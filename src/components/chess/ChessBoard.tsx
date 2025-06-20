@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Chess } from 'chess.js';
+import { Chess, Square } from 'chess.js';
 
 interface ChessBoardProps {
   fen?: string;
@@ -36,11 +36,11 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
     return symbols[piece.type.toLowerCase() as keyof typeof symbols] || '';
   };
 
-  const getSquareName = (row: number, col: number) => {
+  const getSquareName = (row: number, col: number): Square => {
     const files = 'abcdefgh';
     const rank = playerColor === 'white' ? 8 - row : row + 1;
     const file = playerColor === 'white' ? files[col] : files[7 - col];
-    return `${file}${rank}`;
+    return `${file}${rank}` as Square;
   };
 
   const handleSquareClick = (row: number, col: number) => {
@@ -57,7 +57,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
       // Try to make a move
       try {
-        const move = chess.move({ from: selectedSquare, to: square });
+        const move = chess.move({ from: selectedSquare as Square, to: square });
         if (move) {
           onMove?.(selectedSquare, square);
           setBoard(chess.board());
@@ -74,7 +74,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                    (playerColor === 'black' && piece.color === 'b'))) {
         setSelectedSquare(square);
         const moves = chess.moves({ square, verbose: true });
-        setPossibleMoves(moves.map(m => m.to));
+        setPossibleMoves(moves.map(move => move.to));
       }
     }
   };

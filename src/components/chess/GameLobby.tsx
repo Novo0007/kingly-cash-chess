@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -9,9 +8,10 @@ import { toast } from 'sonner';
 import { Plus, Crown, Clock, Users, DollarSign } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 
+type Profile = Tables<'profiles'>;
 type ChessGame = Tables<'chess_games'> & {
-  white_player?: Tables<'profiles'>;
-  black_player?: Tables<'profiles'>;
+  white_player?: Profile | null;
+  black_player?: Profile | null;
 };
 
 export const GameLobby = () => {
@@ -38,22 +38,48 @@ export const GameLobby = () => {
   }, []);
 
   const fetchGames = async () => {
-    const { data, error } = await supabase
-      .from('chess_games')
-      .select(`
-        *,
-        white_player:profiles!chess_games_white_player_id_fkey(username, chess_rating),
-        black_player:profiles!chess_games_black_player_id_fkey(username, chess_rating)
-      `)
-      .eq('game_status', 'waiting')
-      .order('created_at', { ascending: false });
+    try {
+      const { data: gamesData, error } = await supabase
+        .from('chess_games')
+        .select('*')
+        .eq('game_status', 'waiting')
+        .order('created_at', { ascending: false });
 
-    if (error) {
+      if (error) {
+        toast.error('Error loading games');
+        return;
+      }
+
+      // Fetch player profiles separately to avoid foreign key issues
+      const gamesWithProfiles = await Promise.all((gamesData || []).map(async (game) => {
+        const gameWithPlayers: ChessGame = { ...game };
+        
+        if (game.white_player_id) {
+          const { data: whitePlayer } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', game.white_player_id)
+            .single();
+          gameWithPlayers.white_player = whitePlayer;
+        }
+        
+        if (game.black_player_id) {
+          const { data: blackPlayer } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', game.black_player_id)
+            .single();
+          gameWithPlayers.black_player = blackPlayer;
+        }
+        
+        return gameWithPlayers;
+      }));
+
+      setGames(gamesWithProfiles);
+    } catch (error) {
+      console.error('Error fetching games:', error);
       toast.error('Error loading games');
-      return;
     }
-
-    setGames(data || []);
   };
 
   const fetchWallet = async () => {

@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Crown, Menu, X, User, Wallet, LogOut, Users } from 'lucide-react';
+import { Crown, Menu, X, Users, Wallet, LogOut, User as UserIcon } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -67,7 +66,7 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
     { id: 'lobby', label: 'Game Lobby', icon: Crown },
     { id: 'wallet', label: 'Wallet', icon: Wallet },
     { id: 'friends', label: 'Friends', icon: Users },
-    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'profile', label: 'Profile', icon: UserIcon },
   ];
 
   return (
