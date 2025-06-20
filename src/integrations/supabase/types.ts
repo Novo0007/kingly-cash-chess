@@ -9,7 +9,230 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      chess_games: {
+        Row: {
+          black_player_id: string | null
+          black_time_remaining: number | null
+          board_state: string | null
+          created_at: string | null
+          current_turn: string | null
+          entry_fee: number
+          game_result: Database["public"]["Enums"]["game_result"] | null
+          game_status: Database["public"]["Enums"]["game_status"] | null
+          id: string
+          move_history: string[] | null
+          prize_amount: number
+          time_control: number | null
+          updated_at: string | null
+          white_player_id: string | null
+          white_time_remaining: number | null
+          winner_id: string | null
+        }
+        Insert: {
+          black_player_id?: string | null
+          black_time_remaining?: number | null
+          board_state?: string | null
+          created_at?: string | null
+          current_turn?: string | null
+          entry_fee?: number
+          game_result?: Database["public"]["Enums"]["game_result"] | null
+          game_status?: Database["public"]["Enums"]["game_status"] | null
+          id?: string
+          move_history?: string[] | null
+          prize_amount?: number
+          time_control?: number | null
+          updated_at?: string | null
+          white_player_id?: string | null
+          white_time_remaining?: number | null
+          winner_id?: string | null
+        }
+        Update: {
+          black_player_id?: string | null
+          black_time_remaining?: number | null
+          board_state?: string | null
+          created_at?: string | null
+          current_turn?: string | null
+          entry_fee?: number
+          game_result?: Database["public"]["Enums"]["game_result"] | null
+          game_status?: Database["public"]["Enums"]["game_status"] | null
+          id?: string
+          move_history?: string[] | null
+          prize_amount?: number
+          time_control?: number | null
+          updated_at?: string | null
+          white_player_id?: string | null
+          white_time_remaining?: number | null
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
+      friendships: {
+        Row: {
+          addressee_id: string
+          created_at: string | null
+          id: string
+          requester_id: string
+          status: string | null
+        }
+        Insert: {
+          addressee_id: string
+          created_at?: string | null
+          id?: string
+          requester_id: string
+          status?: string | null
+        }
+        Update: {
+          addressee_id?: string
+          created_at?: string | null
+          id?: string
+          requester_id?: string
+          status?: string | null
+        }
+        Relationships: []
+      }
+      game_invitations: {
+        Row: {
+          created_at: string | null
+          entry_fee: number
+          expires_at: string | null
+          from_user_id: string
+          game_id: string
+          id: string
+          status: string | null
+          to_user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          entry_fee: number
+          expires_at?: string | null
+          from_user_id: string
+          game_id: string
+          id?: string
+          status?: string | null
+          to_user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          entry_fee?: number
+          expires_at?: string | null
+          from_user_id?: string
+          game_id?: string
+          id?: string
+          status?: string | null
+          to_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_invitations_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "chess_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          chess_rating: number | null
+          created_at: string | null
+          full_name: string | null
+          games_played: number | null
+          games_won: number | null
+          id: string
+          total_earnings: number | null
+          updated_at: string | null
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          chess_rating?: number | null
+          created_at?: string | null
+          full_name?: string | null
+          games_played?: number | null
+          games_won?: number | null
+          id: string
+          total_earnings?: number | null
+          updated_at?: string | null
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          chess_rating?: number | null
+          created_at?: string | null
+          full_name?: string | null
+          games_played?: number | null
+          games_won?: number | null
+          id?: string
+          total_earnings?: number | null
+          updated_at?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string | null
+          description: string | null
+          id: string
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          status: Database["public"]["Enums"]["payment_status"] | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          status?: Database["public"]["Enums"]["payment_status"] | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          status?: Database["public"]["Enums"]["payment_status"] | null
+          transaction_type?: Database["public"]["Enums"]["transaction_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          balance: number
+          created_at: string | null
+          id: string
+          locked_balance: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string | null
+          id?: string
+          locked_balance?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string | null
+          id?: string
+          locked_balance?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +241,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      game_result: "white_wins" | "black_wins" | "draw" | "abandoned"
+      game_status: "waiting" | "active" | "completed" | "cancelled"
+      payment_status: "pending" | "completed" | "failed" | "refunded"
+      transaction_type:
+        | "deposit"
+        | "withdrawal"
+        | "game_entry"
+        | "game_winning"
+        | "refund"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +364,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      game_result: ["white_wins", "black_wins", "draw", "abandoned"],
+      game_status: ["waiting", "active", "completed", "cancelled"],
+      payment_status: ["pending", "completed", "failed", "refunded"],
+      transaction_type: [
+        "deposit",
+        "withdrawal",
+        "game_entry",
+        "game_winning",
+        "refund",
+      ],
+    },
   },
 } as const
