@@ -10,15 +10,16 @@ import { Users, UserPlus, Check, X, Gamepad2 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Profile = Tables<'profiles'>;
-type Friendship = Tables<'friendships'> & {
-  requester?: Profile;
-  addressee?: Profile;
-};
+type Friendship = Tables<'friendships'>;
+
+interface FriendshipWithProfile extends Friendship {
+  friend?: Profile;
+}
 
 export const FriendsSystem = () => {
   const [allUsers, setAllUsers] = useState<Profile[]>([]);
-  const [friends, setFriends] = useState<Friendship[]>([]);
-  const [pendingRequests, setPendingRequests] = useState<Friendship[]>([]);
+  const [friends, setFriends] = useState<FriendshipWithProfile[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<(Friendship & { requester?: Profile })[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentUser, setCurrentUser] = useState<string | null>(null);
 
@@ -159,12 +160,30 @@ export const FriendsSystem = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Create a new game invitation
+    // First create a new chess game
+    const { data: gameData, error: gameError } = await supabase
+      .from('chess_games')
+      .insert({
+        white_player_id: user.id,
+        entry_fee: 10.00,
+        prize_amount: 20.00,
+        game_status: 'waiting'
+      })
+      .select()
+      .single();
+
+    if (gameError) {
+      toast.error('Failed to create game');
+      return;
+    }
+
+    // Then create the game invitation
     const { error } = await supabase
       .from('game_invitations')
       .insert({
         from_user_id: user.id,
         to_user_id: friendId,
+        game_id: gameData.id,
         entry_fee: 10.00,
         status: 'pending'
       });
