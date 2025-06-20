@@ -6,6 +6,9 @@ import { Navbar } from '@/components/layout/Navbar';
 import { GameLobby } from '@/components/chess/GameLobby';
 import { GamePage } from '@/components/chess/GamePage';
 import { WalletManager } from '@/components/wallet/WalletManager';
+import { FriendsSystem } from '@/components/friends/FriendsSystem';
+import { ProfileSystem } from '@/components/profile/ProfileSystem';
+import { ChatSystem } from '@/components/chat/ChatSystem';
 import type { User } from '@supabase/supabase-js';
 
 const Index = () => {
@@ -56,31 +59,46 @@ const Index = () => {
   const renderCurrentView = () => {
     switch (currentView) {
       case 'lobby':
-        return <GameLobby onJoinGame={handleJoinGame} />;
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <GameLobby onJoinGame={handleJoinGame} />
+            </div>
+            <div>
+              <ChatSystem isGlobalChat={true} />
+            </div>
+          </div>
+        );
       case 'game':
         return currentGameId ? (
-          <GamePage gameId={currentGameId} onBackToLobby={handleBackToLobby} />
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-3">
+              <GamePage gameId={currentGameId} onBackToLobby={handleBackToLobby} />
+            </div>
+            <div>
+              <ChatSystem gameId={currentGameId} />
+            </div>
+          </div>
         ) : (
           <GameLobby onJoinGame={handleJoinGame} />
         );
       case 'wallet':
         return <WalletManager />;
       case 'friends':
-        return (
-          <div className="text-center text-white">
-            <h2 className="text-2xl font-bold mb-4">Friends System</h2>
-            <p className="text-gray-400">Coming soon! Invite friends and challenge them to games.</p>
-          </div>
-        );
+        return <FriendsSystem />;
       case 'profile':
+        return <ProfileSystem />;
+      default:
         return (
-          <div className="text-center text-white">
-            <h2 className="text-2xl font-bold mb-4">Profile Settings</h2>
-            <p className="text-gray-400">Coming soon! Customize your profile and view statistics.</p>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <GameLobby onJoinGame={handleJoinGame} />
+            </div>
+            <div>
+              <ChatSystem isGlobalChat={true} />
+            </div>
           </div>
         );
-      default:
-        return <GameLobby onJoinGame={handleJoinGame} />;
     }
   };
 

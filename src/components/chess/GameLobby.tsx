@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -23,8 +24,10 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
   const [entryFee, setEntryFee] = useState('10');
   const [loading, setLoading] = useState(false);
   const [wallet, setWallet] = useState<Tables<'wallets'> | null>(null);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   useEffect(() => {
+    getCurrentUser();
     fetchGames();
     fetchWallet();
     
@@ -41,6 +44,11 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
     };
   }, []);
 
+  const getCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setCurrentUser(user?.id || null);
+  };
+
   const fetchGames = async () => {
     try {
       const { data: gamesData, error } = await supabase
@@ -50,30 +58,23 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
         .order('created_at', { ascending: false });
 
       if (error) {
-        toast.error('Error loading games');
+        console.error('Error loading games:', error);
         return;
       }
 
-      // Fetch player profiles separately to avoid foreign key issues
       const gamesWithProfiles = await Promise.all((gamesData || []).map(async (game) => {
         const gameWithPlayers: ChessGame = { ...game };
         
         if (game.white_player_id) {
-          const { data: whitePlayer } = await supabase
+          const { data: whitePlayer, error: whiteError } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', game.white_player_id)
             .single();
-          gameWithPlayers.white_player = whitePlayer;
-        }
-        
-        if (game.black_player_id) {
-          const { data: blackPlayer } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', game.black_player_id)
-            .single();
-          gameWithPlayers.black_player = blackPlayer;
+          
+          if (!whiteError) {
+            gameWithPlayers.white_player = whitePlayer;
+          }
         }
         
         return gameWithPlayers;
@@ -82,7 +83,6 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       setGames(gamesWithProfiles);
     } catch (error) {
       console.error('Error fetching games:', error);
-      toast.error('Error loading games');
     }
   };
 
@@ -117,12 +117,11 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
     setLoading(true);
 
     try {
-      // Deduct entry fee from wallet
       const { error: walletError } = await supabase
         .from('wallets')
         .update({
-          balance: wallet.balance - fee,
-          locked_balance: (wallet.locked_balance || 0) + fee
+          balance: (wallet?.balance || 0) - fee,
+          locked_balance: (wallet?.locked_balance || 0) + fee
         })
         .eq('user_id', user.id);
 
@@ -132,7 +131,6 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
         return;
       }
 
-      // Create transaction record
       const { error: transactionError } = await supabase
         .from('transactions')
         .insert({
@@ -147,7 +145,6 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
         console.error('Transaction record error:', transactionError);
       }
 
-      // Create the game
       const { data: gameData, error: gameError } = await supabase
         .from('chess_games')
         .insert({
@@ -160,12 +157,11 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
 
       if (gameError) {
         toast.error('Error creating game');
-        // Refund the entry fee if game creation fails
         await supabase
           .from('wallets')
           .update({
-            balance: wallet.balance,
-            locked_balance: wallet.locked_balance || 0
+            balance: wallet?.balance || 0,
+            locked_balance: wallet?.locked_balance || 0
           })
           .eq('user_id', user.id);
       } else {
@@ -194,12 +190,11 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
     }
 
     try {
-      // Deduct entry fee from wallet
       const { error: walletError } = await supabase
         .from('wallets')
         .update({
-          balance: wallet.balance - entryFee,
-          locked_balance: (wallet.locked_balance || 0) + entryFee
+          balance: (wallet?.balance || 0) - entryFee,
+          locked_balance: (wallet?.locked_balance || 0) + entryFee
         })
         .eq('user_id', user.id);
 
@@ -208,7 +203,6 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
         return;
       }
 
-      // Create transaction record
       const { error: transactionError } = await supabase
         .from('transactions')
         .insert({
@@ -223,23 +217,24 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
         console.error('Transaction record error:', transactionError);
       }
 
-      // Join the game
+      // Update game to add black player and set status to active
       const { error: gameError } = await supabase
         .from('chess_games')
         .update({
           black_player_id: user.id,
-          game_status: 'active'
+          game_status: 'active',
+          updated_at: new Date().toISOString()
         })
         .eq('id', gameId);
 
       if (gameError) {
+        console.error('Game update error:', gameError);
         toast.error('Error joining game');
-        // Refund the entry fee if joining fails
         await supabase
           .from('wallets')
           .update({
-            balance: wallet.balance,
-            locked_balance: wallet.locked_balance || 0
+            balance: wallet?.balance || 0,
+            locked_balance: wallet?.locked_balance || 0
           })
           .eq('user_id', user.id);
       } else {
@@ -349,12 +344,18 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                       </div>
                     </div>
                     
-                    <Button
-                      onClick={() => joinGame(game.id, game.entry_fee)}
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      Join Game
-                    </Button>
+                    {game.white_player_id !== currentUser ? (
+                      <Button
+                        onClick={() => joinGame(game.id, game.entry_fee)}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        Join Game
+                      </Button>
+                    ) : (
+                      <Badge variant="outline" className="text-yellow-500 border-yellow-500">
+                        Your Game
+                      </Badge>
+                    )}
                   </div>
                 </CardContent>
               </Card>
