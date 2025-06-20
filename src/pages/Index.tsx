@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { Navbar } from '@/components/layout/Navbar';
 import { GameLobby } from '@/components/chess/GameLobby';
+import { GamePage } from '@/components/chess/GamePage';
 import { WalletManager } from '@/components/wallet/WalletManager';
 import type { User } from '@supabase/supabase-js';
 
@@ -11,6 +12,7 @@ const Index = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState('lobby');
+  const [currentGameId, setCurrentGameId] = useState<string | null>(null);
 
   useEffect(() => {
     getUser();
@@ -29,6 +31,16 @@ const Index = () => {
     setLoading(false);
   };
 
+  const handleJoinGame = (gameId: string) => {
+    setCurrentGameId(gameId);
+    setCurrentView('game');
+  };
+
+  const handleBackToLobby = () => {
+    setCurrentGameId(null);
+    setCurrentView('lobby');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
@@ -44,7 +56,13 @@ const Index = () => {
   const renderCurrentView = () => {
     switch (currentView) {
       case 'lobby':
-        return <GameLobby />;
+        return <GameLobby onJoinGame={handleJoinGame} />;
+      case 'game':
+        return currentGameId ? (
+          <GamePage gameId={currentGameId} onBackToLobby={handleBackToLobby} />
+        ) : (
+          <GameLobby onJoinGame={handleJoinGame} />
+        );
       case 'wallet':
         return <WalletManager />;
       case 'friends':
@@ -62,7 +80,7 @@ const Index = () => {
           </div>
         );
       default:
-        return <GameLobby />;
+        return <GameLobby onJoinGame={handleJoinGame} />;
     }
   };
 

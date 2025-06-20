@@ -15,15 +15,18 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   playerColor = 'white',
   disabled = false
 }) => {
-  const [chess] = useState(new Chess(fen));
+  const [chess, setChess] = useState(new Chess(fen));
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [possibleMoves, setPossibleMoves] = useState<string[]>([]);
   const [board, setBoard] = useState(chess.board());
 
   useEffect(() => {
-    chess.load(fen);
-    setBoard(chess.board());
-  }, [fen, chess]);
+    const newChess = new Chess(fen);
+    setChess(newChess);
+    setBoard(newChess.board());
+    setSelectedSquare(null);
+    setPossibleMoves([]);
+  }, [fen]);
 
   const getPieceSymbol = (piece: any) => {
     if (!piece) return '';
@@ -57,13 +60,15 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
       // Try to make a move
       try {
-        const move = chess.move({ from: selectedSquare as Square, to: square });
+        const tempChess = new Chess(chess.fen());
+        const move = tempChess.move({ from: selectedSquare as Square, to: square });
         if (move) {
           onMove?.(selectedSquare, square);
-          setBoard(chess.board());
+          // Don't update local state here - wait for the prop update
         }
       } catch (e) {
         // Invalid move
+        console.log('Invalid move:', e);
       }
       
       setSelectedSquare(null);
@@ -119,6 +124,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     ? 'after:absolute after:inset-2 after:bg-green-400 after:rounded-full after:opacity-60' 
                     : ''
                   }
+                  ${disabled ? 'cursor-not-allowed opacity-50' : ''}
                 `}
                 onClick={() => handleSquareClick(displayRow, displayCol)}
               >

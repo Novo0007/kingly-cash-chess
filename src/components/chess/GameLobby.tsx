@@ -14,7 +14,11 @@ type ChessGame = Tables<'chess_games'> & {
   black_player?: Profile | null;
 };
 
-export const GameLobby = () => {
+interface GameLobbyProps {
+  onJoinGame?: (gameId: string) => void;
+}
+
+export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
   const [games, setGames] = useState<ChessGame[]>([]);
   const [entryFee, setEntryFee] = useState('10');
   const [loading, setLoading] = useState(false);
@@ -112,19 +116,69 @@ export const GameLobby = () => {
 
     setLoading(true);
 
-    const { error } = await supabase
-      .from('chess_games')
-      .insert({
-        white_player_id: user.id,
-        entry_fee: fee,
-        prize_amount: fee * 2,
-      });
+    try {
+      // Deduct entry fee from wallet
+      const { error: walletError } = await supabase
+        .from('wallets')
+        .update({
+          balance: wallet.balance - fee,
+          locked_balance: (wallet.locked_balance || 0) + fee
+        })
+        .eq('user_id', user.id);
 
-    if (error) {
-      toast.error('Error creating game');
-    } else {
-      toast.success('Game created successfully!');
-      setEntryFee('10');
+      if (walletError) {
+        toast.error('Failed to deduct entry fee');
+        setLoading(false);
+        return;
+      }
+
+      // Create transaction record
+      const { error: transactionError } = await supabase
+        .from('transactions')
+        .insert({
+          user_id: user.id,
+          transaction_type: 'game_entry',
+          amount: fee,
+          status: 'completed',
+          description: `Entry fee for chess game - ₹${fee}`
+        });
+
+      if (transactionError) {
+        console.error('Transaction record error:', transactionError);
+      }
+
+      // Create the game
+      const { data: gameData, error: gameError } = await supabase
+        .from('chess_games')
+        .insert({
+          white_player_id: user.id,
+          entry_fee: fee,
+          prize_amount: fee * 2,
+        })
+        .select()
+        .single();
+
+      if (gameError) {
+        toast.error('Error creating game');
+        // Refund the entry fee if game creation fails
+        await supabase
+          .from('wallets')
+          .update({
+            balance: wallet.balance,
+            locked_balance: wallet.locked_balance || 0
+          })
+          .eq('user_id', user.id);
+      } else {
+        toast.success('Game created successfully!');
+        setEntryFee('10');
+        fetchWallet();
+        if (onJoinGame && gameData) {
+          onJoinGame(gameData.id);
+        }
+      }
+    } catch (error) {
+      console.error('Error creating game:', error);
+      toast.error('Failed to create game');
     }
 
     setLoading(false);
@@ -139,18 +193,65 @@ export const GameLobby = () => {
       return;
     }
 
-    const { error } = await supabase
-      .from('chess_games')
-      .update({
-        black_player_id: user.id,
-        game_status: 'active'
-      })
-      .eq('id', gameId);
+    try {
+      // Deduct entry fee from wallet
+      const { error: walletError } = await supabase
+        .from('wallets')
+        .update({
+          balance: wallet.balance - entryFee,
+          locked_balance: (wallet.locked_balance || 0) + entryFee
+        })
+        .eq('user_id', user.id);
 
-    if (error) {
-      toast.error('Error joining game');
-    } else {
-      toast.success('Joined game successfully!');
+      if (walletError) {
+        toast.error('Failed to deduct entry fee');
+        return;
+      }
+
+      // Create transaction record
+      const { error: transactionError } = await supabase
+        .from('transactions')
+        .insert({
+          user_id: user.id,
+          transaction_type: 'game_entry',
+          amount: entryFee,
+          status: 'completed',
+          description: `Entry fee for chess game - ₹${entryFee}`
+        });
+
+      if (transactionError) {
+        console.error('Transaction record error:', transactionError);
+      }
+
+      // Join the game
+      const { error: gameError } = await supabase
+        .from('chess_games')
+        .update({
+          black_player_id: user.id,
+          game_status: 'active'
+        })
+        .eq('id', gameId);
+
+      if (gameError) {
+        toast.error('Error joining game');
+        // Refund the entry fee if joining fails
+        await supabase
+          .from('wallets')
+          .update({
+            balance: wallet.balance,
+            locked_balance: wallet.locked_balance || 0
+          })
+          .eq('user_id', user.id);
+      } else {
+        toast.success('Joined game successfully!');
+        fetchWallet();
+        if (onJoinGame) {
+          onJoinGame(gameId);
+        }
+      }
+    } catch (error) {
+      console.error('Error joining game:', error);
+      toast.error('Failed to join game');
     }
   };
 
