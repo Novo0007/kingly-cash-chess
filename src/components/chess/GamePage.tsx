@@ -85,6 +85,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         gameWithPlayers.black_player = blackPlayer;
       }
 
+      console.log('Fetched game:', gameWithPlayers);
       setGame(gameWithPlayers);
     } catch (error) {
       console.error('Error fetching game:', error);
@@ -234,11 +235,21 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       </div>
 
       {/* Game Status */}
-      {game.game_status === 'waiting' && (
+      {game.game_status === 'waiting' && !game.black_player_id && (
         <Card className="bg-yellow-500/10 border-yellow-500/30">
           <CardContent className="p-4 text-center">
             <p className="text-yellow-500 font-medium">
               Waiting for another player to join...
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {game.game_status === 'active' && (
+        <Card className="bg-green-500/10 border-green-500/30">
+          <CardContent className="p-4 text-center">
+            <p className="text-green-500 font-medium">
+              Game is active! Current turn: {game.current_turn}
             </p>
           </CardContent>
         </Card>

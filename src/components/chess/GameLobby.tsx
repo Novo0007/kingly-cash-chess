@@ -190,6 +190,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
     }
 
     try {
+      // First, update the wallet
       const { error: walletError } = await supabase
         .from('wallets')
         .update({
@@ -203,6 +204,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
         return;
       }
 
+      // Record the transaction
       const { error: transactionError } = await supabase
         .from('transactions')
         .insert({
@@ -230,6 +232,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       if (gameError) {
         console.error('Game update error:', gameError);
         toast.error('Error joining game');
+        // Rollback wallet changes
         await supabase
           .from('wallets')
           .update({
