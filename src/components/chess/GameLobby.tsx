@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -35,7 +36,10 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       .channel('chess_games_changes')
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'chess_games' },
-        () => fetchGames()
+        (payload) => {
+          console.log('Game update received:', payload);
+          fetchGames();
+        }
       )
       .subscribe();
 
@@ -337,7 +341,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           })
           .eq('user_id', user.id);
       } else {
-        toast.success(`Joined "${gameName}" successfully!`);
+        toast.success(`Joined "${gameName}" successfully! Game is now active.`);
         fetchWallet();
         if (onJoinGame) {
           onJoinGame(gameId);
@@ -373,6 +377,20 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       );
     }
     return null;
+  };
+
+  const isGameFull = (game: ChessGame) => {
+    return getPlayerCount(game) >= 2;
+  };
+
+  const canJoinGame = (game: ChessGame) => {
+    return game.game_status === 'waiting' && 
+           !isGameFull(game) && 
+           game.white_player_id !== currentUser;
+  };
+
+  const canEnterGame = (game: ChessGame) => {
+    return game.white_player_id === currentUser || game.black_player_id === currentUser;
   };
 
   return (
@@ -461,6 +479,9 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                           </span>
                           <span className="text-gray-400 text-xs">
                             Host: {game.white_player?.username || 'Anonymous'}
+                            {game.black_player && (
+                              <> vs {game.black_player?.username}</>
+                            )}
                           </span>
                         </div>
                         <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-xs">
@@ -489,23 +510,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                       </div>
                     </div>
                     
-                    {game.white_player_id !== currentUser ? (
-                      game.game_status === 'waiting' ? (
-                        <Button
-                          onClick={() => joinGame(game.id, game.entry_fee, game.game_name || 'Unnamed Game')}
-                          className="bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-2 w-full sm:w-auto"
-                        >
-                          Join Game
-                        </Button>
-                      ) : (
-                        <Button
-                          onClick={() => onJoinGame?.(game.id)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-2 w-full sm:w-auto"
-                        >
-                          Spectate
-                        </Button>
-                      )
-                    ) : (
+                    {canEnterGame(game) ? (
                       <Button
                         onClick={() => onJoinGame?.(game.id)}
                         variant="outline"
@@ -513,6 +518,24 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                       >
                         Enter Game
                       </Button>
+                    ) : canJoinGame(game) ? (
+                      <Button
+                        onClick={() => joinGame(game.id, game.entry_fee, game.game_name || 'Unnamed Game')}
+                        className="bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-2 w-full sm:w-auto"
+                      >
+                        Join Game
+                      </Button>
+                    ) : game.game_status === 'active' ? (
+                      <Button
+                        onClick={() => onJoinGame?.(game.id)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-2 w-full sm:w-auto"
+                      >
+                        Spectate
+                      </Button>
+                    ) : (
+                      <Badge variant="secondary" className="text-gray-400 text-xs px-3 py-1">
+                        Game Full
+                      </Badge>
                     )}
                   </div>
                 </CardContent>

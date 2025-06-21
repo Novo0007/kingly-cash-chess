@@ -88,6 +88,20 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
       console.log('Fetched game:', gameWithPlayers);
       setGame(gameWithPlayers);
+
+      // Auto-start game if both players are present and status is still waiting
+      if (gameWithPlayers.game_status === 'waiting' && 
+          gameWithPlayers.white_player_id && 
+          gameWithPlayers.black_player_id) {
+        console.log('Both players present, starting game...');
+        await supabase
+          .from('chess_games')
+          .update({
+            game_status: 'active',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', gameId);
+      }
     } catch (error) {
       console.error('Error fetching game:', error);
       toast.error('Error loading game');
@@ -113,6 +127,16 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
     if (!isPlayerTurn) {
       toast.error('Not your turn');
+      return;
+    }
+
+    // Ensure game is active
+    if (game.game_status !== 'active') {
+      if (game.game_status === 'waiting') {
+        toast.error('Waiting for another player to join');
+      } else {
+        toast.error('Game is not active');
+      }
       return;
     }
 
@@ -189,6 +213,11 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     
     return (game.current_turn === 'white' && isWhitePlayer) || 
            (game.current_turn === 'black' && isBlackPlayer);
+  };
+
+  const isSpectator = () => {
+    if (!game || !currentUser) return true;
+    return currentUser !== game.white_player_id && currentUser !== game.black_player_id;
   };
 
   if (loading) {
@@ -286,8 +315,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
           fen={game.board_state}
           onMove={handleMove}
           playerColor={getPlayerColor()}
-          disabled={game.game_status !== 'active'}
-          isPlayerTurn={isPlayerTurn() && game.game_status === 'active'}
+          disabled={game.game_status !== 'active' || isSpectator()}
+          isPlayerTurn={isPlayerTurn() && game.game_status === 'active' && !isSpectator()}
         />
       </div>
 
@@ -302,11 +331,21 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </Card>
       )}
 
+      {game.game_status === 'waiting' && playerCount === 2 && (
+        <Card className="bg-blue-500/10 border-blue-500/30">
+          <CardContent className="p-3 sm:p-4 text-center">
+            <p className="text-blue-500 font-medium text-sm sm:text-base">
+              Both players joined! Starting game...
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {game.game_status === 'active' && (
         <Card className="bg-green-500/10 border-green-500/30">
           <CardContent className="p-3 sm:p-4 text-center">
             <p className="text-green-500 font-medium text-sm sm:text-base">
-              Game is active! {isPlayerTurn() ? "It's your turn!" : `Waiting for ${game.current_turn} player...`}
+              Game is active! {isSpectator() ? 'You are spectating.' : isPlayerTurn() ? "It's your turn!" : `Waiting for ${game.current_turn} player...`}
             </p>
           </CardContent>
         </Card>
