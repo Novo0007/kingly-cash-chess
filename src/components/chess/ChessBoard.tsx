@@ -86,10 +86,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         }
       }
       
-      if (!piece || piece.color !== (playerColor === 'white' ? 'w' : 'b')) {
-        setSelectedSquare(null);
-        setPossibleMoves([]);
-      }
+      setSelectedSquare(null);
+      setPossibleMoves([]);
     } else {
       const piece = chess.get(square);
       if (piece && !disabled && isPlayerTurn) {
@@ -124,7 +122,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full px-2 sm:px-4">
-      <div className="bg-gradient-to-br from-amber-100 to-amber-200 p-2 sm:p-4 md:p-6 rounded-xl shadow-2xl w-full max-w-lg">
+      <div className="bg-gradient-to-br from-amber-100 to-amber-200 p-3 sm:p-4 md:p-6 rounded-xl shadow-2xl w-full max-w-2xl">
         <div className="grid grid-cols-8 gap-0 aspect-square w-full border-4 border-amber-800 rounded-lg overflow-hidden">
           {board.map((row, rowIndex) =>
             row.map((piece, colIndex) => {
@@ -135,18 +133,18 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 <div
                   key={`${displayRow}-${displayCol}`}
                   className={`
-                    aspect-square flex items-center justify-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black cursor-pointer
-                    transition-all duration-200 hover:scale-105 active:scale-95 relative border border-amber-700/30
+                    aspect-square flex items-center justify-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black cursor-pointer
+                    transition-all duration-200 hover:scale-105 active:scale-95 relative border-2 border-amber-700/40
                     ${isLightSquare(displayRow, displayCol) 
                       ? 'bg-amber-50 hover:bg-amber-100 active:bg-amber-200' 
                       : 'bg-amber-800 hover:bg-amber-700 active:bg-amber-900'
                     }
                     ${isSquareHighlighted(displayRow, displayCol) 
-                      ? 'ring-2 sm:ring-4 ring-yellow-400 bg-yellow-300 shadow-lg' 
+                      ? 'ring-4 sm:ring-6 ring-yellow-400 bg-yellow-300 shadow-xl' 
                       : ''
                     }
                     ${isPossibleMove(displayRow, displayCol) 
-                      ? 'after:absolute after:inset-1 sm:after:inset-2 after:bg-green-400 after:rounded-full after:opacity-70 after:shadow-lg' 
+                      ? 'after:absolute after:inset-2 sm:after:inset-3 after:bg-green-400 after:rounded-full after:opacity-80 after:shadow-lg after:animate-pulse' 
                       : ''
                     }
                     ${disabled || !isPlayerTurn ? 'cursor-default opacity-70' : 'cursor-pointer'}
@@ -154,7 +152,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                   `}
                   onClick={() => handleSquareClick(displayRow, displayCol)}
                 >
-                  <span className="z-10 drop-shadow-lg select-none filter contrast-125 brightness-110">
+                  <span className="z-10 drop-shadow-xl select-none filter contrast-125 brightness-110">
                     {getPieceSymbol(piece)}
                   </span>
                 </div>
@@ -163,12 +161,12 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           )}
         </div>
         
-        <div className="mt-2 sm:mt-3 text-center text-xs sm:text-sm text-amber-800 font-bold">
+        <div className="mt-3 sm:mt-4 text-center text-sm sm:text-base text-amber-800 font-bold">
           <div>Playing as {playerColor === 'white' ? 'White' : 'Black'}</div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-orange-600 animate-pulse mt-1">Waiting for opponent's move...</div>
+            <div className="text-orange-600 animate-pulse mt-2">Waiting for opponent's move...</div>
           )}
-          {disabled && <div className="text-gray-600 mt-1">(Spectating)</div>}
+          {disabled && <div className="text-gray-600 mt-2">(Spectating)</div>}
         </div>
       </div>
     </div>
