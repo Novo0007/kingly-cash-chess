@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Chess, Square } from 'chess.js';
 
@@ -21,22 +20,31 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   const [board, setBoard] = useState(chess.board());
 
   useEffect(() => {
-    const newChess = new Chess(fen);
-    setChess(newChess);
-    setBoard(newChess.board());
-    setSelectedSquare(null);
-    setPossibleMoves([]);
+    try {
+      const newChess = new Chess(fen);
+      setChess(newChess);
+      setBoard(newChess.board());
+      setSelectedSquare(null);
+      setPossibleMoves([]);
+    } catch (error) {
+      console.error('Invalid FEN:', fen, error);
+      // Keep the previous state if FEN is invalid
+    }
   }, [fen]);
 
   const getPieceSymbol = (piece: any) => {
     if (!piece) return '';
     
     const symbols = {
-      'p': '♟', 'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚',
-      'P': '♙', 'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔'
+      'p': piece.color === 'w' ? '♙' : '♟',
+      'r': piece.color === 'w' ? '♖' : '♜',
+      'n': piece.color === 'w' ? '♘' : '♞',
+      'b': piece.color === 'w' ? '♗' : '♝',
+      'q': piece.color === 'w' ? '♕' : '♛',
+      'k': piece.color === 'w' ? '♔' : '♚'
     };
     
-    return symbols[piece.type.toLowerCase() as keyof typeof symbols] || '';
+    return symbols[piece.type as keyof typeof symbols] || '';
   };
 
   const getSquareName = (row: number, col: number): Square => {
@@ -63,11 +71,12 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         const tempChess = new Chess(chess.fen());
         const move = tempChess.move({ from: selectedSquare as Square, to: square });
         if (move) {
+          console.log('Making move:', selectedSquare, 'to', square);
           onMove?.(selectedSquare, square);
-          // Don't update local state here - wait for the prop update
+        } else {
+          console.log('Invalid move attempted:', selectedSquare, 'to', square);
         }
       } catch (e) {
-        // Invalid move
         console.log('Invalid move:', e);
       }
       
@@ -75,11 +84,20 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       setPossibleMoves([]);
     } else {
       const piece = chess.get(square);
-      if (piece && ((playerColor === 'white' && piece.color === 'w') || 
-                   (playerColor === 'black' && piece.color === 'b'))) {
-        setSelectedSquare(square);
-        const moves = chess.moves({ square, verbose: true });
-        setPossibleMoves(moves.map(move => move.to));
+      if (piece) {
+        // Allow any player to select any piece for now (spectator mode)
+        // But only allow moves if it's the correct player's turn and piece
+        const canSelectPiece = !disabled && (
+          (playerColor === 'white' && piece.color === 'w') || 
+          (playerColor === 'black' && piece.color === 'b') ||
+          disabled // Allow selection in spectator mode
+        );
+
+        if (canSelectPiece || disabled) {
+          setSelectedSquare(square);
+          const moves = chess.moves({ square, verbose: true });
+          setPossibleMoves(moves.map(move => move.to));
+        }
       }
     }
   };
@@ -124,17 +142,23 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     ? 'after:absolute after:inset-2 after:bg-green-400 after:rounded-full after:opacity-60' 
                     : ''
                   }
-                  ${disabled ? 'cursor-not-allowed opacity-50' : ''}
+                  ${disabled ? 'cursor-default' : 'cursor-pointer'}
                 `}
                 onClick={() => handleSquareClick(displayRow, displayCol)}
               >
-                <span className="z-10 drop-shadow-sm">
+                <span className="z-10 drop-shadow-sm select-none">
                   {getPieceSymbol(piece)}
                 </span>
               </div>
             );
           })
         )}
+      </div>
+      
+      {/* Board coordinates for better UX */}
+      <div className="mt-2 text-center text-xs text-amber-800 font-medium">
+        Playing as {playerColor === 'white' ? 'White' : 'Black'}
+        {disabled && ' (Spectating)'}
       </div>
     </div>
   );

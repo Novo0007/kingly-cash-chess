@@ -22,6 +22,7 @@ interface GameLobbyProps {
 export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
   const [games, setGames] = useState<ChessGame[]>([]);
   const [entryFee, setEntryFee] = useState('10');
+  const [gameName, setGameName] = useState('');
   const [loading, setLoading] = useState(false);
   const [wallet, setWallet] = useState<Tables<'wallets'> | null>(null);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
@@ -54,7 +55,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       const { data: gamesData, error } = await supabase
         .from('chess_games')
         .select('*')
-        .eq('game_status', 'waiting')
+        .in('game_status', ['waiting', 'active'])
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -74,6 +75,18 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           
           if (!whiteError) {
             gameWithPlayers.white_player = whitePlayer;
+          }
+        }
+
+        if (game.black_player_id) {
+          const { data: blackPlayer, error: blackError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', game.black_player_id)
+            .single();
+          
+          if (!blackError) {
+            gameWithPlayers.black_player = blackPlayer;
           }
         }
         
@@ -99,6 +112,17 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
     setWallet(data);
   };
 
+  const generateUniqueGameName = () => {
+    const adjectives = ['Epic', 'Royal', 'Mystic', 'Grand', 'Elite', 'Swift', 'Bold', 'Golden', 'Diamond', 'Master'];
+    const nouns = ['Battle', 'Quest', 'Challenge', 'Duel', 'Match', 'Tournament', 'Clash', 'Championship', 'Arena', 'Showdown'];
+    
+    const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+    const randomNumber = Math.floor(Math.random() * 1000) + 1;
+    
+    return `${randomAdjective} ${randomNoun} #${randomNumber}`;
+  };
+
   const createGame = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -113,6 +137,8 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       toast.error('Insufficient balance');
       return;
     }
+
+    const finalGameName = gameName.trim() || generateUniqueGameName();
 
     setLoading(true);
 
@@ -138,7 +164,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           transaction_type: 'game_entry',
           amount: fee,
           status: 'completed',
-          description: `Entry fee for chess game - ₹${fee}`
+          description: `Entry fee for chess game: ${finalGameName} - ₹${fee}`
         });
 
       if (transactionError) {
@@ -151,6 +177,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           white_player_id: user.id,
           entry_fee: fee,
           prize_amount: fee * 2,
+          game_name: finalGameName
         })
         .select()
         .single();
@@ -165,8 +192,9 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           })
           .eq('user_id', user.id);
       } else {
-        toast.success('Game created successfully!');
+        toast.success(`Game "${finalGameName}" created successfully!`);
         setEntryFee('10');
+        setGameName('');
         fetchWallet();
         if (onJoinGame && gameData) {
           onJoinGame(gameData.id);
@@ -180,7 +208,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
     setLoading(false);
   };
 
-  const joinGame = async (gameId: string, entryFee: number) => {
+  const joinGame = async (gameId: string, entryFee: number, gameName: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
@@ -212,7 +240,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           transaction_type: 'game_entry',
           amount: entryFee,
           status: 'completed',
-          description: `Entry fee for chess game - ₹${entryFee}`
+          description: `Entry fee for chess game: ${gameName} - ₹${entryFee}`
         });
 
       if (transactionError) {
@@ -241,7 +269,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           })
           .eq('user_id', user.id);
       } else {
-        toast.success('Joined game successfully!');
+        toast.success(`Joined "${gameName}" successfully!`);
         fetchWallet();
         if (onJoinGame) {
           onJoinGame(gameId);
@@ -251,6 +279,32 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       console.error('Error joining game:', error);
       toast.error('Failed to join game');
     }
+  };
+
+  const getPlayerCount = (game: ChessGame) => {
+    let count = 0;
+    if (game.white_player_id) count++;
+    if (game.black_player_id) count++;
+    return count;
+  };
+
+  const getGameStatusBadge = (game: ChessGame) => {
+    const playerCount = getPlayerCount(game);
+    
+    if (game.game_status === 'waiting') {
+      return (
+        <Badge variant="outline" className="text-yellow-500 border-yellow-500">
+          Waiting ({playerCount}/2)
+        </Badge>
+      );
+    } else if (game.game_status === 'active') {
+      return (
+        <Badge variant="outline" className="text-green-500 border-green-500">
+          Active ({playerCount}/2)
+        </Badge>
+      );
+    }
+    return null;
   };
 
   return (
@@ -279,6 +333,16 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div>
+            <label className="text-sm text-gray-300 mb-2 block">Game Name (Optional)</label>
+            <Input
+              type="text"
+              value={gameName}
+              onChange={(e) => setGameName(e.target.value)}
+              className="bg-gray-800/50 border-gray-600 text-white"
+              placeholder="Leave empty for auto-generated name"
+            />
+          </div>
           <div>
             <label className="text-sm text-gray-300 mb-2 block">Entry Fee (₹)</label>
             <Input
@@ -323,12 +387,18 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                     <div className="space-y-2">
                       <div className="flex items-center gap-3">
                         <Crown className="h-4 w-4 text-yellow-500" />
-                        <span className="text-white font-medium">
-                          {game.white_player?.username || 'Anonymous'}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="text-white font-medium text-sm">
+                            {game.game_name || 'Unnamed Game'}
+                          </span>
+                          <span className="text-gray-400 text-xs">
+                            Host: {game.white_player?.username || 'Anonymous'}
+                          </span>
+                        </div>
                         <Badge variant="secondary" className="bg-gray-700 text-gray-300">
                           {game.white_player?.chess_rating || 1200}
                         </Badge>
+                        {getGameStatusBadge(game)}
                       </div>
                       
                       <div className="flex items-center gap-4 text-sm text-gray-400">
@@ -344,20 +414,37 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                           <Clock className="h-3 w-3" />
                           <span>{Math.floor((game.time_control || 600) / 60)} min</span>
                         </div>
+                        <div className="flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          <span>{getPlayerCount(game)}/2 players</span>
+                        </div>
                       </div>
                     </div>
                     
                     {game.white_player_id !== currentUser ? (
-                      <Button
-                        onClick={() => joinGame(game.id, game.entry_fee)}
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                      >
-                        Join Game
-                      </Button>
+                      game.game_status === 'waiting' ? (
+                        <Button
+                          onClick={() => joinGame(game.id, game.entry_fee, game.game_name || 'Unnamed Game')}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          Join Game
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => onJoinGame?.(game.id)}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          Spectate
+                        </Button>
+                      )
                     ) : (
-                      <Badge variant="outline" className="text-yellow-500 border-yellow-500">
-                        Your Game
-                      </Badge>
+                      <Button
+                        onClick={() => onJoinGame?.(game.id)}
+                        variant="outline"
+                        className="text-yellow-500 border-yellow-500 hover:bg-yellow-500/10"
+                      >
+                        Enter Game
+                      </Button>
                     )}
                   </div>
                 </CardContent>
