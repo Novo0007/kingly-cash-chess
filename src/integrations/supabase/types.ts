@@ -17,6 +17,7 @@ export type Database = {
           created_at: string | null
           current_turn: string | null
           entry_fee: number
+          game_name: string | null
           game_result: Database["public"]["Enums"]["game_result"] | null
           game_status: Database["public"]["Enums"]["game_status"] | null
           id: string
@@ -35,6 +36,7 @@ export type Database = {
           created_at?: string | null
           current_turn?: string | null
           entry_fee?: number
+          game_name?: string | null
           game_result?: Database["public"]["Enums"]["game_result"] | null
           game_status?: Database["public"]["Enums"]["game_status"] | null
           id?: string
@@ -53,6 +55,7 @@ export type Database = {
           created_at?: string | null
           current_turn?: string | null
           entry_fee?: number
+          game_name?: string | null
           game_result?: Database["public"]["Enums"]["game_result"] | null
           game_status?: Database["public"]["Enums"]["game_status"] | null
           id?: string

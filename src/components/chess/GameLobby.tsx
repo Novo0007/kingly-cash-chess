@@ -112,15 +112,41 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
     setWallet(data);
   };
 
-  const generateUniqueGameName = () => {
+  const generateUniqueGameName = async () => {
     const adjectives = ['Epic', 'Royal', 'Mystic', 'Grand', 'Elite', 'Swift', 'Bold', 'Golden', 'Diamond', 'Master'];
     const nouns = ['Battle', 'Quest', 'Challenge', 'Duel', 'Match', 'Tournament', 'Clash', 'Championship', 'Arena', 'Showdown'];
     
-    const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-    const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
-    const randomNumber = Math.floor(Math.random() * 1000) + 1;
+    let attempts = 0;
+    let uniqueName = '';
     
-    return `${randomAdjective} ${randomNoun} #${randomNumber}`;
+    while (attempts < 10) {
+      const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+      const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+      const randomNumber = Math.floor(Math.random() * 1000) + 1;
+      
+      const proposedName = `${randomAdjective} ${randomNoun} #${randomNumber}`;
+      
+      // Check if this name already exists
+      const { data: existingGame } = await supabase
+        .from('chess_games')
+        .select('id')
+        .eq('game_name', proposedName)
+        .single();
+      
+      if (!existingGame) {
+        uniqueName = proposedName;
+        break;
+      }
+      
+      attempts++;
+    }
+    
+    // Fallback if we couldn't generate a unique name
+    if (!uniqueName) {
+      uniqueName = `Chess Game #${Date.now()}`;
+    }
+    
+    return uniqueName;
   };
 
   const createGame = async () => {
@@ -138,11 +164,29 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       return;
     }
 
-    const finalGameName = gameName.trim() || generateUniqueGameName();
-
     setLoading(true);
 
     try {
+      let finalGameName = gameName.trim();
+      
+      // Generate unique name if none provided or if the provided name already exists
+      if (!finalGameName) {
+        finalGameName = await generateUniqueGameName();
+      } else {
+        // Check if the provided name already exists
+        const { data: existingGame } = await supabase
+          .from('chess_games')
+          .select('id')
+          .eq('game_name', finalGameName)
+          .single();
+        
+        if (existingGame) {
+          toast.error('Game name already exists. Please choose a different name.');
+          setLoading(false);
+          return;
+        }
+      }
+
       const { error: walletError } = await supabase
         .from('wallets')
         .update({
@@ -340,7 +384,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
               value={gameName}
               onChange={(e) => setGameName(e.target.value)}
               className="bg-gray-800/50 border-gray-600 text-white"
-              placeholder="Leave empty for auto-generated name"
+              placeholder="Leave empty for auto-generated unique name"
             />
           </div>
           <div>
