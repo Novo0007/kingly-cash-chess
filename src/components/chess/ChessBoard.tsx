@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Chess, Square } from 'chess.js';
 
@@ -28,7 +29,6 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       setPossibleMoves([]);
     } catch (error) {
       console.error('Invalid FEN:', fen, error);
-      // Keep the previous state if FEN is invalid
     }
   }, [fen]);
 
@@ -67,33 +67,26 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       }
 
       // Try to make a move
-      try {
-        const tempChess = new Chess(chess.fen());
-        const move = tempChess.move({ from: selectedSquare as Square, to: square });
-        if (move) {
-          console.log('Making move:', selectedSquare, 'to', square);
-          onMove?.(selectedSquare, square);
-        } else {
-          console.log('Invalid move attempted:', selectedSquare, 'to', square);
-        }
-      } catch (e) {
-        console.log('Invalid move:', e);
+      if (possibleMoves.includes(square)) {
+        console.log('Making move:', selectedSquare, 'to', square);
+        onMove?.(selectedSquare, square);
+      } else {
+        // Invalid move, clear selection
+        console.log('Invalid move attempted:', selectedSquare, 'to', square);
       }
       
       setSelectedSquare(null);
       setPossibleMoves([]);
     } else {
       const piece = chess.get(square);
-      if (piece) {
-        // Allow any player to select any piece for now (spectator mode)
-        // But only allow moves if it's the correct player's turn and piece
-        const canSelectPiece = !disabled && (
-          (playerColor === 'white' && piece.color === 'w') || 
-          (playerColor === 'black' && piece.color === 'b') ||
-          disabled // Allow selection in spectator mode
+      if (piece && !disabled) {
+        // Only allow selecting your own pieces
+        const canSelectPiece = (
+          (playerColor === 'white' && piece.color === 'w' && chess.turn() === 'w') || 
+          (playerColor === 'black' && piece.color === 'b' && chess.turn() === 'b')
         );
 
-        if (canSelectPiece || disabled) {
+        if (canSelectPiece) {
           setSelectedSquare(square);
           const moves = chess.moves({ square, verbose: true });
           setPossibleMoves(moves.map(move => move.to));
@@ -117,8 +110,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   };
 
   return (
-    <div className="inline-block bg-gradient-to-br from-amber-100 to-amber-200 p-4 rounded-xl shadow-2xl">
-      <div className="grid grid-cols-8 gap-0 w-80 h-80 md:w-96 md:h-96 border-4 border-amber-800 rounded-lg overflow-hidden">
+    <div className="inline-block bg-gradient-to-br from-amber-100 to-amber-200 p-3 sm:p-6 rounded-xl shadow-2xl">
+      <div className="grid grid-cols-8 gap-0 w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[28rem] lg:h-[28rem] border-4 border-amber-800 rounded-lg overflow-hidden">
         {board.map((row, rowIndex) =>
           row.map((piece, colIndex) => {
             const displayRow = playerColor === 'white' ? rowIndex : 7 - rowIndex;
@@ -128,25 +121,25 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
               <div
                 key={`${displayRow}-${displayCol}`}
                 className={`
-                  aspect-square flex items-center justify-center text-2xl md:text-3xl font-bold cursor-pointer
-                  transition-all duration-200 hover:scale-105 relative
+                  aspect-square flex items-center justify-center text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black cursor-pointer
+                  transition-all duration-200 hover:scale-105 active:scale-95 relative border border-amber-700/30
                   ${isLightSquare(displayRow, displayCol) 
-                    ? 'bg-amber-100 hover:bg-amber-200' 
-                    : 'bg-amber-800 hover:bg-amber-700'
+                    ? 'bg-amber-50 hover:bg-amber-100 active:bg-amber-200' 
+                    : 'bg-amber-800 hover:bg-amber-700 active:bg-amber-900'
                   }
                   ${isSquareHighlighted(displayRow, displayCol) 
-                    ? 'ring-4 ring-yellow-400 bg-yellow-300' 
+                    ? 'ring-4 ring-yellow-400 bg-yellow-300 shadow-lg' 
                     : ''
                   }
                   ${isPossibleMove(displayRow, displayCol) 
-                    ? 'after:absolute after:inset-2 after:bg-green-400 after:rounded-full after:opacity-60' 
+                    ? 'after:absolute after:inset-1 sm:after:inset-2 after:bg-green-400 after:rounded-full after:opacity-70 after:shadow-lg' 
                     : ''
                   }
-                  ${disabled ? 'cursor-default' : 'cursor-pointer'}
+                  ${disabled ? 'cursor-default opacity-70' : 'cursor-pointer'}
                 `}
                 onClick={() => handleSquareClick(displayRow, displayCol)}
               >
-                <span className="z-10 drop-shadow-sm select-none">
+                <span className="z-10 drop-shadow-lg select-none filter contrast-125 brightness-110">
                   {getPieceSymbol(piece)}
                 </span>
               </div>
@@ -155,8 +148,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         )}
       </div>
       
-      {/* Board coordinates for better UX */}
-      <div className="mt-2 text-center text-xs text-amber-800 font-medium">
+      <div className="mt-3 text-center text-xs sm:text-sm text-amber-800 font-bold">
         Playing as {playerColor === 'white' ? 'White' : 'Black'}
         {disabled && ' (Spectating)'}
       </div>

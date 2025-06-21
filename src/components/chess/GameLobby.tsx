@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -50,6 +49,28 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
     setCurrentUser(user?.id || null);
   };
 
+  const isGameExpired = (game: ChessGame) => {
+    if (game.game_status === 'completed' || game.game_status === 'cancelled') {
+      return true;
+    }
+    
+    // If game is waiting for more than 10 minutes, consider it expired
+    if (game.game_status === 'waiting') {
+      const gameAge = Date.now() - new Date(game.created_at!).getTime();
+      const tenMinutes = 10 * 60 * 1000;
+      return gameAge > tenMinutes;
+    }
+
+    // If game is active but both players haven't made moves for 30 minutes, consider it expired
+    if (game.game_status === 'active') {
+      const lastUpdate = Date.now() - new Date(game.updated_at!).getTime();
+      const thirtyMinutes = 30 * 60 * 1000;
+      return lastUpdate > thirtyMinutes;
+    }
+
+    return false;
+  };
+
   const fetchGames = async () => {
     try {
       const { data: gamesData, error } = await supabase
@@ -63,7 +84,10 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
         return;
       }
 
-      const gamesWithProfiles = await Promise.all((gamesData || []).map(async (game) => {
+      // Filter out expired games
+      const activeGames = (gamesData || []).filter(game => !isGameExpired(game));
+
+      const gamesWithProfiles = await Promise.all(activeGames.map(async (game) => {
         const gameWithPlayers: ChessGame = { ...game };
         
         if (game.white_player_id) {
@@ -352,16 +376,16 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 pb-20">
       {/* Wallet Balance */}
       <Card className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/20">
-        <CardContent className="p-4">
+        <CardContent className="p-3 sm:p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-yellow-500" />
-              <span className="text-white font-medium">Wallet Balance</span>
+              <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
+              <span className="text-white font-medium text-sm sm:text-base">Wallet Balance</span>
             </div>
-            <div className="text-xl font-bold text-yellow-500">
+            <div className="text-lg sm:text-xl font-bold text-yellow-500">
               ₹{wallet?.balance?.toFixed(2) || '0.00'}
             </div>
           </div>
@@ -370,39 +394,39 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
 
       {/* Create Game */}
       <Card className="bg-black/50 border-yellow-500/20">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Plus className="h-5 w-5" />
+        <CardHeader className="pb-3 sm:pb-4">
+          <CardTitle className="text-white flex items-center gap-2 text-lg sm:text-xl">
+            <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
             Create New Game
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 sm:space-y-4">
           <div>
-            <label className="text-sm text-gray-300 mb-2 block">Game Name (Optional)</label>
+            <label className="text-xs sm:text-sm text-gray-300 mb-2 block">Game Name (Optional)</label>
             <Input
               type="text"
               value={gameName}
               onChange={(e) => setGameName(e.target.value)}
-              className="bg-gray-800/50 border-gray-600 text-white"
+              className="bg-gray-800/50 border-gray-600 text-white text-sm sm:text-base"
               placeholder="Leave empty for auto-generated unique name"
             />
           </div>
           <div>
-            <label className="text-sm text-gray-300 mb-2 block">Entry Fee (₹)</label>
+            <label className="text-xs sm:text-sm text-gray-300 mb-2 block">Entry Fee (₹)</label>
             <Input
               type="number"
               min="0"
               step="0.01"
               value={entryFee}
               onChange={(e) => setEntryFee(e.target.value)}
-              className="bg-gray-800/50 border-gray-600 text-white"
+              className="bg-gray-800/50 border-gray-600 text-white text-sm sm:text-base"
               placeholder="Enter amount"
             />
           </div>
           <Button
             onClick={createGame}
             disabled={loading}
-            className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-semibold"
+            className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-semibold text-sm sm:text-base py-2 sm:py-3"
           >
             {loading ? 'Creating...' : 'Create Game'}
           </Button>
@@ -410,57 +434,57 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       </Card>
 
       {/* Available Games */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-white flex items-center gap-2">
-          <Users className="h-5 w-5" />
+      <div className="space-y-3 sm:space-y-4">
+        <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+          <Users className="h-4 w-4 sm:h-5 sm:w-5" />
           Available Games
         </h2>
         
         {games.length === 0 ? (
           <Card className="bg-black/30 border-gray-700">
-            <CardContent className="p-6 text-center">
-              <p className="text-gray-400">No games available. Create one to get started!</p>
+            <CardContent className="p-4 sm:p-6 text-center">
+              <p className="text-gray-400 text-sm sm:text-base">No games available. Create one to get started!</p>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-3 sm:gap-4">
             {games.map((game) => (
               <Card key={game.id} className="bg-black/50 border-yellow-500/20 hover:border-yellow-500/40 transition-colors">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                        <Crown className="h-4 w-4 text-yellow-500" />
+                <CardContent className="p-3 sm:p-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="space-y-2 flex-1">
+                      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                        <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500" />
                         <div className="flex flex-col">
-                          <span className="text-white font-medium text-sm">
+                          <span className="text-white font-medium text-xs sm:text-sm">
                             {game.game_name || 'Unnamed Game'}
                           </span>
                           <span className="text-gray-400 text-xs">
                             Host: {game.white_player?.username || 'Anonymous'}
                           </span>
                         </div>
-                        <Badge variant="secondary" className="bg-gray-700 text-gray-300">
+                        <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-xs">
                           {game.white_player?.chess_rating || 1200}
                         </Badge>
                         {getGameStatusBadge(game)}
                       </div>
                       
-                      <div className="flex items-center gap-4 text-sm text-gray-400">
+                      <div className="flex items-center gap-2 sm:gap-4 text-xs text-gray-400 flex-wrap">
                         <div className="flex items-center gap-1">
-                          <DollarSign className="h-3 w-3" />
-                          <span>Entry: ₹{game.entry_fee}</span>
+                          <DollarSign className="h-2 w-2 sm:h-3 sm:w-3" />
+                          <span>₹{game.entry_fee}</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <Crown className="h-3 w-3" />
-                          <span>Prize: ₹{game.prize_amount}</span>
+                          <Crown className="h-2 w-2 sm:h-3 sm:w-3" />
+                          <span>₹{game.prize_amount}</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          <span>{Math.floor((game.time_control || 600) / 60)} min</span>
+                          <Clock className="h-2 w-2 sm:h-3 sm:w-3" />
+                          <span>{Math.floor((game.time_control || 600) / 60)}m</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <Users className="h-3 w-3" />
-                          <span>{getPlayerCount(game)}/2 players</span>
+                          <Users className="h-2 w-2 sm:h-3 sm:w-3" />
+                          <span>{getPlayerCount(game)}/2</span>
                         </div>
                       </div>
                     </div>
@@ -469,14 +493,14 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                       game.game_status === 'waiting' ? (
                         <Button
                           onClick={() => joinGame(game.id, game.entry_fee, game.game_name || 'Unnamed Game')}
-                          className="bg-green-600 hover:bg-green-700 text-white"
+                          className="bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-2 w-full sm:w-auto"
                         >
                           Join Game
                         </Button>
                       ) : (
                         <Button
                           onClick={() => onJoinGame?.(game.id)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-2 w-full sm:w-auto"
                         >
                           Spectate
                         </Button>
@@ -485,7 +509,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                       <Button
                         onClick={() => onJoinGame?.(game.id)}
                         variant="outline"
-                        className="text-yellow-500 border-yellow-500 hover:bg-yellow-500/10"
+                        className="text-yellow-500 border-yellow-500 hover:bg-yellow-500/10 text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-2 w-full sm:w-auto"
                       >
                         Enter Game
                       </Button>
