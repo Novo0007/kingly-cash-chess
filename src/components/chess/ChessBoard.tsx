@@ -7,13 +7,15 @@ interface ChessBoardProps {
   onMove?: (from: string, to: string) => void;
   playerColor?: 'white' | 'black';
   disabled?: boolean;
+  isPlayerTurn?: boolean;
 }
 
 export const ChessBoard: React.FC<ChessBoardProps> = ({
   fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
   onMove,
   playerColor = 'white',
-  disabled = false
+  disabled = false,
+  isPlayerTurn = true
 }) => {
   const [chess, setChess] = useState(new Chess(fen));
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
@@ -55,7 +57,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   };
 
   const handleSquareClick = (row: number, col: number) => {
-    if (disabled) return;
+    if (disabled || !isPlayerTurn) return;
 
     const square = getSquareName(row, col);
     
@@ -71,19 +73,30 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         console.log('Making move:', selectedSquare, 'to', square);
         onMove?.(selectedSquare, square);
       } else {
-        // Invalid move, clear selection
-        console.log('Invalid move attempted:', selectedSquare, 'to', square);
+        // Check if clicking on another piece of same color
+        const piece = chess.get(square);
+        if (piece && ((playerColor === 'white' && piece.color === 'w') || (playerColor === 'black' && piece.color === 'b'))) {
+          setSelectedSquare(square);
+          const moves = chess.moves({ square, verbose: true });
+          setPossibleMoves(moves.map(move => move.to));
+        } else {
+          console.log('Invalid move attempted:', selectedSquare, 'to', square);
+          setSelectedSquare(null);
+          setPossibleMoves([]);
+        }
       }
       
-      setSelectedSquare(null);
-      setPossibleMoves([]);
+      if (!piece || piece.color !== (playerColor === 'white' ? 'w' : 'b')) {
+        setSelectedSquare(null);
+        setPossibleMoves([]);
+      }
     } else {
       const piece = chess.get(square);
-      if (piece && !disabled) {
+      if (piece && !disabled && isPlayerTurn) {
         // Only allow selecting your own pieces
         const canSelectPiece = (
-          (playerColor === 'white' && piece.color === 'w' && chess.turn() === 'w') || 
-          (playerColor === 'black' && piece.color === 'b' && chess.turn() === 'b')
+          (playerColor === 'white' && piece.color === 'w') || 
+          (playerColor === 'black' && piece.color === 'b')
         );
 
         if (canSelectPiece) {
@@ -110,47 +123,53 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   };
 
   return (
-    <div className="inline-block bg-gradient-to-br from-amber-100 to-amber-200 p-3 sm:p-6 rounded-xl shadow-2xl">
-      <div className="grid grid-cols-8 gap-0 w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[28rem] lg:h-[28rem] border-4 border-amber-800 rounded-lg overflow-hidden">
-        {board.map((row, rowIndex) =>
-          row.map((piece, colIndex) => {
-            const displayRow = playerColor === 'white' ? rowIndex : 7 - rowIndex;
-            const displayCol = playerColor === 'white' ? colIndex : 7 - colIndex;
-            
-            return (
-              <div
-                key={`${displayRow}-${displayCol}`}
-                className={`
-                  aspect-square flex items-center justify-center text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black cursor-pointer
-                  transition-all duration-200 hover:scale-105 active:scale-95 relative border border-amber-700/30
-                  ${isLightSquare(displayRow, displayCol) 
-                    ? 'bg-amber-50 hover:bg-amber-100 active:bg-amber-200' 
-                    : 'bg-amber-800 hover:bg-amber-700 active:bg-amber-900'
-                  }
-                  ${isSquareHighlighted(displayRow, displayCol) 
-                    ? 'ring-4 ring-yellow-400 bg-yellow-300 shadow-lg' 
-                    : ''
-                  }
-                  ${isPossibleMove(displayRow, displayCol) 
-                    ? 'after:absolute after:inset-1 sm:after:inset-2 after:bg-green-400 after:rounded-full after:opacity-70 after:shadow-lg' 
-                    : ''
-                  }
-                  ${disabled ? 'cursor-default opacity-70' : 'cursor-pointer'}
-                `}
-                onClick={() => handleSquareClick(displayRow, displayCol)}
-              >
-                <span className="z-10 drop-shadow-lg select-none filter contrast-125 brightness-110">
-                  {getPieceSymbol(piece)}
-                </span>
-              </div>
-            );
-          })
-        )}
-      </div>
-      
-      <div className="mt-3 text-center text-xs sm:text-sm text-amber-800 font-bold">
-        Playing as {playerColor === 'white' ? 'White' : 'Black'}
-        {disabled && ' (Spectating)'}
+    <div className="flex flex-col items-center w-full px-2 sm:px-4">
+      <div className="bg-gradient-to-br from-amber-100 to-amber-200 p-2 sm:p-4 md:p-6 rounded-xl shadow-2xl w-full max-w-lg">
+        <div className="grid grid-cols-8 gap-0 aspect-square w-full border-4 border-amber-800 rounded-lg overflow-hidden">
+          {board.map((row, rowIndex) =>
+            row.map((piece, colIndex) => {
+              const displayRow = playerColor === 'white' ? rowIndex : 7 - rowIndex;
+              const displayCol = playerColor === 'white' ? colIndex : 7 - colIndex;
+              
+              return (
+                <div
+                  key={`${displayRow}-${displayCol}`}
+                  className={`
+                    aspect-square flex items-center justify-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black cursor-pointer
+                    transition-all duration-200 hover:scale-105 active:scale-95 relative border border-amber-700/30
+                    ${isLightSquare(displayRow, displayCol) 
+                      ? 'bg-amber-50 hover:bg-amber-100 active:bg-amber-200' 
+                      : 'bg-amber-800 hover:bg-amber-700 active:bg-amber-900'
+                    }
+                    ${isSquareHighlighted(displayRow, displayCol) 
+                      ? 'ring-2 sm:ring-4 ring-yellow-400 bg-yellow-300 shadow-lg' 
+                      : ''
+                    }
+                    ${isPossibleMove(displayRow, displayCol) 
+                      ? 'after:absolute after:inset-1 sm:after:inset-2 after:bg-green-400 after:rounded-full after:opacity-70 after:shadow-lg' 
+                      : ''
+                    }
+                    ${disabled || !isPlayerTurn ? 'cursor-default opacity-70' : 'cursor-pointer'}
+                    ${!isPlayerTurn ? 'pointer-events-none' : ''}
+                  `}
+                  onClick={() => handleSquareClick(displayRow, displayCol)}
+                >
+                  <span className="z-10 drop-shadow-lg select-none filter contrast-125 brightness-110">
+                    {getPieceSymbol(piece)}
+                  </span>
+                </div>
+              );
+            })
+          )}
+        </div>
+        
+        <div className="mt-2 sm:mt-3 text-center text-xs sm:text-sm text-amber-800 font-bold">
+          <div>Playing as {playerColor === 'white' ? 'White' : 'Black'}</div>
+          {!isPlayerTurn && !disabled && (
+            <div className="text-orange-600 animate-pulse mt-1">Waiting for opponent's move...</div>
+          )}
+          {disabled && <div className="text-gray-600 mt-1">(Spectating)</div>}
+        </div>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Crown, Clock, ArrowLeft } from 'lucide-react';
+import { Crown, Clock, ArrowLeft, Users } from 'lucide-react';
 import { Chess } from 'chess.js';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -30,13 +30,13 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     getCurrentUser();
     fetchGame();
     
-    // Subscribe to game changes
+    // Subscribe to real-time game changes
     const gameSubscription = supabase
       .channel(`game_${gameId}`)
       .on('postgres_changes', 
         { event: 'UPDATE', schema: 'public', table: 'chess_games', filter: `id=eq.${gameId}` },
         (payload) => {
-          console.log('Game updated:', payload);
+          console.log('Real-time game update:', payload);
           fetchGame();
         }
       )
@@ -127,10 +127,28 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         return;
       }
 
-      // Update game state
+      // Update game state in real-time
       const newMoveHistory = [...(game.move_history || []), `${from}-${to}`];
       const nextTurn = game.current_turn === 'white' ? 'black' : 'white';
       const newBoardState = chess.fen();
+
+      // Check for game end conditions
+      let gameStatus = game.game_status;
+      let winnerId = null;
+      let gameResult = null;
+
+      if (chess.isCheckmate()) {
+        gameStatus = 'completed';
+        winnerId = game.current_turn === 'white' ? game.white_player_id : game.black_player_id;
+        gameResult = 'checkmate';
+        toast.success(`Checkmate! ${game.current_turn === 'white' ? 'White' : 'Black'} wins!`);
+      } else if (chess.isDraw()) {
+        gameStatus = 'completed';
+        gameResult = 'draw';
+        toast.success('Game ended in a draw!');
+      } else if (chess.isCheck()) {
+        toast.info(`${nextTurn === 'white' ? 'White' : 'Black'} is in check!`);
+      }
 
       const { error } = await supabase
         .from('chess_games')
@@ -138,6 +156,9 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
           move_history: newMoveHistory,
           current_turn: nextTurn,
           board_state: newBoardState,
+          game_status: gameStatus,
+          winner_id: winnerId,
+          game_result: gameResult,
           updated_at: new Date().toISOString()
         })
         .eq('id', gameId);
@@ -159,6 +180,17 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     return currentUser === game.white_player_id ? 'white' : 'black';
   };
 
+  const isPlayerTurn = () => {
+    if (!game || !currentUser) return false;
+    const isWhitePlayer = currentUser === game.white_player_id;
+    const isBlackPlayer = currentUser === game.black_player_id;
+    
+    if (!isWhitePlayer && !isBlackPlayer) return false;
+    
+    return (game.current_turn === 'white' && isWhitePlayer) || 
+           (game.current_turn === 'black' && isBlackPlayer);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -178,6 +210,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     );
   }
 
+  const playerCount = (game.white_player_id ? 1 : 0) + (game.black_player_id ? 1 : 0);
+
   return (
     <div className="space-y-4 sm:space-y-6 pb-20">
       {/* Header */}
@@ -190,9 +224,15 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
           <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
           Back to Lobby
         </Button>
-        <Badge variant="outline" className="text-yellow-500 border-yellow-500 text-xs sm:text-sm">
-          {game.game_status}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="text-yellow-500 border-yellow-500 text-xs sm:text-sm">
+            {game.game_status}
+          </Badge>
+          <Badge variant="outline" className="text-blue-500 border-blue-500 text-xs sm:text-sm">
+            <Users className="h-3 w-3 mr-1" />
+            {playerCount}/2
+          </Badge>
+        </div>
       </div>
 
       {/* Game Info */}
@@ -223,32 +263,40 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             </div>
             <div>
               <p className="text-xs sm:text-sm text-gray-400">Current Turn</p>
-              <p className="font-medium capitalize">{game.current_turn}</p>
+              <p className={`font-medium capitalize ${isPlayerTurn() ? 'text-green-400 animate-pulse' : ''}`}>
+                {game.current_turn}
+                {isPlayerTurn() && ' (Your turn)'}
+              </p>
             </div>
             <div>
-              <p className="text-xs sm:text-sm text-gray-400">Time Control</p>
-              <p className="font-medium">{Math.floor((game.time_control || 600) / 60)} minutes</p>
+              <p className="text-xs sm:text-sm text-gray-400">Status</p>
+              <p className="font-medium">
+                {game.game_status === 'waiting' ? 'Waiting for players' : 
+                 game.game_status === 'active' ? 'Game in progress' : 
+                 game.game_status}
+              </p>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Chess Board */}
-      <div className="flex justify-center px-2 sm:px-4">
+      <div className="w-full">
         <ChessBoard
           fen={game.board_state}
           onMove={handleMove}
           playerColor={getPlayerColor()}
           disabled={game.game_status !== 'active'}
+          isPlayerTurn={isPlayerTurn() && game.game_status === 'active'}
         />
       </div>
 
-      {/* Game Status */}
-      {game.game_status === 'waiting' && !game.black_player_id && (
+      {/* Game Status Messages */}
+      {game.game_status === 'waiting' && playerCount < 2 && (
         <Card className="bg-yellow-500/10 border-yellow-500/30">
           <CardContent className="p-3 sm:p-4 text-center">
             <p className="text-yellow-500 font-medium text-sm sm:text-base">
-              Waiting for another player to join...
+              Waiting for another player to join... ({playerCount}/2 players)
             </p>
           </CardContent>
         </Card>
@@ -258,7 +306,20 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         <Card className="bg-green-500/10 border-green-500/30">
           <CardContent className="p-3 sm:p-4 text-center">
             <p className="text-green-500 font-medium text-sm sm:text-base">
-              Game is active! Current turn: {game.current_turn}
+              Game is active! {isPlayerTurn() ? "It's your turn!" : `Waiting for ${game.current_turn} player...`}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {game.game_status === 'completed' && (
+        <Card className="bg-blue-500/10 border-blue-500/30">
+          <CardContent className="p-3 sm:p-4 text-center">
+            <p className="text-blue-500 font-medium text-sm sm:text-base">
+              Game completed! 
+              {game.winner_id && game.winner_id === currentUser && ' Congratulations, you won! 🎉'}
+              {game.winner_id && game.winner_id !== currentUser && ' Better luck next time!'}
+              {!game.winner_id && game.game_result === 'draw' && ' Game ended in a draw!'}
             </p>
           </CardContent>
         </Card>
