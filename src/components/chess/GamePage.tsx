@@ -5,8 +5,10 @@ import { ChessBoard } from './ChessBoard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Crown, Clock, ArrowLeft, Users } from 'lucide-react';
+import { Crown, Clock, ArrowLeft, Users, Lock, Trophy, Handshake } from 'lucide-react';
 import { Chess } from 'chess.js';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -25,17 +27,23 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const [game, setGame] = useState<ChessGame | null>(null);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [gamePassword, setGamePassword] = useState('');
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [showGameEndDialog, setShowGameEndDialog] = useState(false);
+  const [gameEndMessage, setGameEndMessage] = useState('');
+  const [gameEndType, setGameEndType] = useState<'win' | 'draw' | 'disconnect'>('win');
 
   useEffect(() => {
     getCurrentUser();
     fetchGame();
     
-    // Auto-refresh game state every second for real-time updates
+    // Auto-refresh game state every 4 seconds for real-time updates
     const autoRefreshInterval = setInterval(() => {
       if (!loading) {
         fetchGame();
+        checkForDisconnection();
       }
-    }, 1000);
+    }, 4000);
     
     // Subscribe to real-time game changes with more specific filtering
     const gameSubscription = supabase
@@ -49,9 +57,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         },
         (payload) => {
           console.log('Real-time game update received:', payload);
-          // Immediately update the game state with the new data
           if (payload.new) {
-            fetchGame(); // Refetch to get complete data with player info
+            fetchGame();
           }
         }
       )
@@ -59,16 +66,85 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         console.log('Real-time subscription status:', status);
       });
 
+    // Track user presence
+    const presenceChannel = supabase
+      .channel(`presence_${gameId}`)
+      .on('presence', { event: 'sync' }, () => {
+        console.log('Presence synced');
+      })
+      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+        console.log('User joined:', key, newPresences);
+      })
+      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+        console.log('User left:', key, leftPresences);
+        setTimeout(() => checkForDisconnection(), 1000);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED' && currentUser) {
+          await presenceChannel.track({ user_id: currentUser, online_at: new Date().toISOString() });
+        }
+      });
+
     return () => {
       console.log('Cleaning up game subscription and auto-refresh');
       clearInterval(autoRefreshInterval);
       supabase.removeChannel(gameSubscription);
+      supabase.removeChannel(presenceChannel);
     };
-  }, [gameId, loading]);
+  }, [gameId, loading, currentUser]);
 
   const getCurrentUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     setCurrentUser(user?.id || null);
+  };
+
+  const checkForDisconnection = async () => {
+    if (!game || game.game_status !== 'active' || !currentUser) return;
+
+    const isPlayer = currentUser === game.white_player_id || currentUser === game.black_player_id;
+    if (!isPlayer) return;
+
+    // Check if opponent is still present
+    const presenceState = supabase.channel(`presence_${gameId}`).presenceState();
+    const presentUsers = Object.keys(presenceState).length;
+    
+    if (presentUsers < 2 && game.game_status === 'active') {
+      // Mark game as cancelled due to disconnection after 10 seconds
+      setTimeout(async () => {
+        const { data: currentGame } = await supabase
+          .from('chess_games')
+          .select('game_status')
+          .eq('id', gameId)
+          .single();
+
+        if (currentGame?.game_status === 'active') {
+          await handleGameDisqualification();
+        }
+      }, 10000);
+    }
+  };
+
+  const handleGameDisqualification = async () => {
+    if (!game || !currentUser) return;
+
+    const winnerId = currentUser === game.white_player_id ? game.black_player_id : game.white_player_id;
+    
+    const { error } = await supabase
+      .from('chess_games')
+      .update({
+        game_status: 'completed' as any,
+        winner_id: winnerId,
+        game_result: 'forfeit' as any,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', gameId);
+
+    if (!error) {
+      setGameEndType('disconnect');
+      setGameEndMessage('Opponent disconnected. You win!');
+      setShowGameEndDialog(true);
+      toast.success('You won by forfeit!');
+    }
   };
 
   const fetchGame = async () => {
@@ -117,6 +193,30 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       
       setGame(gameWithPlayers);
 
+      // Check for game end conditions
+      if (gameWithPlayers.game_status === 'completed' && !showGameEndDialog) {
+        let message = '';
+        let type: 'win' | 'draw' | 'disconnect' = 'win';
+        
+        if (gameWithPlayers.game_result === 'draw') {
+          message = 'Game ended in a draw!';
+          type = 'draw';
+        } else if (gameWithPlayers.game_result === 'forfeit') {
+          message = gameWithPlayers.winner_id === currentUser ? 'You won by forfeit!' : 'You lost by forfeit!';
+          type = 'disconnect';
+        } else if (gameWithPlayers.winner_id === currentUser) {
+          message = 'Congratulations! You won! 🎉';
+          type = 'win';
+        } else {
+          message = 'Game over. Better luck next time!';
+          type = 'win';
+        }
+        
+        setGameEndMessage(message);
+        setGameEndType(type);
+        setShowGameEndDialog(true);
+      }
+
       // Auto-start game if both players are present and status is still waiting
       if (gameWithPlayers.game_status === 'waiting' && 
           gameWithPlayers.white_player_id && 
@@ -125,7 +225,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         await supabase
           .from('chess_games')
           .update({
-            game_status: 'active',
+            game_status: 'active' as any,
             updated_at: new Date().toISOString()
           })
           .eq('id', gameId);
@@ -135,6 +235,18 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       toast.error('Error loading game');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasswordSubmit = async () => {
+    if (!game) return;
+    
+    // For demo purposes, accept any password. In production, you'd verify against a stored hash
+    if (gamePassword.length >= 4) {
+      setShowPasswordDialog(false);
+      toast.success('Password accepted!');
+    } else {
+      toast.error('Password must be at least 4 characters');
     }
   };
 
@@ -222,9 +334,9 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
           move_history: newMoveHistory,
           current_turn: nextTurn,
           board_state: newBoardState,
-          game_status: gameStatus,
+          game_status: gameStatus as any,
           winner_id: winnerId,
-          game_result: gameResult,
+          game_result: gameResult as any,
           updated_at: new Date().toISOString()
         })
         .eq('id', gameId);
@@ -262,6 +374,14 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     return currentUser !== game.white_player_id && currentUser !== game.black_player_id;
   };
 
+  const getPlayerCount = () => {
+    if (!game) return 0;
+    let count = 0;
+    if (game.white_player_id) count++;
+    if (game.black_player_id) count++;
+    return count;
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -281,10 +401,62 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     );
   }
 
-  const playerCount = (game.white_player_id ? 1 : 0) + (game.black_player_id ? 1 : 0);
+  const playerCount = getPlayerCount();
 
   return (
     <div className="space-y-4 sm:space-y-6 pb-20">
+      {/* Password Dialog */}
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock className="h-5 w-5" />
+              Enter Game Password
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              type="password"
+              placeholder="Enter password"
+              value={gamePassword}
+              onChange={(e) => setGamePassword(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
+            />
+            <Button onClick={handlePasswordSubmit} className="w-full">
+              Join Game
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Game End Dialog */}
+      <Dialog open={showGameEndDialog} onOpenChange={setShowGameEndDialog}>
+        <DialogContent className="text-center">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-center gap-2 text-2xl">
+              {gameEndType === 'win' && <Trophy className="h-8 w-8 text-yellow-500" />}
+              {gameEndType === 'draw' && <Handshake className="h-8 w-8 text-blue-500" />}
+              {gameEndType === 'disconnect' && <Crown className="h-8 w-8 text-green-500" />}
+              Game Over
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className={`text-xl font-bold animate-bounce ${
+              gameEndType === 'win' ? 'text-yellow-500' :
+              gameEndType === 'draw' ? 'text-blue-500' : 'text-green-500'
+            }`}>
+              {gameEndMessage}
+            </div>
+            <Button onClick={() => {
+              setShowGameEndDialog(false);
+              onBackToLobby();
+            }} className="w-full">
+              Back to Lobby
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <Button
@@ -303,6 +475,11 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             <Users className="h-3 w-3 mr-1" />
             {playerCount}/2
           </Badge>
+          {playerCount === 2 && isSpectator() && (
+            <Badge variant="outline" className="text-purple-500 border-purple-500 text-xs sm:text-sm">
+              Spectating
+            </Badge>
+          )}
         </div>
       </div>
 

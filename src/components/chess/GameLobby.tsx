@@ -525,10 +525,10 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                       >
                         Join Game
                       </Button>
-                    ) : game.game_status === 'active' ? (
+                    ) : isGameFull(game) ? (
                       <Button
                         onClick={() => onJoinGame?.(game.id)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-2 w-full sm:w-auto"
+                        className="bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-2 w-full sm:w-auto"
                       >
                         Spectate
                       </Button>
