@@ -29,9 +29,18 @@ export const ChatSystem = ({ gameId, isGlobalChat = false }: ChatSystemProps) =>
   const [newMessage, setNewMessage] = useState('');
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [currentUsername, setCurrentUsername] = useState<string>('');
+  const [isMobile, setIsMobile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Check if device is mobile/tablet
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
     getCurrentUser();
     fetchMessages();
     
@@ -45,6 +54,7 @@ export const ChatSystem = ({ gameId, isGlobalChat = false }: ChatSystemProps) =>
       .subscribe();
 
     return () => {
+      window.removeEventListener('resize', checkMobile);
       supabase.removeChannel(channel);
     };
   }, [gameId]);
@@ -132,6 +142,11 @@ export const ChatSystem = ({ gameId, isGlobalChat = false }: ChatSystemProps) =>
       sendMessage();
     }
   };
+
+  // Hide chat system on mobile devices when it's game chat
+  if (isMobile && !isGlobalChat) {
+    return null;
+  }
 
   return (
     <Card className="bg-black/50 border-blue-500/20 h-96">

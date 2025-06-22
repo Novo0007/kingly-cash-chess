@@ -32,6 +32,11 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
     fetchGames();
     fetchWallet();
     
+    // Auto-refresh available games every 7 seconds
+    const autoRefreshInterval = setInterval(() => {
+      fetchGames();
+    }, 7000);
+    
     const gamesSubscription = supabase
       .channel('chess_games_changes')
       .on('postgres_changes', 
@@ -44,6 +49,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       .subscribe();
 
     return () => {
+      clearInterval(autoRefreshInterval);
       supabase.removeChannel(gamesSubscription);
     };
   }, []);
@@ -58,18 +64,18 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       return true;
     }
     
-    // If game is waiting for more than 10 minutes, consider it expired
+    // If game is waiting for more than 15 minutes, consider it expired
     if (game.game_status === 'waiting') {
       const gameAge = Date.now() - new Date(game.created_at!).getTime();
-      const tenMinutes = 10 * 60 * 1000;
-      return gameAge > tenMinutes;
+      const fifteenMinutes = 15 * 60 * 1000;
+      return gameAge > fifteenMinutes;
     }
 
-    // If game is active but both players haven't made moves for 30 minutes, consider it expired
+    // If game is active but both players haven't made moves for 45 minutes, consider it expired
     if (game.game_status === 'active') {
       const lastUpdate = Date.now() - new Date(game.updated_at!).getTime();
-      const thirtyMinutes = 30 * 60 * 1000;
-      return lastUpdate > thirtyMinutes;
+      const fortyFiveMinutes = 45 * 60 * 1000;
+      return lastUpdate > fortyFiveMinutes;
     }
 
     return false;
@@ -113,7 +119,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
             .eq('id', game.black_player_id)
             .single();
           
-          if (!blackError) {
+          if (!blackError)  {
             gameWithPlayers.black_player = blackPlayer;
           }
         }
@@ -365,13 +371,13 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
     
     if (game.game_status === 'waiting') {
       return (
-        <Badge variant="outline" className="text-yellow-500 border-yellow-500">
+        <Badge variant="outline" className="text-yellow-500 border-yellow-500 text-xs">
           Waiting ({playerCount}/2)
         </Badge>
       );
     } else if (game.game_status === 'active') {
       return (
-        <Badge variant="outline" className="text-green-500 border-green-500">
+        <Badge variant="outline" className="text-green-500 border-green-500 text-xs">
           Active ({playerCount}/2)
         </Badge>
       );
@@ -394,7 +400,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-20">
+    <div className="space-y-4 sm:space-y-6 pb-20 px-2 sm:px-0">
       {/* Wallet Balance */}
       <Card className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/20">
         <CardContent className="p-3 sm:p-4">
@@ -412,13 +418,13 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
 
       {/* Create Game */}
       <Card className="bg-black/50 border-yellow-500/20">
-        <CardHeader className="pb-3 sm:pb-4">
-          <CardTitle className="text-white flex items-center gap-2 text-lg sm:text-xl">
+        <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6">
+          <CardTitle className="text-white flex items-center gap-2 text-base sm:text-xl">
             <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
             Create New Game
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3 sm:space-y-4">
+        <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6">
           <div>
             <label className="text-xs sm:text-sm text-gray-300 mb-2 block">Game Name (Optional)</label>
             <Input
@@ -447,15 +453,18 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
             className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-semibold text-sm sm:text-base py-2 sm:py-3"
           >
             {loading ? 'Creating...' : 'Create Game'}
-          </Button>
+          </Button>  
         </CardContent>
       </Card>
 
       {/* Available Games */}
       <div className="space-y-3 sm:space-y-4">
-        <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+        <h2 className="text-base sm:text-xl font-bold text-white flex items-center gap-2 px-1 sm:px-0">
           <Users className="h-4 w-4 sm:h-5 sm:w-5" />
           Available Games
+          <Badge variant="secondary" className="text-xs bg-gray-700 text-gray-300 ml-2">
+            Auto-refresh: 7s
+          </Badge>
         </h2>
         
         {games.length === 0 ? (
@@ -470,24 +479,26 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
               <Card key={game.id} className="bg-black/50 border-yellow-500/20 hover:border-yellow-500/40 transition-colors">
                 <CardContent className="p-3 sm:p-4">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    <div className="space-y-2 flex-1">
+                    <div className="space-y-2 flex-1 min-w-0">
                       <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                        <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500" />
-                        <div className="flex flex-col">
-                          <span className="text-white font-medium text-xs sm:text-sm">
+                        <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 flex-shrink-0" />
+                        <div className="flex flex-col min-w-0 flex-1">
+                          <span className="text-white font-medium text-xs sm:text-sm truncate">
                             {game.game_name || 'Unnamed Game'}
                           </span>
-                          <span className="text-gray-400 text-xs">
+                          <span className="text-gray-400 text-xs truncate">
                             Host: {game.white_player?.username || 'Anonymous'}
                             {game.black_player && (
                               <> vs {game.black_player?.username}</>
                             )}
                           </span>
                         </div>
-                        <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-xs">
-                          {game.white_player?.chess_rating || 1200}
-                        </Badge>
-                        {getGameStatusBadge(game)}
+                        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                          <Badge variant="secondary" className="bg-gray-700 text-gray-300 text-xs px-1 sm:px-2">
+                            {game.white_player?.chess_rating || 1200}
+                          </Badge>
+                          {getGameStatusBadge(game)}
+                        </div>
                       </div>
                       
                       <div className="flex items-center gap-2 sm:gap-4 text-xs text-gray-400 flex-wrap">
