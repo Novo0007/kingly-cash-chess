@@ -30,19 +30,30 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     getCurrentUser();
     fetchGame();
     
-    // Subscribe to real-time game changes
+    // Subscribe to real-time game changes with more specific filtering
     const gameSubscription = supabase
       .channel(`game_${gameId}`)
       .on('postgres_changes', 
-        { event: 'UPDATE', schema: 'public', table: 'chess_games', filter: `id=eq.${gameId}` },
+        { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'chess_games',
+          filter: `id=eq.${gameId}`
+        },
         (payload) => {
-          console.log('Real-time game update:', payload);
-          fetchGame();
+          console.log('Real-time game update received:', payload);
+          // Immediately update the game state with the new data
+          if (payload.new) {
+            fetchGame(); // Refetch to get complete data with player info
+          }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Real-time subscription status:', status);
+      });
 
     return () => {
+      console.log('Cleaning up game subscription');
       supabase.removeChannel(gameSubscription);
     };
   }, [gameId]);
@@ -54,6 +65,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
   const fetchGame = async () => {
     try {
+      console.log('Fetching game data for:', gameId);
       const { data: gameData, error } = await supabase
         .from('chess_games')
         .select('*')
@@ -61,6 +73,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         .single();
 
       if (error) {
+        console.error('Error fetching game:', error);
         toast.error('Error loading game');
         return;
       }
@@ -86,7 +99,14 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         gameWithPlayers.black_player = blackPlayer;
       }
 
-      console.log('Fetched game:', gameWithPlayers);
+      console.log('Game data updated:', {
+        id: gameWithPlayers.id,
+        board_state: gameWithPlayers.board_state,
+        current_turn: gameWithPlayers.current_turn,
+        move_history: gameWithPlayers.move_history?.length || 0,
+        status: gameWithPlayers.game_status
+      });
+      
       setGame(gameWithPlayers);
 
       // Auto-start game if both players are present and status is still waiting
@@ -111,7 +131,10 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   };
 
   const handleMove = async (from: string, to: string) => {
-    if (!game || !currentUser) return;
+    if (!game || !currentUser) {
+      console.log('No game or user found');
+      return;
+    }
 
     // Check if it's the player's turn
     const isWhitePlayer = currentUser === game.white_player_id;
@@ -141,6 +164,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     }
 
     try {
+      console.log('Attempting move:', from, 'to', to);
+      
       // Create a chess instance with current board state
       const chess = new Chess(game.board_state || undefined);
       
@@ -150,6 +175,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         toast.error('Invalid move');
         return;
       }
+
+      console.log('Valid move made:', move);
 
       // Update game state in real-time
       const newMoveHistory = [...(game.move_history || []), `${from}-${to}`];
@@ -174,6 +201,13 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         toast.info(`${nextTurn === 'white' ? 'White' : 'Black'} is in check!`);
       }
 
+      console.log('Updating database with:', {
+        move_history: newMoveHistory,
+        current_turn: nextTurn,
+        board_state: newBoardState,
+        game_status: gameStatus
+      });
+
       const { error } = await supabase
         .from('chess_games')
         .update({
@@ -191,7 +225,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         toast.error('Failed to make move');
         console.error('Move error:', error);
       } else {
-        console.log('Move successful:', from, 'to', to);
+        console.log('Move successfully saved to database');
       }
     } catch (error) {
       console.error('Error making move:', error);
@@ -310,7 +344,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       </Card>
 
       {/* Chess Board */}
-      <div className="w-full">
+      <div className="w-full" key={`${game.board_state}-${game.current_turn}`}>
         <ChessBoard
           fen={game.board_state}
           onMove={handleMove}
