@@ -241,7 +241,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment: {
+        Args: {
+          table_name: string
+          row_id: string
+          column_name: string
+          increment_value?: number
+        }
+        Returns: undefined
+      }
+      increment_decimal: {
+        Args: {
+          table_name: string
+          row_id: string
+          column_name: string
+          increment_value: number
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       game_result: "white_wins" | "black_wins" | "draw" | "abandoned"
