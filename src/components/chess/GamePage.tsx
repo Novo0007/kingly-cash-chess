@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ChessBoard } from './ChessBoard';
@@ -134,7 +133,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       .update({
         game_status: 'completed' as any,
         winner_id: winnerId,
-        game_result: 'forfeit' as any,
+        game_result: 'abandoned' as any,
         updated_at: new Date().toISOString()
       })
       .eq('id', gameId);
@@ -201,7 +200,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         if (gameWithPlayers.game_result === 'draw') {
           message = 'Game ended in a draw!';
           type = 'draw';
-        } else if (gameWithPlayers.game_result === 'forfeit') {
+        } else if (gameWithPlayers.game_result === 'abandoned') {
           message = gameWithPlayers.winner_id === currentUser ? 'You won by forfeit!' : 'You lost by forfeit!';
           type = 'disconnect';
         } else if (gameWithPlayers.winner_id === currentUser) {
@@ -311,7 +310,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       if (chess.isCheckmate()) {
         gameStatus = 'completed';
         winnerId = game.current_turn === 'white' ? game.white_player_id : game.black_player_id;
-        gameResult = 'checkmate';
+        gameResult = game.current_turn === 'white' ? 'white_wins' : 'black_wins';
         toast.success(`Checkmate! ${game.current_turn === 'white' ? 'White' : 'Black'} wins!`);
       } else if (chess.isDraw()) {
         gameStatus = 'completed';
