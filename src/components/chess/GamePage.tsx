@@ -157,7 +157,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       const newBoardState = chess.fen();
 
       // Check for game end conditions
-      let gameStatus = game.game_status;
+      let gameStatus: 'waiting' | 'active' | 'completed' | 'cancelled' = game.game_status;
       let winnerId = null;
       let gameResult = null;
 
