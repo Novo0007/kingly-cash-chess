@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ChessBoard } from './ChessBoard';
@@ -95,7 +94,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
         console.log('User left:', key, leftPresences);
         // Only trigger disconnection check after a reasonable delay
-        setTimeout(() => checkForDisconnection(), 15000); // 15 seconds delay
+        setTimeout(() => checkForDisconnection(), 20000); // 20 seconds delay
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED' && currentUser && !presenceTracked) {
@@ -139,9 +138,9 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
     // Only trigger disconnection if one player is clearly absent for extended time
     if ((!whitePresent || !blackPresent) && game.game_status === 'active') {
-      // Additional check: verify the game hasn't been updated recently (within last 30 seconds)
+      // Additional check: verify the game hasn't been updated recently (within last 45 seconds)
       const gameAge = Date.now() - new Date(game.updated_at!).getTime();
-      if (gameAge > 30000) { // 30 seconds
+      if (gameAge > 45000) { // 45 seconds
         setTimeout(async () => {
           // Final check before marking as disconnected
           const { data: currentGame } = await supabase
@@ -152,7 +151,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
           if (currentGame?.game_status === 'active') {
             const finalGameAge = Date.now() - new Date(currentGame.updated_at!).getTime();
-            if (finalGameAge > 45000) { // 45 seconds total
+            if (finalGameAge > 60000) { // 60 seconds total
               await handleGameDisqualification();
             }
           }
@@ -165,22 +164,171 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     if (!game || !currentUser) return;
 
     const winnerId = currentUser === game.white_player_id ? game.black_player_id : game.white_player_id;
+    const loserId = currentUser;
     
-    const { error } = await supabase
-      .from('chess_games')
-      .update({
-        game_status: 'completed' as any,
-        winner_id: winnerId,
-        game_result: 'abandoned' as any,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', gameId);
+    await completeGame(winnerId, loserId, 'abandoned');
+    
+    setGameEndType('disconnect');
+    setGameEndMessage('Opponent disconnected. You win!');
+    setShowGameEndDialog(true);
+    toast.success('You won by forfeit!');
+  };
 
-    if (!error) {
-      setGameEndType('disconnect');
-      setGameEndMessage('Opponent disconnected. You win!');
-      setShowGameEndDialog(true);
-      toast.success('You won by forfeit!');
+  const completeGame = async (winnerId: string | null, loserId: string | null, gameResult: 'white_wins' | 'black_wins' | 'draw' | 'abandoned') => {
+    if (!game) return;
+
+    try {
+      // Update game status
+      const { error: gameError } = await supabase
+        .from('chess_games')
+        .update({
+          game_status: 'completed' as any,
+          winner_id: winnerId,
+          game_result: gameResult as any,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', gameId);
+
+      if (gameError) {
+        console.error('Error updating game:', gameError);
+        return;
+      }
+
+      // Update player statistics and process winnings
+      const promises = [];
+
+      // Update winner's stats and add winnings
+      if (winnerId) {
+        // Update winner's profile
+        promises.push(
+          supabase.rpc('increment', {
+            table_name: 'profiles',
+            row_id: winnerId,
+            column_name: 'games_played',
+            increment_value: 1
+          })
+        );
+        promises.push(
+          supabase.rpc('increment', {
+            table_name: 'profiles',
+            row_id: winnerId,
+            column_name: 'games_won',
+            increment_value: 1
+          })
+        );
+        promises.push(
+          supabase.rpc('increment_decimal', {
+            table_name: 'profiles',
+            row_id: winnerId,
+            column_name: 'total_earnings',
+            increment_value: game.prize_amount
+          })
+        );
+
+        // Add winnings to wallet
+        promises.push(
+          supabase.rpc('increment_decimal', {
+            table_name: 'wallets',
+            row_id: winnerId,
+            column_name: 'balance',
+            increment_value: game.prize_amount
+          })
+        );
+
+        // Create winning transaction
+        promises.push(
+          supabase
+            .from('transactions')
+            .insert({
+              user_id: winnerId,
+              transaction_type: 'game_winning',
+              amount: game.prize_amount,
+              status: 'completed',
+              description: `Won game: ${game.game_name || 'Chess Game'}`
+            })
+        );
+      }
+
+      // Update loser's stats (only games played)
+      if (loserId) {
+        promises.push(
+          supabase.rpc('increment', {
+            table_name: 'profiles',
+            row_id: loserId,
+            column_name: 'games_played',
+            increment_value: 1
+          })
+        );
+      }
+
+      // If it's a draw, update both players' stats
+      if (gameResult === 'draw' && game.white_player_id && game.black_player_id) {
+        // Update both players' games played
+        promises.push(
+          supabase.rpc('increment', {
+            table_name: 'profiles',
+            row_id: game.white_player_id,
+            column_name: 'games_played',
+            increment_value: 1
+          })
+        );
+        promises.push(
+          supabase.rpc('increment', {
+            table_name: 'profiles',
+            row_id: game.black_player_id,
+            column_name: 'games_played',
+            increment_value: 1
+          })
+        );
+
+        // Return entry fees to both players
+        const refundAmount = game.entry_fee;
+        promises.push(
+          supabase.rpc('increment_decimal', {
+            table_name: 'wallets',
+            row_id: game.white_player_id,
+            column_name: 'balance',
+            increment_value: refundAmount
+          })
+        );
+        promises.push(
+          supabase.rpc('increment_decimal', {
+            table_name: 'wallets',
+            row_id: game.black_player_id,
+            column_name: 'balance',
+            increment_value: refundAmount
+          })
+        );
+
+        // Create refund transactions
+        promises.push(
+          supabase
+            .from('transactions')
+            .insert({
+              user_id: game.white_player_id,
+              transaction_type: 'refund',
+              amount: refundAmount,
+              status: 'completed',
+              description: `Draw refund: ${game.game_name || 'Chess Game'}`
+            })
+        );
+        promises.push(
+          supabase
+            .from('transactions')
+            .insert({
+              user_id: game.black_player_id,
+              transaction_type: 'refund',
+              amount: refundAmount,
+              status: 'completed',
+              description: `Draw refund: ${game.game_name || 'Chess Game'}`
+            })
+        );
+      }
+
+      await Promise.all(promises);
+      console.log('Game completion processing finished successfully');
+    } catch (error) {
+      console.error('Error processing game completion:', error);
     }
   };
 
@@ -350,10 +498,17 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         winnerId = game.current_turn === 'white' ? game.white_player_id : game.black_player_id;
         gameResult = game.current_turn === 'white' ? 'white_wins' : 'black_wins';
         toast.success(`Checkmate! ${game.current_turn === 'white' ? 'White' : 'Black'} wins!`);
+        
+        // Handle game completion
+        const loserId = game.current_turn === 'white' ? game.black_player_id : game.white_player_id;
+        await completeGame(winnerId, loserId, gameResult as any);
       } else if (chess.isDraw()) {
         gameStatus = 'completed';
         gameResult = 'draw';
         toast.success('Game ended in a draw!');
+        
+        // Handle draw
+        await completeGame(null, null, 'draw');
       } else if (chess.isCheck()) {
         toast.info(`${nextTurn === 'white' ? 'White' : 'Black'} is in check!`);
       }
