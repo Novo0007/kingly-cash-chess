@@ -30,6 +30,13 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     getCurrentUser();
     fetchGame();
     
+    // Auto-refresh game state every second for real-time updates
+    const autoRefreshInterval = setInterval(() => {
+      if (!loading) {
+        fetchGame();
+      }
+    }, 1000);
+    
     // Subscribe to real-time game changes with more specific filtering
     const gameSubscription = supabase
       .channel(`game_${gameId}`)
@@ -53,10 +60,11 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       });
 
     return () => {
-      console.log('Cleaning up game subscription');
+      console.log('Cleaning up game subscription and auto-refresh');
+      clearInterval(autoRefreshInterval);
       supabase.removeChannel(gameSubscription);
     };
-  }, [gameId]);
+  }, [gameId, loading]);
 
   const getCurrentUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -344,7 +352,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       </Card>
 
       {/* Chess Board */}
-      <div className="w-full" key={`${game.board_state}-${game.current_turn}`}>
+      <div className="w-full" key={`${game.board_state}-${game.current_turn}-${Date.now()}`}>
         <ChessBoard
           fen={game.board_state}
           onMove={handleMove}
