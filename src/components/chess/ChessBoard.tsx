@@ -62,7 +62,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
     setMovingPiece({ from, to });
     setTimeout(() => {
       setMovingPiece(null);
-    }, 300);
+    }, 400);
   };
 
   const handleSquareClick = (row: number, col: number) => {
@@ -131,9 +131,9 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center w-full px-1 sm:px-4">
-      <div className="bg-gradient-to-br from-purple-300 via-blue-300 to-cyan-300 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-5xl border-6 border-gradient-to-r from-purple-600 to-blue-600 transform hover:scale-[1.02] transition-all duration-500">
-        <div ref={boardRef} className="grid grid-cols-8 gap-0 aspect-square w-full border-8 border-gray-900 rounded-2xl overflow-hidden shadow-2xl relative">
+    <div className="flex flex-col items-center w-full px-2 sm:px-4">
+      <div className="bg-gradient-to-br from-amber-100 to-orange-200 p-4 sm:p-6 md:p-8 rounded-2xl shadow-xl w-full max-w-6xl border-4 border-amber-600">
+        <div ref={boardRef} className="grid grid-cols-8 gap-0 aspect-square w-full border-4 border-gray-800 rounded-xl overflow-hidden shadow-lg relative">
           {board.map((row, rowIndex) =>
             row.map((piece, colIndex) => {
               const displayRow = playerColor === 'white' ? rowIndex : 7 - rowIndex;
@@ -143,30 +143,28 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 <div
                   key={`${displayRow}-${displayCol}`}
                   className={`
-                    aspect-square flex items-center justify-center text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black cursor-pointer
-                    transition-all duration-500 hover:scale-110 active:scale-95 relative border-3 border-gray-800/60
+                    aspect-square flex items-center justify-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold cursor-pointer
+                    transition-all duration-300 hover:scale-105 active:scale-95 relative
                     ${isLightSquare(displayRow, displayCol) 
-                      ? 'bg-gradient-to-br from-amber-50 to-yellow-100 hover:from-amber-100 hover:to-yellow-200 active:from-amber-200 active:to-yellow-300' 
-                      : 'bg-gradient-to-br from-amber-800 to-orange-900 hover:from-amber-700 hover:to-orange-800 active:from-amber-900 active:to-orange-950'
+                      ? 'bg-amber-50 hover:bg-amber-100' 
+                      : 'bg-amber-800 hover:bg-amber-700'
                     }
                     ${isSquareHighlighted(displayRow, displayCol) 
-                      ? 'ring-8 sm:ring-10 ring-yellow-400 bg-gradient-to-br from-yellow-300 to-yellow-400 shadow-2xl transform scale-105 animate-pulse' 
+                      ? 'ring-4 ring-blue-500 bg-blue-200 shadow-lg' 
                       : ''
                     }
                     ${isPossibleMove(displayRow, displayCol) 
-                      ? 'after:absolute after:inset-2 sm:after:inset-3 after:bg-gradient-to-br after:from-green-400 after:to-emerald-500 after:rounded-full after:opacity-90 after:shadow-xl after:animate-bounce after:border-3 after:border-green-600' 
+                      ? 'after:absolute after:inset-1/3 after:bg-green-500 after:rounded-full after:opacity-80' 
                       : ''
                     }
                     ${disabled || !isPlayerTurn ? 'cursor-default opacity-70' : 'cursor-pointer'}
                     ${!isPlayerTurn ? 'pointer-events-none' : ''}
-                    shadow-xl hover:shadow-2xl transform hover:translate-y-[-2px]
                   `}
                   onClick={() => handleSquareClick(displayRow, displayCol)}
                 >
                   <span className={`
-                    z-10 drop-shadow-2xl select-none filter contrast-125 brightness-110 text-shadow-2xl
-                    transition-all duration-300 hover:scale-110 hover:rotate-12 hover:drop-shadow-3xl
-                    ${movingPiece?.from === getSquareName(displayRow, displayCol) ? 'animate-bounce scale-125' : ''}
+                    z-10 drop-shadow-lg select-none transition-all duration-400 ease-in-out
+                    ${movingPiece?.from === getSquareName(displayRow, displayCol) ? 'transform scale-110 translate-x-2 translate-y-2' : ''}
                   `}>
                     {getPieceSymbol(piece)}
                   </span>
@@ -176,18 +174,18 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           )}
         </div>
         
-        <div className="mt-6 sm:mt-8 text-center text-lg sm:text-xl font-black">
-          <div className="text-purple-900 text-2xl sm:text-3xl font-black animate-pulse">
+        <div className="mt-4 sm:mt-6 text-center">
+          <div className="text-gray-700 text-xl sm:text-2xl font-bold">
             Playing as {playerColor === 'white' ? '⚪ White' : '⚫ Black'}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-orange-700 animate-bounce mt-4 text-xl font-black bg-gradient-to-r from-orange-200 to-yellow-200 rounded-full px-6 py-3 inline-block shadow-lg border-2 border-orange-400">
-              🔄 Waiting for opponent's move...
+            <div className="text-orange-600 mt-2 text-lg font-bold bg-orange-100 rounded-lg px-4 py-2 inline-block">
+              Waiting for opponent's move...
             </div>
           )}
           {disabled && (
-            <div className="text-gray-700 mt-4 text-xl font-black bg-gradient-to-r from-gray-200 to-gray-300 rounded-full px-6 py-3 inline-block shadow-lg border-2 border-gray-400">
-              👁️ Spectating
+            <div className="text-gray-600 mt-2 text-lg font-bold bg-gray-100 rounded-lg px-4 py-2 inline-block">
+              Spectating
             </div>
           )}
         </div>

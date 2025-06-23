@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -165,7 +166,48 @@ export const FriendsSystem = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // First create a new chess game
+    // Check user's wallet balance first
+    const { data: wallet } = await supabase
+      .from('wallets')
+      .select('balance')
+      .eq('user_id', user.id)
+      .single();
+
+    if (!wallet || wallet.balance < amount) {
+      toast.error('Insufficient balance for this challenge');
+      return;
+    }
+
+    // Deduct the entry fee from user's wallet
+    const { error: walletError } = await supabase
+      .from('wallets')
+      .update({
+        balance: wallet.balance - amount,
+        updated_at: new Date().toISOString()
+      })
+      .eq('user_id', user.id);
+
+    if (walletError) {
+      toast.error('Failed to deduct entry fee');
+      return;
+    }
+
+    // Create transaction record
+    const { error: transactionError } = await supabase
+      .from('transactions')
+      .insert({
+        user_id: user.id,
+        transaction_type: 'game_entry',
+        amount: -amount,
+        status: 'completed',
+        description: `Entry fee for ₹${amount} challenge`
+      });
+
+    if (transactionError) {
+      console.error('Transaction record error:', transactionError);
+    }
+
+    // Create a new chess game
     const { data: gameData, error: gameError } = await supabase
       .from('chess_games')
       .insert({
@@ -173,17 +215,17 @@ export const FriendsSystem = () => {
         entry_fee: amount,
         prize_amount: amount * 2,
         game_status: 'waiting',
-        game_name: `Epic Challenge - ₹${amount}`
+        game_name: `Challenge - ₹${amount}`
       })
       .select()
       .single();
 
     if (gameError) {
-      toast.error('Failed to create epic challenge');
+      toast.error('Failed to create challenge');
       return;
     }
 
-    // Then create the game invitation
+    // Create the game invitation
     const { error } = await supabase
       .from('game_invitations')
       .insert({
@@ -195,9 +237,9 @@ export const FriendsSystem = () => {
       });
 
     if (error) {
-      toast.error('Failed to send epic challenge');
+      toast.error('Failed to send challenge');
     } else {
-      toast.success(`Epic ₹${amount} challenge sent! 🔥`);
+      toast.success(`₹${amount} challenge sent!`);
     }
   };
 
@@ -214,7 +256,7 @@ export const FriendsSystem = () => {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <ChallengePopup
         open={challengePopup.open}
         onOpenChange={(open) => setChallengePopup(prev => ({ ...prev, open }))}
@@ -223,30 +265,30 @@ export const FriendsSystem = () => {
       />
 
       {/* Search Users */}
-      <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-4 border-yellow-500/30 shadow-2xl rounded-3xl">
+      <Card className="bg-white border-2 border-gray-200 shadow-lg rounded-xl">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-3 text-2xl font-black">
-            <UserPlus className="h-7 w-7 text-yellow-400 animate-bounce" />
-            🔍 Find Epic Warriors
+          <CardTitle className="text-gray-800 flex items-center gap-3 text-xl font-bold">
+            <UserPlus className="h-6 w-6 text-blue-600" />
+            Find Players
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           <Input
-            placeholder="Search legendary players..."
+            placeholder="Search players..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-gray-700/50 border-2 border-gray-500 text-white placeholder:text-gray-400 text-lg py-3 px-4 rounded-xl font-bold"
+            className="border-gray-300 text-gray-800 placeholder:text-gray-500 text-lg py-3 px-4 rounded-lg font-medium"
           />
           
-          <div className="space-y-4 max-h-60 overflow-y-auto">
+          <div className="space-y-3 max-h-60 overflow-y-auto">
             {filteredUsers.map((user) => (
-              <div key={user.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-700/50 to-gray-800/50 rounded-2xl border-2 border-gray-600/50 shadow-lg transform hover:scale-105 transition-all duration-300">
+              <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
                 <div>
-                  <p className="text-white font-black text-lg flex items-center gap-2">
-                    <Crown className="h-5 w-5 text-yellow-400" />
+                  <p className="text-gray-800 font-bold text-lg flex items-center gap-2">
+                    <Crown className="h-5 w-5 text-yellow-600" />
                     {user.username}
                   </p>
-                  <p className="text-gray-400 text-base font-bold flex items-center gap-2">
+                  <p className="text-gray-600 text-base font-medium flex items-center gap-2">
                     <Star className="h-4 w-4" />
                     Rating: {user.chess_rating}
                   </p>
@@ -254,7 +296,7 @@ export const FriendsSystem = () => {
                 <Button
                   onClick={() => sendFriendRequest(user.id)}
                   size="sm"
-                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 font-bold text-lg px-4 py-2 rounded-xl shadow-lg transform hover:scale-110 transition-all duration-300"
+                  className="bg-blue-600 hover:bg-blue-700 font-bold text-base px-4 py-2 rounded-lg"
                 >
                   Add Friend
                 </Button>
@@ -266,34 +308,34 @@ export const FriendsSystem = () => {
 
       {/* Pending Requests */}
       {pendingRequests.length > 0 && (
-        <Card className="bg-gradient-to-br from-orange-700 to-red-700 border-4 border-orange-500/40 shadow-2xl rounded-3xl">
+        <Card className="bg-orange-50 border-2 border-orange-200 shadow-lg rounded-xl">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-3 text-2xl font-black">
-              <Users className="h-7 w-7 text-orange-400 animate-pulse" />
-              🔔 Friend Requests ({pendingRequests.length})
+            <CardTitle className="text-orange-800 flex items-center gap-3 text-xl font-bold">
+              <Users className="h-6 w-6 text-orange-600" />
+              Friend Requests ({pendingRequests.length})
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3">
             {pendingRequests.map((request) => (
-              <div key={request.id} className="flex items-center justify-between p-4 bg-white/10 rounded-2xl border-2 border-orange-400/50 shadow-lg">
+              <div key={request.id} className="flex items-center justify-between p-4 bg-white/70 rounded-lg border border-orange-200">
                 <div>
-                  <p className="text-white font-black text-lg">{request.requester?.username}</p>
-                  <p className="text-orange-200 text-base font-bold">Rating: {request.requester?.chess_rating}</p>
+                  <p className="text-gray-800 font-bold text-lg">{request.requester?.username}</p>
+                  <p className="text-gray-600 text-base font-medium">Rating: {request.requester?.chess_rating}</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-2">
                   <Button
                     onClick={() => acceptFriendRequest(request.id)}
                     size="sm"
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 font-bold px-4 py-2 rounded-xl shadow-lg transform hover:scale-110 transition-all duration-300"
+                    className="bg-green-600 hover:bg-green-700 font-bold px-4 py-2 rounded-lg"
                   >
-                    <Check className="h-5 w-5" />
+                    <Check className="h-4 w-4" />
                   </Button>
                   <Button
                     onClick={() => declineFriendRequest(request.id)}
                     size="sm"
-                    className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 font-bold px-4 py-2 rounded-xl shadow-lg transform hover:scale-110 transition-all duration-300"
+                    className="bg-red-600 hover:bg-red-700 font-bold px-4 py-2 rounded-lg"
                   >
-                    <X className="h-5 w-5" />
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -303,31 +345,31 @@ export const FriendsSystem = () => {
       )}
 
       {/* Friends List */}
-      <Card className="bg-gradient-to-br from-green-700 to-emerald-700 border-4 border-green-500/40 shadow-2xl rounded-3xl">
+      <Card className="bg-green-50 border-2 border-green-200 shadow-lg rounded-xl">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-3 text-2xl font-black">
-            <Users className="h-7 w-7 text-green-400 animate-pulse" />
-            👥 Epic Warriors ({friends.length})
+          <CardTitle className="text-green-800 flex items-center gap-3 text-xl font-bold">
+            <Users className="h-6 w-6 text-green-600" />
+            My Friends ({friends.length})
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
           {friends.length === 0 ? (
-            <p className="text-gray-300 text-center py-8 text-xl font-bold">No epic warriors yet. Send some friend requests! ⚔️</p>
+            <p className="text-gray-600 text-center py-8 text-lg font-medium">No friends yet. Send some friend requests!</p>
           ) : (
             friends.map((friendship) => (
-              <div key={friendship.id} className="flex items-center justify-between p-4 bg-white/10 rounded-2xl border-2 border-green-400/50 shadow-lg transform hover:scale-105 transition-all duration-300">
+              <div key={friendship.id} className="flex items-center justify-between p-4 bg-white/70 rounded-lg border border-green-200 hover:bg-white/90 transition-colors">
                 <div>
-                  <p className="text-white font-black text-lg flex items-center gap-2">
-                    <Crown className="h-5 w-5 text-yellow-400" />
+                  <p className="text-gray-800 font-bold text-lg flex items-center gap-2">
+                    <Crown className="h-5 w-5 text-yellow-600" />
                     {friendship.friend?.username}
                   </p>
-                  <div className="flex items-center gap-6 text-base text-gray-300 font-bold">
+                  <div className="flex items-center gap-4 text-base text-gray-600 font-medium">
                     <span className="flex items-center gap-1">
                       <Star className="h-4 w-4" />
                       Rating: {friendship.friend?.chess_rating}
                     </span>
                     <span>Games: {friendship.friend?.games_played}</span>
-                    <Badge className="bg-gradient-to-r from-green-400 to-emerald-400 text-black font-black border-2 border-green-500 animate-pulse">
+                    <Badge className="bg-green-500 text-white font-bold border border-green-600">
                       Online
                     </Badge>
                   </div>
@@ -335,10 +377,10 @@ export const FriendsSystem = () => {
                 <Button
                   onClick={() => openChallengePopup(friendship.friend?.id || '', friendship.friend?.username || '')}
                   size="sm"
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 font-black text-lg px-6 py-3 rounded-xl shadow-lg transform hover:scale-110 transition-all duration-300 flex items-center gap-2"
+                  className="bg-purple-600 hover:bg-purple-700 font-bold text-base px-6 py-3 rounded-lg flex items-center gap-2"
                 >
-                  <Gamepad2 className="h-5 w-5" />
-                  ⚔️ Challenge
+                  <Gamepad2 className="h-4 w-4" />
+                  Challenge
                 </Button>
               </div>
             ))
