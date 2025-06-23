@@ -634,7 +634,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white text-xl">Loading game...</div>
+        <div className="text-white text-xl font-bold animate-pulse">🎮 Loading game...</div>
       </div>
     );
   }
@@ -642,9 +642,9 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   if (!game) {
     return (
       <div className="text-center text-white pb-20">
-        <h2 className="text-2xl font-bold mb-4">Game not found</h2>
-        <Button onClick={onBackToLobby} className="bg-yellow-500 hover:bg-yellow-600">
-          Back to Lobby
+        <h2 className="text-2xl font-bold mb-4">🎲 Game not found</h2>
+        <Button onClick={onBackToLobby} className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 font-bold text-lg px-6 py-3 rounded-xl shadow-lg">
+          🏠 Back to Lobby
         </Button>
       </div>
     );
@@ -653,14 +653,14 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const playerCount = getPlayerCount();
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-20 px-2 sm:px-0">
+    <div className="space-y-4 sm:space-y-6 pb-20 px-2 sm:px-4">
       {/* Password Dialog */}
       <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-        <DialogContent className="w-[95vw] max-w-md mx-auto">
+        <DialogContent className="w-[95vw] max-w-md mx-auto bg-gradient-to-br from-purple-600 to-blue-600 border-2 border-purple-400">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
-              <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
-              Enter Game Password
+            <DialogTitle className="flex items-center gap-2 text-white text-xl font-bold">
+              <Lock className="h-6 w-6 text-yellow-400" />
+              🔐 Enter Game Password
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -670,10 +670,10 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
               value={gamePassword}
               onChange={(e) => setGamePassword(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-              className="text-sm sm:text-base"
+              className="bg-white/20 border-white/30 text-white placeholder:text-white/70 font-bold"
             />
-            <Button onClick={handlePasswordSubmit} className="w-full text-sm sm:text-base">
-              Join Game
+            <Button onClick={handlePasswordSubmit} className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 font-bold text-lg">
+              🚀 Join Game
             </Button>
           </div>
         </DialogContent>
@@ -681,99 +681,99 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
       {/* Game End Dialog */}
       <Dialog open={showGameEndDialog} onOpenChange={setShowGameEndDialog}>
-        <DialogContent className="text-center w-[95vw] max-w-md mx-auto">
+        <DialogContent className="text-center w-[95vw] max-w-md mx-auto bg-gradient-to-br from-purple-600 to-blue-600 border-2 border-purple-400">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-center gap-2 text-xl sm:text-2xl">
-              {gameEndType === 'win' && <Trophy className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />}
-              {gameEndType === 'draw' && <Handshake className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />}
-              {gameEndType === 'disconnect' && <Crown className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />}
-              Game Over
+            <DialogTitle className="flex items-center justify-center gap-2 text-2xl sm:text-3xl text-white font-black">
+              {gameEndType === 'win' && <Trophy className="h-8 w-8 text-yellow-400 animate-bounce" />}
+              {gameEndType === 'draw' && <Handshake className="h-8 w-8 text-blue-400 animate-bounce" />}
+              {gameEndType === 'disconnect' && <Crown className="h-8 w-8 text-green-400 animate-bounce" />}
+              🎉 Game Over
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className={`text-lg sm:text-xl font-bold animate-bounce ${
-              gameEndType === 'win' ? 'text-yellow-500' :
-              gameEndType === 'draw' ? 'text-blue-500' : 'text-green-500'
+            <div className={`text-xl sm:text-2xl font-black animate-pulse ${
+              gameEndType === 'win' ? 'text-yellow-400' :
+              gameEndType === 'draw' ? 'text-blue-400' : 'text-green-400'
             }`}>
               {gameEndMessage}
             </div>
             <Button onClick={() => {
               setShowGameEndDialog(false);
               onBackToLobby();
-            }} className="w-full text-sm sm:text-base">
-              Back to Lobby
+            }} className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 font-bold text-lg">
+              🏠 Back to Lobby
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header - Always visible */}
+      <div className="flex items-center justify-between bg-gradient-to-r from-purple-600 to-blue-600 p-4 rounded-xl shadow-lg">
         <Button
           onClick={onBackToLobby}
           variant="ghost"
-          className="text-white hover:bg-gray-800 text-sm sm:text-base px-2 sm:px-4"
+          className="text-white hover:bg-white/20 font-bold text-lg px-4 py-2 rounded-lg"
         >
-          <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-          Back
+          <ArrowLeft className="h-5 w-5 mr-2" />
+          🏠 Back
         </Button>
-        <div className="flex items-center gap-1 sm:gap-2">
-          <Badge variant="outline" className="text-yellow-500 border-yellow-500 text-xs px-1 sm:px-2">
-            {game.game_status}
+        <div className="flex items-center gap-2">
+          <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold px-3 py-1 text-sm">
+            🎮 {game.game_status}
           </Badge>
-          <Badge variant="outline" className="text-blue-500 border-blue-500 text-xs px-1 sm:px-2">
-            <Users className="h-2 w-2 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
-            {playerCount}/2
+          <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold px-3 py-1 text-sm">
+            <Users className="h-4 w-4 mr-1" />
+            👥 {playerCount}/2
           </Badge>
           {playerCount === 2 && isSpectator() && (
-            <Badge variant="outline" className="text-purple-500 border-purple-500 text-xs px-1 sm:px-2">
-              Spectating
+            <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold px-3 py-1 text-sm">
+              👁️ Spectating
             </Badge>
           )}
         </div>
       </div>
 
       {/* Game Info */}
-      <Card className="bg-black/50 border-yellow-500/20">
-        <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6">
-          <CardTitle className="text-white flex items-center gap-2 text-base sm:text-xl">
-            <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
-            <span className="truncate">{game.game_name || 'Chess Game'}</span>
+      <Card className="bg-gradient-to-br from-indigo-600 to-purple-700 border-2 border-purple-400 shadow-xl">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-white flex items-center gap-3 text-xl sm:text-2xl font-black">
+            <Crown className="h-6 w-6 text-yellow-400" />
+            <span className="truncate">🏆 {game.game_name || 'Chess Championship'}</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-3 sm:px-6">
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 text-white text-xs sm:text-base">
-            <div>
-              <p className="text-xs text-gray-400">White Player</p>
-              <p className="font-medium truncate">{game.white_player?.username || 'Waiting...'}</p>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4 text-white font-bold">
+            <div className="bg-white/10 p-3 rounded-lg">
+              <p className="text-sm text-blue-200 font-bold">⚪ White Player</p>
+              <p className="font-black text-lg truncate">{game.white_player?.username || '⏳ Waiting...'}</p>
             </div>
-            <div>
-              <p className="text-xs text-gray-400">Black Player</p>
-              <p className="font-medium truncate">{game.black_player?.username || 'Waiting...'}</p>
+            <div className="bg-white/10 p-3 rounded-lg">
+              <p className="text-sm text-blue-200 font-bold">⚫ Black Player</p>
+              <p className="font-black text-lg truncate">{game.black_player?.username || '⏳ Waiting...'}</p>
             </div>
-            <div>
-              <p className="text-xs text-gray-400">Entry Fee</p>
-              <p className="font-medium">₹{game.entry_fee}</p>
+            <div className="bg-white/10 p-3 rounded-lg">
+              <p className="text-sm text-yellow-200 font-bold">💰 Entry Fee</p>
+              <p className="font-black text-xl text-yellow-400">₹{game.entry_fee}</p>
             </div>
-            <div>
-              <p className="text-xs text-gray-400">Prize</p>
-              <p className="font-medium">₹{game.prize_amount}</p>
+            <div className="bg-white/10 p-3 rounded-lg">
+              <p className="text-sm text-green-200 font-bold">🏆 Prize Pool</p>
+              <p className="font-black text-xl text-green-400">₹{game.prize_amount}</p>
             </div>
-            <div>
-              <p className="text-xs text-gray-400">Current Turn</p>
-              <p className={`font-medium capitalize text-xs sm:text-sm ${isPlayerTurn() ? 'text-green-400 animate-pulse' : ''}`}>
-                {game.current_turn}
+            <div className="bg-white/10 p-3 rounded-lg">
+              <p className="text-sm text-purple-200 font-bold">🎯 Current Turn</p>
+              <p className={`font-black text-lg capitalize ${isPlayerTurn() ? 'text-green-400 animate-pulse' : 'text-white'}`}>
+                {game.current_turn === 'white' ? '⚪' : '⚫'} {game.current_turn}
                 {isPlayerTurn() && (
-                  <span className="hidden sm:inline"> (Your turn)</span>
+                  <span className="block text-sm text-green-300">🚀 Your turn!</span>
                 )}
               </p>
             </div>
-            <div>
-              <p className="text-xs text-gray-400">Status</p>
-              <p className="font-medium text-xs sm:text-sm">
-                {game.game_status === 'waiting' ? 'Waiting' : 
-                 game.game_status === 'active' ? 'Active' : 
-                 game.game_status}
+            <div className="bg-white/10 p-3 rounded-lg">
+              <p className="text-sm text-pink-200 font-bold">📊 Status</p>
+              <p className="font-black text-lg">
+                {game.game_status === 'waiting' ? '⏳ Waiting' : 
+                 game.game_status === 'active' ? '🔴 Live' : 
+                 '✅ ' + game.game_status}
               </p>
             </div>
           </div>
@@ -793,43 +793,43 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
       {/* Game Status Messages */}
       {game.game_status === 'waiting' && playerCount < 2 && (
-        <Card className="bg-yellow-500/10 border-yellow-500/30">
-          <CardContent className="p-3 sm:p-4 text-center">
-            <p className="text-yellow-500 font-medium text-sm">
-              Waiting for another player... ({playerCount}/2)
+        <Card className="bg-gradient-to-r from-yellow-500 to-orange-500 border-2 border-yellow-400 shadow-lg">
+          <CardContent className="p-4 text-center">
+            <p className="text-white font-black text-lg">
+              ⏳ Waiting for another player... ({playerCount}/2)
             </p>
           </CardContent>
         </Card>
       )}
 
       {game.game_status === 'waiting' && playerCount === 2 && (
-        <Card className="bg-blue-500/10 border-blue-500/30">
-          <CardContent className="p-3 sm:p-4 text-center">
-            <p className="text-blue-500 font-medium text-sm">
-              Both players joined! Starting game...
+        <Card className="bg-gradient-to-r from-blue-500 to-cyan-500 border-2 border-blue-400 shadow-lg">
+          <CardContent className="p-4 text-center">
+            <p className="text-white font-black text-lg animate-pulse">
+              🎉 Both players joined! Starting game...
             </p>
           </CardContent>
         </Card>
       )}
 
       {game.game_status === 'active' && (
-        <Card className="bg-green-500/10 border-green-500/30">
-          <CardContent className="p-3 sm:p-4 text-center">
-            <p className="text-green-500 font-medium text-sm">
-              Game is active! {isSpectator() ? 'You are spectating.' : isPlayerTurn() ? "It's your turn!" : `Waiting for ${game.current_turn} player...`}
+        <Card className="bg-gradient-to-r from-green-500 to-emerald-500 border-2 border-green-400 shadow-lg">
+          <CardContent className="p-4 text-center">
+            <p className="text-white font-black text-lg">
+              🔴 Game is Live! {isSpectator() ? '👁️ You are spectating.' : isPlayerTurn() ? "🚀 It's your turn!" : `⏳ Waiting for ${game.current_turn} player...`}
             </p>
           </CardContent>
         </Card>
       )}
 
       {game.game_status === 'completed' && (
-        <Card className="bg-blue-500/10 border-blue-500/30">
-          <CardContent className="p-3 sm:p-4 text-center">
-            <p className="text-blue-500 font-medium text-sm">
-              Game completed! 
-              {game.winner_id && game.winner_id === currentUser && ' Congratulations, you won! 🎉'}
-              {game.winner_id && game.winner_id !== currentUser && ' Better luck next time!'}
-              {!game.winner_id && game.game_result === 'draw' && ' Game ended in a draw!'}
+        <Card className="bg-gradient-to-r from-purple-500 to-pink-500 border-2 border-purple-400 shadow-lg">
+          <CardContent className="p-4 text-center">
+            <p className="text-white font-black text-lg">
+              🏁 Game completed! 
+              {game.winner_id && game.winner_id === currentUser && ' 🎉 Congratulations, you won!'}
+              {game.winner_id && game.winner_id !== currentUser && ' 😔 Better luck next time!'}
+              {!game.winner_id && game.game_result === 'draw' && ' 🤝 Game ended in a draw!'}
             </p>
           </CardContent>
         </Card>

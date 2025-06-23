@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { User, Trophy, Target, Crown, Edit2, Save, X, RefreshCw } from 'lucide-react';
+import { User, Trophy, Target, Crown, Edit2, Save, X, RefreshCw, LogOut } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 
 export const ProfileSystem = () => {
@@ -142,6 +141,19 @@ export const ProfileSystem = () => {
     setEditing(false);
   };
 
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast.success('Signed out successfully!');
+      // The auth state change will be handled by the parent component
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast.error('Failed to sign out');
+    }
+  };
+
   const getWinRate = () => {
     if (!profile || !profile.games_played || profile.games_played === 0) return 0;
     return Math.round((profile.games_won / profile.games_played) * 100);
@@ -181,12 +193,12 @@ export const ProfileSystem = () => {
   return (
     <div className="space-y-6">
       {/* Profile Header */}
-      <Card className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/30">
+      <Card className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 border-2 border-purple-400 shadow-xl">
         <CardHeader>
           <CardTitle className="text-white flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Player Profile
+            <div className="flex items-center gap-3">
+              <User className="h-6 w-6 text-yellow-400" />
+              <span className="font-black text-xl">👤 Player Profile</span>
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -194,7 +206,7 @@ export const ProfileSystem = () => {
                 variant="ghost"
                 size="sm"
                 disabled={refreshing}
-                className="text-blue-400 hover:bg-blue-500/10"
+                className="text-blue-200 hover:bg-white/20 font-bold"
               >
                 <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
               </Button>
@@ -203,7 +215,7 @@ export const ProfileSystem = () => {
                   onClick={() => setEditing(true)}
                   variant="ghost"
                   size="sm"
-                  className="text-blue-400 hover:bg-blue-500/10"
+                  className="text-green-200 hover:bg-white/20 font-bold"
                 >
                   <Edit2 className="h-4 w-4" />
                 </Button>
@@ -213,7 +225,7 @@ export const ProfileSystem = () => {
                     onClick={handleSave}
                     variant="ghost"
                     size="sm"
-                    className="text-green-400 hover:bg-green-500/10"
+                    className="text-green-200 hover:bg-white/20 font-bold"
                   >
                     <Save className="h-4 w-4" />
                   </Button>
@@ -221,12 +233,21 @@ export const ProfileSystem = () => {
                     onClick={handleCancel}
                     variant="ghost"
                     size="sm"
-                    className="text-red-400 hover:bg-red-500/10"
+                    className="text-red-200 hover:bg-white/20 font-bold"
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
               )}
+              <Button
+                onClick={handleSignOut}
+                variant="ghost"
+                size="sm"
+                className="text-red-200 hover:bg-red-500/20 font-bold ml-2"
+              >
+                <LogOut className="h-4 w-4 mr-1" />
+                🚪 Sign Out
+              </Button>
             </div>
           </CardTitle>
         </CardHeader>
@@ -234,36 +255,36 @@ export const ProfileSystem = () => {
           {editing ? (
             <div className="space-y-4">
               <div>
-                <Label htmlFor="username" className="text-white">Username</Label>
+                <Label htmlFor="username" className="text-white font-bold">📝 Username</Label>
                 <Input
                   id="username"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="bg-gray-800/50 border-gray-600 text-white"
+                  className="bg-white/20 border-white/30 text-white font-bold placeholder:text-white/70"
                 />
               </div>
               <div>
-                <Label htmlFor="full_name" className="text-white">Full Name</Label>
+                <Label htmlFor="full_name" className="text-white font-bold">👤 Full Name</Label>
                 <Input
                   id="full_name"
                   value={formData.full_name}
                   onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  className="bg-gray-800/50 border-gray-600 text-white"
+                  className="bg-white/20 border-white/30 text-white font-bold placeholder:text-white/70"
                 />
               </div>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div>
-                <h3 className="text-2xl font-bold text-white">{profile.username}</h3>
+                <h3 className="text-3xl font-black text-white">🎮 {profile.username}</h3>
                 {profile.full_name && (
-                  <p className="text-gray-300">{profile.full_name}</p>
+                  <p className="text-blue-200 font-bold text-lg">{profile.full_name}</p>
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <Badge className={getRatingBadgeColor(profile.chess_rating || 1200)}>
-                  <Crown className="h-3 w-3 mr-1" />
-                  {profile.chess_rating || 1200} - {getRatingTitle(profile.chess_rating || 1200)}
+                <Badge className={`${getRatingBadgeColor(profile.chess_rating || 1200)} font-bold text-lg px-4 py-2`}>
+                  <Crown className="h-4 w-4 mr-2 text-yellow-400" />
+                  ⭐ {profile.chess_rating || 1200} - {getRatingTitle(profile.chess_rating || 1200)}
                 </Badge>
               </div>
             </div>
@@ -273,53 +294,53 @@ export const ProfileSystem = () => {
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-black/50 border-green-500/20">
+        <Card className="bg-gradient-to-br from-green-600 to-emerald-700 border-2 border-green-400 shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-green-400 flex items-center gap-2 text-sm">
-              <Trophy className="h-4 w-4" />
-              Games Won
+            <CardTitle className="text-green-100 flex items-center gap-2 font-black text-lg">
+              <Trophy className="h-5 w-5 text-yellow-400" />
+              🏆 Games Won
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">
+            <div className="text-4xl font-black text-white">
               {profile.games_won || 0}
             </div>
-            <p className="text-xs text-gray-400">
-              Win Rate: {getWinRate()}%
+            <p className="text-sm text-green-200 font-bold">
+              📊 Win Rate: {getWinRate()}%
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-black/50 border-blue-500/20">
+        <Card className="bg-gradient-to-br from-blue-600 to-cyan-700 border-2 border-blue-400 shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-blue-400 flex items-center gap-2 text-sm">
-              <Target className="h-4 w-4" />
-              Games Played
+            <CardTitle className="text-blue-100 flex items-center gap-2 font-black text-lg">
+              <Target className="h-5 w-5 text-yellow-400" />
+              🎯 Games Played
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">
+            <div className="text-4xl font-black text-white">
               {profile.games_played || 0}
             </div>
-            <p className="text-xs text-gray-400">
-              Total matches
+            <p className="text-sm text-blue-200 font-bold">
+              📈 Total matches
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-black/50 border-yellow-500/20">
+        <Card className="bg-gradient-to-br from-yellow-600 to-orange-700 border-2 border-yellow-400 shadow-xl">
           <CardHeader className="pb-2">
-            <CardTitle className="text-yellow-400 flex items-center gap-2 text-sm">
-              <Crown className="h-4 w-4" />
-              Total Earnings
+            <CardTitle className="text-yellow-100 flex items-center gap-2 font-black text-lg">
+              <Crown className="h-5 w-5 text-yellow-400" />
+              💰 Total Earnings
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">
+            <div className="text-4xl font-black text-white">
               ₹{(profile.total_earnings || 0).toFixed(2)}
             </div>
-            <p className="text-xs text-gray-400">
-              All-time winnings
+            <p className="text-sm text-yellow-200 font-bold">
+              🎊 All-time winnings
             </p>
           </CardContent>
         </Card>
@@ -327,20 +348,20 @@ export const ProfileSystem = () => {
 
       {/* Wallet Summary */}
       {wallet && (
-        <Card className="bg-black/50 border-yellow-500/20">
+        <Card className="bg-gradient-to-br from-purple-600 to-pink-700 border-2 border-purple-400 shadow-xl">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-yellow-500" />
-              Current Wallet Balance
+            <CardTitle className="text-white flex items-center gap-3 font-black text-xl">
+              <Trophy className="h-6 w-6 text-yellow-400" />
+              💳 Current Wallet Balance
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-yellow-500">
+            <div className="text-5xl font-black text-yellow-400">
               ₹{wallet.balance.toFixed(2)}
             </div>
             {wallet.locked_balance > 0 && (
-              <p className="text-sm text-gray-400 mt-1">
-                Locked Balance: ₹{wallet.locked_balance.toFixed(2)}
+              <p className="text-lg text-purple-200 font-bold mt-2">
+                🔒 Locked Balance: ₹{wallet.locked_balance.toFixed(2)}
               </p>
             )}
           </CardContent>
