@@ -1,13 +1,15 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ChessBoard } from './ChessBoard';
+import { ChatSystem } from '../chat/ChatSystem';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Crown, Clock, ArrowLeft, Users, Lock, Trophy, Handshake, Zap, Star } from 'lucide-react';
+import { Crown, Clock, ArrowLeft, Users, Lock, Trophy, Handshake, Zap, Star, MessageSquare } from 'lucide-react';
 import { Chess } from 'chess.js';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -33,17 +35,27 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const [gameEndType, setGameEndType] = useState<'win' | 'draw' | 'disconnect'>('win');
   const [lastActiveTime, setLastActiveTime] = useState<number>(Date.now());
   const [presenceTracked, setPresenceTracked] = useState(false);
+  const [showMobileChat, setShowMobileChat] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    // Check if device is mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
     getCurrentUser();
     fetchGame();
     
-    // Auto-refresh game state every 7 seconds
+    // Auto-refresh game state every 5 seconds
     const autoRefreshInterval = setInterval(() => {
       if (!loading) {
         fetchGame();
       }
-    }, 7000);
+    }, 5000);
     
     // Subscribe to real-time game changes
     const gameSubscription = supabase
@@ -67,6 +79,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       });
 
     return () => {
+      window.removeEventListener('resize', checkMobile);
       console.log('Cleaning up game subscription and auto-refresh');
       clearInterval(autoRefreshInterval);
       supabase.removeChannel(gameSubscription);
@@ -634,7 +647,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-800 text-2xl font-bold bg-white px-8 py-4 rounded-lg shadow-lg">
+        <div className="text-gray-800 text-xl font-bold bg-white px-6 py-3 rounded-lg shadow-lg">
           Loading Chess Game...
         </div>
       </div>
@@ -644,7 +657,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   if (!game) {
     return (
       <div className="text-center pb-20">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">
           Game Not Found
         </h2>
         <Button onClick={onBackToLobby} className="bg-blue-600 hover:bg-blue-700 font-bold text-lg px-6 py-3 rounded-lg">
@@ -657,26 +670,26 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const playerCount = getPlayerCount();
 
   return (
-    <div className="space-y-6 pb-20 px-2 sm:px-4">
+    <div className="space-y-4 pb-20 px-1 sm:px-2">
       {/* Password Dialog */}
       <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-        <DialogContent className="w-[95vw] max-w-md mx-auto bg-white border-2 border-gray-300 shadow-xl rounded-xl">
+        <DialogContent className="w-[95vw] max-w-sm mx-auto bg-white border-2 border-gray-300 shadow-xl rounded-xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-3 text-gray-800 text-xl font-bold">
-              <Lock className="h-6 w-6 text-blue-600" />
+            <DialogTitle className="flex items-center gap-2 text-gray-800 text-lg font-bold">
+              <Lock className="h-5 w-5 text-blue-600" />
               Enter Game Password
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-3">
             <Input
               type="password"
               placeholder="Enter password"
               value={gamePassword}
               onChange={(e) => setGamePassword(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-              className="border-gray-300 font-medium text-lg px-4 py-3 rounded-lg"
+              className="border-gray-300 font-medium text-base px-3 py-2 rounded-lg"
             />
-            <Button onClick={handlePasswordSubmit} className="w-full bg-green-600 hover:bg-green-700 font-bold text-lg py-3 rounded-lg">
+            <Button onClick={handlePasswordSubmit} className="w-full bg-green-600 hover:bg-green-700 font-bold text-base py-2 rounded-lg">
               Join Game
             </Button>
           </div>
@@ -685,17 +698,17 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
       {/* Game End Dialog */}
       <Dialog open={showGameEndDialog} onOpenChange={setShowGameEndDialog}>
-        <DialogContent className="text-center w-[95vw] max-w-md mx-auto bg-white border-2 border-gray-300 shadow-xl rounded-xl">
+        <DialogContent className="text-center w-[95vw] max-w-sm mx-auto bg-white border-2 border-gray-300 shadow-xl rounded-xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-center gap-3 text-2xl text-gray-800 font-bold">
-              {gameEndType === 'win' && <Trophy className="h-8 w-8 text-yellow-500" />}
-              {gameEndType === 'draw' && <Handshake className="h-8 w-8 text-blue-500" />}
-              {gameEndType === 'disconnect' && <Crown className="h-8 w-8 text-green-500" />}
+            <DialogTitle className="flex items-center justify-center gap-2 text-xl text-gray-800 font-bold">
+              {gameEndType === 'win' && <Trophy className="h-6 w-6 text-yellow-500" />}
+              {gameEndType === 'draw' && <Handshake className="h-6 w-6 text-blue-500" />}
+              {gameEndType === 'disconnect' && <Crown className="h-6 w-6 text-green-500" />}
               Game Over!
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className={`text-xl font-bold p-4 rounded-lg ${
+          <div className="space-y-3">
+            <div className={`text-lg font-bold p-3 rounded-lg ${
               gameEndType === 'win' ? 'text-yellow-700 bg-yellow-100' :
               gameEndType === 'draw' ? 'text-blue-700 bg-blue-100' : 'text-green-700 bg-green-100'
             }`}>
@@ -704,7 +717,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             <Button onClick={() => {
               setShowGameEndDialog(false);
               onBackToLobby();
-            }} className="w-full bg-blue-600 hover:bg-blue-700 font-bold text-lg py-3 rounded-lg">
+            }} className="w-full bg-blue-600 hover:bg-blue-700 font-bold text-base py-2 rounded-lg">
               Return to Lobby
             </Button>
           </div>
@@ -712,81 +725,92 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       </Dialog>
 
       {/* Header */}
-      <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-md border border-gray-200">
+      <div className="flex items-center justify-between bg-white p-2 sm:p-3 rounded-lg shadow-md border border-gray-200">
         <Button
           onClick={onBackToLobby}
           variant="ghost"
-          className="text-gray-700 hover:bg-gray-100 font-bold text-lg px-4 py-2 rounded-lg"
+          className="text-gray-700 hover:bg-gray-100 font-bold text-sm sm:text-base px-2 sm:px-3 py-1 sm:py-2 rounded-lg"
         >
-          <ArrowLeft className="h-5 w-5 mr-2" />
-          Back to Lobby
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          Back
         </Button>
-        <div className="flex items-center gap-3">
-          <Badge className="bg-blue-600 text-white font-bold px-3 py-1 text-base">
-            <Zap className="h-4 w-4 mr-1" />
+        <div className="flex items-center gap-2">
+          <Badge className="bg-blue-600 text-white font-bold px-2 py-1 text-xs sm:text-sm">
+            <Zap className="h-3 w-3 mr-1" />
             {game.game_status}
           </Badge>
-          <Badge className="bg-green-600 text-white font-bold px-3 py-1 text-base">
-            <Users className="h-4 w-4 mr-1" />
+          <Badge className="bg-green-600 text-white font-bold px-2 py-1 text-xs sm:text-sm">
+            <Users className="h-3 w-3 mr-1" />
             {playerCount}/2
           </Badge>
-          {playerCount === 2 && isSpectator() && (
-            <Badge className="bg-purple-600 text-white font-bold px-3 py-1 text-base">
-              Spectating
-            </Badge>
+          {isMobile && !isSpectator() && (
+            <Button
+              onClick={() => setShowMobileChat(!showMobileChat)}
+              variant="ghost"
+              size="sm"
+              className="p-1"
+            >
+              <MessageSquare className="h-4 w-4" />
+            </Button>
           )}
         </div>
       </div>
 
-      {/* Game Info */}
-      <Card className="bg-white border-2 border-gray-200 shadow-lg rounded-xl">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-gray-800 flex items-center gap-3 text-xl font-bold">
-            <Crown className="h-6 w-6 text-yellow-600" />
-            <span className="truncate">
-              {game.game_name || 'Chess Championship'}
+      {/* Mobile Chat */}
+      {isMobile && showMobileChat && (
+        <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-2">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-bold text-sm">Game Chat</h3>
+            <Button
+              onClick={() => setShowMobileChat(false)}
+              variant="ghost"
+              size="sm"
+              className="p-1 text-xs"
+            >
+              Close
+            </Button>
+          </div>
+          <div className="h-40">
+            <ChatSystem gameId={gameId} />
+          </div>
+        </div>
+      )}
+
+      {/* Game Info - Compact for mobile */}
+      <Card className="bg-white border border-gray-200 shadow-lg rounded-lg">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-gray-800 flex items-center gap-2 text-base sm:text-lg font-bold">
+            <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600" />
+            <span className="truncate text-sm sm:text-base">
+              {game.game_name || 'Chess Game'}
             </span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4 text-gray-800 font-medium">
-            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-              <p className="text-sm text-gray-600 font-medium flex items-center gap-1">
-                <Star className="h-4 w-4" />
-                White Player
-              </p>
-              <p className="font-bold text-lg truncate">{game.white_player?.username || 'Waiting...'}</p>
+        <CardContent className="space-y-2">
+          <div className="grid grid-cols-2 gap-2 text-gray-800 font-medium text-xs sm:text-sm">
+            <div className="bg-gray-50 p-2 rounded border border-gray-200">
+              <p className="text-xs text-gray-600 font-medium">⚪ White</p>
+              <p className="font-bold truncate">{game.white_player?.username || 'Waiting...'}</p>
             </div>
-            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-              <p className="text-sm text-gray-600 font-medium flex items-center gap-1">
-                <Star className="h-4 w-4" />
-                Black Player
-              </p>
-              <p className="font-bold text-lg truncate">{game.black_player?.username || 'Waiting...'}</p>
+            <div className="bg-gray-50 p-2 rounded border border-gray-200">
+              <p className="text-xs text-gray-600 font-medium">⚫ Black</p>
+              <p className="font-bold truncate">{game.black_player?.username || 'Waiting...'}</p>
             </div>
-            <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-              <p className="text-sm text-yellow-700 font-medium">Entry Fee</p>
-              <p className="font-bold text-xl text-yellow-800">₹{game.entry_fee}</p>
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-xs">
+            <div className="bg-yellow-50 p-2 rounded border border-yellow-200 text-center">
+              <p className="text-yellow-700 font-medium">Entry</p>
+              <p className="font-bold text-yellow-800">₹{game.entry_fee}</p>
             </div>
-            <div className="bg-green-50 p-3 rounded-lg border border-green-200">
-              <p className="text-sm text-green-700 font-medium">Prize Pool</p>
-              <p className="font-bold text-xl text-green-800">₹{game.prize_amount}</p>
+            <div className="bg-green-50 p-2 rounded border border-green-200 text-center">
+              <p className="text-green-700 font-medium">Prize</p>
+              <p className="font-bold text-green-800">₹{game.prize_amount}</p>
             </div>
-            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-              <p className="text-sm text-blue-700 font-medium">Current Turn</p>
-              <p className={`font-bold text-lg capitalize ${isPlayerTurn() ? 'text-green-600' : 'text-gray-800'}`}>
-                {game.current_turn === 'white' ? '⚪' : '⚫'} {game.current_turn}
-                {isPlayerTurn() && (
-                  <span className="block text-sm text-green-600">Your turn!</span>
-                )}
-              </p>
-            </div>
-            <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
-              <p className="text-sm text-purple-700 font-medium">Game Status</p>
-              <p className="font-bold text-lg capitalize">
-                {game.game_status === 'waiting' ? 'Waiting' : 
-                 game.game_status === 'active' ? 'Active' : 
-                 game.game_status}
+            <div className="bg-blue-50 p-2 rounded border border-blue-200 text-center">
+              <p className="text-blue-700 font-medium">Turn</p>
+              <p className={`font-bold text-xs ${isPlayerTurn() ? 'text-green-600' : 'text-gray-800'}`}>
+                {game.current_turn === 'white' ? '⚪' : '⚫'}
+                {isPlayerTurn() && <span className="block text-green-600">You!</span>}
               </p>
             </div>
           </div>
@@ -804,11 +828,18 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         />
       </div>
 
-      {/* Game Status Messages */}
+      {/* Desktop Chat - only show on larger screens and for players */}
+      {!isMobile && !isSpectator() && (
+        <div className="max-w-md mx-auto">
+          <ChatSystem gameId={gameId} />
+        </div>
+      )}
+
+      {/* Game Status Messages - Compact */}
       {game.game_status === 'waiting' && playerCount < 2 && (
-        <Card className="bg-yellow-50 border-2 border-yellow-200 shadow-lg rounded-xl">
-          <CardContent className="p-4 text-center">
-            <p className="text-yellow-800 font-bold text-xl">
+        <Card className="bg-yellow-50 border border-yellow-200 shadow-md rounded-lg">
+          <CardContent className="p-3 text-center">
+            <p className="text-yellow-800 font-bold text-sm">
               Waiting for player... ({playerCount}/2)
             </p>
           </CardContent>
@@ -816,33 +847,20 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       )}
 
       {game.game_status === 'waiting' && playerCount === 2 && (
-        <Card className="bg-blue-50 border-2 border-blue-200 shadow-lg rounded-xl">
-          <CardContent className="p-4 text-center">
-            <p className="text-blue-800 font-bold text-xl">
-              Both players ready! Starting game...
+        <Card className="bg-blue-50 border border-blue-200 shadow-md rounded-lg">
+          <CardContent className="p-3 text-center">
+            <p className="text-blue-800 font-bold text-sm">
+              Both players ready! Starting...
             </p>
           </CardContent>
         </Card>
       )}
 
       {game.game_status === 'active' && (
-        <Card className="bg-green-50 border-2 border-green-200 shadow-lg rounded-xl">
-          <CardContent className="p-4 text-center">
-            <p className="text-green-800 font-bold text-xl">
-              Game in Progress! {isSpectator() ? 'Spectating.' : isPlayerTurn() ? "It's your move!" : `Waiting for ${game.current_turn} player...`}
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {game.game_status === 'completed' && (
-        <Card className="bg-purple-50 border-2 border-purple-200 shadow-lg rounded-xl">
-          <CardContent className="p-4 text-center">
-            <p className="text-purple-800 font-bold text-xl">
-              Game Completed! 
-              {game.winner_id && game.winner_id === currentUser && ' You Won!'}
-              {game.winner_id && game.winner_id !== currentUser && ' You Lost!'}
-              {!game.winner_id && game.game_result === 'draw' && ' It\'s a Draw!'}
+        <Card className="bg-green-50 border border-green-200 shadow-md rounded-lg">
+          <CardContent className="p-3 text-center">
+            <p className="text-green-800 font-bold text-sm">
+              {isSpectator() ? 'Spectating' : isPlayerTurn() ? "Your move!" : `${game.current_turn} player's turn`}
             </p>
           </CardContent>
         </Card>
