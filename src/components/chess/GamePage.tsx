@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Crown, Clock, ArrowLeft, Users, Lock, Trophy, Handshake } from 'lucide-react';
+import { Crown, Clock, ArrowLeft, Users, Lock, Trophy, Handshake, Zap, Star } from 'lucide-react';
 import { Chess } from 'chess.js';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -634,7 +634,9 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-white text-xl font-bold animate-pulse">🎮 Loading game...</div>
+        <div className="text-white text-2xl font-black animate-pulse bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-4 rounded-2xl shadow-2xl">
+          🎮 Loading Epic Chess Battle...
+        </div>
       </div>
     );
   }
@@ -642,9 +644,11 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   if (!game) {
     return (
       <div className="text-center text-white pb-20">
-        <h2 className="text-2xl font-bold mb-4">🎲 Game not found</h2>
-        <Button onClick={onBackToLobby} className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 font-bold text-lg px-6 py-3 rounded-xl shadow-lg">
-          🏠 Back to Lobby
+        <h2 className="text-4xl font-black mb-6 bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent animate-pulse">
+          🎲 Game Not Found
+        </h2>
+        <Button onClick={onBackToLobby} className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 font-black text-xl px-8 py-4 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300">
+          🏠 Back to Legendary Lobby
         </Button>
       </div>
     );
@@ -653,27 +657,27 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const playerCount = getPlayerCount();
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-20 px-2 sm:px-4">
+    <div className="space-y-6 sm:space-y-8 pb-20 px-2 sm:px-4">
       {/* Password Dialog */}
       <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-        <DialogContent className="w-[95vw] max-w-md mx-auto bg-gradient-to-br from-purple-600 to-blue-600 border-2 border-purple-400">
+        <DialogContent className="w-[95vw] max-w-md mx-auto bg-gradient-to-br from-purple-700 to-blue-700 border-4 border-purple-400 shadow-2xl rounded-3xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-white text-xl font-bold">
-              <Lock className="h-6 w-6 text-yellow-400" />
-              🔐 Enter Game Password
+            <DialogTitle className="flex items-center gap-3 text-white text-2xl font-black animate-pulse">
+              <Lock className="h-8 w-8 text-yellow-400 animate-bounce" />
+              🔐 Enter Epic Game Password
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-6">
             <Input
               type="password"
               placeholder="Enter password"
               value={gamePassword}
               onChange={(e) => setGamePassword(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-              className="bg-white/20 border-white/30 text-white placeholder:text-white/70 font-bold"
+              className="bg-white/30 border-white/50 text-white placeholder:text-white/80 font-bold text-lg px-4 py-3 rounded-xl"
             />
-            <Button onClick={handlePasswordSubmit} className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 font-bold text-lg">
-              🚀 Join Game
+            <Button onClick={handlePasswordSubmit} className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 font-black text-xl py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300">
+              🚀 Join Epic Battle
             </Button>
           </div>
         </DialogContent>
@@ -681,98 +685,107 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
       {/* Game End Dialog */}
       <Dialog open={showGameEndDialog} onOpenChange={setShowGameEndDialog}>
-        <DialogContent className="text-center w-[95vw] max-w-md mx-auto bg-gradient-to-br from-purple-600 to-blue-600 border-2 border-purple-400">
+        <DialogContent className="text-center w-[95vw] max-w-md mx-auto bg-gradient-to-br from-purple-700 to-blue-700 border-4 border-purple-400 shadow-2xl rounded-3xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-center gap-2 text-2xl sm:text-3xl text-white font-black">
-              {gameEndType === 'win' && <Trophy className="h-8 w-8 text-yellow-400 animate-bounce" />}
-              {gameEndType === 'draw' && <Handshake className="h-8 w-8 text-blue-400 animate-bounce" />}
-              {gameEndType === 'disconnect' && <Crown className="h-8 w-8 text-green-400 animate-bounce" />}
-              🎉 Game Over
+            <DialogTitle className="flex items-center justify-center gap-3 text-3xl sm:text-4xl text-white font-black animate-bounce">
+              {gameEndType === 'win' && <Trophy className="h-10 w-10 text-yellow-400 animate-spin" />}
+              {gameEndType === 'draw' && <Handshake className="h-10 w-10 text-blue-400 animate-pulse" />}
+              {gameEndType === 'disconnect' && <Crown className="h-10 w-10 text-green-400 animate-bounce" />}
+              🎉 Epic Battle Over!
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className={`text-xl sm:text-2xl font-black animate-pulse ${
-              gameEndType === 'win' ? 'text-yellow-400' :
-              gameEndType === 'draw' ? 'text-blue-400' : 'text-green-400'
+          <div className="space-y-6">
+            <div className={`text-2xl sm:text-3xl font-black animate-pulse p-4 rounded-2xl shadow-lg border-2 ${
+              gameEndType === 'win' ? 'text-yellow-400 bg-yellow-100/20 border-yellow-400' :
+              gameEndType === 'draw' ? 'text-blue-400 bg-blue-100/20 border-blue-400' : 'text-green-400 bg-green-100/20 border-green-400'
             }`}>
               {gameEndMessage}
             </div>
             <Button onClick={() => {
               setShowGameEndDialog(false);
               onBackToLobby();
-            }} className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 font-bold text-lg">
-              🏠 Back to Lobby
+            }} className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 font-black text-xl py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300">
+              🏠 Return to Victory Hall
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Header - Always visible */}
-      <div className="flex items-center justify-between bg-gradient-to-r from-purple-600 to-blue-600 p-4 rounded-xl shadow-lg">
+      <div className="flex items-center justify-between bg-gradient-to-r from-purple-700 to-blue-700 p-6 rounded-2xl shadow-2xl border-2 border-purple-400">
         <Button
           onClick={onBackToLobby}
           variant="ghost"
-          className="text-white hover:bg-white/20 font-bold text-lg px-4 py-2 rounded-lg"
+          className="text-white hover:bg-white/30 font-black text-xl px-6 py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
         >
-          <ArrowLeft className="h-5 w-5 mr-2" />
-          🏠 Back
+          <ArrowLeft className="h-6 w-6 mr-3" />
+          🏠 Epic Lobby
         </Button>
-        <div className="flex items-center gap-2">
-          <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold px-3 py-1 text-sm">
+        <div className="flex items-center gap-3">
+          <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-black px-4 py-2 text-lg shadow-lg animate-pulse">
+            <Zap className="h-5 w-5 mr-2" />
             🎮 {game.game_status}
           </Badge>
-          <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold px-3 py-1 text-sm">
-            <Users className="h-4 w-4 mr-1" />
+          <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-black px-4 py-2 text-lg shadow-lg">
+            <Users className="h-5 w-5 mr-2" />
             👥 {playerCount}/2
           </Badge>
           {playerCount === 2 && isSpectator() && (
-            <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold px-3 py-1 text-sm">
-              👁️ Spectating
+            <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-black px-4 py-2 text-lg shadow-lg animate-bounce">
+              👁️ Epic Spectating
             </Badge>
           )}
         </div>
       </div>
 
       {/* Game Info */}
-      <Card className="bg-gradient-to-br from-indigo-600 to-purple-700 border-2 border-purple-400 shadow-xl">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-white flex items-center gap-3 text-xl sm:text-2xl font-black">
-            <Crown className="h-6 w-6 text-yellow-400" />
-            <span className="truncate">🏆 {game.game_name || 'Chess Championship'}</span>
+      <Card className="bg-gradient-to-br from-indigo-700 to-purple-800 border-4 border-purple-400 shadow-2xl rounded-3xl transform hover:scale-[1.02] transition-all duration-500">
+        <CardHeader className="pb-6">
+          <CardTitle className="text-white flex items-center gap-4 text-2xl sm:text-3xl font-black animate-pulse">
+            <Crown className="h-8 w-8 text-yellow-400 animate-bounce" />
+            <span className="truncate bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+              🏆 {game.game_name || 'Epic Chess Championship'}
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-4 text-white font-bold">
-            <div className="bg-white/10 p-3 rounded-lg">
-              <p className="text-sm text-blue-200 font-bold">⚪ White Player</p>
-              <p className="font-black text-lg truncate">{game.white_player?.username || '⏳ Waiting...'}</p>
+          <div className="grid grid-cols-2 gap-6 text-white font-black">
+            <div className="bg-white/20 p-4 rounded-2xl shadow-lg border-2 border-white/30 transform hover:scale-105 transition-all duration-300">
+              <p className="text-lg text-blue-200 font-black flex items-center gap-2">
+                <Star className="h-5 w-5" />
+                ⚪ White Champion
+              </p>
+              <p className="font-black text-xl truncate">{game.white_player?.username || '⏳ Awaiting Hero...'}</p>
             </div>
-            <div className="bg-white/10 p-3 rounded-lg">
-              <p className="text-sm text-blue-200 font-bold">⚫ Black Player</p>
-              <p className="font-black text-lg truncate">{game.black_player?.username || '⏳ Waiting...'}</p>
+            <div className="bg-white/20 p-4 rounded-2xl shadow-lg border-2 border-white/30 transform hover:scale-105 transition-all duration-300">
+              <p className="text-lg text-blue-200 font-black flex items-center gap-2">
+                <Star className="h-5 w-5" />
+                ⚫ Black Warrior
+              </p>
+              <p className="font-black text-xl truncate">{game.black_player?.username || '⏳ Awaiting Hero...'}</p>
             </div>
-            <div className="bg-white/10 p-3 rounded-lg">
-              <p className="text-sm text-yellow-200 font-bold">💰 Entry Fee</p>
-              <p className="font-black text-xl text-yellow-400">₹{game.entry_fee}</p>
+            <div className="bg-gradient-to-r from-yellow-500/30 to-orange-500/30 p-4 rounded-2xl shadow-lg border-2 border-yellow-400 transform hover:scale-105 transition-all duration-300">
+              <p className="text-lg text-yellow-200 font-black">💰 Entry Stakes</p>
+              <p className="font-black text-2xl text-yellow-400 animate-pulse">₹{game.entry_fee}</p>
             </div>
-            <div className="bg-white/10 p-3 rounded-lg">
-              <p className="text-sm text-green-200 font-bold">🏆 Prize Pool</p>
-              <p className="font-black text-xl text-green-400">₹{game.prize_amount}</p>
+            <div className="bg-gradient-to-r from-green-500/30 to-emerald-500/30 p-4 rounded-2xl shadow-lg border-2 border-green-400 transform hover:scale-105 transition-all duration-300">
+              <p className="text-lg text-green-200 font-black">🏆 Victory Prize</p>
+              <p className="font-black text-2xl text-green-400 animate-pulse">₹{game.prize_amount}</p>
             </div>
-            <div className="bg-white/10 p-3 rounded-lg">
-              <p className="text-sm text-purple-200 font-bold">🎯 Current Turn</p>
-              <p className={`font-black text-lg capitalize ${isPlayerTurn() ? 'text-green-400 animate-pulse' : 'text-white'}`}>
+            <div className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 p-4 rounded-2xl shadow-lg border-2 border-purple-400 transform hover:scale-105 transition-all duration-300">
+              <p className="text-lg text-purple-200 font-black">🎯 Turn Master</p>
+              <p className={`font-black text-xl capitalize ${isPlayerTurn() ? 'text-green-400 animate-bounce' : 'text-white'}`}>
                 {game.current_turn === 'white' ? '⚪' : '⚫'} {game.current_turn}
                 {isPlayerTurn() && (
-                  <span className="block text-sm text-green-300">🚀 Your turn!</span>
+                  <span className="block text-lg text-green-300 animate-pulse">🚀 Your Epic Turn!</span>
                 )}
               </p>
             </div>
-            <div className="bg-white/10 p-3 rounded-lg">
-              <p className="text-sm text-pink-200 font-bold">📊 Status</p>
-              <p className="font-black text-lg">
-                {game.game_status === 'waiting' ? '⏳ Waiting' : 
-                 game.game_status === 'active' ? '🔴 Live' : 
+            <div className="bg-gradient-to-r from-pink-500/30 to-rose-500/30 p-4 rounded-2xl shadow-lg border-2 border-pink-400 transform hover:scale-105 transition-all duration-300">
+              <p className="text-lg text-pink-200 font-black">📊 Battle Status</p>
+              <p className="font-black text-xl">
+                {game.game_status === 'waiting' ? '⏳ Assembling' : 
+                 game.game_status === 'active' ? '🔴 Epic Battle' : 
                  '✅ ' + game.game_status}
               </p>
             </div>
@@ -793,43 +806,43 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
       {/* Game Status Messages */}
       {game.game_status === 'waiting' && playerCount < 2 && (
-        <Card className="bg-gradient-to-r from-yellow-500 to-orange-500 border-2 border-yellow-400 shadow-lg">
-          <CardContent className="p-4 text-center">
-            <p className="text-white font-black text-lg">
-              ⏳ Waiting for another player... ({playerCount}/2)
+        <Card className="bg-gradient-to-r from-yellow-600 to-orange-600 border-4 border-yellow-400 shadow-2xl rounded-3xl">
+          <CardContent className="p-6 text-center">
+            <p className="text-white font-black text-2xl animate-bounce">
+              ⏳ Awaiting Epic Challenger... ({playerCount}/2)
             </p>
           </CardContent>
         </Card>
       )}
 
       {game.game_status === 'waiting' && playerCount === 2 && (
-        <Card className="bg-gradient-to-r from-blue-500 to-cyan-500 border-2 border-blue-400 shadow-lg">
-          <CardContent className="p-4 text-center">
-            <p className="text-white font-black text-lg animate-pulse">
-              🎉 Both players joined! Starting game...
+        <Card className="bg-gradient-to-r from-blue-600 to-cyan-600 border-4 border-blue-400 shadow-2xl rounded-3xl">
+          <CardContent className="p-6 text-center">
+            <p className="text-white font-black text-2xl animate-pulse">
+              🎉 Epic Warriors Assembled! Initializing Battle...
             </p>
           </CardContent>
         </Card>
       )}
 
       {game.game_status === 'active' && (
-        <Card className="bg-gradient-to-r from-green-500 to-emerald-500 border-2 border-green-400 shadow-lg">
-          <CardContent className="p-4 text-center">
-            <p className="text-white font-black text-lg">
-              🔴 Game is Live! {isSpectator() ? '👁️ You are spectating.' : isPlayerTurn() ? "🚀 It's your turn!" : `⏳ Waiting for ${game.current_turn} player...`}
+        <Card className="bg-gradient-to-r from-green-600 to-emerald-600 border-4 border-green-400 shadow-2xl rounded-3xl">
+          <CardContent className="p-6 text-center">
+            <p className="text-white font-black text-2xl animate-pulse">
+              🔴 Epic Battle in Progress! {isSpectator() ? '👁️ Witnessing Greatness.' : isPlayerTurn() ? "🚀 Unleash Your Power!" : `⏳ ${game.current_turn} champion's turn...`}
             </p>
           </CardContent>
         </Card>
       )}
 
       {game.game_status === 'completed' && (
-        <Card className="bg-gradient-to-r from-purple-500 to-pink-500 border-2 border-purple-400 shadow-lg">
-          <CardContent className="p-4 text-center">
-            <p className="text-white font-black text-lg">
-              🏁 Game completed! 
-              {game.winner_id && game.winner_id === currentUser && ' 🎉 Congratulations, you won!'}
-              {game.winner_id && game.winner_id !== currentUser && ' 😔 Better luck next time!'}
-              {!game.winner_id && game.game_result === 'draw' && ' 🤝 Game ended in a draw!'}
+        <Card className="bg-gradient-to-r from-purple-600 to-pink-600 border-4 border-purple-400 shadow-2xl rounded-3xl">
+          <CardContent className="p-6 text-center">
+            <p className="text-white font-black text-2xl animate-bounce">
+              🏁 Epic Battle Concluded! 
+              {game.winner_id && game.winner_id === currentUser && ' 🎉 You Are The Champion!'}
+              {game.winner_id && game.winner_id !== currentUser && ' ⚔️ Honor in Defeat!'}
+              {!game.winner_id && game.game_result === 'draw' && ' 🤝 Legendary Stalemate!'}
             </p>
           </CardContent>
         </Card>

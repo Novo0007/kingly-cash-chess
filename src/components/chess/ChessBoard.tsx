@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Chess, Square } from 'chess.js';
 
 interface ChessBoardProps {
@@ -21,6 +21,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [possibleMoves, setPossibleMoves] = useState<string[]>([]);
   const [board, setBoard] = useState(chess.board());
+  const [movingPiece, setMovingPiece] = useState<{from: string, to: string} | null>(null);
+  const boardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     try {
@@ -56,6 +58,13 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
     return `${file}${rank}` as Square;
   };
 
+  const animateMove = (from: string, to: string) => {
+    setMovingPiece({ from, to });
+    setTimeout(() => {
+      setMovingPiece(null);
+    }, 300);
+  };
+
   const handleSquareClick = (row: number, col: number) => {
     if (disabled || !isPlayerTurn) return;
 
@@ -71,6 +80,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       // Try to make a move
       if (possibleMoves.includes(square)) {
         console.log('Making move:', selectedSquare, 'to', square);
+        animateMove(selectedSquare, square);
         onMove?.(selectedSquare, square);
       } else {
         // Check if clicking on another piece of same color
@@ -122,8 +132,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full px-1 sm:px-4">
-      <div className="bg-gradient-to-br from-purple-200 via-blue-200 to-cyan-200 p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-4xl border-4 border-gradient-to-r from-purple-500 to-blue-500">
-        <div className="grid grid-cols-8 gap-0 aspect-square w-full border-6 border-gray-900 rounded-xl overflow-hidden shadow-inner">
+      <div className="bg-gradient-to-br from-purple-300 via-blue-300 to-cyan-300 p-6 sm:p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-5xl border-6 border-gradient-to-r from-purple-600 to-blue-600 transform hover:scale-[1.02] transition-all duration-500">
+        <div ref={boardRef} className="grid grid-cols-8 gap-0 aspect-square w-full border-8 border-gray-900 rounded-2xl overflow-hidden shadow-2xl relative">
           {board.map((row, rowIndex) =>
             row.map((piece, colIndex) => {
               const displayRow = playerColor === 'white' ? rowIndex : 7 - rowIndex;
@@ -133,27 +143,31 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 <div
                   key={`${displayRow}-${displayCol}`}
                   className={`
-                    aspect-square flex items-center justify-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black cursor-pointer
-                    transition-all duration-300 hover:scale-110 active:scale-95 relative border-2 border-gray-800/50
+                    aspect-square flex items-center justify-center text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black cursor-pointer
+                    transition-all duration-500 hover:scale-110 active:scale-95 relative border-3 border-gray-800/60
                     ${isLightSquare(displayRow, displayCol) 
-                      ? 'bg-gradient-to-br from-amber-100 to-yellow-200 hover:from-amber-200 hover:to-yellow-300 active:from-amber-300 active:to-yellow-400' 
-                      : 'bg-gradient-to-br from-amber-700 to-orange-800 hover:from-amber-600 hover:to-orange-700 active:from-amber-800 active:to-orange-900'
+                      ? 'bg-gradient-to-br from-amber-50 to-yellow-100 hover:from-amber-100 hover:to-yellow-200 active:from-amber-200 active:to-yellow-300' 
+                      : 'bg-gradient-to-br from-amber-800 to-orange-900 hover:from-amber-700 hover:to-orange-800 active:from-amber-900 active:to-orange-950'
                     }
                     ${isSquareHighlighted(displayRow, displayCol) 
-                      ? 'ring-6 sm:ring-8 ring-yellow-400 bg-gradient-to-br from-yellow-300 to-yellow-400 shadow-2xl transform scale-105' 
+                      ? 'ring-8 sm:ring-10 ring-yellow-400 bg-gradient-to-br from-yellow-300 to-yellow-400 shadow-2xl transform scale-105 animate-pulse' 
                       : ''
                     }
                     ${isPossibleMove(displayRow, displayCol) 
-                      ? 'after:absolute after:inset-3 sm:after:inset-4 after:bg-gradient-to-br after:from-green-400 after:to-emerald-500 after:rounded-full after:opacity-90 after:shadow-xl after:animate-pulse after:border-2 after:border-green-600' 
+                      ? 'after:absolute after:inset-2 sm:after:inset-3 after:bg-gradient-to-br after:from-green-400 after:to-emerald-500 after:rounded-full after:opacity-90 after:shadow-xl after:animate-bounce after:border-3 after:border-green-600' 
                       : ''
                     }
                     ${disabled || !isPlayerTurn ? 'cursor-default opacity-70' : 'cursor-pointer'}
                     ${!isPlayerTurn ? 'pointer-events-none' : ''}
-                    shadow-lg hover:shadow-xl
+                    shadow-xl hover:shadow-2xl transform hover:translate-y-[-2px]
                   `}
                   onClick={() => handleSquareClick(displayRow, displayCol)}
                 >
-                  <span className="z-10 drop-shadow-2xl select-none filter contrast-125 brightness-110 text-shadow-lg">
+                  <span className={`
+                    z-10 drop-shadow-2xl select-none filter contrast-125 brightness-110 text-shadow-2xl
+                    transition-all duration-300 hover:scale-110 hover:rotate-12 hover:drop-shadow-3xl
+                    ${movingPiece?.from === getSquareName(displayRow, displayCol) ? 'animate-bounce scale-125' : ''}
+                  `}>
                     {getPieceSymbol(piece)}
                   </span>
                 </div>
@@ -162,17 +176,17 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           )}
         </div>
         
-        <div className="mt-4 sm:mt-6 text-center text-base sm:text-lg font-bold">
-          <div className="text-purple-800 text-xl sm:text-2xl font-black">
+        <div className="mt-6 sm:mt-8 text-center text-lg sm:text-xl font-black">
+          <div className="text-purple-900 text-2xl sm:text-3xl font-black animate-pulse">
             Playing as {playerColor === 'white' ? '⚪ White' : '⚫ Black'}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-orange-600 animate-pulse mt-3 text-lg font-bold bg-orange-100 rounded-full px-4 py-2 inline-block">
+            <div className="text-orange-700 animate-bounce mt-4 text-xl font-black bg-gradient-to-r from-orange-200 to-yellow-200 rounded-full px-6 py-3 inline-block shadow-lg border-2 border-orange-400">
               🔄 Waiting for opponent's move...
             </div>
           )}
           {disabled && (
-            <div className="text-gray-600 mt-3 text-lg font-bold bg-gray-100 rounded-full px-4 py-2 inline-block">
+            <div className="text-gray-700 mt-4 text-xl font-black bg-gradient-to-r from-gray-200 to-gray-300 rounded-full px-6 py-3 inline-block shadow-lg border-2 border-gray-400">
               👁️ Spectating
             </div>
           )}
