@@ -98,7 +98,7 @@ export const ChallengePopup = ({ open, onOpenChange, friendName, onChallenge }: 
             </Button>
             <Button
               onClick={handleChallenge}
-              disable={!selectedAmount}
+              disabled={!selectedAmount}
               className={`
                 flex-1 font-black text-lg py-3 rounded-xl shadow-lg transform transition-all duration-300
                 ${selectedAmount 
