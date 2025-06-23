@@ -36,12 +36,12 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
       
-      oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
-      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
       
       oscillator.start();
-      oscillator.stop(audioContext.currentTime + 0.1);
+      oscillator.stop(audioContext.currentTime + 0.2);
     } catch (error) {
       console.log('Audio not supported');
     }
@@ -91,7 +91,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           
           setTimeout(() => {
             setAnimatingMove(null);
-          }, 300);
+          }, 400);
         }
       }
       
@@ -141,14 +141,14 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       // Try to make a move
       if (possibleMoves.includes(square)) {
         console.log('Making move:', selectedSquare, 'to', square);
-        const piece = chess.get(selectedSquare);
+        const piece = chess.get(selectedSquare as Square);
         setAnimatingMove({ from: selectedSquare, to: square, piece });
         playMoveSound();
         
         setTimeout(() => {
           onMove?.(selectedSquare, square);
           setAnimatingMove(null);
-        }, 300);
+        }, 400);
         
         setSelectedSquare(null);
         setPossibleMoves([]);
@@ -223,7 +223,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full px-1 sm:px-2">
-      <div className="bg-gradient-to-br from-amber-50 to-orange-100 p-2 sm:p-4 rounded-xl shadow-lg w-full max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl border-2 border-amber-300">
+      <div className="bg-gradient-to-br from-amber-50 to-orange-100 p-2 sm:p-4 rounded-xl shadow-lg w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl border border-amber-200">
         <div 
           ref={boardRef} 
           className="grid grid-cols-8 gap-0 aspect-square w-full border-2 border-gray-800 rounded-lg overflow-hidden shadow-md relative"
@@ -231,7 +231,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           {/* Animating piece overlay */}
           {animatingMove && (
             <div
-              className="absolute z-20 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold pointer-events-none transition-all duration-300 ease-out"
+              className="absolute z-20 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold pointer-events-none transition-all duration-[400ms] ease-out"
               style={{
                 left: `${getSquareCoordinates(animatingMove.from).x}px`,
                 top: `${getSquareCoordinates(animatingMove.from).y}px`,
@@ -258,8 +258,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 <div
                   key={`${displayRow}-${displayCol}`}
                   className={`
-                    aspect-square flex items-center justify-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold cursor-pointer
-                    transition-all duration-200 active:scale-95 relative
+                    aspect-square flex items-center justify-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold cursor-pointer
+                    transition-colors duration-150 active:scale-95 relative
                     ${isLightSquare(displayRow, displayCol) 
                       ? 'bg-amber-50 hover:bg-amber-100' 
                       : 'bg-amber-700 hover:bg-amber-600'
