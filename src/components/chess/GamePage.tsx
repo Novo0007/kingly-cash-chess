@@ -199,41 +199,47 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
       // Update winner's stats and add winnings
       if (winnerId) {
-        // Update winner's profile
-        promises.push(
-          supabase.rpc('increment', {
-            table_name: 'profiles',
-            row_id: winnerId,
-            column_name: 'games_played',
-            increment_value: 1
-          })
-        );
-        promises.push(
-          supabase.rpc('increment', {
-            table_name: 'profiles',
-            row_id: winnerId,
-            column_name: 'games_won',
-            increment_value: 1
-          })
-        );
-        promises.push(
-          supabase.rpc('increment_decimal', {
-            table_name: 'profiles',
-            row_id: winnerId,
-            column_name: 'total_earnings',
-            increment_value: game.prize_amount
-          })
-        );
+        // Get current winner stats
+        const { data: winnerProfile } = await supabase
+          .from('profiles')
+          .select('games_played, games_won, total_earnings')
+          .eq('id', winnerId)
+          .single();
 
-        // Add winnings to wallet
-        promises.push(
-          supabase.rpc('increment_decimal', {
-            table_name: 'wallets',
-            row_id: winnerId,
-            column_name: 'balance',
-            increment_value: game.prize_amount
-          })
-        );
+        if (winnerProfile) {
+          // Update winner's profile
+          promises.push(
+            supabase
+              .from('profiles')
+              .update({
+                games_played: (winnerProfile.games_played || 0) + 1,
+                games_won: (winnerProfile.games_won || 0) + 1,
+                total_earnings: (winnerProfile.total_earnings || 0) + game.prize_amount,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', winnerId)
+          );
+        }
+
+        // Get current wallet balance
+        const { data: winnerWallet } = await supabase
+          .from('wallets')
+          .select('balance')
+          .eq('user_id', winnerId)
+          .single();
+
+        if (winnerWallet) {
+          // Add winnings to wallet
+          promises.push(
+            supabase
+              .from('wallets')
+              .update({
+                balance: (winnerWallet.balance || 0) + game.prize_amount,
+                updated_at: new Date().toISOString()
+              })
+              .eq('user_id', winnerId)
+          );
+        }
 
         // Create winning transaction
         promises.push(
@@ -251,54 +257,104 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
       // Update loser's stats (only games played)
       if (loserId) {
-        promises.push(
-          supabase.rpc('increment', {
-            table_name: 'profiles',
-            row_id: loserId,
-            column_name: 'games_played',
-            increment_value: 1
-          })
-        );
+        const { data: loserProfile } = await supabase
+          .from('profiles')
+          .select('games_played')
+          .eq('id', loserId)
+          .single();
+
+        if (loserProfile) {
+          promises.push(
+            supabase
+              .from('profiles')
+              .update({
+                games_played: (loserProfile.games_played || 0) + 1,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', loserId)
+          );
+        }
       }
 
       // If it's a draw, update both players' stats
       if (gameResult === 'draw' && game.white_player_id && game.black_player_id) {
+        // Get both players' current stats
+        const { data: whiteProfile } = await supabase
+          .from('profiles')
+          .select('games_played')
+          .eq('id', game.white_player_id)
+          .single();
+
+        const { data: blackProfile } = await supabase
+          .from('profiles')
+          .select('games_played')
+          .eq('id', game.black_player_id)
+          .single();
+
         // Update both players' games played
-        promises.push(
-          supabase.rpc('increment', {
-            table_name: 'profiles',
-            row_id: game.white_player_id,
-            column_name: 'games_played',
-            increment_value: 1
-          })
-        );
-        promises.push(
-          supabase.rpc('increment', {
-            table_name: 'profiles',
-            row_id: game.black_player_id,
-            column_name: 'games_played',
-            increment_value: 1
-          })
-        );
+        if (whiteProfile) {
+          promises.push(
+            supabase
+              .from('profiles')
+              .update({
+                games_played: (whiteProfile.games_played || 0) + 1,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', game.white_player_id)
+          );
+        }
+
+        if (blackProfile) {
+          promises.push(
+            supabase
+              .from('profiles')
+              .update({
+                games_played: (blackProfile.games_played || 0) + 1,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', game.black_player_id)
+          );
+        }
+
+        // Get both players' wallet balances
+        const { data: whiteWallet } = await supabase
+          .from('wallets')
+          .select('balance')
+          .eq('user_id', game.white_player_id)
+          .single();
+
+        const { data: blackWallet } = await supabase
+          .from('wallets')
+          .select('balance')
+          .eq('user_id', game.black_player_id)
+          .single();
 
         // Return entry fees to both players
         const refundAmount = game.entry_fee;
-        promises.push(
-          supabase.rpc('increment_decimal', {
-            table_name: 'wallets',
-            row_id: game.white_player_id,
-            column_name: 'balance',
-            increment_value: refundAmount
-          })
-        );
-        promises.push(
-          supabase.rpc('increment_decimal', {
-            table_name: 'wallets',
-            row_id: game.black_player_id,
-            column_name: 'balance',
-            increment_value: refundAmount
-          })
-        );
+        
+        if (whiteWallet) {
+          promises.push(
+            supabase
+              .from('wallets')
+              .update({
+                balance: (whiteWallet.balance || 0) + refundAmount,
+                updated_at: new Date().toISOString()
+              })
+              .eq('user_id', game.white_player_id)
+          );
+        }
+
+        if (blackWallet) {
+          promises.push(
+            supabase
+              .from('wallets')
+              .update({
+                balance: (blackWallet.balance || 0) + refundAmount,
+                updated_at: new Date().toISOString()
+              })
+              .eq('user_id', game.black_player_id)
+          );
+        }
 
         // Create refund transactions
         promises.push(
