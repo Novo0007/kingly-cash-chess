@@ -90,9 +90,44 @@ export const WalletManager = () => {
       .single();
 
     if (error) {
-      console.error("Error fetching wallet:", error);
+      console.error("Error fetching wallet:", error.message || error);
+
+      // If wallet doesn't exist, create one
+      if (error.code === "PGRST116") {
+        // No rows returned
+        console.log("Creating new wallet for user...");
+        await createWallet(user.id);
+        return;
+      }
+
+      toast.error(
+        "Error loading wallet: " + (error.message || "Unknown error"),
+      );
     } else {
       setWallet(data);
+    }
+  };
+
+  const createWallet = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("wallets")
+      .insert({
+        user_id: userId,
+        balance: 0.0,
+        locked_balance: 0.0,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error creating wallet:", error.message || error);
+      toast.error(
+        "Error creating wallet: " + (error.message || "Unknown error"),
+      );
+    } else {
+      console.log("Wallet created successfully");
+      setWallet(data);
+      toast.success("🎉 Welcome! Your wallet has been created.");
     }
   };
 
@@ -341,7 +376,7 @@ export const WalletManager = () => {
           <CardTitle className="text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
               <CreditCard className="h-6 w-6" />
-              💰 Wallet Balance
+              ���� Wallet Balance
             </div>
             <Button
               onClick={handleRefresh}
