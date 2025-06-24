@@ -145,7 +145,10 @@ export const WalletManager = () => {
       .limit(10);
 
     if (error) {
-      console.error("Error fetching transactions:", error);
+      console.error("Error fetching transactions:", error.message || error);
+      toast.error(
+        "Error loading transactions: " + (error.message || "Unknown error"),
+      );
     } else {
       setTransactions(data || []);
     }
@@ -376,7 +379,7 @@ export const WalletManager = () => {
           <CardTitle className="text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
               <CreditCard className="h-6 w-6" />
-              ���� Wallet Balance
+              💰 Wallet Balance
             </div>
             <Button
               onClick={handleRefresh}
