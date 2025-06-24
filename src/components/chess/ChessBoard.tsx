@@ -91,7 +91,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           
           setTimeout(() => {
             setAnimatingMove(null);
-          }, 800); // Increased duration for smoother animation
+          }, 400); // Smooth animation duration
         }
       }
       
@@ -148,7 +148,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         setTimeout(() => {
           onMove?.(selectedSquare, square);
           setAnimatingMove(null);
-        }, 800); // Increased duration for smoother animation
+        }, 400); // Smooth animation timing
         
         setSelectedSquare(null);
         setPossibleMoves([]);
@@ -231,18 +231,18 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           {/* Animating piece overlay */}
           {animatingMove && (
             <div
-              className="absolute z-30 text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-bold pointer-events-none transition-all duration-[800ms] ease-in-out transform"
+              className="absolute z-30 text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-bold pointer-events-none transition-all duration-[400ms] ease-out transform"
               style={{
                 left: `${getSquareCoordinates(animatingMove.from).x}px`,
                 top: `${getSquareCoordinates(animatingMove.from).y}px`,
-                transform: `translate(${getSquareCoordinates(animatingMove.to).x - getSquareCoordinates(animatingMove.from).x}px, ${getSquareCoordinates(animatingMove.to).y - getSquareCoordinates(animatingMove.from).y}px) scale(1.1)`,
+                transform: `translate(${getSquareCoordinates(animatingMove.to).x - getSquareCoordinates(animatingMove.from).x}px, ${getSquareCoordinates(animatingMove.to).y - getSquareCoordinates(animatingMove.from).y}px) scale(1.05)`,
                 width: `${boardRef.current ? boardRef.current.offsetWidth / 8 : 50}px`,
                 height: `${boardRef.current ? boardRef.current.offsetHeight / 8 : 50}px`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                textShadow: '0 0 20px rgba(255, 255, 0, 0.9), 0 0 40px rgba(255, 255, 0, 0.6)',
-                filter: 'drop-shadow(0 0 10px rgba(255, 255, 0, 0.8))'
+                textShadow: '0 0 15px rgba(255, 255, 0, 0.8), 0 0 30px rgba(255, 255, 0, 0.5)',
+                filter: 'drop-shadow(0 0 8px rgba(255, 255, 0, 0.7))'
               }}
             >
               {getPieceSymbol(animatingMove.piece)}
@@ -263,8 +263,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     aspect-square flex items-center justify-center text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-bold cursor-pointer
                     transition-all duration-200 active:scale-95 relative overflow-hidden
                     ${isLightSquare(displayRow, displayCol) 
-                      ? 'bg-gradient-to-br from-white to-gray-100 hover:from-yellow-100 hover:to-yellow-200' 
-                      : 'bg-gradient-to-br from-gray-800 to-black hover:from-gray-700 hover:to-gray-900'
+                      ? 'bg-gradient-to-br from-white to-gray-50 hover:from-green-50 hover:to-green-100' 
+                      : 'bg-gradient-to-br from-green-600 to-green-700 hover:from-green-500 hover:to-green-600'
                     }
                     ${isSquareHighlighted(displayRow, displayCol) 
                       ? 'ring-4 ring-yellow-400 bg-gradient-to-br from-yellow-200 to-yellow-300 shadow-xl' 

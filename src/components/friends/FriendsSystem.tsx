@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -28,12 +27,14 @@ export const FriendsSystem = () => {
     friendId: '',
     friendName: ''
   });
+  const [sentChallenges, setSentChallenges] = useState<any[]>([]);
 
   useEffect(() => {
     getCurrentUser();
     fetchAllUsers();
     fetchFriends();
     fetchPendingRequests();
+    fetchSentChallenges();
   }, []);
 
   const getCurrentUser = async () => {
@@ -111,6 +112,23 @@ export const FriendsSystem = () => {
 
       setPendingRequests(requestsWithProfiles);
     }
+  };
+
+  const fetchSentChallenges = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('game_invitations')
+      .select(`
+        *,
+        to_user:profiles!game_invitations_to_user_id_fkey(*),
+        chess_game:chess_games(*)
+      `)
+      .eq('from_user_id', user.id)
+      .eq('status', 'pending');
+
+    setSentChallenges(data || []);
   };
 
   const sendFriendRequest = async (addresseeId: string) => {
@@ -207,7 +225,7 @@ export const FriendsSystem = () => {
       console.error('Transaction record error:', transactionError);
     }
 
-    // Create a new chess game
+    // Create a new chess game with is_friend_challenge flag
     const { data: gameData, error: gameError } = await supabase
       .from('chess_games')
       .insert({
@@ -215,7 +233,8 @@ export const FriendsSystem = () => {
         entry_fee: amount,
         prize_amount: amount * 2,
         game_status: 'waiting',
-        game_name: `Challenge - ₹${amount}`
+        game_name: `Challenge - ₹${amount}`,
+        is_friend_challenge: true
       })
       .select()
       .single();
@@ -240,6 +259,31 @@ export const FriendsSystem = () => {
       toast.error('Failed to send challenge');
     } else {
       toast.success(`₹${amount} challenge sent!`);
+      fetchSentChallenges();
+    }
+  };
+
+  const cancelChallenge = async (invitationId: string, gameId: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Cancel the invitation
+    const { error: invitationError } = await supabase
+      .from('game_invitations')
+      .update({ status: 'cancelled' })
+      .eq('id', invitationId);
+
+    // Cancel the game
+    const { error: gameError } = await supabase
+      .from('chess_games')
+      .update({ game_status: 'cancelled' })
+      .eq('id', gameId);
+
+    if (invitationError || gameError) {
+      toast.error('Failed to cancel challenge');
+    } else {
+      toast.success('Challenge cancelled');
+      fetchSentChallenges();
     }
   };
 
@@ -263,6 +307,36 @@ export const FriendsSystem = () => {
         friendName={challengePopup.friendName}
         onChallenge={(amount) => createGameInvitation(challengePopup.friendId, amount)}
       />
+
+      {/* Sent Challenges */}
+      {sentChallenges.length > 0 && (
+        <Card className="bg-blue-50 border-2 border-blue-200 shadow-lg rounded-xl">
+          <CardHeader>
+            <CardTitle className="text-blue-800 flex items-center gap-3 text-xl font-bold">
+              <Gamepad2 className="h-6 w-6 text-blue-600" />
+              Sent Challenges ({sentChallenges.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {sentChallenges.map((challenge) => (
+              <div key={challenge.id} className="flex items-center justify-between p-4 bg-white/70 rounded-lg border border-blue-200">
+                <div>
+                  <p className="text-gray-800 font-bold text-lg">{challenge.to_user?.username}</p>
+                  <p className="text-gray-600 text-base font-medium">Challenge: ₹{challenge.entry_fee}</p>
+                </div>
+                <Button
+                  onClick={() => cancelChallenge(challenge.id, challenge.game_id)}
+                  size="sm"
+                  className="bg-red-600 hover:bg-red-700 font-bold px-4 py-2 rounded-lg"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Cancel
+                </Button>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Search Users */}
       <Card className="bg-white border-2 border-gray-200 shadow-lg rounded-xl">
