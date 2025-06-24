@@ -1,42 +1,50 @@
-
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Crown, Users, DollarSign, User, MessageCircle } from 'lucide-react';
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Crown, Users, DollarSign, User, MessageCircle } from "lucide-react";
 
 interface BottomNavProps {
   currentView: string;
   onViewChange: (view: string) => void;
 }
 
-export const BottomNav: React.FC<BottomNavProps> = ({ currentView, onViewChange }) => {
+export const BottomNav: React.FC<BottomNavProps> = ({
+  currentView,
+  onViewChange,
+}) => {
   const navItems = [
-    { id: 'lobby', label: 'Games', icon: Crown },
-    { id: 'friends', label: 'Friends', icon: Users },
-    { id: 'wallet', label: 'Wallet', icon: DollarSign },
-    { id: 'profile', label: 'Profile', icon: User },
+    { id: "lobby", label: "Games", icon: Crown },
+    { id: "friends", label: "Friends", icon: Users },
+    { id: "wallet", label: "Wallet", icon: DollarSign },
+    { id: "profile", label: "Profile", icon: User },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-lg border-t border-yellow-500/20">
-      <div className="flex items-center justify-around px-2 py-2 max-w-md mx-auto">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-lg border-t border-yellow-500/20 safe-area-inset-bottom">
+      <div className="flex items-center justify-around px-1 py-2 max-w-sm mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentView === item.id;
-          
+
           return (
             <Button
               key={item.id}
               variant="ghost"
               size="sm"
               onClick={() => onViewChange(item.id)}
-              className={`flex flex-col items-center gap-1 px-3 py-2 h-auto min-w-0 ${
-                isActive 
-                  ? 'text-yellow-500 bg-yellow-500/10' 
-                  : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              className={`flex flex-col items-center gap-1 px-2 py-3 h-auto min-w-0 flex-1 min-h-[56px] transition-all duration-200 ${
+                isActive
+                  ? "text-yellow-500 bg-yellow-500/15 scale-105"
+                  : "text-gray-400 hover:text-white hover:bg-gray-800/50 active:bg-gray-700/50 active:scale-95"
               }`}
             >
-              <Icon className="h-5 w-5" />
-              <span className="text-xs font-medium">{item.label}</span>
+              <Icon
+                className={`${isActive ? "h-6 w-6" : "h-5 w-5"} transition-all duration-200`}
+              />
+              <span
+                className={`text-xs font-medium leading-tight ${isActive ? "text-yellow-500" : ""}`}
+              >
+                {item.label}
+              </span>
             </Button>
           );
         })}
