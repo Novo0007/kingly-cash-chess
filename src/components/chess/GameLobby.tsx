@@ -526,24 +526,30 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
         </CardContent>
       </Card>
 
-      {/* Available Games */}
+      {/* Futuristic Available Battles */}
       <div className="space-y-3 sm:space-y-4">
-        <h2 className="text-base sm:text-xl font-bold text-white flex items-center gap-2 px-1 sm:px-0">
-          <Users className="h-4 w-4 sm:h-5 sm:w-5" />
-          Available Games
+        <h2 className="text-base sm:text-xl font-bold text-cyan-300 flex items-center gap-3 px-1 sm:px-0 font-mono tracking-wide">
+          <div className="relative">
+            <Users className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse" />
+            <div className="absolute inset-0 bg-cyan-400/20 rounded-full animate-ping"></div>
+          </div>
+          🌐 ACTIVE BATTLES
           <Badge
             variant="secondary"
-            className="text-xs bg-gray-700 text-gray-300 ml-2"
+            className="text-xs bg-green-500/20 text-green-400 ml-2 border border-green-400/30 font-mono"
           >
-            Auto-refresh: 7s
+            ⚡ LIVE SYNC: 7s
           </Badge>
         </h2>
 
         {games.length === 0 ? (
-          <Card className="bg-black/30 border-gray-700">
+          <Card className="bg-slate-900/30 border-cyan-400/20 glow-cyan">
             <CardContent className="p-4 sm:p-6 text-center">
-              <p className="text-gray-400 text-sm sm:text-base">
-                No games available. Create one to get started!
+              <p className="text-cyan-300 text-sm sm:text-base font-mono">
+                🔍 NO ACTIVE BATTLES DETECTED
+              </p>
+              <p className="text-gray-400 text-xs mt-2">
+                Initialize first combat sequence above ⬆️
               </p>
             </CardContent>
           </Card>
