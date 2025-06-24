@@ -414,18 +414,18 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       return (
         <Badge
           variant="outline"
-          className="text-yellow-500 border-yellow-500 text-xs"
+          className="text-orange-400 border-orange-400/50 text-xs bg-orange-500/10 font-mono animate-pulse"
         >
-          Waiting ({playerCount}/2)
+          🔍 RECRUITING ({playerCount}/2)
         </Badge>
       );
     } else if (game.game_status === "active") {
       return (
         <Badge
           variant="outline"
-          className="text-green-500 border-green-500 text-xs"
+          className="text-green-400 border-green-400/50 text-xs bg-green-500/10 font-mono animate-pulse"
         >
-          Active ({playerCount}/2)
+          ⚔️ ENGAGED ({playerCount}/2)
         </Badge>
       );
     }
