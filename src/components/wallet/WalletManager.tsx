@@ -140,7 +140,7 @@ export const WalletManager = () => {
     try {
       // Initialize Razorpay
       const options = {
-        key: "rzp_test_1234567890", // Replace with your actual Razorpay key
+        key: "rzp_live_uEV76dlTQYpxEl", // Live Razorpay key
         amount: depositAmount * 100, // Amount in paise
         currency: "INR",
         name: "Chess Game Wallet",
