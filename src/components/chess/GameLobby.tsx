@@ -558,30 +558,34 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
             {games.map((game) => (
               <Card
                 key={game.id}
-                className="bg-black/50 border-yellow-500/20 hover:border-yellow-500/40 transition-colors"
+                className="bg-slate-900/50 border-cyan-400/30 hover:border-purple-400/60 transition-all duration-300 glow-cyan hover:glow-purple relative overflow-hidden group"
               >
-                <CardContent className="p-3 sm:p-4">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/5 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <CardContent className="p-3 sm:p-4 relative">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="space-y-2 flex-1 min-w-0">
                       <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                        <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 flex-shrink-0" />
+                        <div className="relative">
+                          <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-cyan-400 flex-shrink-0 animate-pulse" />
+                          <div className="absolute inset-0 bg-cyan-400/20 rounded-full animate-ping"></div>
+                        </div>
                         <div className="flex flex-col min-w-0 flex-1">
-                          <span className="text-white font-medium text-xs sm:text-sm truncate">
-                            {game.game_name || "Unnamed Game"}
+                          <span className="text-cyan-300 font-mono text-xs sm:text-sm truncate tracking-wide">
+                            {game.game_name || "UNNAMED_MISSION"}
                           </span>
-                          <span className="text-gray-400 text-xs truncate">
-                            Host: {game.white_player?.username || "Anonymous"}
+                          <span className="text-gray-400 text-xs truncate font-mono">
+                            Agent: {game.white_player?.username || "UNKNOWN"}
                             {game.black_player && (
-                              <> vs {game.black_player?.username}</>
+                              <> ⚔️ {game.black_player?.username}</>
                             )}
                           </span>
                         </div>
                         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                           <Badge
                             variant="secondary"
-                            className="bg-gray-700 text-gray-300 text-xs px-1 sm:px-2"
+                            className="bg-slate-800 text-cyan-400 text-xs px-1 sm:px-2 border border-cyan-400/30 font-mono"
                           >
-                            {game.white_player?.chess_rating || 1200}
+                            ⚡{game.white_player?.chess_rating || 1200}
                           </Badge>
                           {getGameStatusBadge(game)}
                         </div>
