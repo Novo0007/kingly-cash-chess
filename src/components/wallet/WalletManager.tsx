@@ -363,7 +363,7 @@ export const WalletManager = () => {
   };
 
   return (
-    <div className="space-y-6 p-4 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
+    <div className="space-y-4 md:space-y-6 p-3 md:p-4 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
       <WithdrawalForm
         open={withdrawalForm.open}
         onOpenChange={(open) =>
@@ -375,18 +375,18 @@ export const WalletManager = () => {
 
       {/* Wallet Balance */}
       <Card className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-2 border-yellow-500/40 shadow-xl rounded-xl backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <CreditCard className="h-6 w-6" />
-              💰 Wallet Balance
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="text-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="flex items-center gap-2 md:gap-3">
+              <CreditCard className="h-5 w-5 md:h-6 md:w-6" />
+              <span className="text-lg md:text-xl">💰 Wallet Balance</span>
             </div>
             <Button
               onClick={handleRefresh}
               variant="ghost"
               size="sm"
               disabled={refreshing}
-              className="text-yellow-400 hover:bg-yellow-500/10 border border-yellow-500/30"
+              className="text-yellow-400 hover:bg-yellow-500/10 border border-yellow-500/30 self-start sm:self-auto"
             >
               <RefreshCw
                 className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
@@ -394,8 +394,8 @@ export const WalletManager = () => {
             </Button>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="text-4xl font-bold text-yellow-400 mb-2">
+        <CardContent className="pt-0">
+          <div className="text-3xl md:text-4xl font-bold text-yellow-400 mb-2">
             ₹{wallet?.balance?.toFixed(2) || "0.00"}
           </div>
           {wallet?.locked_balance && wallet.locked_balance > 0 && (
@@ -411,15 +411,15 @@ export const WalletManager = () => {
 
       {/* Deposit/Withdraw */}
       <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-2 border-slate-600/30 shadow-xl rounded-xl backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-3">
-            <DollarSign className="h-6 w-6" />
-            💳 Manage Funds
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="text-white flex items-center gap-2 md:gap-3">
+            <DollarSign className="h-5 w-5 md:h-6 md:w-6" />
+            <span className="text-lg md:text-xl">💳 Manage Funds</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 md:space-y-6">
           <div>
-            <label className="text-white font-medium mb-2 block">
+            <label className="text-white font-medium mb-2 block text-sm md:text-base">
               Enter Amount (₹)
             </label>
             <Input
@@ -429,16 +429,16 @@ export const WalletManager = () => {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Enter amount"
-              className="bg-gray-800/50 border-gray-600 text-white text-lg py-3 px-4 rounded-lg"
+              className="bg-gray-800/50 border-gray-600 text-white text-base md:text-lg py-3 px-3 md:px-4 rounded-lg"
             />
-            <div className="flex gap-2 mt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
               {[100, 500, 1000, 2000].map((quickAmount) => (
                 <Button
                   key={quickAmount}
                   onClick={() => setAmount(quickAmount.toString())}
                   variant="outline"
                   size="sm"
-                  className="border-gray-500 text-gray-300 hover:bg-gray-700"
+                  className="border-gray-500 text-gray-300 hover:bg-gray-700 text-xs md:text-sm py-2"
                 >
                   ₹{quickAmount}
                 </Button>
@@ -446,27 +446,27 @@ export const WalletManager = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-3 md:gap-4">
             <Button
               onClick={handleDeposit}
               disabled={loading}
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-4 rounded-lg text-lg shadow-lg"
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-4 md:py-4 rounded-lg text-sm md:text-lg shadow-lg min-h-[48px]"
             >
-              <ArrowDownLeft className="h-5 w-5 mr-2" />
+              <ArrowDownLeft className="h-4 w-4 md:h-5 md:w-5 mr-2" />
               💰 Add Money (Razorpay)
             </Button>
             <Button
               onClick={handleWithdrawClick}
               disabled={loading}
-              className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-bold py-4 rounded-lg text-lg shadow-lg"
+              className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-bold py-4 md:py-4 rounded-lg text-sm md:text-lg shadow-lg min-h-[48px]"
             >
-              <ArrowUpRight className="h-5 w-5 mr-2" />
+              <ArrowUpRight className="h-4 w-4 md:h-5 md:w-5 mr-2" />
               🏦 Withdraw (-20% fee)
             </Button>
           </div>
 
           <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
-            <p className="text-blue-300 text-sm">
+            <p className="text-blue-300 text-xs md:text-sm">
               ℹ️ <strong>Note:</strong> Deposits are instant via Razorpay.
               Withdrawals have a 20% processing fee and take 1-3 business days.
             </p>
@@ -476,48 +476,50 @@ export const WalletManager = () => {
 
       {/* Transaction History */}
       <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-2 border-slate-600/30 shadow-xl rounded-xl backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-3">
-            <History className="h-6 w-6" />
-            📊 Recent Transactions
+        <CardHeader className="pb-3 md:pb-6">
+          <CardTitle className="text-white flex items-center gap-2 md:gap-3">
+            <History className="h-5 w-5 md:h-6 md:w-6" />
+            <span className="text-lg md:text-xl">📊 Recent Transactions</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           {transactions.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-400 text-lg">📭 No transactions yet</p>
+            <div className="text-center py-6 md:py-8">
+              <p className="text-gray-400 text-base md:text-lg">
+                📭 No transactions yet
+              </p>
               <p className="text-gray-500 text-sm mt-2">
                 Your transaction history will appear here
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               {transactions.slice(0, 10).map((transaction) => (
                 <div
                   key={transaction.id}
-                  className="flex items-center justify-between p-4 bg-gray-800/30 backdrop-blur-sm rounded-lg border border-gray-700/50 hover:bg-gray-700/30 transition-colors"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 md:p-4 bg-gray-800/30 backdrop-blur-sm rounded-lg border border-gray-700/50 hover:bg-gray-700/30 transition-colors gap-2 sm:gap-4"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
                     {getTransactionIcon(transaction.transaction_type)}
-                    <div>
-                      <p className="text-white font-medium capitalize">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-white font-medium capitalize text-sm md:text-base">
                         {transaction.transaction_type.replace("_", " ")}
                       </p>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-xs md:text-sm text-gray-400">
                         {new Date(transaction.created_at).toLocaleDateString()}{" "}
                         •{" "}
                         {new Date(transaction.created_at).toLocaleTimeString()}
                       </p>
                       {transaction.description && (
-                        <p className="text-xs text-gray-500 truncate max-w-[250px] mt-1">
+                        <p className="text-xs text-gray-500 truncate max-w-[200px] md:max-w-[250px] mt-1">
                           {transaction.description}
                         </p>
                       )}
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-left sm:text-right flex-shrink-0">
                     <p
-                      className={`font-semibold text-lg ${
+                      className={`font-semibold text-base md:text-lg ${
                         getTransactionSign(transaction.transaction_type) === "+"
                           ? "text-green-400"
                           : "text-red-400"
@@ -527,7 +529,7 @@ export const WalletManager = () => {
                       {transaction.amount.toFixed(2)}
                     </p>
                     <Badge
-                      className={`${getStatusColor(transaction.status)} border`}
+                      className={`${getStatusColor(transaction.status)} border text-xs mt-1`}
                     >
                       {transaction.status}
                     </Badge>
