@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -112,18 +113,25 @@ export const WalletManager = () => {
       return;
     }
 
+    if (depositAmount < 1) {
+      toast.error('Minimum deposit amount is ₹1');
+      return;
+    }
+
     setLoading(true);
     
     try {
       // Initialize Razorpay
       const options = {
-        key: 'rzp_test_1234567890', // Replace with your Razorpay key
+        key: 'rzp_test_1234567890', // Replace with your actual Razorpay key
         amount: depositAmount * 100, // Amount in paise
         currency: 'INR',
-        name: 'Chess Game',
-        description: `Deposit ₹${depositAmount} to wallet`,
+        name: 'Chess Game Wallet',
+        description: `Deposit ₹${depositAmount} to your gaming wallet`,
+        image: '/favicon.ico', // Your logo
         handler: async function (response: any) {
           try {
+            console.log('Razorpay payment successful:', response);
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
@@ -151,39 +159,63 @@ export const WalletManager = () => {
 
             if (walletError) throw walletError;
 
-            toast.success('💰 Deposit successful!');
+            toast.success(`💰 Successfully deposited ₹${depositAmount}!`);
             setAmount('');
             fetchWallet();
             fetchTransactions();
           } catch (error) {
             console.error('Payment confirmation error:', error);
-            toast.error('Payment confirmation failed');
+            toast.error('Payment confirmation failed. Please contact support.');
           }
         },
         prefill: {
-          name: 'Player',
-          email: 'player@example.com'
+          name: 'Chess Player',
+          email: 'player@chessgame.com'
         },
         theme: {
-          color: '#F59E0B'
+          color: '#3B82F6'
+        },
+        modal: {
+          ondismiss: function() {
+            console.log('Razorpay payment cancelled');
+            setLoading(false);
+          }
         }
       };
 
+      // @ts-ignore - Razorpay is loaded via script tag
+      if (typeof window.Razorpay === 'undefined') {
+        toast.error('Payment system not loaded. Please refresh the page.');
+        setLoading(false);
+        return;
+      }
+
       // @ts-ignore
       const rzp = new window.Razorpay(options);
+      
+      rzp.on('payment.failed', function (response: any) {
+        console.error('Payment failed:', response.error);
+        toast.error(`Payment failed: ${response.error.description}`);
+        setLoading(false);
+      });
+
       rzp.open();
     } catch (error) {
-      console.error('Razorpay error:', error);
-      toast.error('Payment initialization failed');
+      console.error('Razorpay initialization error:', error);
+      toast.error('Failed to initialize payment. Please try again.');
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const handleWithdrawClick = () => {
     const withdrawAmount = parseFloat(amount);
     if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
       toast.error('Please enter a valid amount');
+      return;
+    }
+
+    if (withdrawAmount < 10) {
+      toast.error('Minimum withdrawal amount is ₹10');
       return;
     }
 
@@ -225,14 +257,14 @@ export const WalletManager = () => {
 
       if (walletError) throw walletError;
 
-      toast.success('🏦 Withdrawal request submitted!');
+      toast.success('🏦 Withdrawal request submitted! Processing will take 1-3 business days.');
       setAmount('');
       setWithdrawalForm({ open: false, amount: 0 });
       fetchWallet();
       fetchTransactions();
     } catch (error) {
       console.error('Withdrawal error:', error);
-      toast.error('Withdrawal failed');
+      toast.error('Withdrawal failed. Please try again.');
     }
   };
 
@@ -256,13 +288,13 @@ export const WalletManager = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-500/20 text-green-400';
+        return 'bg-green-500/20 text-green-400 border-green-500/30';
       case 'pending':
-        return 'bg-yellow-500/20 text-yellow-400';
+        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
       case 'failed':
-        return 'bg-red-500/20 text-red-400';
+        return 'bg-red-500/20 text-red-400 border-red-500/30';
       default:
-        return 'bg-gray-500/20 text-gray-400';
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
   };
 
@@ -271,7 +303,7 @@ export const WalletManager = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
       <WithdrawalForm
         open={withdrawalForm.open}
         onOpenChange={(open) => setWithdrawalForm(prev => ({ ...prev, open }))}
@@ -280,11 +312,11 @@ export const WalletManager = () => {
       />
 
       {/* Wallet Balance */}
-      <Card className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/30">
+      <Card className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-2 border-yellow-500/40 shadow-xl rounded-xl backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="text-white flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5" />
+            <div className="flex items-center gap-3">
+              <CreditCard className="h-6 w-6" />
               💰 Wallet Balance
             </div>
             <Button
@@ -292,101 +324,136 @@ export const WalletManager = () => {
               variant="ghost"
               size="sm"
               disabled={refreshing}
-              className="text-yellow-500 hover:bg-yellow-500/10"
+              className="text-yellow-400 hover:bg-yellow-500/10 border border-yellow-500/30"
             >
               <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
             </Button>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold text-yellow-500">
+          <div className="text-4xl font-bold text-yellow-400 mb-2">
             ₹{wallet?.balance?.toFixed(2) || '0.00'}
           </div>
           {wallet?.locked_balance && wallet.locked_balance > 0 && (
-            <p className="text-sm text-gray-400 mt-1">
-              🔒 Locked: ₹{wallet.locked_balance.toFixed(2)}
+            <p className="text-sm text-gray-400 flex items-center gap-2">
+              🔒 Locked Balance: ₹{wallet.locked_balance.toFixed(2)}
             </p>
           )}
+          <p className="text-xs text-gray-500 mt-2">
+            Available for games and withdrawals
+          </p>
         </CardContent>
       </Card>
 
       {/* Deposit/Withdraw */}
-      <Card className="bg-black/50 border-yellow-500/20">
+      <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-2 border-slate-600/30 shadow-xl rounded-xl backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-white">💳 Add or Withdraw Funds</CardTitle>
+          <CardTitle className="text-white flex items-center gap-3">
+            <DollarSign className="h-6 w-6" />
+            💳 Manage Funds
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Input
-            type="number"
-            min="1"
-            step="0.01"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter amount"
-            className="bg-gray-800/50 border-gray-600 text-white"
-          />
-          <div className="flex gap-3">
+        <CardContent className="space-y-6">
+          <div>
+            <label className="text-white font-medium mb-2 block">Enter Amount (₹)</label>
+            <Input
+              type="number"
+              min="1"
+              step="0.01"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="Enter amount"
+              className="bg-gray-800/50 border-gray-600 text-white text-lg py-3 px-4 rounded-lg"
+            />
+            <div className="flex gap-2 mt-2">
+              {[100, 500, 1000, 2000].map((quickAmount) => (
+                <Button
+                  key={quickAmount}
+                  onClick={() => setAmount(quickAmount.toString())}
+                  variant="outline"
+                  size="sm"
+                  className="border-gray-500 text-gray-300 hover:bg-gray-700"
+                >
+                  ₹{quickAmount}
+                </Button>
+              ))}
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Button
               onClick={handleDeposit}
               disabled={loading}
-              className="flex-1 bg-green-600 hover:bg-green-700"
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-4 rounded-lg text-lg shadow-lg"
             >
-              <ArrowDownLeft className="h-4 w-4 mr-2" />
-              💰 Deposit (Razorpay)
+              <ArrowDownLeft className="h-5 w-5 mr-2" />
+              💰 Add Money (Razorpay)
             </Button>
             <Button
               onClick={handleWithdrawClick}
               disabled={loading}
-              variant="outline"
-              className="flex-1 border-red-500/50 text-red-400 hover:bg-red-500/10"
+              className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-bold py-4 rounded-lg text-lg shadow-lg"
             >
-              <ArrowUpRight className="h-4 w-4 mr-2" />
-              🏦 Withdraw (-20%)
+              <ArrowUpRight className="h-5 w-5 mr-2" />
+              🏦 Withdraw (-20% fee)
             </Button>
+          </div>
+          
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+            <p className="text-blue-300 text-sm">
+              ℹ️ <strong>Note:</strong> Deposits are instant via Razorpay. Withdrawals have a 20% processing fee and take 1-3 business days.
+            </p>
           </div>
         </CardContent>
       </Card>
 
       {/* Transaction History */}
-      <Card className="bg-black/50 border-yellow-500/20">
+      <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-2 border-slate-600/30 shadow-xl rounded-xl backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <History className="h-5 w-5" />
+          <CardTitle className="text-white flex items-center gap-3">
+            <History className="h-6 w-6" />
             📊 Recent Transactions
           </CardTitle>
         </CardHeader>
         <CardContent>
           {transactions.length === 0 ? (
-            <p className="text-gray-400 text-center py-4">📭 No transactions yet</p>
+            <div className="text-center py-8">
+              <p className="text-gray-400 text-lg">📭 No transactions yet</p>
+              <p className="text-gray-500 text-sm mt-2">Your transaction history will appear here</p>
+            </div>
           ) : (
             <div className="space-y-3">
               {transactions.slice(0, 10).map((transaction) => (
                 <div
                   key={transaction.id}
-                  className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg"
+                  className="flex items-center justify-between p-4 bg-gray-800/30 backdrop-blur-sm rounded-lg border border-gray-700/50 hover:bg-gray-700/30 transition-colors"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     {getTransactionIcon(transaction.transaction_type)}
                     <div>
                       <p className="text-white font-medium capitalize">
                         {transaction.transaction_type.replace('_', ' ')}
                       </p>
                       <p className="text-sm text-gray-400">
-                        {new Date(transaction.created_at).toLocaleDateString()}
+                        {new Date(transaction.created_at).toLocaleDateString()} • {new Date(transaction.created_at).toLocaleTimeString()}
                       </p>
                       {transaction.description && (
-                        <p className="text-xs text-gray-500 truncate max-w-[200px]">
+                        <p className="text-xs text-gray-500 truncate max-w-[250px] mt-1">
                           {transaction.description}
                         </p>
                       )}
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-white font-semibold">
+                    <p className={`font-semibold text-lg ${
+                      getTransactionSign(transaction.transaction_type) === '+' 
+                        ? 'text-green-400' 
+                        : 'text-red-400'
+                    }`}>
                       {getTransactionSign(transaction.transaction_type)}
                       ₹{transaction.amount.toFixed(2)}
                     </p>
-                    <Badge className={getStatusColor(transaction.status)}>
+                    <Badge className={`${getStatusColor(transaction.status)} border`}>
                       {transaction.status}
                     </Badge>
                   </div>
@@ -397,8 +464,8 @@ export const WalletManager = () => {
         </CardContent>
       </Card>
 
-      {/* Razorpay Script */}
-      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+      {/* Load Razorpay Script */}
+      <script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
     </div>
   );
 };

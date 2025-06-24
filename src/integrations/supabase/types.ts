@@ -21,6 +21,7 @@ export type Database = {
           game_result: Database["public"]["Enums"]["game_result"] | null
           game_status: Database["public"]["Enums"]["game_status"] | null
           id: string
+          is_friend_challenge: boolean | null
           move_history: string[] | null
           prize_amount: number
           time_control: number | null
@@ -40,6 +41,7 @@ export type Database = {
           game_result?: Database["public"]["Enums"]["game_result"] | null
           game_status?: Database["public"]["Enums"]["game_status"] | null
           id?: string
+          is_friend_challenge?: boolean | null
           move_history?: string[] | null
           prize_amount?: number
           time_control?: number | null
@@ -59,6 +61,7 @@ export type Database = {
           game_result?: Database["public"]["Enums"]["game_result"] | null
           game_status?: Database["public"]["Enums"]["game_status"] | null
           id?: string
+          is_friend_challenge?: boolean | null
           move_history?: string[] | null
           prize_amount?: number
           time_control?: number | null

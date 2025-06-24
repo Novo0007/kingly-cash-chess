@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -209,6 +210,8 @@ export const FriendsSystem = () => {
     if (!user) return;
 
     try {
+      console.log('Creating challenge for friend:', friendId, 'amount:', amount);
+
       // Check user's wallet balance first
       const { data: wallet } = await supabase
         .from('wallets')
@@ -270,6 +273,8 @@ export const FriendsSystem = () => {
         return;
       }
 
+      console.log('Game created successfully:', gameData);
+
       // Create the game invitation
       const { error } = await supabase
         .from('game_invitations')
@@ -285,6 +290,7 @@ export const FriendsSystem = () => {
         console.error('Invitation creation error:', error);
         toast.error('Failed to send challenge');
       } else {
+        console.log('Challenge sent successfully');
         toast.success(`₹${amount} challenge sent!`);
         fetchSentChallenges();
       }
@@ -297,6 +303,27 @@ export const FriendsSystem = () => {
   const cancelChallenge = async (invitationId: string, gameId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+
+    // Get the challenge amount first for refund
+    const { data: invitation } = await supabase
+      .from('game_invitations')
+      .select('entry_fee')
+      .eq('id', invitationId)
+      .single();
+
+    if (invitation) {
+      // Refund the entry fee
+      const { error: refundError } = await supabase.rpc('increment_decimal', {
+        table_name: 'wallets',
+        row_id: user.id,
+        column_name: 'balance',
+        increment_value: invitation.entry_fee
+      });
+
+      if (refundError) {
+        console.error('Refund error:', refundError);
+      }
+    }
 
     // Cancel the invitation
     const { error: invitationError } = await supabase
@@ -313,7 +340,7 @@ export const FriendsSystem = () => {
     if (invitationError || gameError) {
       toast.error('Failed to cancel challenge');
     } else {
-      toast.success('Challenge cancelled');
+      toast.success('Challenge cancelled and refunded');
       fetchSentChallenges();
     }
   };
@@ -335,17 +362,31 @@ export const FriendsSystem = () => {
     }
 
     // Deduct entry fee
-    const { error: walletError } = await supabase
-      .from('wallets')
-      .update({
-        balance: wallet.balance - amount,
-        updated_at: new Date().toISOString()
-      })
-      .eq('user_id', user.id);
+    const { error: walletError } = await supabase.rpc('increment_decimal', {
+      table_name: 'wallets',
+      row_id: user.id,
+      column_name: 'balance',
+      increment_value: -amount
+    });
 
     if (walletError) {
       toast.error('Failed to deduct entry fee');
       return;
+    }
+
+    // Create transaction record
+    const { error: transactionError } = await supabase
+      .from('transactions')
+      .insert({
+        user_id: user.id,
+        transaction_type: 'game_entry',
+        amount: amount,
+        status: 'completed',
+        description: `Entry fee for ₹${amount} challenge acceptance`
+      });
+
+    if (transactionError) {
+      console.error('Transaction record error:', transactionError);
     }
 
     // Update invitation and game
@@ -370,16 +411,44 @@ export const FriendsSystem = () => {
     }
   };
 
-  const declineChallenge = async (invitationId: string) => {
+  const declineChallenge = async (invitationId: string, gameId: string) => {
+    // Get challenge details for refund
+    const { data: invitation } = await supabase
+      .from('game_invitations')
+      .select('from_user_id, entry_fee')
+      .eq('id', invitationId)
+      .single();
+
+    if (invitation) {
+      // Refund the challenger
+      const { error: refundError } = await supabase.rpc('increment_decimal', {
+        table_name: 'wallets',
+        row_id: invitation.from_user_id,
+        column_name: 'balance',
+        increment_value: invitation.entry_fee
+      });
+
+      if (refundError) {
+        console.error('Refund error:', refundError);
+      }
+    }
+
+    // Update invitation status
     const { error } = await supabase
       .from('game_invitations')
       .update({ status: 'declined' })
       .eq('id', invitationId);
 
-    if (error) {
+    // Cancel the game
+    const { error: gameError } = await supabase
+      .from('chess_games')
+      .update({ game_status: 'cancelled' })
+      .eq('id', gameId);
+
+    if (error || gameError) {
       toast.error('Failed to decline challenge');
     } else {
-      toast.success('Challenge declined');
+      toast.success('Challenge declined and refunded to challenger');
       fetchReceivedChallenges();
     }
   };
@@ -397,7 +466,7 @@ export const FriendsSystem = () => {
   );
 
   return (
-    <div className="space-y-4 p-2 bg-gradient-to-br from-black via-gray-900 to-black min-h-screen">
+    <div className="space-y-6 p-4 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
       <ChallengePopup
         open={challengePopup.open}
         onOpenChange={(open) => setChallengePopup(prev => ({ ...prev, open }))}
@@ -407,35 +476,35 @@ export const FriendsSystem = () => {
 
       {/* Received Challenges */}
       {receivedChallenges.length > 0 && (
-        <Card className="bg-gradient-to-br from-purple-900/30 to-purple-800/30 border-2 border-purple-400/50 shadow-2xl rounded-xl">
+        <Card className="bg-gradient-to-br from-emerald-900/40 to-green-800/40 border-2 border-emerald-400/60 shadow-xl rounded-xl">
           <CardHeader>
-            <CardTitle className="text-purple-300 flex items-center gap-3 text-lg sm:text-xl font-bold">
-              <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
+            <CardTitle className="text-emerald-200 flex items-center gap-3 text-xl font-bold">
+              <Trophy className="h-6 w-6 text-yellow-400" />
               🏆 Incoming Challenges ({receivedChallenges.length})
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4">
             {receivedChallenges.map((challenge) => (
-              <div key={challenge.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white/10 rounded-lg border border-purple-300/30 space-y-2 sm:space-y-0">
+              <div key={challenge.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-emerald-300/30 space-y-3 sm:space-y-0">
                 <div className="flex-1">
-                  <p className="text-white font-bold text-base sm:text-lg">{challenge.from_user?.username}</p>
-                  <p className="text-purple-200 text-sm sm:text-base font-medium">💰 Challenge: ₹{challenge.entry_fee}</p>
+                  <p className="text-white font-bold text-lg">{challenge.from_user?.username}</p>
+                  <p className="text-emerald-200 text-base font-medium">💰 Challenge: ₹{challenge.entry_fee}</p>
                 </div>
-                <div className="flex gap-2 w-full sm:w-auto">
+                <div className="flex gap-3 w-full sm:w-auto">
                   <Button
                     onClick={() => acceptChallenge(challenge.id, challenge.game_id, challenge.entry_fee)}
                     size="sm"
-                    className="bg-green-600 hover:bg-green-700 font-bold px-3 py-2 rounded-lg flex-1 sm:flex-none"
+                    className="bg-green-600 hover:bg-green-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
                   >
-                    <Check className="h-4 w-4 mr-1" />
+                    <Check className="h-4 w-4 mr-2" />
                     Accept
                   </Button>
                   <Button
-                    onClick={() => declineChallenge(challenge.id)}
+                    onClick={() => declineChallenge(challenge.id, challenge.game_id)}
                     size="sm"
-                    className="bg-red-600 hover:bg-red-700 font-bold px-3 py-2 rounded-lg flex-1 sm:flex-none"
+                    className="bg-red-600 hover:bg-red-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
                   >
-                    <X className="h-4 w-4 mr-1" />
+                    <X className="h-4 w-4 mr-2" />
                     Decline
                   </Button>
                 </div>
@@ -447,19 +516,19 @@ export const FriendsSystem = () => {
 
       {/* Sent Challenges */}
       {sentChallenges.length > 0 && (
-        <Card className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/30 border-2 border-yellow-400/50 shadow-2xl rounded-xl">
+        <Card className="bg-gradient-to-br from-amber-900/40 to-orange-800/40 border-2 border-amber-400/60 shadow-xl rounded-xl">
           <CardHeader>
-            <CardTitle className="text-yellow-300 flex items-center gap-3 text-lg sm:text-xl font-bold">
-              <Gamepad2 className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
+            <CardTitle className="text-amber-200 flex items-center gap-3 text-xl font-bold">
+              <Gamepad2 className="h-6 w-6 text-yellow-400" />
               ⏳ Sent Challenges ({sentChallenges.length})
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4">
             {sentChallenges.map((challenge) => (
-              <div key={challenge.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white/10 rounded-lg border border-yellow-300/30 space-y-2 sm:space-y-0">
+              <div key={challenge.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-amber-300/30 space-y-3 sm:space-y-0">
                 <div className="flex-1">
-                  <p className="text-white font-bold text-base sm:text-lg">{challenge.to_user?.username}</p>
-                  <p className="text-yellow-200 text-sm sm:text-base font-medium flex items-center gap-1">
+                  <p className="text-white font-bold text-lg">{challenge.to_user?.username}</p>
+                  <p className="text-amber-200 text-base font-medium flex items-center gap-2">
                     <Clock className="h-4 w-4" />
                     💰 Challenge: ₹{challenge.entry_fee}
                   </p>
@@ -467,9 +536,9 @@ export const FriendsSystem = () => {
                 <Button
                   onClick={() => cancelChallenge(challenge.id, challenge.game_id)}
                   size="sm"
-                  className="bg-red-600 hover:bg-red-700 font-bold px-3 py-2 rounded-lg w-full sm:w-auto"
+                  className="bg-red-600 hover:bg-red-700 font-bold px-4 py-2 rounded-lg w-full sm:w-auto"
                 >
-                  <X className="h-4 w-4 mr-1" />
+                  <X className="h-4 w-4 mr-2" />
                   Cancel
                 </Button>
               </div>
@@ -479,10 +548,10 @@ export const FriendsSystem = () => {
       )}
 
       {/* Search Users */}
-      <Card className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 border-2 border-white/20 shadow-2xl rounded-xl">
+      <Card className="bg-gradient-to-br from-indigo-900/40 to-purple-800/40 border-2 border-indigo-400/60 shadow-xl rounded-xl">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-3 text-lg sm:text-xl font-bold">
-            <UserPlus className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
+          <CardTitle className="text-indigo-200 flex items-center gap-3 text-xl font-bold">
+            <UserPlus className="h-6 w-6 text-purple-400" />
             🔍 Find Players
           </CardTitle>
         </CardHeader>
@@ -491,18 +560,18 @@ export const FriendsSystem = () => {
             placeholder="Search players..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="border-purple-400 bg-black/30 text-white placeholder:text-gray-400 text-base sm:text-lg py-3 px-4 rounded-lg font-medium"
+            className="border-indigo-400 bg-black/30 text-white placeholder:text-gray-400 text-lg py-3 px-4 rounded-lg font-medium"
           />
           
           <div className="space-y-3 max-h-60 overflow-y-auto">
             {filteredUsers.map((user) => (
-              <div key={user.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors space-y-2 sm:space-y-0">
+              <div key={user.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-indigo-300/30 hover:bg-white/15 transition-colors space-y-3 sm:space-y-0">
                 <div className="flex-1">
-                  <p className="text-white font-bold text-base sm:text-lg flex items-center gap-2">
-                    <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" />
+                  <p className="text-white font-bold text-lg flex items-center gap-2">
+                    <Crown className="h-5 w-5 text-yellow-400" />
                     👤 {user.username}
                   </p>
-                  <p className="text-gray-300 text-sm sm:text-base font-medium flex items-center gap-2">
+                  <p className="text-indigo-200 text-base font-medium flex items-center gap-2">
                     <Star className="h-4 w-4" />
                     ⭐ Rating: {user.chess_rating}
                   </p>
@@ -510,7 +579,7 @@ export const FriendsSystem = () => {
                 <Button
                   onClick={() => sendFriendRequest(user.id)}
                   size="sm"
-                  className="bg-purple-600 hover:bg-purple-700 font-bold text-sm sm:text-base px-4 py-2 rounded-lg w-full sm:w-auto"
+                  className="bg-purple-600 hover:bg-purple-700 font-bold text-base px-4 py-2 rounded-lg w-full sm:w-auto"
                 >
                   ➕ Add Friend
                 </Button>
@@ -522,32 +591,32 @@ export const FriendsSystem = () => {
 
       {/* Pending Requests */}
       {pendingRequests.length > 0 && (
-        <Card className="bg-gradient-to-br from-blue-900/30 to-blue-800/30 border-2 border-blue-400/50 shadow-2xl rounded-xl">
+        <Card className="bg-gradient-to-br from-blue-900/40 to-cyan-800/40 border-2 border-blue-400/60 shadow-xl rounded-xl">
           <CardHeader>
-            <CardTitle className="text-blue-300 flex items-center gap-3 text-lg sm:text-xl font-bold">
-              <Users className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
+            <CardTitle className="text-blue-200 flex items-center gap-3 text-xl font-bold">
+              <Users className="h-6 w-6 text-blue-400" />
               📨 Friend Requests ({pendingRequests.length})
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4">
             {pendingRequests.map((request) => (
-              <div key={request.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white/10 rounded-lg border border-blue-300/30 space-y-2 sm:space-y-0">
+              <div key={request.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-blue-300/30 space-y-3 sm:space-y-0">
                 <div className="flex-1">
-                  <p className="text-white font-bold text-base sm:text-lg">👤 {request.requester?.username}</p>
-                  <p className="text-blue-200 text-sm sm:text-base font-medium">⭐ Rating: {request.requester?.chess_rating}</p>
+                  <p className="text-white font-bold text-lg">👤 {request.requester?.username}</p>
+                  <p className="text-blue-200 text-base font-medium">⭐ Rating: {request.requester?.chess_rating}</p>
                 </div>
-                <div className="flex gap-2 w-full sm:w-auto">
+                <div className="flex gap-3 w-full sm:w-auto">
                   <Button
                     onClick={() => acceptFriendRequest(request.id)}
                     size="sm"
-                    className="bg-green-600 hover:bg-green-700 font-bold px-3 py-2 rounded-lg flex-1 sm:flex-none"
+                    className="bg-green-600 hover:bg-green-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
                   >
                     <Check className="h-4 w-4" />
                   </Button>
                   <Button
                     onClick={() => declineFriendRequest(request.id)}
                     size="sm"
-                    className="bg-red-600 hover:bg-red-700 font-bold px-3 py-2 rounded-lg flex-1 sm:flex-none"
+                    className="bg-red-600 hover:bg-red-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -558,26 +627,26 @@ export const FriendsSystem = () => {
         </Card>
       )}
 
-      {/* Friends List */}
-      <Card className="bg-gradient-to-br from-green-900/30 to-green-800/30 border-2 border-green-400/50 shadow-2xl rounded-xl">
+      {/* Online Friends */}
+      <Card className="bg-gradient-to-br from-teal-900/40 to-green-800/40 border-2 border-teal-400/60 shadow-xl rounded-xl">
         <CardHeader>
-          <CardTitle className="text-green-300 flex items-center gap-3 text-lg sm:text-xl font-bold">
-            <Users className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
-            👥 Online Friends ({friends.filter(f => f.isOnline).length})
+          <CardTitle className="text-teal-200 flex items-center gap-3 text-xl font-bold">
+            <Users className="h-6 w-6 text-teal-400" />
+            👥 My Friends ({friends.filter(f => f.isOnline).length} online)
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4">
           {friends.filter(f => f.isOnline).length === 0 ? (
-            <p className="text-gray-300 text-center py-8 text-base sm:text-lg font-medium">😴 No online friends. Send some friend requests!</p>
+            <p className="text-gray-300 text-center py-8 text-lg font-medium">😴 No friends online. Send some friend requests!</p>
           ) : (
             friends.filter(f => f.isOnline).map((friendship) => (
-              <div key={friendship.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white/10 rounded-lg border border-green-300/30 hover:bg-white/15 transition-colors space-y-2 sm:space-y-0">
+              <div key={friendship.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-teal-300/30 hover:bg-white/15 transition-colors space-y-3 sm:space-y-0">
                 <div className="flex-1">
-                  <p className="text-white font-bold text-base sm:text-lg flex items-center gap-2">
-                    <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" />
+                  <p className="text-white font-bold text-lg flex items-center gap-2">
+                    <Crown className="h-5 w-5 text-yellow-400" />
                     👤 {friendship.friend?.username}
                   </p>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-sm sm:text-base text-gray-300 font-medium">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-base text-teal-200 font-medium">
                     <span className="flex items-center gap-1">
                       <Star className="h-4 w-4" />
                       ⭐ Rating: {friendship.friend?.chess_rating}
@@ -591,7 +660,7 @@ export const FriendsSystem = () => {
                 <Button
                   onClick={() => openChallengePopup(friendship.friend?.id || '', friendship.friend?.username || '')}
                   size="sm"
-                  className="bg-purple-600 hover:bg-purple-700 font-bold text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded-lg flex items-center gap-2 w-full sm:w-auto"
+                  className="bg-purple-600 hover:bg-purple-700 font-bold text-base px-6 py-3 rounded-lg flex items-center gap-2 w-full sm:w-auto"
                 >
                   <Gamepad2 className="h-4 w-4" />
                   ⚔️ Challenge
