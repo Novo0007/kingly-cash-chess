@@ -91,7 +91,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           
           setTimeout(() => {
             setAnimatingMove(null);
-          }, 600);
+          }, 800); // Increased duration for smoother animation
         }
       }
       
@@ -148,7 +148,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         setTimeout(() => {
           onMove?.(selectedSquare, square);
           setAnimatingMove(null);
-        }, 600);
+        }, 800); // Increased duration for smoother animation
         
         setSelectedSquare(null);
         setPossibleMoves([]);
@@ -223,25 +223,26 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full px-1 sm:px-2">
-      <div className="bg-gradient-to-br from-gray-900 to-black p-3 sm:p-5 rounded-xl shadow-2xl w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl border-2 border-yellow-400">
+      <div className="bg-gradient-to-br from-black via-purple-900 to-black p-3 sm:p-6 rounded-xl shadow-2xl w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-4xl border-4 border-yellow-400">
         <div 
           ref={boardRef} 
-          className="grid grid-cols-8 gap-0 aspect-square w-full border-3 border-purple-600 rounded-lg overflow-hidden shadow-xl relative"
+          className="grid grid-cols-8 gap-0 aspect-square w-full border-4 border-purple-600 rounded-lg overflow-hidden shadow-2xl relative"
         >
           {/* Animating piece overlay */}
           {animatingMove && (
             <div
-              className="absolute z-20 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold pointer-events-none transition-all duration-[600ms] ease-in-out"
+              className="absolute z-30 text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-bold pointer-events-none transition-all duration-[800ms] ease-in-out transform"
               style={{
                 left: `${getSquareCoordinates(animatingMove.from).x}px`,
                 top: `${getSquareCoordinates(animatingMove.from).y}px`,
-                transform: `translate(${getSquareCoordinates(animatingMove.to).x - getSquareCoordinates(animatingMove.from).x}px, ${getSquareCoordinates(animatingMove.to).y - getSquareCoordinates(animatingMove.from).y}px)`,
+                transform: `translate(${getSquareCoordinates(animatingMove.to).x - getSquareCoordinates(animatingMove.from).x}px, ${getSquareCoordinates(animatingMove.to).y - getSquareCoordinates(animatingMove.from).y}px) scale(1.1)`,
                 width: `${boardRef.current ? boardRef.current.offsetWidth / 8 : 50}px`,
                 height: `${boardRef.current ? boardRef.current.offsetHeight / 8 : 50}px`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                textShadow: '0 0 10px rgba(255, 255, 0, 0.8)'
+                textShadow: '0 0 20px rgba(255, 255, 0, 0.9), 0 0 40px rgba(255, 255, 0, 0.6)',
+                filter: 'drop-shadow(0 0 10px rgba(255, 255, 0, 0.8))'
               }}
             >
               {getPieceSymbol(animatingMove.piece)}
@@ -259,36 +260,37 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 <div
                   key={`${displayRow}-${displayCol}`}
                   className={`
-                    aspect-square flex items-center justify-center text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold cursor-pointer
-                    transition-all duration-200 active:scale-95 relative
+                    aspect-square flex items-center justify-center text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-bold cursor-pointer
+                    transition-all duration-200 active:scale-95 relative overflow-hidden
                     ${isLightSquare(displayRow, displayCol) 
-                      ? 'bg-white hover:bg-yellow-100' 
-                      : 'bg-gray-800 hover:bg-gray-700'
+                      ? 'bg-gradient-to-br from-white to-gray-100 hover:from-yellow-100 hover:to-yellow-200' 
+                      : 'bg-gradient-to-br from-gray-800 to-black hover:from-gray-700 hover:to-gray-900'
                     }
                     ${isSquareHighlighted(displayRow, displayCol) 
-                      ? 'ring-4 ring-yellow-400 bg-yellow-200' 
+                      ? 'ring-4 ring-yellow-400 bg-gradient-to-br from-yellow-200 to-yellow-300 shadow-xl' 
                       : ''
                     }
                     ${isPossibleMove(displayRow, displayCol) 
-                      ? 'after:absolute after:inset-1/3 after:bg-purple-500 after:rounded-full after:opacity-80 after:shadow-lg' 
+                      ? 'after:absolute after:inset-1/3 after:bg-gradient-to-br after:from-purple-400 after:to-purple-600 after:rounded-full after:opacity-90 after:shadow-lg after:animate-pulse' 
                       : ''
                     }
                     ${isLastMove(displayRow, displayCol)
-                      ? 'bg-yellow-300 ring-2 ring-yellow-500'
+                      ? 'bg-gradient-to-br from-yellow-300 to-yellow-400 ring-2 ring-yellow-500 shadow-lg'
                       : ''
                     }
-                    ${disabled || !isPlayerTurn ? 'cursor-default opacity-70' : 'cursor-pointer'}
+                    ${disabled || !isPlayerTurn ? 'cursor-default opacity-70' : 'cursor-pointer hover:shadow-lg'}
                     ${!isPlayerTurn ? 'pointer-events-none' : ''}
                   `}
                   onClick={() => handleSquareClick(displayRow, displayCol)}
                 >
                   <span className={`
-                    z-10 drop-shadow-lg select-none transition-all duration-300
-                    ${isAnimating ? 'opacity-0' : 'opacity-100'}
-                    ${piece ? 'text-shadow-lg' : ''}
+                    z-10 drop-shadow-2xl select-none transition-all duration-300 transform
+                    ${isAnimating ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}
+                    ${piece ? 'hover:scale-110' : ''}
                   `}
                   style={{
-                    textShadow: piece ? '0 0 8px rgba(0, 0, 0, 0.8)' : 'none'
+                    textShadow: piece ? '0 0 12px rgba(0, 0, 0, 0.9), 0 0 8px rgba(255, 255, 255, 0.3)' : 'none',
+                    filter: piece ? 'drop-shadow(0 0 6px rgba(0, 0, 0, 0.8))' : 'none'
                   }}>
                     {getPieceSymbol(piece)}
                   </span>
@@ -298,17 +300,17 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           )}
         </div>
         
-        <div className="mt-3 sm:mt-5 text-center">
-          <div className="text-white text-base sm:text-xl font-bold bg-black/50 rounded-lg px-4 py-2 border border-yellow-400">
+        <div className="mt-3 sm:mt-6 text-center">
+          <div className="text-white text-base sm:text-xl font-bold bg-gradient-to-r from-black/80 to-purple-900/80 rounded-lg px-4 py-3 border-2 border-yellow-400 shadow-xl">
             Playing as {playerColor === 'white' ? '⚪ White' : '⚫ Black'}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-purple-300 mt-2 text-sm sm:text-base font-bold bg-purple-900/50 rounded-md px-3 py-2 inline-block border border-purple-400">
+            <div className="text-purple-300 mt-2 text-sm sm:text-base font-bold bg-gradient-to-r from-purple-900/60 to-purple-800/60 rounded-md px-3 py-2 inline-block border-2 border-purple-400 shadow-lg">
               Opponent's turn...
             </div>
           )}
           {disabled && (
-            <div className="text-gray-300 mt-2 text-sm sm:text-base font-bold bg-gray-900/50 rounded-md px-3 py-2 inline-block border border-gray-400">
+            <div className="text-gray-300 mt-2 text-sm sm:text-base font-bold bg-gradient-to-r from-gray-900/60 to-gray-800/60 rounded-md px-3 py-2 inline-block border-2 border-gray-400 shadow-lg">
               Spectating
             </div>
           )}
