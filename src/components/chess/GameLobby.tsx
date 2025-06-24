@@ -453,21 +453,17 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
 
   return (
     <div className="space-y-4 sm:space-y-6 pb-20 px-2 sm:px-0">
-      {/* Futuristic Wallet Balance */}
-      <Card className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border-cyan-400/30 glow-cyan relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/5 to-purple-400/5 animate-pulse"></div>
-        <CardContent className="p-3 sm:p-4 relative">
+      {/* Wallet Balance */}
+      <Card className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/20">
+        <CardContent className="p-3 sm:p-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-400 animate-pulse" />
-                <div className="absolute inset-0 bg-cyan-400/20 rounded-full animate-ping"></div>
-              </div>
-              <span className="text-cyan-300 font-mono text-sm sm:text-base tracking-wide">
-                ⚡ CREDITS
+            <div className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+              <span className="text-white font-medium text-sm sm:text-base">
+                Wallet Balance
               </span>
             </div>
-            <div className="text-lg sm:text-xl font-bold text-green-400 font-mono">
+            <div className="text-lg sm:text-xl font-bold text-blue-400">
               ₹{wallet?.balance?.toFixed(2) || "0.00"}
             </div>
           </div>
