@@ -21,7 +21,6 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [possibleMoves, setPossibleMoves] = useState<string[]>([]);
   const [board, setBoard] = useState(chess.board());
-  const [animatingMove, setAnimatingMove] = useState<{from: string, to: string, piece: any} | null>(null);
   const [lastMove, setLastMove] = useState<{from: string, to: string} | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
 
@@ -58,7 +57,6 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         const oldBoard = chess.board();
         let moveFrom = '';
         let moveTo = '';
-        let movedPiece = null;
         
         // Compare boards to find the move
         for (let row = 0; row < 8; row++) {
@@ -70,28 +68,22 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
             if (oldPiece && !newPiece) {
               const square = getSquareName(row, col);
               moveFrom = square;
-              movedPiece = oldPiece;
             }
             
             // Find where a piece appeared or changed (to square)
             if ((!oldPiece && newPiece) || (oldPiece && newPiece && (oldPiece.type !== newPiece.type || oldPiece.color !== newPiece.color))) {
               const square = getSquareName(row, col);
-              if (newPiece && movedPiece && newPiece.type === movedPiece.type && newPiece.color === movedPiece.color) {
+              if (newPiece) {
                 moveTo = square;
               }
             }
           }
         }
         
-        // Animate the move if we found it
-        if (moveFrom && moveTo && movedPiece) {
-          setAnimatingMove({ from: moveFrom, to: moveTo, piece: movedPiece });
+        // Set last move and play sound
+        if (moveFrom && moveTo) {
           setLastMove({ from: moveFrom, to: moveTo });
           playMoveSound();
-          
-          setTimeout(() => {
-            setAnimatingMove(null);
-          }, 400); // Smooth animation duration
         }
       }
       
@@ -127,7 +119,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   };
 
   const handleSquareClick = (row: number, col: number) => {
-    if (disabled || !isPlayerTurn || animatingMove) return;
+    if (disabled || !isPlayerTurn) return;
 
     const square = getSquareName(row, col);
     
@@ -141,15 +133,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       // Try to make a move
       if (possibleMoves.includes(square)) {
         console.log('Making move:', selectedSquare, 'to', square);
-        const piece = chess.get(selectedSquare as Square);
-        setAnimatingMove({ from: selectedSquare, to: square, piece });
         playMoveSound();
-        
-        setTimeout(() => {
-          onMove?.(selectedSquare, square);
-          setAnimatingMove(null);
-        }, 400); // Smooth animation timing
-        
+        onMove?.(selectedSquare, square);
         setSelectedSquare(null);
         setPossibleMoves([]);
         return;
@@ -202,96 +187,51 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
     return (row + col) % 2 === 0;
   };
 
-  const getSquareCoordinates = (square: string) => {
-    if (!boardRef.current) return { x: 0, y: 0 };
-    
-    const files = 'abcdefgh';
-    const file = files.indexOf(square[0]);
-    const rank = parseInt(square[1]) - 1;
-    
-    const boardRect = boardRef.current.getBoundingClientRect();
-    const squareSize = boardRect.width / 8;
-    
-    const col = playerColor === 'white' ? file : 7 - file;
-    const row = playerColor === 'white' ? 7 - rank : rank;
-    
-    return {
-      x: col * squareSize,
-      y: row * squareSize
-    };
-  };
-
   return (
     <div className="flex flex-col items-center w-full px-1 sm:px-2">
       <div className="bg-gradient-to-br from-black via-purple-900 to-black p-3 sm:p-6 rounded-xl shadow-2xl w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-4xl border-4 border-yellow-400">
         <div 
           ref={boardRef} 
-          className="grid grid-cols-8 gap-0 aspect-square w-full border-4 border-purple-600 rounded-lg overflow-hidden shadow-2xl relative"
+          className="grid grid-cols-8 gap-0 aspect-square w-full border-4 border-purple-600 rounded-lg overflow-hidden shadow-2xl"
         >
-          {/* Animating piece overlay */}
-          {animatingMove && (
-            <div
-              className="absolute z-30 text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-bold pointer-events-none transition-all duration-[400ms] ease-out transform"
-              style={{
-                left: `${getSquareCoordinates(animatingMove.from).x}px`,
-                top: `${getSquareCoordinates(animatingMove.from).y}px`,
-                transform: `translate(${getSquareCoordinates(animatingMove.to).x - getSquareCoordinates(animatingMove.from).x}px, ${getSquareCoordinates(animatingMove.to).y - getSquareCoordinates(animatingMove.from).y}px) scale(1.05)`,
-                width: `${boardRef.current ? boardRef.current.offsetWidth / 8 : 50}px`,
-                height: `${boardRef.current ? boardRef.current.offsetHeight / 8 : 50}px`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textShadow: '0 0 15px rgba(255, 255, 0, 0.8), 0 0 30px rgba(255, 255, 0, 0.5)',
-                filter: 'drop-shadow(0 0 8px rgba(255, 255, 0, 0.7))'
-              }}
-            >
-              {getPieceSymbol(animatingMove.piece)}
-            </div>
-          )}
-          
           {board.map((row, rowIndex) =>
             row.map((piece, colIndex) => {
               const displayRow = playerColor === 'white' ? rowIndex : 7 - rowIndex;
               const displayCol = playerColor === 'white' ? colIndex : 7 - colIndex;
-              const square = getSquareName(displayRow, displayCol);
-              const isAnimating = animatingMove && animatingMove.from === square;
               
               return (
                 <div
                   key={`${displayRow}-${displayCol}`}
                   className={`
-                    aspect-square flex items-center justify-center text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-bold cursor-pointer
-                    transition-all duration-200 active:scale-95 relative overflow-hidden
+                    aspect-square flex items-center justify-center text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold cursor-pointer
+                    transition-colors duration-200 active:scale-95 relative overflow-hidden
                     ${isLightSquare(displayRow, displayCol) 
-                      ? 'bg-gradient-to-br from-white to-gray-50 hover:from-green-50 hover:to-green-100' 
-                      : 'bg-gradient-to-br from-green-600 to-green-700 hover:from-green-500 hover:to-green-600'
+                      ? 'bg-green-100 hover:bg-green-200' 
+                      : 'bg-green-600 hover:bg-green-700'
                     }
                     ${isSquareHighlighted(displayRow, displayCol) 
-                      ? 'ring-4 ring-yellow-400 bg-gradient-to-br from-yellow-200 to-yellow-300 shadow-xl' 
+                      ? 'ring-4 ring-yellow-400 bg-yellow-200' 
                       : ''
                     }
                     ${isPossibleMove(displayRow, displayCol) 
-                      ? 'after:absolute after:inset-1/3 after:bg-gradient-to-br after:from-purple-400 after:to-purple-600 after:rounded-full after:opacity-90 after:shadow-lg after:animate-pulse' 
+                      ? 'after:absolute after:inset-1/3 after:bg-blue-500 after:rounded-full after:opacity-70' 
                       : ''
                     }
                     ${isLastMove(displayRow, displayCol)
-                      ? 'bg-gradient-to-br from-yellow-300 to-yellow-400 ring-2 ring-yellow-500 shadow-lg'
+                      ? 'bg-yellow-300 ring-2 ring-yellow-500'
                       : ''
                     }
-                    ${disabled || !isPlayerTurn ? 'cursor-default opacity-70' : 'cursor-pointer hover:shadow-lg'}
+                    ${disabled || !isPlayerTurn ? 'cursor-default opacity-70' : 'cursor-pointer'}
                     ${!isPlayerTurn ? 'pointer-events-none' : ''}
                   `}
                   onClick={() => handleSquareClick(displayRow, displayCol)}
                 >
-                  <span className={`
-                    z-10 drop-shadow-2xl select-none transition-all duration-300 transform
-                    ${isAnimating ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}
-                    ${piece ? 'hover:scale-110' : ''}
-                  `}
-                  style={{
-                    textShadow: piece ? '0 0 12px rgba(0, 0, 0, 0.9), 0 0 8px rgba(255, 255, 255, 0.3)' : 'none',
-                    filter: piece ? 'drop-shadow(0 0 6px rgba(0, 0, 0, 0.8))' : 'none'
-                  }}>
+                  <span 
+                    className="z-10 drop-shadow-2xl select-none"
+                    style={{
+                      textShadow: piece ? '2px 2px 4px rgba(0, 0, 0, 0.8)' : 'none'
+                    }}
+                  >
                     {getPieceSymbol(piece)}
                   </span>
                 </div>
