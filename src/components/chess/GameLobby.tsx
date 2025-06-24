@@ -414,18 +414,18 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       return (
         <Badge
           variant="outline"
-          className="text-orange-400 border-orange-400/50 text-xs bg-orange-500/10 font-mono animate-pulse"
+          className="text-yellow-500 border-yellow-500 text-xs"
         >
-          🔍 RECRUITING ({playerCount}/2)
+          Waiting ({playerCount}/2)
         </Badge>
       );
     } else if (game.game_status === "active") {
       return (
         <Badge
           variant="outline"
-          className="text-green-400 border-green-400/50 text-xs bg-green-500/10 font-mono animate-pulse"
+          className="text-green-500 border-green-500 text-xs"
         >
-          ⚔️ ENGAGED ({playerCount}/2)
+          Active ({playerCount}/2)
         </Badge>
       );
     }
@@ -470,34 +470,30 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
         </CardContent>
       </Card>
 
-      {/* Futuristic Create Game */}
-      <Card className="bg-slate-900/50 border-purple-400/30 glow-purple relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-400/5 to-cyan-400/5 animate-pulse"></div>
-        <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6 relative">
-          <CardTitle className="text-cyan-300 flex items-center gap-3 text-base sm:text-xl font-mono tracking-wide">
-            <div className="relative">
-              <Plus className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse" />
-              <div className="absolute inset-0 bg-purple-400/20 rounded-full animate-ping"></div>
-            </div>
-            INITIALIZE BATTLE
+      {/* Create Game */}
+      <Card className="bg-slate-800/50 border-slate-700">
+        <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6">
+          <CardTitle className="text-white flex items-center gap-2 text-base sm:text-xl">
+            <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
+            Create New Game
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6 relative">
+        <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6">
           <div>
-            <label className="text-xs sm:text-sm text-cyan-300 mb-2 block font-mono tracking-wider">
-              ⚡ MISSION NAME (OPTIONAL)
+            <label className="text-xs sm:text-sm text-gray-300 mb-2 block">
+              Game Name (Optional)
             </label>
             <Input
               type="text"
               value={gameName}
               onChange={(e) => setGameName(e.target.value)}
-              className="bg-slate-800/50 border-cyan-400/30 text-cyan-300 text-sm sm:text-base font-mono glow-cyan"
-              placeholder="Auto-generated quantum signature..."
+              className="bg-gray-800/50 border-gray-600 text-white text-sm sm:text-base"
+              placeholder="Leave empty for auto-generated unique name"
             />
           </div>
           <div>
-            <label className="text-xs sm:text-sm text-cyan-300 mb-2 block font-mono tracking-wider">
-              💰 STAKE AMOUNT (₹)
+            <label className="text-xs sm:text-sm text-gray-300 mb-2 block">
+              Entry Fee (₹)
             </label>
             <Input
               type="number"
@@ -505,47 +501,38 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
               step="0.01"
               value={entryFee}
               onChange={(e) => setEntryFee(e.target.value)}
-              className="bg-slate-800/50 border-cyan-400/30 text-green-400 text-sm sm:text-base font-mono glow-cyan"
-              placeholder="Enter credits..."
+              className="bg-gray-800/50 border-gray-600 text-white text-sm sm:text-base"
+              placeholder="Enter amount"
             />
           </div>
           <Button
             onClick={createGame}
             disabled={loading}
-            className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 text-white font-bold text-sm sm:text-base py-2 sm:py-3 font-mono tracking-wide glow-purple relative overflow-hidden"
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold text-sm sm:text-base py-2 sm:py-3"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-cyan-400/20 animate-pulse"></div>
-            <span className="relative">
-              {loading ? "⚡ INITIALIZING..." : "🚀 DEPLOY BATTLE"}
-            </span>
+            {loading ? "Creating..." : "Create Game"}
           </Button>
         </CardContent>
       </Card>
 
-      {/* Futuristic Available Battles */}
+      {/* Available Games */}
       <div className="space-y-3 sm:space-y-4">
-        <h2 className="text-base sm:text-xl font-bold text-cyan-300 flex items-center gap-3 px-1 sm:px-0 font-mono tracking-wide">
-          <div className="relative">
-            <Users className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse" />
-            <div className="absolute inset-0 bg-cyan-400/20 rounded-full animate-ping"></div>
-          </div>
-          🌐 ACTIVE BATTLES
+        <h2 className="text-base sm:text-xl font-bold text-white flex items-center gap-2 px-1 sm:px-0">
+          <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+          Available Games
           <Badge
             variant="secondary"
-            className="text-xs bg-green-500/20 text-green-400 ml-2 border border-green-400/30 font-mono"
+            className="text-xs bg-gray-700 text-gray-300 ml-2"
           >
-            ⚡ LIVE SYNC: 7s
+            Auto-refresh: 7s
           </Badge>
         </h2>
 
         {games.length === 0 ? (
-          <Card className="bg-slate-900/30 border-cyan-400/20 glow-cyan">
+          <Card className="bg-slate-800/30 border-gray-700">
             <CardContent className="p-4 sm:p-6 text-center">
-              <p className="text-cyan-300 text-sm sm:text-base font-mono">
-                🔍 NO ACTIVE BATTLES DETECTED
-              </p>
-              <p className="text-gray-400 text-xs mt-2">
-                Initialize first combat sequence above ⬆️
+              <p className="text-gray-400 text-sm sm:text-base">
+                No games available. Create one to get started!
               </p>
             </CardContent>
           </Card>
@@ -554,34 +541,30 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
             {games.map((game) => (
               <Card
                 key={game.id}
-                className="bg-slate-900/50 border-cyan-400/30 hover:border-purple-400/60 transition-all duration-300 glow-cyan hover:glow-purple relative overflow-hidden group"
+                className="bg-slate-800/50 border-gray-700 hover:border-blue-500/40 transition-colors"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/5 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <CardContent className="p-3 sm:p-4 relative">
+                <CardContent className="p-3 sm:p-4">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="space-y-2 flex-1 min-w-0">
                       <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                        <div className="relative">
-                          <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-cyan-400 flex-shrink-0 animate-pulse" />
-                          <div className="absolute inset-0 bg-cyan-400/20 rounded-full animate-ping"></div>
-                        </div>
+                        <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500 flex-shrink-0" />
                         <div className="flex flex-col min-w-0 flex-1">
-                          <span className="text-cyan-300 font-mono text-xs sm:text-sm truncate tracking-wide">
-                            {game.game_name || "UNNAMED_MISSION"}
+                          <span className="text-white font-medium text-xs sm:text-sm truncate">
+                            {game.game_name || "Unnamed Game"}
                           </span>
-                          <span className="text-gray-400 text-xs truncate font-mono">
-                            Agent: {game.white_player?.username || "UNKNOWN"}
+                          <span className="text-gray-400 text-xs truncate">
+                            Host: {game.white_player?.username || "Anonymous"}
                             {game.black_player && (
-                              <> ⚔️ {game.black_player?.username}</>
+                              <> vs {game.black_player?.username}</>
                             )}
                           </span>
                         </div>
                         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                           <Badge
                             variant="secondary"
-                            className="bg-slate-800 text-cyan-400 text-xs px-1 sm:px-2 border border-cyan-400/30 font-mono"
+                            className="bg-gray-700 text-gray-300 text-xs px-1 sm:px-2"
                           >
-                            ⚡{game.white_player?.chess_rating || 1200}
+                            {game.white_player?.chess_rating || 1200}
                           </Badge>
                           {getGameStatusBadge(game)}
                         </div>
