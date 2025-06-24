@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -209,82 +208,89 @@ export const FriendsSystem = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Check user's wallet balance first
-    const { data: wallet } = await supabase
-      .from('wallets')
-      .select('balance')
-      .eq('user_id', user.id)
-      .single();
+    try {
+      // Check user's wallet balance first
+      const { data: wallet } = await supabase
+        .from('wallets')
+        .select('balance')
+        .eq('user_id', user.id)
+        .single();
 
-    if (!wallet || wallet.balance < amount) {
-      toast.error('Insufficient balance for this challenge');
-      return;
-    }
+      if (!wallet || wallet.balance < amount) {
+        toast.error('Insufficient balance for this challenge');
+        return;
+      }
 
-    // Deduct the entry fee from user's wallet
-    const { error: walletError } = await supabase
-      .from('wallets')
-      .update({
-        balance: wallet.balance - amount,
-        updated_at: new Date().toISOString()
-      })
-      .eq('user_id', user.id);
-
-    if (walletError) {
-      toast.error('Failed to deduct entry fee');
-      return;
-    }
-
-    // Create transaction record
-    const { error: transactionError } = await supabase
-      .from('transactions')
-      .insert({
-        user_id: user.id,
-        transaction_type: 'game_entry',
-        amount: -amount,
-        status: 'completed',
-        description: `Entry fee for ₹${amount} challenge`
+      // Deduct the entry fee from user's wallet
+      const { error: walletError } = await supabase.rpc('increment_decimal', {
+        table_name: 'wallets',
+        row_id: user.id,
+        column_name: 'balance',
+        increment_value: -amount
       });
 
-    if (transactionError) {
-      console.error('Transaction record error:', transactionError);
-    }
+      if (walletError) {
+        console.error('Wallet update error:', walletError);
+        toast.error('Failed to deduct entry fee');
+        return;
+      }
 
-    // Create a new chess game with is_friend_challenge flag
-    const { data: gameData, error: gameError } = await supabase
-      .from('chess_games')
-      .insert({
-        white_player_id: user.id,
-        entry_fee: amount,
-        prize_amount: amount * 2,
-        game_status: 'waiting',
-        game_name: `Challenge - ₹${amount}`,
-        is_friend_challenge: true
-      })
-      .select()
-      .single();
+      // Create transaction record
+      const { error: transactionError } = await supabase
+        .from('transactions')
+        .insert({
+          user_id: user.id,
+          transaction_type: 'game_entry',
+          amount: amount,
+          status: 'completed',
+          description: `Entry fee for ₹${amount} challenge`
+        });
 
-    if (gameError) {
+      if (transactionError) {
+        console.error('Transaction record error:', transactionError);
+      }
+
+      // Create a new chess game with is_friend_challenge flag
+      const { data: gameData, error: gameError } = await supabase
+        .from('chess_games')
+        .insert({
+          white_player_id: user.id,
+          entry_fee: amount,
+          prize_amount: amount * 2,
+          game_status: 'waiting',
+          game_name: `Challenge - ₹${amount}`,
+          is_friend_challenge: true
+        })
+        .select()
+        .single();
+
+      if (gameError) {
+        console.error('Game creation error:', gameError);
+        toast.error('Failed to create challenge');
+        return;
+      }
+
+      // Create the game invitation
+      const { error } = await supabase
+        .from('game_invitations')
+        .insert({
+          from_user_id: user.id,
+          to_user_id: friendId,
+          game_id: gameData.id,
+          entry_fee: amount,
+          status: 'pending'
+        });
+
+      if (error) {
+        console.error('Invitation creation error:', error);
+        toast.error('Failed to send challenge');
+      } else {
+        toast.success(`₹${amount} challenge sent!`);
+        fetchSentChallenges();
+      }
+    } catch (error) {
+      console.error('Challenge creation error:', error);
       toast.error('Failed to create challenge');
-      return;
-    }
-
-    // Create the game invitation
-    const { error } = await supabase
-      .from('game_invitations')
-      .insert({
-        from_user_id: user.id,
-        to_user_id: friendId,
-        game_id: gameData.id,
-        entry_fee: amount,
-        status: 'pending'
-      });
-
-    if (error) {
-      toast.error('Failed to send challenge');
-    } else {
-      toast.success(`₹${amount} challenge sent!`);
-      fetchSentChallenges();
     }
   };
 
@@ -391,7 +397,7 @@ export const FriendsSystem = () => {
   );
 
   return (
-    <div className="space-y-4 p-2 bg-gradient-to-br from-black via-purple-900 to-black min-h-screen">
+    <div className="space-y-4 p-2 bg-gradient-to-br from-black via-gray-900 to-black min-h-screen">
       <ChallengePopup
         open={challengePopup.open}
         onOpenChange={(open) => setChallengePopup(prev => ({ ...prev, open }))}
@@ -401,19 +407,19 @@ export const FriendsSystem = () => {
 
       {/* Received Challenges */}
       {receivedChallenges.length > 0 && (
-        <Card className="bg-gradient-to-br from-yellow-900/20 to-yellow-800/20 border-2 border-yellow-400 shadow-2xl rounded-xl">
+        <Card className="bg-gradient-to-br from-purple-900/30 to-purple-800/30 border-2 border-purple-400/50 shadow-2xl rounded-xl">
           <CardHeader>
-            <CardTitle className="text-yellow-300 flex items-center gap-3 text-lg sm:text-xl font-bold">
+            <CardTitle className="text-purple-300 flex items-center gap-3 text-lg sm:text-xl font-bold">
               <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
-              Incoming Challenges ({receivedChallenges.length})
+              🏆 Incoming Challenges ({receivedChallenges.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {receivedChallenges.map((challenge) => (
-              <div key={challenge.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white/10 rounded-lg border border-yellow-300/30 space-y-2 sm:space-y-0">
+              <div key={challenge.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white/10 rounded-lg border border-purple-300/30 space-y-2 sm:space-y-0">
                 <div className="flex-1">
                   <p className="text-white font-bold text-base sm:text-lg">{challenge.from_user?.username}</p>
-                  <p className="text-yellow-200 text-sm sm:text-base font-medium">Challenge: ₹{challenge.entry_fee}</p>
+                  <p className="text-purple-200 text-sm sm:text-base font-medium">💰 Challenge: ₹{challenge.entry_fee}</p>
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto">
                   <Button
@@ -441,21 +447,21 @@ export const FriendsSystem = () => {
 
       {/* Sent Challenges */}
       {sentChallenges.length > 0 && (
-        <Card className="bg-gradient-to-br from-blue-900/20 to-blue-800/20 border-2 border-blue-400 shadow-2xl rounded-xl">
+        <Card className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/30 border-2 border-yellow-400/50 shadow-2xl rounded-xl">
           <CardHeader>
-            <CardTitle className="text-blue-300 flex items-center gap-3 text-lg sm:text-xl font-bold">
-              <Gamepad2 className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
-              Sent Challenges ({sentChallenges.length})
+            <CardTitle className="text-yellow-300 flex items-center gap-3 text-lg sm:text-xl font-bold">
+              <Gamepad2 className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
+              ⏳ Sent Challenges ({sentChallenges.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {sentChallenges.map((challenge) => (
-              <div key={challenge.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white/10 rounded-lg border border-blue-300/30 space-y-2 sm:space-y-0">
+              <div key={challenge.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white/10 rounded-lg border border-yellow-300/30 space-y-2 sm:space-y-0">
                 <div className="flex-1">
                   <p className="text-white font-bold text-base sm:text-lg">{challenge.to_user?.username}</p>
-                  <p className="text-blue-200 text-sm sm:text-base font-medium flex items-center gap-1">
+                  <p className="text-yellow-200 text-sm sm:text-base font-medium flex items-center gap-1">
                     <Clock className="h-4 w-4" />
-                    Challenge: ₹{challenge.entry_fee}
+                    💰 Challenge: ₹{challenge.entry_fee}
                   </p>
                 </div>
                 <Button
@@ -473,11 +479,11 @@ export const FriendsSystem = () => {
       )}
 
       {/* Search Users */}
-      <Card className="bg-gradient-to-br from-white/5 to-white/10 border-2 border-white/20 shadow-2xl rounded-xl">
+      <Card className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 border-2 border-white/20 shadow-2xl rounded-xl">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-3 text-lg sm:text-xl font-bold">
             <UserPlus className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
-            Find Players
+            🔍 Find Players
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -494,11 +500,11 @@ export const FriendsSystem = () => {
                 <div className="flex-1">
                   <p className="text-white font-bold text-base sm:text-lg flex items-center gap-2">
                     <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" />
-                    {user.username}
+                    👤 {user.username}
                   </p>
                   <p className="text-gray-300 text-sm sm:text-base font-medium flex items-center gap-2">
                     <Star className="h-4 w-4" />
-                    Rating: {user.chess_rating}
+                    ⭐ Rating: {user.chess_rating}
                   </p>
                 </div>
                 <Button
@@ -506,7 +512,7 @@ export const FriendsSystem = () => {
                   size="sm"
                   className="bg-purple-600 hover:bg-purple-700 font-bold text-sm sm:text-base px-4 py-2 rounded-lg w-full sm:w-auto"
                 >
-                  Add Friend
+                  ➕ Add Friend
                 </Button>
               </div>
             ))}
@@ -516,19 +522,19 @@ export const FriendsSystem = () => {
 
       {/* Pending Requests */}
       {pendingRequests.length > 0 && (
-        <Card className="bg-gradient-to-br from-orange-900/20 to-orange-800/20 border-2 border-orange-400 shadow-2xl rounded-xl">
+        <Card className="bg-gradient-to-br from-blue-900/30 to-blue-800/30 border-2 border-blue-400/50 shadow-2xl rounded-xl">
           <CardHeader>
-            <CardTitle className="text-orange-300 flex items-center gap-3 text-lg sm:text-xl font-bold">
-              <Users className="h-5 w-5 sm:h-6 sm:w-6 text-orange-400" />
-              Friend Requests ({pendingRequests.length})
+            <CardTitle className="text-blue-300 flex items-center gap-3 text-lg sm:text-xl font-bold">
+              <Users className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
+              📨 Friend Requests ({pendingRequests.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {pendingRequests.map((request) => (
-              <div key={request.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white/10 rounded-lg border border-orange-300/30 space-y-2 sm:space-y-0">
+              <div key={request.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white/10 rounded-lg border border-blue-300/30 space-y-2 sm:space-y-0">
                 <div className="flex-1">
-                  <p className="text-white font-bold text-base sm:text-lg">{request.requester?.username}</p>
-                  <p className="text-orange-200 text-sm sm:text-base font-medium">Rating: {request.requester?.chess_rating}</p>
+                  <p className="text-white font-bold text-base sm:text-lg">👤 {request.requester?.username}</p>
+                  <p className="text-blue-200 text-sm sm:text-base font-medium">⭐ Rating: {request.requester?.chess_rating}</p>
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto">
                   <Button
@@ -553,32 +559,32 @@ export const FriendsSystem = () => {
       )}
 
       {/* Friends List */}
-      <Card className="bg-gradient-to-br from-green-900/20 to-green-800/20 border-2 border-green-400 shadow-2xl rounded-xl">
+      <Card className="bg-gradient-to-br from-green-900/30 to-green-800/30 border-2 border-green-400/50 shadow-2xl rounded-xl">
         <CardHeader>
           <CardTitle className="text-green-300 flex items-center gap-3 text-lg sm:text-xl font-bold">
             <Users className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
-            My Friends ({friends.filter(f => f.isOnline).length})
+            👥 Online Friends ({friends.filter(f => f.isOnline).length})
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {friends.filter(f => f.isOnline).length === 0 ? (
-            <p className="text-gray-300 text-center py-8 text-base sm:text-lg font-medium">No online friends. Send some friend requests!</p>
+            <p className="text-gray-300 text-center py-8 text-base sm:text-lg font-medium">😴 No online friends. Send some friend requests!</p>
           ) : (
             friends.filter(f => f.isOnline).map((friendship) => (
               <div key={friendship.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white/10 rounded-lg border border-green-300/30 hover:bg-white/15 transition-colors space-y-2 sm:space-y-0">
                 <div className="flex-1">
                   <p className="text-white font-bold text-base sm:text-lg flex items-center gap-2">
                     <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" />
-                    {friendship.friend?.username}
+                    👤 {friendship.friend?.username}
                   </p>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-sm sm:text-base text-gray-300 font-medium">
                     <span className="flex items-center gap-1">
                       <Star className="h-4 w-4" />
-                      Rating: {friendship.friend?.chess_rating}
+                      ⭐ Rating: {friendship.friend?.chess_rating}
                     </span>
-                    <span>Games: {friendship.friend?.games_played}</span>
+                    <span>🏆 Games: {friendship.friend?.games_played}</span>
                     <Badge className="bg-green-500 text-white font-bold border border-green-600">
-                      Online
+                      🟢 Online
                     </Badge>
                   </div>
                 </div>
@@ -588,7 +594,7 @@ export const FriendsSystem = () => {
                   className="bg-purple-600 hover:bg-purple-700 font-bold text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded-lg flex items-center gap-2 w-full sm:w-auto"
                 >
                   <Gamepad2 className="h-4 w-4" />
-                  Challenge
+                  ⚔️ Challenge
                 </Button>
               </div>
             ))

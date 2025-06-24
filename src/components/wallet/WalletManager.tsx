@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { CreditCard, ArrowUpRight, ArrowDownLeft, History, DollarSign, RefreshCw } from 'lucide-react';
+import { WithdrawalForm } from './WithdrawalForm';
 import type { Tables } from '@/integrations/supabase/types';
 
 export const WalletManager = () => {
@@ -15,6 +15,10 @@ export const WalletManager = () => {
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [withdrawalForm, setWithdrawalForm] = useState<{open: boolean, amount: number}>({
+    open: false,
+    amount: 0
+  });
 
   useEffect(() => {
     fetchWallet();
@@ -111,47 +115,72 @@ export const WalletManager = () => {
     setLoading(true);
     
     try {
-      // Create Razorpay order (this would normally be done via your backend)
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      // Initialize Razorpay
+      const options = {
+        key: 'rzp_test_1234567890', // Replace with your Razorpay key
+        amount: depositAmount * 100, // Amount in paise
+        currency: 'INR',
+        name: 'Chess Game',
+        description: `Deposit ₹${depositAmount} to wallet`,
+        handler: async function (response: any) {
+          try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
 
-      // For demo purposes, we'll simulate a successful payment
-      // In production, integrate with Razorpay properly
-      const { error } = await supabase
-        .from('transactions')
-        .insert({
-          user_id: user.id,
-          transaction_type: 'deposit',
-          amount: depositAmount,
-          status: 'completed',
-          description: `Deposit of ₹${depositAmount}`,
-        });
+            // Create transaction record
+            const { error } = await supabase
+              .from('transactions')
+              .insert({
+                user_id: user.id,
+                transaction_type: 'deposit',
+                amount: depositAmount,
+                status: 'completed',
+                description: `Razorpay deposit of ₹${depositAmount}`,
+                razorpay_payment_id: response.razorpay_payment_id
+              });
 
-      if (error) throw error;
+            if (error) throw error;
 
-      // Update wallet balance using the new function
-      const { error: walletError } = await supabase.rpc('increment_decimal', {
-        table_name: 'wallets',
-        row_id: user.id,
-        column_name: 'balance',
-        increment_value: depositAmount
-      });
+            // Update wallet balance
+            const { error: walletError } = await supabase.rpc('increment_decimal', {
+              table_name: 'wallets',
+              row_id: user.id,
+              column_name: 'balance',
+              increment_value: depositAmount
+            });
 
-      if (walletError) throw walletError;
+            if (walletError) throw walletError;
 
-      toast.success('Deposit successful!');
-      setAmount('');
-      fetchWallet();
-      fetchTransactions();
+            toast.success('💰 Deposit successful!');
+            setAmount('');
+            fetchWallet();
+            fetchTransactions();
+          } catch (error) {
+            console.error('Payment confirmation error:', error);
+            toast.error('Payment confirmation failed');
+          }
+        },
+        prefill: {
+          name: 'Player',
+          email: 'player@example.com'
+        },
+        theme: {
+          color: '#F59E0B'
+        }
+      };
+
+      // @ts-ignore
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (error) {
-      console.error('Deposit error:', error);
-      toast.error('Deposit failed');
+      console.error('Razorpay error:', error);
+      toast.error('Payment initialization failed');
     }
 
     setLoading(false);
   };
 
-  const handleWithdraw = async () => {
+  const handleWithdrawClick = () => {
     const withdrawAmount = parseFloat(amount);
     if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
       toast.error('Please enter a valid amount');
@@ -163,8 +192,13 @@ export const WalletManager = () => {
       return;
     }
 
-    setLoading(true);
+    setWithdrawalForm({
+      open: true,
+      amount: withdrawAmount
+    });
+  };
 
+  const handleWithdrawalSubmit = async (withdrawalData: any) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -174,33 +208,32 @@ export const WalletManager = () => {
         .insert({
           user_id: user.id,
           transaction_type: 'withdrawal',
-          amount: withdrawAmount,
+          amount: withdrawalData.finalAmount,
           status: 'pending',
-          description: `Withdrawal of ₹${withdrawAmount}`,
+          description: `Withdrawal to ${withdrawalData.accountType === 'bank' ? 'Bank Account' : 'UPI'}: ${withdrawalData.accountType === 'bank' ? withdrawalData.accountNumber : withdrawalData.upiId}`,
         });
 
       if (error) throw error;
 
-      // Update wallet balance using the new function (negative amount for withdrawal)
+      // Update wallet balance
       const { error: walletError } = await supabase.rpc('increment_decimal', {
         table_name: 'wallets',
         row_id: user.id,
         column_name: 'balance',
-        increment_value: -withdrawAmount
+        increment_value: -withdrawalData.originalAmount
       });
 
       if (walletError) throw walletError;
 
-      toast.success('Withdrawal request submitted!');
+      toast.success('🏦 Withdrawal request submitted!');
       setAmount('');
+      setWithdrawalForm({ open: false, amount: 0 });
       fetchWallet();
       fetchTransactions();
     } catch (error) {
       console.error('Withdrawal error:', error);
       toast.error('Withdrawal failed');
     }
-
-    setLoading(false);
   };
 
   const getTransactionIcon = (type: string) => {
@@ -239,13 +272,20 @@ export const WalletManager = () => {
 
   return (
     <div className="space-y-6">
+      <WithdrawalForm
+        open={withdrawalForm.open}
+        onOpenChange={(open) => setWithdrawalForm(prev => ({ ...prev, open }))}
+        amount={withdrawalForm.amount}
+        onWithdraw={handleWithdrawalSubmit}
+      />
+
       {/* Wallet Balance */}
       <Card className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/30">
         <CardHeader>
           <CardTitle className="text-white flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CreditCard className="h-5 w-5" />
-              Wallet Balance
+              💰 Wallet Balance
             </div>
             <Button
               onClick={handleRefresh}
@@ -264,7 +304,7 @@ export const WalletManager = () => {
           </div>
           {wallet?.locked_balance && wallet.locked_balance > 0 && (
             <p className="text-sm text-gray-400 mt-1">
-              Locked: ₹{wallet.locked_balance.toFixed(2)}
+              🔒 Locked: ₹{wallet.locked_balance.toFixed(2)}
             </p>
           )}
         </CardContent>
@@ -273,7 +313,7 @@ export const WalletManager = () => {
       {/* Deposit/Withdraw */}
       <Card className="bg-black/50 border-yellow-500/20">
         <CardHeader>
-          <CardTitle className="text-white">Add or Withdraw Funds</CardTitle>
+          <CardTitle className="text-white">💳 Add or Withdraw Funds</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <Input
@@ -292,16 +332,16 @@ export const WalletManager = () => {
               className="flex-1 bg-green-600 hover:bg-green-700"
             >
               <ArrowDownLeft className="h-4 w-4 mr-2" />
-              Deposit
+              💰 Deposit (Razorpay)
             </Button>
             <Button
-              onClick={handleWithdraw}
+              onClick={handleWithdrawClick}
               disabled={loading}
               variant="outline"
               className="flex-1 border-red-500/50 text-red-400 hover:bg-red-500/10"
             >
               <ArrowUpRight className="h-4 w-4 mr-2" />
-              Withdraw
+              🏦 Withdraw (-20%)
             </Button>
           </div>
         </CardContent>
@@ -312,15 +352,15 @@ export const WalletManager = () => {
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <History className="h-5 w-5" />
-            Recent Transactions
+            📊 Recent Transactions
           </CardTitle>
         </CardHeader>
         <CardContent>
           {transactions.length === 0 ? (
-            <p className="text-gray-400 text-center py-4">No transactions yet</p>
+            <p className="text-gray-400 text-center py-4">📭 No transactions yet</p>
           ) : (
             <div className="space-y-3">
-              {transactions.map((transaction) => (
+              {transactions.slice(0, 10).map((transaction) => (
                 <div
                   key={transaction.id}
                   className="flex items-center justify-between p-3 bg-gray-800/30 rounded-lg"
@@ -356,6 +396,9 @@ export const WalletManager = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Razorpay Script */}
+      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     </div>
   );
 };
