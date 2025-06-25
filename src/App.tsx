@@ -30,7 +30,10 @@ const App = () => {
             <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
           </div>
           <div className="space-y-4">
-            <h1 className="text-white text-4xl font-bold">Chess Arena</h1>
+            <h1 className="text-white text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              NNC GAMES
+            </h1>
+            <h2 className="text-white text-3xl font-bold">Chess Arena</h2>
             <p className="text-gray-300 text-lg">Loading...</p>
           </div>
         </div>

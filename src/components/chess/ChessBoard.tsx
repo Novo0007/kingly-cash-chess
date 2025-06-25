@@ -189,7 +189,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full px-1 sm:px-2">
-      <div className="bg-gradient-to-br from-black via-purple-900 to-black p-3 sm:p-6 rounded-xl shadow-2xl w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-4xl border-4 border-yellow-400">
+      <div className="bg-gradient-to-br from-black via-purple-900 to-black p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-2xl sm:max-w-3xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl border-4 border-yellow-400">
         <div 
           ref={boardRef} 
           className="grid grid-cols-8 gap-0 aspect-square w-full border-4 border-purple-600 rounded-lg overflow-hidden shadow-2xl"
@@ -203,7 +203,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 <div
                   key={`${displayRow}-${displayCol}`}
                   className={`
-                    aspect-square flex items-center justify-center text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold cursor-pointer
+                    aspect-square flex items-center justify-center text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold cursor-pointer
                     transition-colors duration-200 active:scale-95 relative overflow-hidden
                     ${isLightSquare(displayRow, displayCol) 
                       ? 'bg-green-100 hover:bg-green-200' 
@@ -227,9 +227,16 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                   onClick={() => handleSquareClick(displayRow, displayCol)}
                 >
                   <span 
-                    className="z-10 drop-shadow-2xl select-none"
+                    className={`z-10 drop-shadow-2xl select-none ${
+                      piece && piece.color === 'b' ? 'text-black' : 'text-white'
+                    }`}
                     style={{
-                      textShadow: piece ? '2px 2px 4px rgba(0, 0, 0, 0.8)' : 'none'
+                      textShadow: piece 
+                        ? piece.color === 'b' 
+                          ? '2px 2px 4px rgba(255, 255, 255, 0.8)' 
+                          : '2px 2px 4px rgba(0, 0, 0, 0.8)'
+                        : 'none',
+                      filter: piece && piece.color === 'b' ? 'drop-shadow(1px 1px 2px white)' : 'none'
                     }}
                   >
                     {getPieceSymbol(piece)}
@@ -240,17 +247,17 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           )}
         </div>
         
-        <div className="mt-3 sm:mt-6 text-center">
-          <div className="text-white text-base sm:text-xl font-bold bg-gradient-to-r from-black/80 to-purple-900/80 rounded-lg px-4 py-3 border-2 border-yellow-400 shadow-xl">
+        <div className="mt-4 sm:mt-8 text-center">
+          <div className="text-white text-lg sm:text-2xl font-bold bg-gradient-to-r from-black/80 to-purple-900/80 rounded-lg px-6 py-4 border-2 border-yellow-400 shadow-xl">
             Playing as {playerColor === 'white' ? '⚪ White' : '⚫ Black'}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-purple-300 mt-2 text-sm sm:text-base font-bold bg-gradient-to-r from-purple-900/60 to-purple-800/60 rounded-md px-3 py-2 inline-block border-2 border-purple-400 shadow-lg">
+            <div className="text-purple-300 mt-3 text-base sm:text-lg font-bold bg-gradient-to-r from-purple-900/60 to-purple-800/60 rounded-md px-4 py-3 inline-block border-2 border-purple-400 shadow-lg">
               Opponent's turn...
             </div>
           )}
           {disabled && (
-            <div className="text-gray-300 mt-2 text-sm sm:text-base font-bold bg-gradient-to-r from-gray-900/60 to-gray-800/60 rounded-md px-3 py-2 inline-block border-2 border-gray-400 shadow-lg">
+            <div className="text-gray-300 mt-3 text-base sm:text-lg font-bold bg-gradient-to-r from-gray-900/60 to-gray-800/60 rounded-md px-4 py-3 inline-block border-2 border-gray-400 shadow-lg">
               Spectating
             </div>
           )}
