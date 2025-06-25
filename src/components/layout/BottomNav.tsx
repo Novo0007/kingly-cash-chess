@@ -25,7 +25,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentView === item.id || 
-            (item.id === "games" && (currentView === "lobby" || currentView === "game" || currentView === "dots-and-boxes"));
+            (item.id === "games" && (
+              currentView === "lobby" || 
+              currentView === "game" || 
+              currentView === "dots-and-boxes" || 
+              currentView === "dots-and-boxes-lobby" || 
+              currentView === "online-dots-and-boxes"
+            ));
 
           return (
             <Button

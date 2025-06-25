@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -156,7 +155,6 @@ export const DotsAndBoxes: React.FC<DotsAndBoxesProps> = ({
         </div>
 
         <div className="grid grid-cols-9 gap-1 bg-white p-4 rounded-lg">
-          {/* Render the game board */}
           {Array(9).fill(null).map((_, rowIndex) => 
             Array(9).fill(null).map((_, colIndex) => {
               const isDot = rowIndex % 2 === 0 && colIndex % 2 === 0;

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -24,10 +23,11 @@ export const FriendsSystem = () => {
   const [pendingRequests, setPendingRequests] = useState<(Friendship & { requester?: Profile })[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentUser, setCurrentUser] = useState<string | null>(null);
-  const [challengePopup, setChallengePopup] = useState<{open: boolean, friendId: string, friendName: string}>({
+  const [challengePopup, setChallengePopup] = useState<{open: boolean, friendId: string, friendName: string, gameType: 'chess' | 'dots-and-boxes'}>({
     open: false,
     friendId: '',
-    friendName: ''
+    friendName: '',
+    gameType: 'chess'
   });
   const [sentChallenges, setSentChallenges] = useState<any[]>([]);
   const [receivedChallenges, setReceivedChallenges] = useState<any[]>([]);
@@ -131,7 +131,8 @@ export const FriendsSystem = () => {
       .select(`
         *,
         to_user:profiles!game_invitations_to_user_id_fkey(*),
-        chess_game:chess_games(*)
+        chess_game:chess_games(*),
+        dots_game:dots_and_boxes_games(*)
       `)
       .eq('from_user_id', user.id)
       .eq('status', 'pending');
@@ -148,7 +149,8 @@ export const FriendsSystem = () => {
       .select(`
         *,
         from_user:profiles!game_invitations_from_user_id_fkey(*),
-        chess_game:chess_games(*)
+        chess_game:chess_games(*),
+        dots_game:dots_and_boxes_games(*)
       `)
       .eq('to_user_id', user.id)
       .eq('status', 'pending');
@@ -205,12 +207,12 @@ export const FriendsSystem = () => {
     }
   };
 
-  const createGameInvitation = async (friendId: string, amount: number) => {
+  const createGameInvitation = async (friendId: string, amount: number, gameType: 'chess' | 'dots-and-boxes' = 'chess') => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
     try {
-      console.log('Creating challenge for friend:', friendId, 'amount:', amount);
+      console.log('Creating challenge for friend:', friendId, 'amount:', amount, 'gameType:', gameType);
 
       // Check user's wallet balance first
       const { data: wallet } = await supabase
@@ -246,31 +248,61 @@ export const FriendsSystem = () => {
           transaction_type: 'game_entry',
           amount: amount,
           status: 'completed',
-          description: `Entry fee for ₹${amount} challenge`
+          description: `Entry fee for ₹${amount} ${gameType} challenge`
         });
 
       if (transactionError) {
         console.error('Transaction record error:', transactionError);
       }
 
-      // Create a new chess game with is_friend_challenge flag
-      const { data: gameData, error: gameError } = await supabase
-        .from('chess_games')
-        .insert({
-          white_player_id: user.id,
-          entry_fee: amount,
-          prize_amount: amount * 2,
-          game_status: 'waiting',
-          game_name: `Challenge - ₹${amount}`,
-          is_friend_challenge: true
-        })
-        .select()
-        .single();
+      let gameData;
 
-      if (gameError) {
-        console.error('Game creation error:', gameError);
-        toast.error('Failed to create challenge');
-        return;
+      if (gameType === 'chess') {
+        // Create a new chess game with is_friend_challenge flag
+        const { data: chessGameData, error: gameError } = await supabase
+          .from('chess_games')
+          .insert({
+            white_player_id: user.id,
+            entry_fee: amount,
+            prize_amount: amount * 2,
+            game_status: 'waiting',
+            game_name: `Challenge - ₹${amount}`,
+            is_friend_challenge: true
+          })
+          .select()
+          .single();
+
+        if (gameError) {
+          console.error('Chess game creation error:', gameError);
+          toast.error('Failed to create challenge');
+          return;
+        }
+        gameData = chessGameData;
+      } else {
+        // Create a new dots and boxes game with is_friend_challenge flag
+        const { data: dotsGameData, error: gameError } = await supabase
+          .from('dots_and_boxes_games')
+          .insert({
+            player1_id: user.id,
+            entry_fee: amount,
+            prize_amount: amount * 2,
+            game_status: 'waiting',
+            game_name: `Challenge - ₹${amount}`,
+            is_friend_challenge: true,
+            horizontal_lines: Array(4).fill(null).map(() => Array(5).fill(false)),
+            vertical_lines: Array(5).fill(null).map(() => Array(4).fill(false)),
+            boxes: Array(4).fill(null).map(() => Array(4).fill(null)),
+            scores: { player1: 0, player2: 0 }
+          })
+          .select()
+          .single();
+
+        if (gameError) {
+          console.error('Dots game creation error:', gameError);
+          toast.error('Failed to create challenge');
+          return;
+        }
+        gameData = dotsGameData;
       }
 
       console.log('Game created successfully:', gameData);
@@ -283,6 +315,7 @@ export const FriendsSystem = () => {
           to_user_id: friendId,
           game_id: gameData.id,
           entry_fee: amount,
+          game_type: gameType,
           status: 'pending'
         });
 
@@ -291,7 +324,7 @@ export const FriendsSystem = () => {
         toast.error('Failed to send challenge');
       } else {
         console.log('Challenge sent successfully');
-        toast.success(`₹${amount} challenge sent!`);
+        toast.success(`₹${amount} ${gameType} challenge sent!`);
         fetchSentChallenges();
       }
     } catch (error) {
@@ -300,7 +333,7 @@ export const FriendsSystem = () => {
     }
   };
 
-  const cancelChallenge = async (invitationId: string, gameId: string) => {
+  const cancelChallenge = async (invitationId: string, gameId: string, gameType: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
@@ -331,9 +364,10 @@ export const FriendsSystem = () => {
       .update({ status: 'cancelled' })
       .eq('id', invitationId);
 
-    // Cancel the game
+    // Cancel the game in the appropriate table
+    const gameTable = gameType === 'chess' ? 'chess_games' : 'dots_and_boxes_games';
     const { error: gameError } = await supabase
-      .from('chess_games')
+      .from(gameTable)
       .update({ game_status: 'cancelled' })
       .eq('id', gameId);
 
@@ -345,7 +379,7 @@ export const FriendsSystem = () => {
     }
   };
 
-  const acceptChallenge = async (invitationId: string, gameId: string, amount: number) => {
+  const acceptChallenge = async (invitationId: string, gameId: string, amount: number, gameType: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
@@ -382,26 +416,40 @@ export const FriendsSystem = () => {
         transaction_type: 'game_entry',
         amount: amount,
         status: 'completed',
-        description: `Entry fee for ₹${amount} challenge acceptance`
+        description: `Entry fee for ₹${amount} ${gameType} challenge acceptance`
       });
 
     if (transactionError) {
       console.error('Transaction record error:', transactionError);
     }
 
-    // Update invitation and game
+    // Update invitation
     const { error: invitationError } = await supabase
       .from('game_invitations')
       .update({ status: 'accepted' })
       .eq('id', invitationId);
 
-    const { error: gameError } = await supabase
-      .from('chess_games')
-      .update({ 
-        black_player_id: user.id,
-        game_status: 'active'
-      })
-      .eq('id', gameId);
+    // Update game in the appropriate table
+    let gameError;
+    if (gameType === 'chess') {
+      const { error } = await supabase
+        .from('chess_games')
+        .update({ 
+          black_player_id: user.id,
+          game_status: 'active'
+        })
+        .eq('id', gameId);
+      gameError = error;
+    } else {
+      const { error } = await supabase
+        .from('dots_and_boxes_games')
+        .update({ 
+          player2_id: user.id,
+          game_status: 'active'
+        })
+        .eq('id', gameId);
+      gameError = error;
+    }
 
     if (invitationError || gameError) {
       toast.error('Failed to accept challenge');
@@ -411,7 +459,7 @@ export const FriendsSystem = () => {
     }
   };
 
-  const declineChallenge = async (invitationId: string, gameId: string) => {
+  const declineChallenge = async (invitationId: string, gameId: string, gameType: string) => {
     // Get challenge details for refund
     const { data: invitation } = await supabase
       .from('game_invitations')
@@ -439,9 +487,10 @@ export const FriendsSystem = () => {
       .update({ status: 'declined' })
       .eq('id', invitationId);
 
-    // Cancel the game
+    // Cancel the game in the appropriate table
+    const gameTable = gameType === 'chess' ? 'chess_games' : 'dots_and_boxes_games';
     const { error: gameError } = await supabase
-      .from('chess_games')
+      .from(gameTable)
       .update({ game_status: 'cancelled' })
       .eq('id', gameId);
 
@@ -453,11 +502,12 @@ export const FriendsSystem = () => {
     }
   };
 
-  const openChallengePopup = (friendId: string, friendName: string) => {
+  const openChallengePopup = (friendId: string, friendName: string, gameType: 'chess' | 'dots-and-boxes' = 'chess') => {
     setChallengePopup({
       open: true,
       friendId,
-      friendName
+      friendName,
+      gameType
     });
   };
 
@@ -471,7 +521,7 @@ export const FriendsSystem = () => {
         open={challengePopup.open}
         onOpenChange={(open) => setChallengePopup(prev => ({ ...prev, open }))}
         friendName={challengePopup.friendName}
-        onChallenge={(amount) => createGameInvitation(challengePopup.friendId, amount)}
+        onChallenge={(amount) => createGameInvitation(challengePopup.friendId, amount, challengePopup.gameType)}
       />
 
       {/* Received Challenges */}
@@ -488,11 +538,11 @@ export const FriendsSystem = () => {
               <div key={challenge.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-emerald-300/30 space-y-3 sm:space-y-0">
                 <div className="flex-1">
                   <p className="text-white font-bold text-lg">{challenge.from_user?.username}</p>
-                  <p className="text-emerald-200 text-base font-medium">💰 Challenge: ₹{challenge.entry_fee}</p>
+                  <p className="text-emerald-200 text-base font-medium">💰 {challenge.game_type || 'chess'} Challenge: ₹{challenge.entry_fee}</p>
                 </div>
                 <div className="flex gap-3 w-full sm:w-auto">
                   <Button
-                    onClick={() => acceptChallenge(challenge.id, challenge.game_id, challenge.entry_fee)}
+                    onClick={() => acceptChallenge(challenge.id, challenge.game_id, challenge.entry_fee, challenge.game_type || 'chess')}
                     size="sm"
                     className="bg-green-600 hover:bg-green-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
                   >
@@ -500,7 +550,7 @@ export const FriendsSystem = () => {
                     Accept
                   </Button>
                   <Button
-                    onClick={() => declineChallenge(challenge.id, challenge.game_id)}
+                    onClick={() => declineChallenge(challenge.id, challenge.game_id, challenge.game_type || 'chess')}
                     size="sm"
                     className="bg-red-600 hover:bg-red-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
                   >
@@ -530,11 +580,11 @@ export const FriendsSystem = () => {
                   <p className="text-white font-bold text-lg">{challenge.to_user?.username}</p>
                   <p className="text-amber-200 text-base font-medium flex items-center gap-2">
                     <Clock className="h-4 w-4" />
-                    💰 Challenge: ₹{challenge.entry_fee}
+                    💰 {challenge.game_type || 'chess'} Challenge: ₹{challenge.entry_fee}
                   </p>
                 </div>
                 <Button
-                  onClick={() => cancelChallenge(challenge.id, challenge.game_id)}
+                  onClick={() => cancelChallenge(challenge.id, challenge.game_id, challenge.game_type || 'chess')}
                   size="sm"
                   className="bg-red-600 hover:bg-red-700 font-bold px-4 py-2 rounded-lg w-full sm:w-auto"
                 >
@@ -657,14 +707,24 @@ export const FriendsSystem = () => {
                     </Badge>
                   </div>
                 </div>
-                <Button
-                  onClick={() => openChallengePopup(friendship.friend?.id || '', friendship.friend?.username || '')}
-                  size="sm"
-                  className="bg-purple-600 hover:bg-purple-700 font-bold text-base px-6 py-3 rounded-lg flex items-center gap-2 w-full sm:w-auto"
-                >
-                  <Gamepad2 className="h-4 w-4" />
-                  ⚔️ Challenge
-                </Button>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <Button
+                    onClick={() => openChallengePopup(friendship.friend?.id || '', friendship.friend?.username || '', 'chess')}
+                    size="sm"
+                    className="bg-purple-600 hover:bg-purple-700 font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-1 flex-1 sm:flex-none"
+                  >
+                    <Gamepad2 className="h-3 w-3" />
+                    Chess
+                  </Button>
+                  <Button
+                    onClick={() => openChallengePopup(friendship.friend?.id || '', friendship.friend?.username || '', 'dots-and-boxes')}
+                    size="sm"
+                    className="bg-blue-600 hover:bg-blue-700 font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-1 flex-1 sm:flex-none"
+                  >
+                    <Gamepad2 className="h-3 w-3" />
+                    D&B
+                  </Button>
+                </div>
               </div>
             ))
           )}

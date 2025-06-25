@@ -72,6 +72,104 @@ export type Database = {
         }
         Relationships: []
       }
+      dots_and_boxes_games: {
+        Row: {
+          boxes: Json
+          created_at: string
+          current_player: string
+          entry_fee: number
+          game_name: string | null
+          game_status: string
+          horizontal_lines: Json
+          id: string
+          is_friend_challenge: boolean | null
+          player1_id: string
+          player2_id: string | null
+          prize_amount: number
+          scores: Json
+          updated_at: string
+          vertical_lines: Json
+          winner_id: string | null
+        }
+        Insert: {
+          boxes?: Json
+          created_at?: string
+          current_player?: string
+          entry_fee?: number
+          game_name?: string | null
+          game_status?: string
+          horizontal_lines?: Json
+          id?: string
+          is_friend_challenge?: boolean | null
+          player1_id: string
+          player2_id?: string | null
+          prize_amount?: number
+          scores?: Json
+          updated_at?: string
+          vertical_lines?: Json
+          winner_id?: string | null
+        }
+        Update: {
+          boxes?: Json
+          created_at?: string
+          current_player?: string
+          entry_fee?: number
+          game_name?: string | null
+          game_status?: string
+          horizontal_lines?: Json
+          id?: string
+          is_friend_challenge?: boolean | null
+          player1_id?: string
+          player2_id?: string | null
+          prize_amount?: number
+          scores?: Json
+          updated_at?: string
+          vertical_lines?: Json
+          winner_id?: string | null
+        }
+        Relationships: []
+      }
+      dots_and_boxes_moves: {
+        Row: {
+          boxes_completed: number | null
+          created_at: string
+          game_id: string
+          id: string
+          move_col: number
+          move_row: number
+          move_type: string
+          player_id: string
+        }
+        Insert: {
+          boxes_completed?: number | null
+          created_at?: string
+          game_id: string
+          id?: string
+          move_col: number
+          move_row: number
+          move_type: string
+          player_id: string
+        }
+        Update: {
+          boxes_completed?: number | null
+          created_at?: string
+          game_id?: string
+          id?: string
+          move_col?: number
+          move_row?: number
+          move_type?: string
+          player_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dots_and_boxes_moves_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "dots_and_boxes_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friendships: {
         Row: {
           addressee_id: string
@@ -103,6 +201,7 @@ export type Database = {
           expires_at: string | null
           from_user_id: string
           game_id: string
+          game_type: string | null
           id: string
           status: string | null
           to_user_id: string
@@ -113,6 +212,7 @@ export type Database = {
           expires_at?: string | null
           from_user_id: string
           game_id: string
+          game_type?: string | null
           id?: string
           status?: string | null
           to_user_id: string
@@ -123,6 +223,7 @@ export type Database = {
           expires_at?: string | null
           from_user_id?: string
           game_id?: string
+          game_type?: string | null
           id?: string
           status?: string | null
           to_user_id?: string
