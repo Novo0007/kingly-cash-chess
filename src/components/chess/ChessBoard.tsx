@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Chess, Square } from 'chess.js';
 
@@ -17,15 +18,15 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   isPlayerTurn = true
 }) => {
   const [chess, setChess] = useState(new Chess(fen));
-  const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
-  const [possibleMoves, setPossibleMoves] = useState<string[]>([]);
+  const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
+  const [possibleMoves, setPossibleMoves] = useState<Square[]>([]);
   const [board, setBoard] = useState(chess.board());
-  const [lastMove, setLastMove] = useState<{from: string, to: string} | null>(null);
+  const [lastMove, setLastMove] = useState<{from: Square, to: Square} | null>(null);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
 
   // Voice synthesis function
-  const speakMove = (from: string, to: string, piece?: string) => {
+  const speakMove = (from: Square, to: Square, piece?: string) => {
     if (!voiceEnabled || !('speechSynthesis' in window)) return;
     
     try {
@@ -81,8 +82,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       if (chess.fen() !== fen && board) {
         // Find the move that was made
         const oldBoard = chess.board();
-        let moveFrom = '';
-        let moveTo = '';
+        let moveFrom: Square | null = null;
+        let moveTo: Square | null = null;
         let movedPiece = '';
         
         // Compare boards to find the move
@@ -175,7 +176,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         if (piece && ((playerColor === 'white' && piece.color === 'w') || (playerColor === 'black' && piece.color === 'b'))) {
           setSelectedSquare(square);
           const moves = chess.moves({ square, verbose: true });
-          setPossibleMoves(moves.map(move => move.to));
+          setPossibleMoves(moves.map(move => move.to as Square));
         } else {
           setSelectedSquare(null);
           setPossibleMoves([]);
@@ -193,7 +194,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         if (canSelectPiece) {
           setSelectedSquare(square);
           const moves = chess.moves({ square, verbose: true });
-          setPossibleMoves(moves.map(move => move.to));
+          setPossibleMoves(moves.map(move => move.to as Square));
         }
       }
     }
@@ -219,8 +220,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center w-full px-2 sm:px-4">
-      <div className="bg-gradient-to-br from-black via-purple-900 to-black p-3 sm:p-6 md:p-8 rounded-xl shadow-2xl w-full max-w-sm sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl border-4 border-yellow-400">
+    <div className="flex flex-col items-center w-full px-1 sm:px-2 md:px-4">
+      <div className="bg-gradient-to-br from-black via-purple-900 to-black p-2 sm:p-4 md:p-6 lg:p-8 rounded-xl shadow-2xl w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-4xl 2xl:max-w-6xl border-4 border-yellow-400">
         <div 
           ref={boardRef} 
           className="grid grid-cols-8 gap-0 aspect-square w-full border-4 border-purple-600 rounded-lg overflow-hidden shadow-2xl"
@@ -235,7 +236,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                   key={`${displayRow}-${displayCol}`}
                   className={`
                     aspect-square flex items-center justify-center 
-                    text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl 
+                    text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl
                     font-bold cursor-pointer transition-all duration-200 active:scale-95 
                     relative overflow-hidden hover:scale-105
                     ${isLightSquare(displayRow, displayCol) 
@@ -266,10 +267,10 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     style={{
                       textShadow: piece 
                         ? piece.color === 'b' 
-                          ? '3px 3px 6px rgba(255, 255, 255, 0.9), 1px 1px 2px rgba(255, 255, 255, 0.7)' 
-                          : '3px 3px 6px rgba(0, 0, 0, 0.9), 1px 1px 2px rgba(0, 0, 0, 0.7)'
+                          ? '2px 2px 4px rgba(255, 255, 255, 0.9), 1px 1px 2px rgba(255, 255, 255, 0.7)' 
+                          : '2px 2px 4px rgba(0, 0, 0, 0.9), 1px 1px 2px rgba(0, 0, 0, 0.7)'
                         : 'none',
-                      filter: piece && piece.color === 'b' ? 'drop-shadow(2px 2px 4px white)' : 'none'
+                      filter: piece && piece.color === 'b' ? 'drop-shadow(1px 1px 2px white)' : 'none'
                     }}
                   >
                     {getPieceSymbol(piece)}
@@ -280,16 +281,16 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           )}
         </div>
         
-        <div className="mt-4 sm:mt-6 md:mt-8 text-center space-y-3">
-          <div className="text-white text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-black/80 to-purple-900/80 rounded-lg px-4 py-3 sm:px-6 sm:py-4 border-2 border-yellow-400 shadow-xl">
+        <div className="mt-3 sm:mt-4 md:mt-6 text-center space-y-2 sm:space-y-3">
+          <div className="text-white text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold bg-gradient-to-r from-black/80 to-purple-900/80 rounded-lg px-3 py-2 sm:px-4 sm:py-3 border-2 border-yellow-400 shadow-xl">
             Playing as {playerColor === 'white' ? '⚪ White' : '⚫ Black'}
           </div>
           
           {/* Voice Control Toggle */}
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-2 sm:gap-3">
             <button
               onClick={() => setVoiceEnabled(!voiceEnabled)}
-              className={`px-4 py-2 rounded-lg font-bold text-sm sm:text-base transition-all duration-200 border-2 ${
+              className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-bold text-xs sm:text-sm transition-all duration-200 border-2 ${
                 voiceEnabled 
                   ? 'bg-green-600 hover:bg-green-700 text-white border-green-400' 
                   : 'bg-gray-600 hover:bg-gray-700 text-gray-300 border-gray-400'
@@ -300,12 +301,12 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           </div>
           
           {!isPlayerTurn && !disabled && (
-            <div className="text-purple-300 text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-purple-900/60 to-purple-800/60 rounded-md px-4 py-3 inline-block border-2 border-purple-400 shadow-lg animate-pulse">
+            <div className="text-purple-300 text-xs sm:text-sm md:text-base lg:text-lg font-bold bg-gradient-to-r from-purple-900/60 to-purple-800/60 rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border-2 border-purple-400 shadow-lg animate-pulse">
               Opponent's turn...
             </div>
           )}
           {disabled && (
-            <div className="text-gray-300 text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-gray-900/60 to-gray-800/60 rounded-md px-4 py-3 inline-block border-2 border-gray-400 shadow-lg">
+            <div className="text-gray-300 text-xs sm:text-sm md:text-base lg:text-lg font-bold bg-gradient-to-r from-gray-900/60 to-gray-800/60 rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border-2 border-gray-400 shadow-lg">
               Spectating
             </div>
           )}
