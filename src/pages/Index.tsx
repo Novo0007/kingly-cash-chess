@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthPage } from "@/components/auth/AuthPage";
@@ -5,6 +6,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { GameLobby } from "@/components/chess/GameLobby";
 import { GamePage } from "@/components/chess/GamePage";
+import { GameSelection } from "@/components/games/GameSelection";
+import { DotsAndBoxes } from "@/components/games/DotsAndBoxes";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -14,8 +17,9 @@ import type { User } from "@supabase/supabase-js";
 const Index = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [currentView, setCurrentView] = useState("lobby");
+  const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
+  const [selectedGameType, setSelectedGameType] = useState<'chess' | 'dots-and-boxes' | null>(null);
 
   useEffect(() => {
     getUser();
@@ -38,6 +42,15 @@ const Index = () => {
     setLoading(false);
   };
 
+  const handleSelectGame = (gameType: 'chess' | 'dots-and-boxes') => {
+    setSelectedGameType(gameType);
+    if (gameType === 'chess') {
+      setCurrentView("lobby");
+    } else {
+      setCurrentView("dots-and-boxes");
+    }
+  };
+
   const handleJoinGame = (gameId: string) => {
     setCurrentGameId(gameId);
     setCurrentView("game");
@@ -46,6 +59,11 @@ const Index = () => {
   const handleBackToLobby = () => {
     setCurrentGameId(null);
     setCurrentView("lobby");
+  };
+
+  const handleBackToGameSelection = () => {
+    setSelectedGameType(null);
+    setCurrentView("games");
   };
 
   if (loading) {
@@ -62,6 +80,8 @@ const Index = () => {
 
   const renderCurrentView = () => {
     switch (currentView) {
+      case "games":
+        return <GameSelection onSelectGame={handleSelectGame} />;
       case "lobby":
         return (
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 md:gap-6">
@@ -89,6 +109,8 @@ const Index = () => {
         ) : (
           <GameLobby onJoinGame={handleJoinGame} />
         );
+      case "dots-and-boxes":
+        return <DotsAndBoxes onBackToLobby={handleBackToGameSelection} />;
       case "wallet":
         return <WalletManager />;
       case "friends":
@@ -96,16 +118,7 @@ const Index = () => {
       case "profile":
         return <ProfileSystem />;
       default:
-        return (
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 md:gap-6">
-            <div className="xl:col-span-2">
-              <GameLobby onJoinGame={handleJoinGame} />
-            </div>
-            <div className="hidden xl:block">
-              <ChatSystem isGlobalChat={true} />
-            </div>
-          </div>
-        );
+        return <GameSelection onSelectGame={handleSelectGame} />;
     }
   };
 

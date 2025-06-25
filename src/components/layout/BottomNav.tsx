@@ -1,6 +1,7 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Crown, Users, DollarSign, User, MessageCircle } from "lucide-react";
+import { Gamepad2, Users, DollarSign, User } from "lucide-react";
 
 interface BottomNavProps {
   currentView: string;
@@ -12,7 +13,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   onViewChange,
 }) => {
   const navItems = [
-    { id: "lobby", label: "Games", icon: Crown },
+    { id: "games", label: "Games", icon: Gamepad2 },
     { id: "friends", label: "Friends", icon: Users },
     { id: "wallet", label: "Wallet", icon: DollarSign },
     { id: "profile", label: "Profile", icon: User },
@@ -23,7 +24,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       <div className="flex items-center justify-around px-1 py-2 max-w-sm mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = currentView === item.id;
+          const isActive = currentView === item.id || 
+            (item.id === "games" && (currentView === "lobby" || currentView === "game" || currentView === "dots-and-boxes"));
 
           return (
             <Button
