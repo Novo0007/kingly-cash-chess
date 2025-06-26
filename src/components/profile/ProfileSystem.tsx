@@ -7,6 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
   User,
@@ -29,6 +35,11 @@ import {
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
+import { About } from "./About";
+import { PrivacyPolicy } from "./PrivacyPolicy";
+import { Contact } from "./Contact";
+import { UserGuide } from "./UserGuide";
+import { MoreAppsGames } from "./MoreAppsGames";
 import type { Tables } from "@/integrations/supabase/types";
 
 export const ProfileSystem = () => {
@@ -49,6 +60,15 @@ export const ProfileSystem = () => {
     darkMode: true,
     reducedAnimations: false,
     autoRefresh: true,
+  });
+
+  // Modal states for information sections
+  const [modals, setModals] = useState({
+    about: false,
+    privacy: false,
+    contact: false,
+    userGuide: false,
+    moreApps: false,
   });
 
   const { isMobile, isTablet } = useDeviceType();
@@ -651,6 +671,65 @@ export const ProfileSystem = () => {
 
               <Separator className="bg-slate-600/30" />
 
+              {/* Information & Support */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4 text-cyan-400" />
+                  <h4 className="text-white font-medium text-sm">
+                    Information & Support
+                  </h4>
+                </div>
+                <div className="space-y-2 pl-6">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                    onClick={() => setModals({ ...modals, about: true })}
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    About NNC Games
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                    onClick={() => setModals({ ...modals, userGuide: true })}
+                  >
+                    <Gamepad2 className="h-4 w-4 mr-2" />
+                    User Guide
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                    onClick={() => setModals({ ...modals, moreApps: true })}
+                  >
+                    <Trophy className="h-4 w-4 mr-2" />
+                    Our More Apps & Games
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                    onClick={() => setModals({ ...modals, contact: true })}
+                  >
+                    <Bell className="h-4 w-4 mr-2" />
+                    Contact Support
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                    onClick={() => setModals({ ...modals, privacy: true })}
+                  >
+                    <Shield className="h-4 w-4 mr-2" />
+                    Privacy Policy
+                  </Button>
+                </div>
+              </div>
+
+              <Separator className="bg-slate-600/30" />
+
               {/* Account Settings */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
@@ -695,6 +774,82 @@ export const ProfileSystem = () => {
           )}
         </Card>
       </div>
+
+      {/* Information Modals */}
+      <Dialog
+        open={modals.about}
+        onOpenChange={(open) => setModals({ ...modals, about: open })}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <User className="h-5 w-5 text-blue-400" />
+              About NNC Games
+            </DialogTitle>
+          </DialogHeader>
+          <About />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={modals.privacy}
+        onOpenChange={(open) => setModals({ ...modals, privacy: open })}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Shield className="h-5 w-5 text-green-400" />
+              Privacy Policy
+            </DialogTitle>
+          </DialogHeader>
+          <PrivacyPolicy />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={modals.contact}
+        onOpenChange={(open) => setModals({ ...modals, contact: open })}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Bell className="h-5 w-5 text-blue-400" />
+              Contact Support
+            </DialogTitle>
+          </DialogHeader>
+          <Contact />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={modals.userGuide}
+        onOpenChange={(open) => setModals({ ...modals, userGuide: open })}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Gamepad2 className="h-5 w-5 text-purple-400" />
+              User Guide
+            </DialogTitle>
+          </DialogHeader>
+          <UserGuide />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={modals.moreApps}
+        onOpenChange={(open) => setModals({ ...modals, moreApps: open })}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-orange-400" />
+              Our More Apps & Games
+            </DialogTitle>
+          </DialogHeader>
+          <MoreAppsGames />
+        </DialogContent>
+      </Dialog>
     </MobileContainer>
   );
 };
