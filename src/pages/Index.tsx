@@ -195,13 +195,15 @@ const Index = () => {
       </div>
 
       {/* Main Content Area */}
-      <main className="relative z-20 max-w-7xl mx-auto px-3 md:px-4 py-4 md:py-8 pb-24 md:pb-8">
+      <main className="relative z-20 max-w-7xl mx-auto px-2 sm:px-3 md:px-4 py-2 sm:py-4 md:py-8 pb-20 sm:pb-24 md:pb-8">
         <div className="relative">
           {/* Content Background with Glassmorphism */}
-          <div className="absolute inset-0 backdrop-blur-sm bg-white/2 rounded-3xl border border-white/5"></div>
+          <div className="absolute inset-0 backdrop-blur-sm bg-white/2 rounded-2xl sm:rounded-3xl border border-white/5"></div>
 
           {/* Content */}
-          <div className="relative z-10 p-2 md:p-4">{renderCurrentView()}</div>
+          <div className="relative z-10 p-1 sm:p-2 md:p-4">
+            {renderCurrentView()}
+          </div>
         </div>
       </main>
 
