@@ -539,7 +539,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     }
   };
 
-  const handleMove = async (from: string, to: string) => {
+  const handleMove = async (from: string, to: string, promotion?: string) => {
     if (!game || !currentUser) {
       console.log("No game or user found");
       return;
