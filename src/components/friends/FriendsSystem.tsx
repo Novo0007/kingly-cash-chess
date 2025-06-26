@@ -597,8 +597,18 @@ export const FriendsSystem = () => {
     user.username.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+  // Mobile-optimized styles
+  const cardGradient = isMobile
+    ? "bg-slate-800/80 border border-slate-600"
+    : "bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-600 shadow-lg";
+
+  const animationClass = isMobile
+    ? ""
+    : "transition-all duration-300 hover:scale-105";
+
   return (
-    <div className="space-y-6 p-4 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
+    <MobileContainer maxWidth="xl">
+      <div className="space-y-4 md:space-y-6">
       <ChallengePopup
         open={challengePopup.open}
         onOpenChange={(open) =>
