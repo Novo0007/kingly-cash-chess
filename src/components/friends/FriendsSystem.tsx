@@ -30,6 +30,7 @@ interface FriendshipWithProfile extends Friendship {
 }
 
 export const FriendsSystem = () => {
+  const { isMobile, isTablet } = useDeviceType();
   const [allUsers, setAllUsers] = useState<Profile[]>([]);
   const [friends, setFriends] = useState<FriendshipWithProfile[]>([]);
   const [pendingRequests, setPendingRequests] = useState<
