@@ -270,17 +270,17 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           )}
         </div>
 
-        <div className="mt-4 sm:mt-8 text-center">
-          <div className="text-white text-lg sm:text-2xl font-bold bg-gradient-to-r from-black/80 to-purple-900/80 rounded-lg px-6 py-4 border-2 border-yellow-400 shadow-xl">
+        <div className="mt-2 sm:mt-4 md:mt-8 text-center">
+          <div className="text-white text-sm sm:text-lg md:text-2xl font-bold bg-gradient-to-r from-black/80 to-purple-900/80 rounded-md sm:rounded-lg px-3 py-2 sm:px-6 sm:py-4 border border-yellow-400 sm:border-2 shadow-xl">
             Playing as {playerColor === "white" ? "⚪ White" : "⚫ Black"}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-purple-300 mt-3 text-base sm:text-lg font-bold bg-gradient-to-r from-purple-900/60 to-purple-800/60 rounded-md px-4 py-3 inline-block border-2 border-purple-400 shadow-lg">
+            <div className="text-purple-300 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold bg-gradient-to-r from-purple-900/60 to-purple-800/60 rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border border-purple-400 sm:border-2 shadow-lg">
               Opponent's turn...
             </div>
           )}
           {disabled && (
-            <div className="text-gray-300 mt-3 text-base sm:text-lg font-bold bg-gradient-to-r from-gray-900/60 to-gray-800/60 rounded-md px-4 py-3 inline-block border-2 border-gray-400 shadow-lg">
+            <div className="text-gray-300 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold bg-gradient-to-r from-gray-900/60 to-gray-800/60 rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border border-gray-400 sm:border-2 shadow-lg">
               Spectating
             </div>
           )}
