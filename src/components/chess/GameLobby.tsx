@@ -18,6 +18,7 @@ type ChessGame = Tables<"chess_games"> & {
 
 interface GameLobbyProps {
   onJoinGame?: (gameId: string) => void;
+  onShowChessRules?: () => void;
 }
 
 export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
