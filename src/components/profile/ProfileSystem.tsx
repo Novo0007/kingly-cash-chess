@@ -62,6 +62,15 @@ export const ProfileSystem = () => {
     autoRefresh: true,
   });
 
+  // Modal states for information sections
+  const [modals, setModals] = useState({
+    about: false,
+    privacy: false,
+    contact: false,
+    userGuide: false,
+    moreApps: false,
+  });
+
   const { isMobile, isTablet } = useDeviceType();
 
   useEffect(() => {
