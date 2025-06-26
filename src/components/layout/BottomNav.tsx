@@ -26,7 +26,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       </div>
 
       {/* Navigation Content */}
-      <div className="relative z-10 flex items-center justify-around px-2 py-3 max-w-sm mx-auto">
+      <div className="relative z-10 flex items-center justify-around px-3 py-4 max-w-md mx-auto">
         {navItems.map((item, index) => {
           const Icon = item.icon;
           const isActive =
