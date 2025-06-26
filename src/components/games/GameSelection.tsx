@@ -83,16 +83,16 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
             <CardTitle className="lavender-text">
               <div className="flex items-center justify-center gap-3 mb-3">
                 <div className="relative">
-                  <Gamepad2 className="h-8 w-8 md:h-10 md:w-10 text-blue-400" />
+                  <Gamepad2 className="h-8 w-8 md:h-10 md:w-10 text-purple-500" />
                   {!isMobile && (
-                    <Star className="h-3 w-3 text-yellow-400 absolute -top-1 -right-1" />
+                    <Star className="h-3 w-3 text-purple-400 absolute -top-1 -right-1" />
                   )}
                 </div>
-                <span className="text-2xl md:text-3xl font-bold">
+                <span className="text-2xl md:text-3xl font-bold lavender-text-gradient">
                   Choose Your Game
                 </span>
               </div>
-              <p className="text-slate-300 text-sm md:text-base font-normal max-w-2xl mx-auto">
+              <p className="text-purple-600 text-sm md:text-base font-normal max-w-2xl mx-auto">
                 Select your favorite game and start competing with players
                 worldwide for real money prizes!
               </p>
