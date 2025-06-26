@@ -229,6 +229,27 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
     }
   };
 
+  const handlePromotionSelect = (piece: "q" | "r" | "b" | "n") => {
+    if (!promotionMove) return;
+
+    console.log("Promotion piece selected:", piece);
+    playMoveSound();
+    onMove?.(promotionMove.from, promotionMove.to, piece);
+
+    // Reset promotion state
+    setPromotionMove(null);
+    setShowPromotionDialog(false);
+    setSelectedSquare(null);
+    setPossibleMoves([]);
+  };
+
+  const handlePromotionCancel = () => {
+    console.log("Promotion cancelled");
+    setPromotionMove(null);
+    setShowPromotionDialog(false);
+    // Keep the square selected so user can try a different move
+  };
+
   const isSquareHighlighted = (row: number, col: number) => {
     const square = getSquareName(row, col);
     return selectedSquare === square;
