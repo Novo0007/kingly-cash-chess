@@ -54,17 +54,9 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const [lastActiveTime, setLastActiveTime] = useState<number>(Date.now());
   const [presenceTracked, setPresenceTracked] = useState(false);
   const [showMobileChat, setShowMobileChat] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const { isMobile, isTablet } = useDeviceType();
 
   useEffect(() => {
-    // Check if device is mobile
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
     getCurrentUser();
     fetchGame();
 
