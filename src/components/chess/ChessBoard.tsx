@@ -206,7 +206,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       <div className="lavender-card p-2 sm:p-4 md:p-6 lg:p-8 rounded-lg sm:rounded-xl lavender-shadow-lg w-full h-full max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl border-2 sm:border-4 border-purple-300">
         <div
           ref={boardRef}
-          className="grid grid-cols-8 gap-0 aspect-square w-full h-full border-2 sm:border-4 border-purple-600 rounded-md sm:rounded-lg overflow-hidden shadow-2xl"
+          className="grid grid-cols-8 gap-0 aspect-square w-full h-full border-2 sm:border-4 border-purple-400 rounded-md sm:rounded-lg overflow-hidden lavender-shadow-lg"
         >
           {board.map((row, rowIndex) =>
             row.map((piece, colIndex) => {
