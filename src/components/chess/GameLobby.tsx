@@ -21,7 +21,7 @@ interface GameLobbyProps {
   onShowChessRules?: () => void;
 }
 
-export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
+export const GameLobby = ({ onJoinGame, onShowChessRules }: GameLobbyProps) => {
   const [games, setGames] = useState<ChessGame[]>([]);
   const [entryFee, setEntryFee] = useState("10");
   const [gameName, setGameName] = useState("");
