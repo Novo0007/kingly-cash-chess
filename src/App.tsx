@@ -95,18 +95,20 @@ const App = () => {
           <div className="text-center space-y-6 sm:space-y-8 max-w-sm sm:max-w-md mx-auto w-full">
             {/* Logo with Glow Effect */}
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-full blur-2xl opacity-60 animate-pulse"></div>
-              <div className="relative bg-gradient-to-r from-slate-800 to-slate-900 p-8 rounded-full border-4 border-purple-500/50 backdrop-blur-sm">
-                <div className="text-6xl md:text-7xl animate-pulse">🎮</div>
+              <div className="absolute -inset-2 sm:-inset-4 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-full blur-xl sm:blur-2xl opacity-60 animate-pulse"></div>
+              <div className="relative bg-gradient-to-r from-slate-800 to-slate-900 p-6 sm:p-8 rounded-full border-2 sm:border-4 border-purple-500/50 backdrop-blur-sm">
+                <div className="text-5xl sm:text-6xl md:text-7xl animate-pulse">
+                  🎮
+                </div>
               </div>
             </div>
 
             {/* Brand Name */}
-            <div className="space-y-4">
-              <h1 className="text-5xl md:text-6xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent animate-pulse">
+            <div className="space-y-3 sm:space-y-4 px-2">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent animate-pulse leading-tight">
                 NNC GAMES
               </h1>
-              <h2 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white drop-shadow-lg">
                 Chess Arena & More
               </h2>
             </div>
