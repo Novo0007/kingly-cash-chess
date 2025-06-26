@@ -261,7 +261,7 @@ export const DotsAndBoxes: React.FC<DotsAndBoxesProps> = ({
                     return (
                       <div
                         key={`${rowIndex}-${colIndex}`}
-                        className={`w-8 h-8 flex items-center justify-center rounded ${
+                        className={`w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded ${
                           boxOwner === "player1"
                             ? "bg-blue-200 text-blue-800"
                             : boxOwner === "player2"
