@@ -91,8 +91,8 @@ const App = () => {
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-8">
-          <div className="text-center space-y-8 max-w-md mx-auto">
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 md:p-8">
+          <div className="text-center space-y-6 sm:space-y-8 max-w-sm sm:max-w-md mx-auto w-full">
             {/* Logo with Glow Effect */}
             <div className="relative">
               <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-full blur-2xl opacity-60 animate-pulse"></div>
