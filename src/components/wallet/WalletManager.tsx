@@ -14,6 +14,8 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { WithdrawalForm } from "./WithdrawalForm";
+import { useDeviceType } from "@/hooks/use-mobile";
+import { MobileContainer } from "@/components/layout/MobileContainer";
 import type { Tables } from "@/integrations/supabase/types";
 
 export const WalletManager = () => {
