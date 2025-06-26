@@ -597,11 +597,21 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       }
 
       // Try to make the move
-      const move = chess.move({ from, to });
+      const moveOptions: { from: string; to: string; promotion?: string } = {
+        from,
+        to,
+      };
+      if (promotion) {
+        moveOptions.promotion = promotion;
+        console.log("Making promotion move with piece:", promotion);
+      }
+
+      const move = chess.move(moveOptions);
       if (!move) {
         console.error("Move validation passed but chess.move failed:", {
           from,
           to,
+          promotion,
         });
         toast.error("Move failed");
         return;
