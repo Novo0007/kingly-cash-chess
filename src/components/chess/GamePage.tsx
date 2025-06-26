@@ -575,14 +575,35 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
     try {
       console.log("Attempting move:", from, "to", to);
+      console.log("Current board state:", game.board_state);
 
       // Create a chess instance with current board state
       const chess = new Chess(game.board_state || undefined);
 
+      // Validate the move before attempting it
+      const moves = chess.moves({ verbose: true });
+      const validMove = moves.find((m) => m.from === from && m.to === to);
+
+      if (!validMove) {
+        console.log("Invalid move attempted:", { from, to });
+        console.log(
+          "Valid moves from",
+          from,
+          ":",
+          moves.filter((m) => m.from === from),
+        );
+        toast.error("Invalid move");
+        return;
+      }
+
       // Try to make the move
       const move = chess.move({ from, to });
       if (!move) {
-        toast.error("Invalid move");
+        console.error("Move validation passed but chess.move failed:", {
+          from,
+          to,
+        });
+        toast.error("Move failed");
         return;
       }
 
