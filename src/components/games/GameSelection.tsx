@@ -35,7 +35,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       color: "yellow",
       features: [
         "🏆 Tournaments",
-        "��� Quick Matches",
+        "⚡ Quick Matches",
         "💰 Real Prizes",
         "📈 Rankings",
       ],
@@ -171,18 +171,18 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {comingSoonGames.map((game, index) => (
                 <div key={index} className="text-center space-y-2">
-                  <div className="text-3xl md:text-4xl">{game.emoji}</div>
-                  <h4 className="text-white font-semibold text-xs md:text-sm">
-                    {game.name}
-                  </h4>
-                  <div className="w-full bg-slate-700 rounded-full h-2">
-                    <div
-                      className={`${game.color === "yellow" ? "bg-yellow-500" : "bg-blue-500"} h-2 rounded-full transition-all duration-1000`}
-                      style={{ width: `${game.progress}%` }}
-                    ></div>
-                  </div>
-                  <span className="text-slate-400 text-xs">
-                    {game.progress}%
+              <div className="flex justify-center mb-3">
+                <div className="relative">
+                  <Gamepad2 className="h-8 w-8 md:h-10 md:w-10 text-purple-500" />
+                  {!isMobile && (
+                    <Star className="h-3 w-3 text-purple-400 absolute -top-1 -right-1" />
+                  )}
+                </div>
+                <span className="text-2xl md:text-3xl font-bold lavender-text-gradient">
+                  Choose Your Game
+                </span>
+              </div>
+              <p className="text-purple-600 text-sm md:text-base font-normal max-w-2xl mx-auto">
                   </span>
                 </div>
               ))}
