@@ -359,59 +359,35 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
             <div className="border-l-4 border-blue-500 pl-6">
               <div className="flex items-center gap-3 mb-3">
                 <Clock className="h-6 w-6 text-blue-600" />
-                <h3 className="text-xl font-bold text-blue-600">
-                  10. Time Controls
-                </h3>
+                <h3 className="text-xl font-bold text-blue-600">10. Time Controls</h3>
               </div>
               <div className="bg-blue-50 p-4 rounded-xl space-y-3">
                 <div>
-                  <h4 className="font-semibold text-blue-700 mb-2">
-                    Common Time Formats:
-                  </h4>
+                  <h4 className="font-semibold text-blue-700 mb-2">Common Time Formats:</h4>
                   <ul className="space-y-1 text-gray-700 text-sm">
-                    <li>
-                      • <strong>3|0</strong> - 3 minutes per player, no
-                      increment
-                    </li>
-                    <li>
-                      • <strong>5|3</strong> - 5 minutes + 3 seconds per move
-                    </li>
-                    <li>
-                      • <strong>10|0</strong> - 10 minutes per player
-                    </li>
-                    <li>
-                      • <strong>15|10</strong> - 15 minutes + 10 seconds
-                      increment
-                    </li>
+                    <li>• <strong>3|0</strong> - 3 minutes per player, no increment</li>
+                    <li>• <strong>5|3</strong> - 5 minutes + 3 seconds per move</li>
+                    <li>• <strong>10|0</strong> - 10 minutes per player</li>
+                    <li>• <strong>15|10</strong> - 15 minutes + 10 seconds increment</li>
                   </ul>
                 </div>
                 <p className="text-gray-700">
-                  <strong>Time Forfeit:</strong> Running out of time results in
-                  an automatic loss unless the opponent cannot deliver checkmate
-                  (insufficient material = draw).
+                  <strong>Time Forfeit:</strong> Running out of time results in an automatic loss unless the opponent cannot deliver checkmate (insufficient material = draw).
                 </p>
               </div>
             </div>
 
             {/* Move Validation */}
             <div className="border-l-4 border-indigo-500 pl-6">
-              <h3 className="text-xl font-bold text-indigo-600 mb-3">
-                11. Legal Move Requirements
-              </h3>
+              <h3 className="text-xl font-bold text-indigo-600 mb-3">11. Legal Move Requirements</h3>
               <div className="bg-indigo-50 p-4 rounded-xl space-y-3">
                 <p className="text-gray-700">
-                  <strong>Every move must be legal:</strong> You cannot make a
-                  move that leaves your own king in check.
+                  <strong>Every move must be legal:</strong> You cannot make a move that leaves your own king in check.
                 </p>
                 <div>
-                  <h4 className="font-semibold text-indigo-700 mb-2">
-                    Touch-Move Rule (Online Equivalent):
-                  </h4>
+                  <h4 className="font-semibold text-indigo-700 mb-2">Touch-Move Rule (Online Equivalent):</h4>
                   <ul className="space-y-1 text-gray-700 text-sm">
-                    <li>
-                      • Once you click and release a piece on a valid square,
-                      the move is final
-                    </li>
+                    <li>• Once you click and release a piece on a valid square, the move is final</li>
                     <li>• No "take-back" moves in rated games</li>
                     <li>• Some platforms allow "confirm move" feature</li>
                   </ul>
@@ -421,72 +397,51 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
 
             {/* Fair Play & Conduct */}
             <div className="border-l-4 border-green-500 pl-6">
-              <h3 className="text-xl font-bold text-green-600 mb-3">
-                12. Fair Play & Conduct
-              </h3>
+              <h3 className="text-xl font-bold text-green-600 mb-3">12. Fair Play & Conduct</h3>
               <div className="bg-green-50 p-4 rounded-xl space-y-3">
                 <div>
-                  <h4 className="font-semibold text-green-700 mb-2">
-                    Prohibited Actions:
-                  </h4>
+                  <h4 className="font-semibold text-green-700 mb-2">Prohibited Actions:</h4>
                   <ul className="space-y-1 text-gray-700 text-sm">
                     <li>• Using chess engines or computer assistance</li>
-                    <li>
-                      • Getting help from other players or books during the game
-                    </li>
+                    <li>• Getting help from other players or books during the game</li>
                     <li>• Creating multiple accounts to manipulate ratings</li>
                     <li>• Deliberately disconnecting to avoid losses</li>
                     <li>• Abusive language or unsportsmanlike conduct</li>
                   </ul>
                 </div>
                 <p className="text-gray-700">
-                  <strong>Penalties:</strong> Violations can result in warnings,
-                  rating penalties, or permanent bans.
+                  <strong>Penalties:</strong> Violations can result in warnings, rating penalties, or permanent bans.
                 </p>
               </div>
             </div>
 
             {/* Connection & Technical Rules */}
             <div className="border-l-4 border-orange-500 pl-6">
-              <h3 className="text-xl font-bold text-orange-600 mb-3">
-                13. Connection & Technical Rules
-              </h3>
+              <h3 className="text-xl font-bold text-orange-600 mb-3">13. Connection & Technical Rules</h3>
               <div className="bg-orange-50 p-4 rounded-xl space-y-3">
                 <div>
-                  <h4 className="font-semibold text-orange-700 mb-2">
-                    Disconnection Rules:
-                  </h4>
+                  <h4 className="font-semibold text-orange-700 mb-2">Disconnection Rules:</h4>
                   <ul className="space-y-1 text-gray-700 text-sm">
                     <li>• If you disconnect, your clock continues running</li>
-                    <li>
-                      • Extended disconnection (usually 5+ minutes) = forfeit
-                    </li>
+                    <li>• Extended disconnection (usually 5+ minutes) = forfeit</li>
                     <li>• Brief disconnections are usually tolerated</li>
-                    <li>
-                      • Some platforms pause games for mutual disconnections
-                    </li>
+                    <li>• Some platforms pause games for mutual disconnections</li>
                   </ul>
                 </div>
                 <p className="text-gray-700">
-                  <strong>Tip:</strong> Ensure stable internet connection before
-                  starting rated games.
+                  <strong>Tip:</strong> Ensure stable internet connection before starting rated games.
                 </p>
               </div>
             </div>
 
             {/* Advanced Online Features */}
             <div className="border-l-4 border-purple-500 pl-6">
-              <h3 className="text-xl font-bold text-purple-600 mb-3">
-                14. Advanced Online Features
-              </h3>
+              <h3 className="text-xl font-bold text-purple-600 mb-3">14. Advanced Online Features</h3>
               <div className="bg-purple-50 p-4 rounded-xl space-y-3">
                 <div>
-                  <h4 className="font-semibold text-purple-700 mb-2">
-                    Premoves:
-                  </h4>
+                  <h4 className="font-semibold text-purple-700 mb-2">Premoves:</h4>
                   <p className="text-gray-700 text-sm mb-2">
-                    Queue moves during opponent's turn that execute instantly if
-                    legal.
+                    Queue moves during opponent's turn that execute instantly if legal.
                   </p>
                   <ul className="space-y-1 text-gray-700 text-sm">
                     <li>• Useful in time-pressed situations</li>
@@ -495,12 +450,9 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-purple-700 mb-2">
-                    Auto-Queen Promotion:
-                  </h4>
+                  <h4 className="font-semibold text-purple-700 mb-2">Auto-Queen Promotion:</h4>
                   <p className="text-gray-700 text-sm">
-                    Most platforms auto-promote pawns to queens unless you
-                    specify otherwise.
+                    Most platforms auto-promote pawns to queens unless you specify otherwise.
                   </p>
                 </div>
               </div>
@@ -508,59 +460,38 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
 
             {/* Rating & Ranking System */}
             <div className="border-l-4 border-yellow-500 pl-6">
-              <h3 className="text-xl font-bold text-yellow-600 mb-3">
-                15. Rating & Competition
-              </h3>
+              <h3 className="text-xl font-bold text-yellow-600 mb-3">15. Rating & Competition</h3>
               <div className="bg-yellow-50 p-4 rounded-xl space-y-3">
                 <div>
-                  <h4 className="font-semibold text-yellow-700 mb-2">
-                    Rating Changes:
-                  </h4>
+                  <h4 className="font-semibold text-yellow-700 mb-2">Rating Changes:</h4>
                   <ul className="space-y-1 text-gray-700 text-sm">
-                    <li>
-                      • Win: Gain rating points (more vs higher-rated opponents)
-                    </li>
-                    <li>
-                      • Loss: Lose rating points (less vs higher-rated
-                      opponents)
-                    </li>
-                    <li>
-                      • Draw: Small rating change based on opponent's rating
-                    </li>
+                    <li>• Win: Gain rating points (more vs higher-rated opponents)</li>
+                    <li>• Loss: Lose rating points (less vs higher-rated opponents)</li>
+                    <li>• Draw: Small rating change based on opponent's rating</li>
                     <li>• Forfeit/Timeout: Treated as a loss</li>
                   </ul>
                 </div>
                 <p className="text-gray-700">
-                  <strong>Fair Pairing:</strong> System matches players of
-                  similar skill levels for balanced games.
+                  <strong>Fair Pairing:</strong> System matches players of similar skill levels for balanced games.
                 </p>
               </div>
             </div>
 
             {/* Game Analysis */}
             <div className="border-l-4 border-cyan-500 pl-6">
-              <h3 className="text-xl font-bold text-cyan-600 mb-3">
-                16. Post-Game Analysis
-              </h3>
+              <h3 className="text-xl font-bold text-cyan-600 mb-3">16. Post-Game Analysis</h3>
               <div className="bg-cyan-50 p-4 rounded-xl space-y-3">
                 <div>
-                  <h4 className="font-semibold text-cyan-700 mb-2">
-                    Learning Features:
-                  </h4>
+                  <h4 className="font-semibold text-cyan-700 mb-2">Learning Features:</h4>
                   <ul className="space-y-1 text-gray-700 text-sm">
-                    <li>
-                      • Review game moves and see where improvements can be made
-                    </li>
+                    <li>• Review game moves and see where improvements can be made</li>
                     <li>• Computer analysis showing best moves</li>
-                    <li>
-                      • Identify blunders, mistakes, and missed opportunities
-                    </li>
+                    <li>• Identify blunders, mistakes, and missed opportunities</li>
                     <li>• Study opening and endgame patterns</li>
                   </ul>
                 </div>
                 <p className="text-gray-700">
-                  <strong>Growth:</strong> Regular analysis is key to improving
-                  your chess skills.
+                  <strong>Growth:</strong> Regular analysis is key to improving your chess skills.
                 </p>
               </div>
             </div>
@@ -583,33 +514,53 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
             {[
               {
                 icon: "⚠️",
-                tip: 'Always double-check before moving — there\'s no "undo" in online rated games.',
-                color: "from-red-50 to-orange-50 border-red-200",
+                tip: "Always double-check before moving — there's no \"undo\" in online rated games. Take your time to verify the move is what you intended.",
+                color: "from-red-50 to-orange-50 border-red-200"
               },
               {
                 icon: "⏰",
-                tip: "Respect time control and manage your clock wisely.",
-                color: "from-blue-50 to-cyan-50 border-blue-200",
+                tip: "Manage your time wisely! Don't spend too much time on early moves. Save time for complex middle-game and endgame positions.",
+                color: "from-blue-50 to-cyan-50 border-blue-200"
               },
               {
                 icon: "🤝",
-                tip: "Be polite and sportsmanlike in chats or post-game messages.",
-                color: "from-green-50 to-emerald-50 border-green-200",
+                tip: "Be respectful and sportsmanlike. Good manners make the game enjoyable for everyone. Say 'good game' regardless of the result.",
+                color: "from-green-50 to-emerald-50 border-green-200"
               },
               {
                 icon: "🔒",
-                tip: "Play on secure and fair platforms (e.g., Chess.com, Lichess.org, FIDE Online Arena).",
-                color: "from-purple-50 to-violet-50 border-purple-200",
+                tip: "Play fair and honest. Never use engines or get outside help during games. Your improvement comes from genuine practice.",
+                color: "from-purple-50 to-violet-50 border-purple-200"
               },
+              {
+                icon: "📶",
+                tip: "Ensure stable internet connection before starting rated games. A disconnection can cost you the game and rating points.",
+                color: "from-indigo-50 to-blue-50 border-indigo-200"
+              },
+              {
+                icon: "🎯",
+                tip: "Focus on one game at a time. Playing multiple games simultaneously can lead to mistakes and poor time management.",
+                color: "from-yellow-50 to-amber-50 border-yellow-200"
+              },
+              {
+                icon: "📚",
+                tip: "Analyze your games after playing. Learn from both victories and defeats to identify areas for improvement.",
+                color: "from-teal-50 to-cyan-50 border-teal-200"
+              },
+              {
+                icon: "🧘",
+                tip: "Stay calm under time pressure. Panic leads to blunders. Take a deep breath and find the best move you can in the time available.",
+                color: "from-pink-50 to-rose-50 border-pink-200"
+              }
             ].map((item, index) => (
-              <div
-                key={index}
-                className={`p-4 rounded-xl bg-gradient-to-r ${item.color} border`}
-              >
+              <div key={index} className={`p-4 rounded-xl bg-gradient-to-r ${item.color} border`}>
                 <div className="flex items-start gap-3">
                   <span className="text-2xl flex-shrink-0">{item.icon}</span>
                   <p className="text-gray-700 leading-relaxed">{item.tip}</p>
                 </div>
+              </div>
+            ))}
+          </div>
               </div>
             ))}
           </div>
