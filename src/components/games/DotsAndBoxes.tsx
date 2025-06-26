@@ -279,7 +279,10 @@ export const DotsAndBoxes: React.FC<DotsAndBoxesProps> = ({
                   }
 
                   return (
-                    <div key={`${rowIndex}-${colIndex}`} className="w-4 h-4" />
+                    <div
+                      key={`${rowIndex}-${colIndex}`}
+                      className="w-5 h-5 sm:w-4 sm:h-4"
+                    />
                   );
                 }),
             )}
