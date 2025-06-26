@@ -11,6 +11,7 @@ import {
   Sparkles,
   Target,
   Gamepad2,
+  BookOpen,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
@@ -176,6 +177,33 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
               <p className="text-purple-600 text-xs md:text-sm">
                 More exciting games are in development! Stay tuned for updates.
               </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Chess Rules Quick Access */}
+        <Card className="lavender-card lavender-shadow border-indigo-200/50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <BookOpen className="h-5 w-5 text-indigo-500" />
+                <div>
+                  <h4 className="text-indigo-700 font-semibold text-sm">
+                    Learn Chess Rules
+                  </h4>
+                  <p className="text-indigo-600 text-xs">
+                    Master the game with our comprehensive guide
+                  </p>
+                </div>
+              </div>
+              <Button
+                onClick={() => window.open("/chess-rules", "_blank")}
+                variant="outline"
+                size="sm"
+                className="text-indigo-600 border-indigo-300 hover:bg-indigo-50 text-xs px-3 py-2"
+              >
+                View Guide
+              </Button>
             </div>
           </CardContent>
         </Card>

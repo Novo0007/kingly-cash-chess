@@ -539,7 +539,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     }
   };
 
-  const handleMove = async (from: string, to: string) => {
+  const handleMove = async (from: string, to: string, promotion?: string) => {
     if (!game || !currentUser) {
       console.log("No game or user found");
       return;
@@ -575,21 +575,62 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
     try {
       console.log("Attempting move:", from, "to", to);
+      console.log("Current board state:", game.board_state);
 
       // Create a chess instance with current board state
       const chess = new Chess(game.board_state || undefined);
 
-      // Try to make the move
-      const move = chess.move({ from, to });
-      if (!move) {
+      // Validate the move before attempting it
+      const moves = chess.moves({ verbose: true });
+      let validMove = moves.find((m) => m.from === from && m.to === to);
+
+      // For promotion moves, we need to check if any promotion option is valid
+      if (!validMove && promotion) {
+        validMove = moves.find(
+          (m) => m.from === from && m.to === to && m.promotion === promotion,
+        );
+      }
+
+      if (!validMove) {
+        console.log("Invalid move attempted:", { from, to, promotion });
+        console.log(
+          "Valid moves from",
+          from,
+          ":",
+          moves.filter((m) => m.from === from),
+        );
         toast.error("Invalid move");
+        return;
+      }
+
+      // Try to make the move
+      const moveOptions: { from: string; to: string; promotion?: string } = {
+        from,
+        to,
+      };
+      if (promotion) {
+        moveOptions.promotion = promotion;
+        console.log("Making promotion move with piece:", promotion);
+      }
+
+      const move = chess.move(moveOptions);
+      if (!move) {
+        console.error("Move validation passed but chess.move failed:", {
+          from,
+          to,
+          promotion,
+        });
+        toast.error("Move failed");
         return;
       }
 
       console.log("Valid move made:", move);
 
       // Update game state in real-time
-      const newMoveHistory = [...(game.move_history || []), `${from}-${to}`];
+      const moveNotation = promotion
+        ? `${from}-${to}=${promotion}`
+        : `${from}-${to}`;
+      const newMoveHistory = [...(game.move_history || []), moveNotation];
       const nextTurn = game.current_turn === "white" ? "black" : "white";
       const newBoardState = chess.fen();
 

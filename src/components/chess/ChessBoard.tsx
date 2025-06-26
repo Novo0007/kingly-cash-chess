@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Chess, Square } from "chess.js";
+import { toast } from "sonner";
+import { PawnPromotionDialog } from "./PawnPromotionDialog";
 
 interface ChessBoardProps {
   fen?: string;
-  onMove?: (from: string, to: string) => void;
+  onMove?: (from: string, to: string, promotion?: string) => void;
   playerColor?: "white" | "black";
   disabled?: boolean;
   isPlayerTurn?: boolean;
@@ -23,6 +25,11 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   const [lastMove, setLastMove] = useState<{ from: string; to: string } | null>(
     null,
   );
+  const [promotionMove, setPromotionMove] = useState<{
+    from: string;
+    to: string;
+  } | null>(null);
+  const [showPromotionDialog, setShowPromotionDialog] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
 
   // Create audio context for move sounds
@@ -53,6 +60,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   useEffect(() => {
     try {
+      console.log("ChessBoard: Updating with FEN:", fen);
       const newChess = new Chess(fen);
       const newBoard = newChess.board();
 
@@ -102,8 +110,9 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       setBoard(newBoard);
       setSelectedSquare(null);
       setPossibleMoves([]);
+      console.log("ChessBoard: Successfully updated board state");
     } catch (error) {
-      console.error("Invalid FEN:", fen, error);
+      console.error("ChessBoard: Invalid FEN:", fen, error);
     }
   }, [fen]);
 
@@ -120,6 +129,19 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
     };
 
     return symbols[piece.type as keyof typeof symbols] || "";
+  };
+
+  const isPawnPromotion = (from: string, to: string): boolean => {
+    const piece = chess.get(from);
+    if (!piece || piece.type !== "p") return false;
+
+    const toRank = parseInt(to[1]);
+
+    // White pawn reaching rank 8, black pawn reaching rank 1
+    return (
+      (piece.color === "w" && toRank === 8) ||
+      (piece.color === "b" && toRank === 1)
+    );
   };
 
   const getSquareName = (row: number, col: number): Square => {
@@ -144,6 +166,31 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       // Try to make a move
       if (possibleMoves.includes(square)) {
         console.log("Making move:", selectedSquare, "to", square);
+
+        // Double-check the move is valid before calling onMove
+        const moveAttempt = chess
+          .moves({ verbose: true })
+          .find((m) => m.from === selectedSquare && m.to === square);
+
+        if (!moveAttempt) {
+          console.error("Move was in possibleMoves but not valid:", {
+            from: selectedSquare,
+            to: square,
+          });
+          toast.error("Invalid move");
+          setSelectedSquare(null);
+          setPossibleMoves([]);
+          return;
+        }
+
+        // Check if this is a pawn promotion
+        if (isPawnPromotion(selectedSquare, square)) {
+          console.log("Pawn promotion detected:", selectedSquare, "to", square);
+          setPromotionMove({ from: selectedSquare, to: square });
+          setShowPromotionDialog(true);
+          return;
+        }
+
         playMoveSound();
         onMove?.(selectedSquare, square);
         setSelectedSquare(null);
@@ -180,6 +227,27 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         }
       }
     }
+  };
+
+  const handlePromotionSelect = (piece: "q" | "r" | "b" | "n") => {
+    if (!promotionMove) return;
+
+    console.log("Promotion piece selected:", piece);
+    playMoveSound();
+    onMove?.(promotionMove.from, promotionMove.to, piece);
+
+    // Reset promotion state
+    setPromotionMove(null);
+    setShowPromotionDialog(false);
+    setSelectedSquare(null);
+    setPossibleMoves([]);
+  };
+
+  const handlePromotionCancel = () => {
+    console.log("Promotion cancelled");
+    setPromotionMove(null);
+    setShowPromotionDialog(false);
+    // Keep the square selected so user can try a different move
   };
 
   const isSquareHighlighted = (row: number, col: number) => {
@@ -286,6 +354,14 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           )}
         </div>
       </div>
+
+      {/* Pawn Promotion Dialog */}
+      <PawnPromotionDialog
+        isOpen={showPromotionDialog}
+        playerColor={playerColor}
+        onSelect={handlePromotionSelect}
+        onCancel={handlePromotionCancel}
+      />
     </div>
   );
 };

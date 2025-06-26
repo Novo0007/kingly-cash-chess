@@ -5,7 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, Crown, Clock, Users, DollarSign, RefreshCw } from "lucide-react";
+import {
+  Plus,
+  Crown,
+  Clock,
+  Users,
+  DollarSign,
+  RefreshCw,
+  BookOpen,
+} from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import type { Tables } from "@/integrations/supabase/types";
@@ -504,6 +512,30 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                   />
                 </Button>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Chess Rules Quick Access */}
+        <Card
+          className={`${cardGradient} ${animationClass} border-indigo-600/30`}
+        >
+          <CardContent className="p-3 md:p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4 md:h-5 md:w-5 text-indigo-400" />
+                <span className="text-white font-semibold text-sm md:text-base">
+                  New to Chess?
+                </span>
+              </div>
+              <Button
+                onClick={() => window.open("/chess-rules", "_blank")}
+                variant="outline"
+                size="sm"
+                className="text-indigo-400 border-indigo-400 hover:bg-indigo-500/10 text-xs px-3 py-1"
+              >
+                View Rules
+              </Button>
             </div>
           </CardContent>
         </Card>
