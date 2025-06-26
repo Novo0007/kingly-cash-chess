@@ -400,7 +400,7 @@ export const OnlineDotsAndBoxes: React.FC<OnlineDotsAndBoxesProps> = ({
                           onClick={() =>
                             makeMove("horizontal", lineRow, lineCol)
                           }
-                          className={`w-8 h-1 transition-colors ${
+                          className={`w-10 h-2 sm:w-8 sm:h-1 transition-colors ${
                             isDrawn
                               ? "bg-blue-600"
                               : "bg-gray-300 hover:bg-gray-400"
