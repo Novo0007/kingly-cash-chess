@@ -36,151 +36,155 @@ const App = () => {
     };
   }, []);
 
-  // Epic Gaming Loading Screen
+  // Professional Lavender Loading Screen
   if (appLoading) {
     return (
       <div className="fixed inset-0 overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-cyan-600/10 animate-pulse"></div>
+        {/* Elegant Lavender Background */}
+        <div className="absolute inset-0 lavender-gradient">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-white/10"></div>
         </div>
 
-        {/* Animated Grid Pattern */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="cyber-grid h-full w-full"></div>
-        </div>
-
-        {/* Floating Gaming Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Subtle Pattern Overlay */}
+        <div className="absolute inset-0 opacity-5">
           <div
-            className="absolute top-10 left-10 text-4xl animate-bounce"
-            style={{ animationDelay: "0s" }}
-          >
-            🎮
-          </div>
-          <div
-            className="absolute top-20 right-20 text-3xl animate-bounce"
-            style={{ animationDelay: "0.5s" }}
-          >
-            ♛
-          </div>
-          <div
-            className="absolute bottom-20 left-20 text-3xl animate-bounce"
-            style={{ animationDelay: "1s" }}
-          >
-            🏆
-          </div>
-          <div
-            className="absolute bottom-10 right-10 text-4xl animate-bounce"
-            style={{ animationDelay: "1.5s" }}
-          >
-            ⚡
-          </div>
-          <div
-            className="absolute top-1/3 left-1/4 text-2xl animate-bounce"
-            style={{ animationDelay: "2s" }}
-          >
-            💎
-          </div>
-          <div
-            className="absolute top-2/3 right-1/4 text-2xl animate-bounce"
-            style={{ animationDelay: "2.5s" }}
-          >
-            🌟
-          </div>
+            className="h-full w-full"
+            style={{
+              backgroundImage: `radial-gradient(circle at 25% 25%, hsl(250, 70%, 60%) 0%, transparent 50%),
+                               radial-gradient(circle at 75% 75%, hsl(270, 80%, 70%) 0%, transparent 50%)`,
+            }}
+          ></div>
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 md:p-8">
-          <div className="text-center space-y-6 sm:space-y-8 max-w-sm sm:max-w-md mx-auto w-full">
-            {/* Logo with Glow Effect */}
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-6 sm:p-8">
+          <div className="text-center space-y-8 sm:space-y-10 max-w-md sm:max-w-lg mx-auto w-full">
+            {/* Professional Logo */}
             <div className="relative">
-              <div className="absolute -inset-2 sm:-inset-4 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-full blur-xl sm:blur-2xl opacity-60 animate-pulse"></div>
-              <div className="relative bg-gradient-to-r from-slate-800 to-slate-900 p-6 sm:p-8 rounded-full border-2 sm:border-4 border-purple-500/50 backdrop-blur-sm">
-                <div className="text-5xl sm:text-6xl md:text-7xl animate-pulse">
-                  🎮
+              <div className="lavender-shadow-lg rounded-full p-2">
+                <div className="lavender-glass rounded-full p-8 sm:p-10 backdrop-blur-xl">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl lavender-pulse"></div>
+                    <div className="absolute inset-2 bg-white rounded-xl flex items-center justify-center">
+                      <svg
+                        className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                        <path
+                          fillRule="evenodd"
+                          d="M4 5a2 2 0 012-2h8a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 1a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Brand Name */}
-            <div className="space-y-3 sm:space-y-4 px-2">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent animate-pulse leading-tight">
+            <div className="space-y-4">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold lavender-text-gradient leading-tight">
                 NNC GAMES
               </h1>
-              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white drop-shadow-lg">
-                Chess Arena & More
-              </h2>
+              <p className="text-lg sm:text-xl md:text-2xl font-medium text-gray-600">
+                Professional Gaming Platform
+              </p>
             </div>
 
-            {/* Loading Spinner */}
+            {/* Elegant Loading Spinner */}
             <div className="relative">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto">
-                <div className="absolute inset-0 border-3 sm:border-4 border-blue-500/30 rounded-full"></div>
-                <div className="absolute inset-0 border-3 sm:border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
-                <div
-                  className="absolute inset-1 sm:inset-2 border-3 sm:border-4 border-transparent border-t-purple-500 rounded-full animate-spin"
-                  style={{
-                    animationDirection: "reverse",
-                    animationDuration: "0.8s",
-                  }}
-                ></div>
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto">
+                <div className="lavender-spinner w-full h-full"></div>
               </div>
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full max-w-xs sm:max-w-sm mx-auto px-4 sm:px-0">
-              <div className="relative h-2 sm:h-3 bg-slate-800 rounded-full overflow-hidden border border-purple-500/50">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-cyan-500/20 animate-pulse"></div>
+            <div className="w-full max-w-sm mx-auto">
+              <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden lavender-shadow">
+                <div className="absolute inset-0 lavender-shimmer"></div>
                 <div
-                  className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-full transition-all duration-300 ease-out relative overflow-hidden"
+                  className="h-full bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full transition-all duration-500 ease-out relative overflow-hidden"
                   style={{ width: `${Math.min(loadingProgress, 100)}%` }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
                 </div>
               </div>
-              <p className="text-gray-300 text-xs sm:text-sm mt-2 sm:mt-3 font-medium">
-                {Math.round(loadingProgress)}% Loading...
+              <div className="flex justify-between items-center mt-3">
+                <span className="text-sm font-medium text-gray-600">
+                  Loading...
+                </span>
+                <span className="text-sm font-bold text-purple-600">
+                  {Math.round(loadingProgress)}%
+                </span>
+              </div>
+            </div>
+
+            {/* Loading Status */}
+            <div className="space-y-2">
+              <p className="text-base sm:text-lg font-medium text-gray-700">
+                {loadingProgress < 30
+                  ? "Initializing Platform..."
+                  : loadingProgress < 60
+                    ? "Loading Game Engine..."
+                    : loadingProgress < 90
+                      ? "Preparing Interface..."
+                      : "Almost Ready..."}
+              </p>
+              <p className="text-sm text-gray-500">
+                Welcome to premium gaming experience
               </p>
             </div>
 
-            {/* Loading Messages */}
-            <div className="space-y-2 px-4">
-              <p className="text-gray-400 text-base sm:text-lg font-medium text-center leading-tight">
-                {loadingProgress < 30
-                  ? "🔥 Initializing Gaming Engine..."
-                  : loadingProgress < 60
-                    ? "⚡ Loading Game Assets..."
-                    : loadingProgress < 90
-                      ? "🎯 Preparing Your Experience..."
-                      : "🚀 Almost Ready..."}
-              </p>
-              <p className="text-gray-500 text-xs sm:text-sm text-center">
-                Get ready for epic gaming battles!
-              </p>
+            {/* Professional Features */}
+            <div className="grid grid-cols-3 gap-4 mt-8">
+              <div className="text-center">
+                <div className="w-10 h-10 mx-auto mb-2 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-purple-600"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <p className="text-xs font-medium text-gray-600">Secure</p>
+              </div>
+              <div className="text-center">
+                <div className="w-10 h-10 mx-auto mb-2 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-purple-600"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
+                  </svg>
+                </div>
+                <p className="text-xs font-medium text-gray-600">Multiplayer</p>
+              </div>
+              <div className="text-center">
+                <div className="w-10 h-10 mx-auto mb-2 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-purple-600"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                  </svg>
+                </div>
+                <p className="text-xs font-medium text-gray-600">Real-time</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom Gaming Elements */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end justify-center pb-8">
-          <div className="flex items-center gap-6 text-2xl">
-            <span className="animate-bounce" style={{ animationDelay: "0s" }}>
-              🎲
-            </span>
-            <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>
-              🎯
-            </span>
-            <span className="animate-bounce" style={{ animationDelay: "0.4s" }}>
-              🏅
-            </span>
-            <span className="animate-bounce" style={{ animationDelay: "0.6s" }}>
-              💰
-            </span>
-            <span className="animate-bounce" style={{ animationDelay: "0.8s" }}>
-              🎊
-            </span>
-          </div>
+        {/* Bottom Branding */}
+        <div className="absolute bottom-8 left-0 right-0 text-center">
+          <p className="text-sm text-gray-500 font-medium">
+            © 2024 NNC Games • Professional Gaming Platform
+          </p>
         </div>
       </div>
     );
