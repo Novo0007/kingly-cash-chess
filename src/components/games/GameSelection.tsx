@@ -183,9 +183,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </span>
               </div>
               <p className="text-purple-600 text-sm md:text-base font-normal max-w-2xl mx-auto">
-                  </span>
-                </div>
-              ))}
+                Select your favorite game and start competing with players
+                worldwide for real money prizes!
+              </p>
             </div>
             <div className="text-center mt-4">
               <p className="text-slate-400 text-xs md:text-sm">
