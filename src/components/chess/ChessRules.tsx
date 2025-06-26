@@ -190,7 +190,7 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
                 color: "from-purple-500 to-violet-600",
               },
               {
-                piece: "♘",
+                piece: "���",
                 name: "Knight",
                 description:
                   "Moves in an 'L' shape (2 in one direction, 1 perpendicular); jumps over pieces.",
@@ -291,7 +291,7 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
       </section>
 
       {/* Game End Conditions */}
-      <section className="relative">
+      <section id="game-endings" className="relative">
         <div className="absolute inset-0 lavender-glass rounded-2xl lavender-shadow"></div>
         <div className="relative z-10 p-6">
           <h2 className="text-3xl font-bold text-purple-700 mb-6 flex items-center gap-3">
