@@ -115,11 +115,11 @@ const App = () => {
 
             {/* Loading Spinner */}
             <div className="relative">
-              <div className="w-20 h-20 mx-auto">
-                <div className="absolute inset-0 border-4 border-blue-500/30 rounded-full"></div>
-                <div className="absolute inset-0 border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
+              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto">
+                <div className="absolute inset-0 border-3 sm:border-4 border-blue-500/30 rounded-full"></div>
+                <div className="absolute inset-0 border-3 sm:border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
                 <div
-                  className="absolute inset-2 border-4 border-transparent border-t-purple-500 rounded-full animate-spin"
+                  className="absolute inset-1 sm:inset-2 border-3 sm:border-4 border-transparent border-t-purple-500 rounded-full animate-spin"
                   style={{
                     animationDirection: "reverse",
                     animationDuration: "0.8s",
@@ -129,8 +129,8 @@ const App = () => {
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full max-w-xs mx-auto">
-              <div className="relative h-3 bg-slate-800 rounded-full overflow-hidden border border-purple-500/50">
+            <div className="w-full max-w-xs sm:max-w-sm mx-auto px-4 sm:px-0">
+              <div className="relative h-2 sm:h-3 bg-slate-800 rounded-full overflow-hidden border border-purple-500/50">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-cyan-500/20 animate-pulse"></div>
                 <div
                   className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-full transition-all duration-300 ease-out relative overflow-hidden"
@@ -139,7 +139,7 @@ const App = () => {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
                 </div>
               </div>
-              <p className="text-gray-300 text-sm mt-3 font-medium">
+              <p className="text-gray-300 text-xs sm:text-sm mt-2 sm:mt-3 font-medium">
                 {Math.round(loadingProgress)}% Loading...
               </p>
             </div>
