@@ -90,12 +90,12 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
 
   return (
     <nav className="relative">
-      {/* Background with Glassmorphism */}
+      {/* Background with Lavender Glassmorphism */}
       <div
-        className={`absolute inset-0 ${isMobile ? "bg-slate-900/95" : "backdrop-blur-2xl bg-slate-900/90"} border-b border-slate-600/50`}
+        className={`absolute inset-0 ${isMobile ? "lavender-card" : "lavender-glass"} border-b border-purple-200/50`}
       >
         {!isMobile && (
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-cyan-600/5"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-100/10 via-lavender-100/10 to-indigo-100/10"></div>
         )}
       </div>
 
