@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Chess, Square } from "chess.js";
 import { toast } from "sonner";
+import { PawnPromotionDialog } from "./PawnPromotionDialog";
 
 interface ChessBoardProps {
   fen?: string;
