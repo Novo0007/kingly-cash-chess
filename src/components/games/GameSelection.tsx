@@ -17,6 +17,7 @@ import { MobileContainer } from "@/components/layout/MobileContainer";
 
 interface GameSelectionProps {
   onSelectGame: (gameType: "chess" | "dots-and-boxes") => void;
+  onShowChessRules?: () => void;
 }
 
 export const GameSelection: React.FC<GameSelectionProps> = ({
