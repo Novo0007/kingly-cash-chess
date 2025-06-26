@@ -206,7 +206,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       <div className="bg-gradient-to-br from-black via-purple-900 to-black p-2 sm:p-4 md:p-6 lg:p-8 rounded-lg sm:rounded-xl shadow-2xl w-full h-full max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl border-2 sm:border-4 border-yellow-400">
         <div
           ref={boardRef}
-          className="grid grid-cols-8 gap-0 aspect-square w-full border-4 border-purple-600 rounded-lg overflow-hidden shadow-2xl"
+          className="grid grid-cols-8 gap-0 aspect-square w-full h-full border-2 sm:border-4 border-purple-600 rounded-md sm:rounded-lg overflow-hidden shadow-2xl"
         >
           {board.map((row, rowIndex) =>
             row.map((piece, colIndex) => {
