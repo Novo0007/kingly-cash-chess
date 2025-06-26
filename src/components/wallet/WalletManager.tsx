@@ -14,6 +14,8 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { WithdrawalForm } from "./WithdrawalForm";
+import { useDeviceType } from "@/hooks/use-mobile";
+import { MobileContainer } from "@/components/layout/MobileContainer";
 import type { Tables } from "@/integrations/supabase/types";
 
 export const WalletManager = () => {
@@ -31,6 +33,8 @@ export const WalletManager = () => {
     open: false,
     amount: 0,
   });
+
+  const { isMobile, isTablet } = useDeviceType();
 
   useEffect(() => {
     fetchWallet();
@@ -331,17 +335,17 @@ export const WalletManager = () => {
   const getTransactionIcon = (type: string) => {
     switch (type) {
       case "deposit":
-        return <ArrowDownLeft className="h-4 w-4 text-green-500" />;
+        return <ArrowDownLeft className="h-4 w-4 text-green-400" />;
       case "withdrawal":
-        return <ArrowUpRight className="h-4 w-4 text-red-500" />;
+        return <ArrowUpRight className="h-4 w-4 text-red-400" />;
       case "game_winning":
-        return <CreditCard className="h-4 w-4 text-yellow-500" />;
+        return <CreditCard className="h-4 w-4 text-yellow-400" />;
       case "game_entry":
-        return <DollarSign className="h-4 w-4 text-blue-500" />;
+        return <DollarSign className="h-4 w-4 text-blue-400" />;
       case "refund":
-        return <RefreshCw className="h-4 w-4 text-purple-500" />;
+        return <RefreshCw className="h-4 w-4 text-purple-400" />;
       default:
-        return <DollarSign className="h-4 w-4 text-gray-500" />;
+        return <DollarSign className="h-4 w-4 text-gray-400" />;
     }
   };
 
@@ -362,184 +366,207 @@ export const WalletManager = () => {
     return ["withdrawal", "game_entry"].includes(type) ? "-" : "+";
   };
 
+  // Mobile-optimized styles
+  const cardGradient = isMobile
+    ? "bg-slate-800/80 border border-slate-600"
+    : "bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-600 shadow-lg";
+
+  const animationClass = isMobile
+    ? ""
+    : "transition-all duration-300 hover:scale-105";
+
   return (
-    <div className="space-y-4 md:space-y-6 p-3 md:p-4 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
-      <WithdrawalForm
-        open={withdrawalForm.open}
-        onOpenChange={(open) =>
-          setWithdrawalForm((prev) => ({ ...prev, open }))
-        }
-        amount={withdrawalForm.amount}
-        onWithdraw={handleWithdrawalSubmit}
-      />
+    <MobileContainer maxWidth="xl">
+      <div className="space-y-4 md:space-y-6">
+        <WithdrawalForm
+          open={withdrawalForm.open}
+          onOpenChange={(open) =>
+            setWithdrawalForm((prev) => ({ ...prev, open }))
+          }
+          amount={withdrawalForm.amount}
+          onWithdraw={handleWithdrawalSubmit}
+        />
 
-      {/* Wallet Balance */}
-      <Card className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-2 border-yellow-500/40 shadow-xl rounded-xl backdrop-blur-sm">
-        <CardHeader className="pb-3 md:pb-6">
-          <CardTitle className="text-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div className="flex items-center gap-2 md:gap-3">
-              <CreditCard className="h-5 w-5 md:h-6 md:w-6" />
-              <span className="text-lg md:text-xl">💰 Wallet Balance</span>
+        {/* Wallet Balance */}
+        <Card
+          className={`${cardGradient} ${animationClass} border-yellow-600/30`}
+        >
+          <CardHeader className="pb-3">
+            <CardTitle className="text-yellow-400 flex items-center justify-between font-semibold text-base md:text-lg">
+              <div className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5 md:h-6 md:w-6" />
+                Wallet Balance
+              </div>
+              <Button
+                onClick={handleRefresh}
+                variant="ghost"
+                size="sm"
+                disabled={refreshing}
+                className="text-yellow-400 hover:bg-slate-700/50 h-8 w-8 p-0"
+              >
+                <RefreshCw
+                  className={`h-3 w-3 md:h-4 md:w-4 ${refreshing && !isMobile ? "animate-spin" : ""}`}
+                />
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl md:text-4xl font-bold text-white mb-2">
+              ₹{wallet?.balance?.toFixed(2) || "0.00"}
             </div>
-            <Button
-              onClick={handleRefresh}
-              variant="ghost"
-              size="sm"
-              disabled={refreshing}
-              className="text-yellow-400 hover:bg-yellow-500/10 border border-yellow-500/30 self-start sm:self-auto"
-            >
-              <RefreshCw
-                className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
+            {wallet?.locked_balance && wallet.locked_balance > 0 && (
+              <p className="text-sm text-slate-400 flex items-center gap-2">
+                🔒 Locked Balance: ₹{wallet.locked_balance.toFixed(2)}
+              </p>
+            )}
+            <p className="text-xs text-slate-500 mt-2">
+              Available for games and withdrawals
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Deposit/Withdraw */}
+        <Card
+          className={`${cardGradient} ${animationClass} border-green-600/30`}
+        >
+          <CardHeader className="pb-3">
+            <CardTitle className="text-green-400 flex items-center gap-2 font-semibold text-base md:text-lg">
+              <DollarSign className="h-5 w-5 md:h-6 md:w-6" />
+              Manage Funds
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-white font-medium mb-2 block text-sm">
+                Enter Amount (₹)
+              </label>
+              <Input
+                type="number"
+                min="1"
+                step="0.01"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Enter amount"
+                className="bg-slate-700/50 border-slate-600 text-white"
               />
-            </Button>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="text-3xl md:text-4xl font-bold text-yellow-400 mb-2">
-            ₹{wallet?.balance?.toFixed(2) || "0.00"}
-          </div>
-          {wallet?.locked_balance && wallet.locked_balance > 0 && (
-            <p className="text-sm text-gray-400 flex items-center gap-2">
-              🔒 Locked Balance: ₹{wallet.locked_balance.toFixed(2)}
-            </p>
-          )}
-          <p className="text-xs text-gray-500 mt-2">
-            Available for games and withdrawals
-          </p>
-        </CardContent>
-      </Card>
-
-      {/* Deposit/Withdraw */}
-      <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-2 border-slate-600/30 shadow-xl rounded-xl backdrop-blur-sm">
-        <CardHeader className="pb-3 md:pb-6">
-          <CardTitle className="text-white flex items-center gap-2 md:gap-3">
-            <DollarSign className="h-5 w-5 md:h-6 md:w-6" />
-            <span className="text-lg md:text-xl">💳 Manage Funds</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4 md:space-y-6">
-          <div>
-            <label className="text-white font-medium mb-2 block text-sm md:text-base">
-              Enter Amount (₹)
-            </label>
-            <Input
-              type="number"
-              min="1"
-              step="0.01"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="Enter amount"
-              className="bg-gray-800/50 border-gray-600 text-white text-base md:text-lg py-3 px-3 md:px-4 rounded-lg"
-            />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
-              {[100, 500, 1000, 2000].map((quickAmount) => (
-                <Button
-                  key={quickAmount}
-                  onClick={() => setAmount(quickAmount.toString())}
-                  variant="outline"
-                  size="sm"
-                  className="border-gray-500 text-gray-300 hover:bg-gray-700 text-xs md:text-sm py-2"
-                >
-                  ₹{quickAmount}
-                </Button>
-              ))}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
+                {[100, 500, 1000, 2000].map((quickAmount) => (
+                  <Button
+                    key={quickAmount}
+                    onClick={() => setAmount(quickAmount.toString())}
+                    variant="outline"
+                    size="sm"
+                    className="border-slate-600 text-slate-300 hover:bg-slate-700/50"
+                  >
+                    ₹{quickAmount}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 gap-3 md:gap-4">
-            <Button
-              onClick={handleDeposit}
-              disabled={loading}
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-4 md:py-4 rounded-lg text-sm md:text-lg shadow-lg min-h-[48px]"
-            >
-              <ArrowDownLeft className="h-4 w-4 md:h-5 md:w-5 mr-2" />
-              💰 Add Money (Razorpay)
-            </Button>
-            <Button
-              onClick={handleWithdrawClick}
-              disabled={loading}
-              className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-bold py-4 md:py-4 rounded-lg text-sm md:text-lg shadow-lg min-h-[48px]"
-            >
-              <ArrowUpRight className="h-4 w-4 md:h-5 md:w-5 mr-2" />
-              🏦 Withdraw (-20% fee)
-            </Button>
-          </div>
+            <div className="grid grid-cols-1 gap-3">
+              <Button
+                onClick={handleDeposit}
+                disabled={loading}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg"
+              >
+                <ArrowDownLeft className="h-4 w-4 mr-2" />
+                Add Money (Razorpay)
+              </Button>
+              <Button
+                onClick={handleWithdrawClick}
+                disabled={loading}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg"
+              >
+                <ArrowUpRight className="h-4 w-4 mr-2" />
+                Withdraw (-20% fee)
+              </Button>
+            </div>
 
-          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
-            <p className="text-blue-300 text-xs md:text-sm">
-              ℹ️ <strong>Note:</strong> Deposits are instant via Razorpay.
-              Withdrawals have a 20% processing fee and take 1-3 business days.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Transaction History */}
-      <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-2 border-slate-600/30 shadow-xl rounded-xl backdrop-blur-sm">
-        <CardHeader className="pb-3 md:pb-6">
-          <CardTitle className="text-white flex items-center gap-2 md:gap-3">
-            <History className="h-5 w-5 md:h-6 md:w-6" />
-            <span className="text-lg md:text-xl">📊 Recent Transactions</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {transactions.length === 0 ? (
-            <div className="text-center py-6 md:py-8">
-              <p className="text-gray-400 text-base md:text-lg">
-                📭 No transactions yet
-              </p>
-              <p className="text-gray-500 text-sm mt-2">
-                Your transaction history will appear here
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+              <p className="text-blue-300 text-xs md:text-sm">
+                ℹ️ <strong>Note:</strong> Deposits are instant via Razorpay.
+                Withdrawals have a 20% processing fee and take 1-3 business
+                days.
               </p>
             </div>
-          ) : (
-            <div className="space-y-2 md:space-y-3">
-              {transactions.slice(0, 10).map((transaction) => (
-                <div
-                  key={transaction.id}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 md:p-4 bg-gray-800/30 backdrop-blur-sm rounded-lg border border-gray-700/50 hover:bg-gray-700/30 transition-colors gap-2 sm:gap-4"
-                >
-                  <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
-                    {getTransactionIcon(transaction.transaction_type)}
-                    <div className="min-w-0 flex-1">
-                      <p className="text-white font-medium capitalize text-sm md:text-base">
-                        {transaction.transaction_type.replace("_", " ")}
-                      </p>
-                      <p className="text-xs md:text-sm text-gray-400">
-                        {new Date(transaction.created_at).toLocaleDateString()}{" "}
-                        •{" "}
-                        {new Date(transaction.created_at).toLocaleTimeString()}
-                      </p>
-                      {transaction.description && (
-                        <p className="text-xs text-gray-500 truncate max-w-[200px] md:max-w-[250px] mt-1">
-                          {transaction.description}
+          </CardContent>
+        </Card>
+
+        {/* Transaction History */}
+        <Card
+          className={`${cardGradient} ${animationClass} border-purple-600/30`}
+        >
+          <CardHeader className="pb-3">
+            <CardTitle className="text-purple-400 flex items-center gap-2 font-semibold text-base md:text-lg">
+              <History className="h-5 w-5 md:h-6 md:w-6" />
+              Recent Transactions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {transactions.length === 0 ? (
+              <div className="text-center py-6 md:py-8">
+                <p className="text-slate-400 text-sm md:text-base">
+                  📭 No transactions yet
+                </p>
+                <p className="text-slate-500 text-xs mt-2">
+                  Your transaction history will appear here
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {transactions.slice(0, 10).map((transaction) => (
+                  <div
+                    key={transaction.id}
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 bg-slate-700/30 rounded-lg border border-slate-600/50 hover:bg-slate-700/50 transition-colors gap-2 sm:gap-4"
+                  >
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      {getTransactionIcon(transaction.transaction_type)}
+                      <div className="min-w-0 flex-1">
+                        <p className="text-white font-medium capitalize text-sm">
+                          {transaction.transaction_type.replace("_", " ")}
                         </p>
-                      )}
+                        <p className="text-xs text-slate-400">
+                          {new Date(
+                            transaction.created_at,
+                          ).toLocaleDateString()}{" "}
+                          •{" "}
+                          {new Date(
+                            transaction.created_at,
+                          ).toLocaleTimeString()}
+                        </p>
+                        {transaction.description && (
+                          <p className="text-xs text-slate-500 truncate max-w-[200px] mt-1">
+                            {transaction.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-left sm:text-right flex-shrink-0">
+                      <p
+                        className={`font-semibold text-base ${
+                          getTransactionSign(transaction.transaction_type) ===
+                          "+"
+                            ? "text-green-400"
+                            : "text-red-400"
+                        }`}
+                      >
+                        {getTransactionSign(transaction.transaction_type)}₹
+                        {transaction.amount.toFixed(2)}
+                      </p>
+                      <Badge
+                        className={`${getStatusColor(transaction.status)} border text-xs mt-1`}
+                      >
+                        {transaction.status}
+                      </Badge>
                     </div>
                   </div>
-                  <div className="text-left sm:text-right flex-shrink-0">
-                    <p
-                      className={`font-semibold text-base md:text-lg ${
-                        getTransactionSign(transaction.transaction_type) === "+"
-                          ? "text-green-400"
-                          : "text-red-400"
-                      }`}
-                    >
-                      {getTransactionSign(transaction.transaction_type)}₹
-                      {transaction.amount.toFixed(2)}
-                    </p>
-                    <Badge
-                      className={`${getStatusColor(transaction.status)} border text-xs mt-1`}
-                    >
-                      {transaction.status}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </MobileContainer>
   );
 };

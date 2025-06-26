@@ -5,7 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, Crown, Clock, Users, DollarSign } from "lucide-react";
+import { Plus, Crown, Clock, Users, DollarSign, RefreshCw } from "lucide-react";
+import { useDeviceType } from "@/hooks/use-mobile";
+import { MobileContainer } from "@/components/layout/MobileContainer";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
@@ -23,8 +25,11 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
   const [entryFee, setEntryFee] = useState("10");
   const [gameName, setGameName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [wallet, setWallet] = useState<Tables<"wallets"> | null>(null);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+
+  const { isMobile, isTablet } = useDeviceType();
 
   useEffect(() => {
     getCurrentUser();
@@ -414,7 +419,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       return (
         <Badge
           variant="outline"
-          className="text-yellow-500 border-yellow-500 text-xs"
+          className="text-yellow-400 border-yellow-400 text-xs"
         >
           Waiting ({playerCount}/2)
         </Badge>
@@ -423,7 +428,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
       return (
         <Badge
           variant="outline"
-          className="text-green-500 border-green-500 text-xs"
+          className="text-green-400 border-green-400 text-xs"
         >
           Active ({playerCount}/2)
         </Badge>
@@ -451,190 +456,230 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
     );
   };
 
+  // Mobile-optimized styles
+  const cardGradient = isMobile
+    ? "bg-slate-800/80 border border-slate-600"
+    : "bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-600 shadow-lg";
+
+  const animationClass = isMobile
+    ? ""
+    : "transition-all duration-300 hover:scale-105";
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchGames();
+    await fetchWallet();
+    setRefreshing(false);
+    toast.success("Lobby refreshed!");
+  };
+
   return (
-    <div className="space-y-4 sm:space-y-6 pb-20 px-2 sm:px-0">
-      {/* Wallet Balance */}
-      <Card className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/20">
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
-              <span className="text-white font-medium text-sm sm:text-base">
-                Wallet Balance
-              </span>
+    <MobileContainer maxWidth="xl">
+      <div className="space-y-4 md:space-y-6">
+        {/* Header with Wallet Balance */}
+        <Card
+          className={`${cardGradient} ${animationClass} border-blue-600/30`}
+        >
+          <CardContent className="p-3 md:p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-blue-400" />
+                <span className="text-white font-semibold text-sm md:text-base">
+                  Wallet Balance
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="text-lg md:text-xl font-bold text-blue-400">
+                  ₹{wallet?.balance?.toFixed(2) || "0.00"}
+                </div>
+                <Button
+                  onClick={handleRefresh}
+                  variant="ghost"
+                  size="sm"
+                  disabled={refreshing}
+                  className="text-blue-400 hover:bg-slate-700/50 h-8 w-8 p-0"
+                >
+                  <RefreshCw
+                    className={`h-3 w-3 md:h-4 md:w-4 ${refreshing && !isMobile ? "animate-spin" : ""}`}
+                  />
+                </Button>
+              </div>
             </div>
-            <div className="text-lg sm:text-xl font-bold text-blue-400">
-              ₹{wallet?.balance?.toFixed(2) || "0.00"}
+          </CardContent>
+        </Card>
+
+        {/* Create Game */}
+        <Card
+          className={`${cardGradient} ${animationClass} border-green-600/30`}
+        >
+          <CardHeader className="pb-3">
+            <CardTitle className="text-green-400 flex items-center gap-2 font-semibold text-base md:text-lg">
+              <Plus className="h-5 w-5 md:h-6 md:w-6" />
+              Create New Game
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 md:space-y-4">
+            <div>
+              <label className="text-slate-300 mb-2 block text-sm">
+                Game Name (Optional)
+              </label>
+              <Input
+                type="text"
+                value={gameName}
+                onChange={(e) => setGameName(e.target.value)}
+                className="bg-slate-700/50 border-slate-600 text-white"
+                placeholder="Leave empty for auto-generated unique name"
+              />
             </div>
-          </div>
-        </CardContent>
-      </Card>
+            <div>
+              <label className="text-slate-300 mb-2 block text-sm">
+                Entry Fee (₹)
+              </label>
+              <Input
+                type="number"
+                min="0"
+                step="0.01"
+                value={entryFee}
+                onChange={(e) => setEntryFee(e.target.value)}
+                className="bg-slate-700/50 border-slate-600 text-white"
+                placeholder="Enter amount"
+              />
+            </div>
+            <Button
+              onClick={createGame}
+              disabled={loading}
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3"
+            >
+              {loading ? "Creating..." : "Create Game"}
+            </Button>
+          </CardContent>
+        </Card>
 
-      {/* Create Game */}
-      <Card className="bg-slate-800/50 border-slate-700">
-        <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6">
-          <CardTitle className="text-white flex items-center gap-2 text-base sm:text-xl">
-            <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
-            Create New Game
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6">
-          <div>
-            <label className="text-xs sm:text-sm text-gray-300 mb-2 block">
-              Game Name (Optional)
-            </label>
-            <Input
-              type="text"
-              value={gameName}
-              onChange={(e) => setGameName(e.target.value)}
-              className="bg-gray-800/50 border-gray-600 text-white text-sm sm:text-base"
-              placeholder="Leave empty for auto-generated unique name"
-            />
-          </div>
-          <div>
-            <label className="text-xs sm:text-sm text-gray-300 mb-2 block">
-              Entry Fee (₹)
-            </label>
-            <Input
-              type="number"
-              min="0"
-              step="0.01"
-              value={entryFee}
-              onChange={(e) => setEntryFee(e.target.value)}
-              className="bg-gray-800/50 border-gray-600 text-white text-sm sm:text-base"
-              placeholder="Enter amount"
-            />
-          </div>
-          <Button
-            onClick={createGame}
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold text-sm sm:text-base py-2 sm:py-3"
-          >
-            {loading ? "Creating..." : "Create Game"}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Available Games */}
-      <div className="space-y-3 sm:space-y-4">
-        <h2 className="text-base sm:text-xl font-bold text-white flex items-center gap-2 px-1 sm:px-0">
-          <Users className="h-4 w-4 sm:h-5 sm:w-5" />
-          Available Games
-          <Badge
-            variant="secondary"
-            className="text-xs bg-gray-700 text-gray-300 ml-2"
-          >
-            Auto-refresh: 7s
-          </Badge>
-        </h2>
-
-        {games.length === 0 ? (
-          <Card className="bg-slate-800/30 border-gray-700">
-            <CardContent className="p-4 sm:p-6 text-center">
-              <p className="text-gray-400 text-sm sm:text-base">
-                No games available. Create one to get started!
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-3 sm:gap-4">
-            {games.map((game) => (
-              <Card
-                key={game.id}
-                className="bg-slate-800/50 border-gray-700 hover:border-blue-500/40 transition-colors"
+        {/* Available Games */}
+        <Card
+          className={`${cardGradient} ${animationClass} border-purple-600/30`}
+        >
+          <CardHeader className="pb-3">
+            <CardTitle className="text-purple-400 flex items-center gap-2 font-semibold text-base md:text-lg">
+              <Users className="h-5 w-5 md:h-6 md:w-6" />
+              Available Games
+              <Badge
+                variant="secondary"
+                className="text-xs bg-slate-700 text-slate-300 ml-2"
               >
-                <CardContent className="p-3 sm:p-4">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    <div className="space-y-2 flex-1 min-w-0">
-                      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                        <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500 flex-shrink-0" />
-                        <div className="flex flex-col min-w-0 flex-1">
-                          <span className="text-white font-medium text-xs sm:text-sm truncate">
-                            {game.game_name || "Unnamed Game"}
-                          </span>
-                          <span className="text-gray-400 text-xs truncate">
-                            Host: {game.white_player?.username || "Anonymous"}
-                            {game.black_player && (
-                              <> vs {game.black_player?.username}</>
-                            )}
-                          </span>
+                Auto-refresh: 7s
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {games.length === 0 ? (
+              <div className="text-center py-6 md:py-8">
+                <p className="text-slate-400 text-sm md:text-base">
+                  No games available. Create one to get started!
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {games.map((game) => (
+                  <Card
+                    key={game.id}
+                    className="bg-slate-700/30 border-slate-600 hover:border-purple-500/40 transition-colors"
+                  >
+                    <CardContent className="p-3 md:p-4">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div className="space-y-2 flex-1 min-w-0">
+                          <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+                            <Crown className="h-3 w-3 md:h-4 md:w-4 text-purple-400 flex-shrink-0" />
+                            <div className="flex flex-col min-w-0 flex-1">
+                              <span className="text-white font-medium text-xs md:text-sm truncate">
+                                {game.game_name || "Unnamed Game"}
+                              </span>
+                              <span className="text-slate-400 text-xs truncate">
+                                Host:{" "}
+                                {game.white_player?.username || "Anonymous"}
+                                {game.black_player && (
+                                  <> vs {game.black_player?.username}</>
+                                )}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+                              <Badge
+                                variant="secondary"
+                                className="bg-slate-700 text-slate-300 text-xs px-1 md:px-2"
+                              >
+                                {game.white_player?.chess_rating || 1200}
+                              </Badge>
+                              {getGameStatusBadge(game)}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 md:gap-4 text-xs text-slate-400 flex-wrap">
+                            <div className="flex items-center gap-1">
+                              <DollarSign className="h-2 w-2 md:h-3 md:w-3" />
+                              <span>₹{game.entry_fee}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Crown className="h-2 w-2 md:h-3 md:w-3" />
+                              <span>₹{game.prize_amount}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-2 w-2 md:h-3 md:w-3" />
+                              <span>
+                                {Math.floor((game.time_control || 600) / 60)}m
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Users className="h-2 w-2 md:h-3 md:w-3" />
+                              <span>{getPlayerCount(game)}/2</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+
+                        {canEnterGame(game) ? (
+                          <Button
+                            onClick={() => onJoinGame?.(game.id)}
+                            variant="outline"
+                            className="text-yellow-400 border-yellow-400 hover:bg-yellow-500/10 text-xs md:text-sm px-3 py-1 md:px-4 md:py-2 w-full sm:w-auto"
+                          >
+                            Enter Game
+                          </Button>
+                        ) : canJoinGame(game) ? (
+                          <Button
+                            onClick={() =>
+                              joinGame(
+                                game.id,
+                                game.entry_fee,
+                                game.game_name || "Unnamed Game",
+                              )
+                            }
+                            className="bg-green-600 hover:bg-green-700 text-white text-xs md:text-sm px-3 py-1 md:px-4 md:py-2 w-full sm:w-auto"
+                          >
+                            Join Game
+                          </Button>
+                        ) : isGameFull(game) ? (
+                          <Button
+                            onClick={() => onJoinGame?.(game.id)}
+                            className="bg-purple-600 hover:bg-purple-700 text-white text-xs md:text-sm px-3 py-1 md:px-4 md:py-2 w-full sm:w-auto"
+                          >
+                            Spectate
+                          </Button>
+                        ) : (
                           <Badge
                             variant="secondary"
-                            className="bg-gray-700 text-gray-300 text-xs px-1 sm:px-2"
+                            className="text-slate-400 text-xs px-3 py-1"
                           >
-                            {game.white_player?.chess_rating || 1200}
+                            Game Full
                           </Badge>
-                          {getGameStatusBadge(game)}
-                        </div>
+                        )}
                       </div>
-
-                      <div className="flex items-center gap-2 sm:gap-4 text-xs text-gray-400 flex-wrap">
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="h-2 w-2 sm:h-3 sm:w-3" />
-                          <span>₹{game.entry_fee}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Crown className="h-2 w-2 sm:h-3 sm:w-3" />
-                          <span>₹{game.prize_amount}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-2 w-2 sm:h-3 sm:w-3" />
-                          <span>
-                            {Math.floor((game.time_control || 600) / 60)}m
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Users className="h-2 w-2 sm:h-3 sm:w-3" />
-                          <span>{getPlayerCount(game)}/2</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {canEnterGame(game) ? (
-                      <Button
-                        onClick={() => onJoinGame?.(game.id)}
-                        variant="outline"
-                        className="text-yellow-500 border-yellow-500 hover:bg-yellow-500/10 text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-2 w-full sm:w-auto"
-                      >
-                        Enter Game
-                      </Button>
-                    ) : canJoinGame(game) ? (
-                      <Button
-                        onClick={() =>
-                          joinGame(
-                            game.id,
-                            game.entry_fee,
-                            game.game_name || "Unnamed Game",
-                          )
-                        }
-                        className="bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-2 w-full sm:w-auto"
-                      >
-                        Join Game
-                      </Button>
-                    ) : isGameFull(game) ? (
-                      <Button
-                        onClick={() => onJoinGame?.(game.id)}
-                        className="bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-2 w-full sm:w-auto"
-                      >
-                        Spectate
-                      </Button>
-                    ) : (
-                      <Badge
-                        variant="secondary"
-                        className="text-gray-400 text-xs px-3 py-1"
-                      >
-                        Game Full
-                      </Badge>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </MobileContainer>
   );
 };

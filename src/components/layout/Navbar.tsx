@@ -14,6 +14,7 @@ import {
   Zap,
   Sparkles,
 } from "lucide-react";
+import { useDeviceType } from "@/hooks/use-mobile";
 import type { User } from "@supabase/supabase-js";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -27,6 +28,8 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
   const [profile, setProfile] = useState<Tables<"profiles"> | null>(null);
   const [wallet, setWallet] = useState<Tables<"wallets"> | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const { isMobile, isTablet } = useDeviceType();
 
   useEffect(() => {
     getUser();
@@ -88,8 +91,12 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
   return (
     <nav className="relative">
       {/* Background with Glassmorphism */}
-      <div className="absolute inset-0 backdrop-blur-2xl bg-slate-900/90 border-b-2 border-purple-500/30">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/15 to-cyan-600/10"></div>
+      <div
+        className={`absolute inset-0 ${isMobile ? "bg-slate-900/95" : "backdrop-blur-2xl bg-slate-900/90"} border-b border-slate-600/50`}
+      >
+        {!isMobile && (
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-cyan-600/5"></div>
+        )}
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6">
