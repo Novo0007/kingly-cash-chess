@@ -270,7 +270,7 @@ export const DotsAndBoxes: React.FC<DotsAndBoxesProps> = ({
                         }`}
                       >
                         {boxOwner && (
-                          <span className="text-xs font-bold">
+                          <span className="text-sm sm:text-xs font-bold">
                             {boxOwner === "player1" ? "1" : "2"}
                           </span>
                         )}
