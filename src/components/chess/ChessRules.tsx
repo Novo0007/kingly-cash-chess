@@ -279,12 +279,38 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
             {/* Pawn Promotion */}
             <div className="border-l-4 border-purple-500 pl-6">
               <h3 className="text-xl font-bold text-purple-600 mb-3">
-                6. Pawn Promotion
+                6. Pawn Promotion ⚡
               </h3>
-              <p className="text-gray-700">
-                When a pawn reaches the 8th rank, it must be promoted to a
-                queen, rook, bishop, or knight.
-              </p>
+              <div className="bg-purple-50 p-4 rounded-xl space-y-3">
+                <p className="text-gray-700 font-semibold">
+                  When a pawn reaches the 8th rank, it{" "}
+                  <strong>must be promoted</strong> to a queen, rook, bishop, or
+                  knight.
+                </p>
+                <div>
+                  <h4 className="font-semibold text-purple-700 mb-2">
+                    Important Notes:
+                  </h4>
+                  <ul className="space-y-1 text-gray-700 text-sm">
+                    <li>
+                      • <strong>Mandatory:</strong> You cannot leave the pawn as
+                      a pawn
+                    </li>
+                    <li>
+                      • <strong>Choice:</strong> You can choose any piece, not
+                      just queen
+                    </li>
+                    <li>
+                      • <strong>Multiple Queens:</strong> You can have multiple
+                      queens on the board
+                    </li>
+                    <li>
+                      • <strong>Online Play:</strong> Most platforms
+                      auto-promote to queen unless specified
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
