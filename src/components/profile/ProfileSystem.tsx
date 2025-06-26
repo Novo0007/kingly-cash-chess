@@ -684,7 +684,7 @@ export const ProfileSystem = () => {
                     variant="outline"
                     size="sm"
                     className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                    onClick={() => toast.info("About section coming soon!")}
+                    onClick={() => setModals({ ...modals, about: true })}
                   >
                     <User className="h-4 w-4 mr-2" />
                     About NNC Games
@@ -693,7 +693,7 @@ export const ProfileSystem = () => {
                     variant="outline"
                     size="sm"
                     className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                    onClick={() => toast.info("User guide coming soon!")}
+                    onClick={() => setModals({ ...modals, userGuide: true })}
                   >
                     <Gamepad2 className="h-4 w-4 mr-2" />
                     User Guide
@@ -702,7 +702,7 @@ export const ProfileSystem = () => {
                     variant="outline"
                     size="sm"
                     className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                    onClick={() => toast.info("More games coming soon!")}
+                    onClick={() => setModals({ ...modals, moreApps: true })}
                   >
                     <Trophy className="h-4 w-4 mr-2" />
                     Our More Apps & Games
@@ -711,7 +711,7 @@ export const ProfileSystem = () => {
                     variant="outline"
                     size="sm"
                     className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                    onClick={() => toast.info("Contact support coming soon!")}
+                    onClick={() => setModals({ ...modals, contact: true })}
                   >
                     <Bell className="h-4 w-4 mr-2" />
                     Contact Support
@@ -720,7 +720,7 @@ export const ProfileSystem = () => {
                     variant="outline"
                     size="sm"
                     className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                    onClick={() => toast.info("Privacy policy coming soon!")}
+                    onClick={() => setModals({ ...modals, privacy: true })}
                   >
                     <Shield className="h-4 w-4 mr-2" />
                     Privacy Policy
