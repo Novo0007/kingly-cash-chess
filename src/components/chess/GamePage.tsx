@@ -90,7 +90,6 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       });
 
     return () => {
-      window.removeEventListener("resize", checkMobile);
       console.log("Cleaning up game subscription and auto-refresh");
       clearInterval(autoRefreshInterval);
       supabase.removeChannel(gameSubscription);
