@@ -145,6 +145,33 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
           ))}
         </div>
 
+        {/* Chess Rules Section */}
+        {onShowChessRules && (
+          <Card className="lavender-card lavender-shadow border-purple-200/50">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-purple-600 text-center flex items-center justify-center gap-2 text-lg md:text-xl">
+                <Crown className="h-5 w-5 text-purple-400" />
+                📚 Learn Chess
+                <Crown className="h-5 w-5 text-purple-400" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              <p className="text-purple-700 text-sm md:text-base">
+                New to chess or need a refresher? Check out our comprehensive
+                guide to master the game!
+              </p>
+              <Button
+                onClick={onShowChessRules}
+                variant="outline"
+                className="border-purple-300 text-purple-600 hover:bg-purple-50 hover:text-purple-700"
+              >
+                <Crown className="h-4 w-4 mr-2" />
+                View Chess Rules & Guide
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Coming Soon Section */}
         <Card className="lavender-card lavender-shadow border-purple-200/50">
           <CardHeader className="pb-3">
