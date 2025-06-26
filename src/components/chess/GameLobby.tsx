@@ -502,15 +502,15 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           </CardContent>
         </Card>
 
-      {/* Create Game */}
-      <Card className="bg-slate-800/50 border-slate-700">
-        <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6">
-          <CardTitle className="text-white flex items-center gap-2 text-base sm:text-xl">
-            <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
-            Create New Game
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6">
+        {/* Create Game */}
+        <Card className={`${cardGradient} ${animationClass} border-green-600/30`}>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-green-400 flex items-center gap-2 font-semibold text-base md:text-lg">
+              <Plus className="h-5 w-5 md:h-6 md:w-6" />
+              Create New Game
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 md:space-y-4">
           <div>
             <label className="text-xs sm:text-sm text-gray-300 mb-2 block">
               Game Name (Optional)
