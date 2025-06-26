@@ -22,6 +22,7 @@ interface GameSelectionProps {
 
 export const GameSelection: React.FC<GameSelectionProps> = ({
   onSelectGame,
+  onShowChessRules,
 }) => {
   const { isMobile, isTablet } = useDeviceType();
 
