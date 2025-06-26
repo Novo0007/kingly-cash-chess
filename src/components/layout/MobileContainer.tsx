@@ -16,9 +16,9 @@ export const MobileContainer: React.FC<MobileContainerProps> = ({
 }) => {
   const paddingClasses = {
     none: "",
-    sm: "p-2 md:p-3",
-    md: "p-3 md:p-4",
-    lg: "p-4 md:p-6",
+    sm: "p-1 sm:p-2 md:p-3",
+    md: "p-2 sm:p-3 md:p-4",
+    lg: "p-3 sm:p-4 md:p-6",
   };
 
   const maxWidthClasses = {
