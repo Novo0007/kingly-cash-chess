@@ -108,7 +108,10 @@ const Index = () => {
         return (
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
             <div className="xl:col-span-2">
-              <GameLobby onJoinGame={handleJoinGame} />
+              <GameLobby
+                onJoinGame={handleJoinGame}
+                onShowChessRules={() => setCurrentView("chess-rules")}
+              />
             </div>
             <div className="hidden xl:block">
               <ChatSystem isGlobalChat={true} />
