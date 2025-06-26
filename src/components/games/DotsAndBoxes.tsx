@@ -205,7 +205,7 @@ export const DotsAndBoxes: React.FC<DotsAndBoxesProps> = ({
                     return (
                       <div
                         key={`${rowIndex}-${colIndex}`}
-                        className="w-4 h-4 bg-black rounded-full"
+                        className="w-5 h-5 sm:w-4 sm:h-4 bg-black rounded-full"
                       />
                     );
                   }
