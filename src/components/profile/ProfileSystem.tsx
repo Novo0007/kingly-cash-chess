@@ -774,6 +774,82 @@ export const ProfileSystem = () => {
           )}
         </Card>
       </div>
+
+      {/* Information Modals */}
+      <Dialog
+        open={modals.about}
+        onOpenChange={(open) => setModals({ ...modals, about: open })}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <User className="h-5 w-5 text-blue-400" />
+              About NNC Games
+            </DialogTitle>
+          </DialogHeader>
+          <About />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={modals.privacy}
+        onOpenChange={(open) => setModals({ ...modals, privacy: open })}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Shield className="h-5 w-5 text-green-400" />
+              Privacy Policy
+            </DialogTitle>
+          </DialogHeader>
+          <PrivacyPolicy />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={modals.contact}
+        onOpenChange={(open) => setModals({ ...modals, contact: open })}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Bell className="h-5 w-5 text-blue-400" />
+              Contact Support
+            </DialogTitle>
+          </DialogHeader>
+          <Contact />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={modals.userGuide}
+        onOpenChange={(open) => setModals({ ...modals, userGuide: open })}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Gamepad2 className="h-5 w-5 text-purple-400" />
+              User Guide
+            </DialogTitle>
+          </DialogHeader>
+          <UserGuide />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={modals.moreApps}
+        onOpenChange={(open) => setModals({ ...modals, moreApps: open })}
+      >
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-orange-400" />
+              Our More Apps & Games
+            </DialogTitle>
+          </DialogHeader>
+          <MoreAppsGames />
+        </DialogContent>
+      </Dialog>
     </MobileContainer>
   );
 };
