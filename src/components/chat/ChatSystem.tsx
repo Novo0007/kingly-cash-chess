@@ -1,14 +1,14 @@
-
-import { useState, useEffect, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
-import { MessageSquare, Send, Users } from 'lucide-react';
-import type { Tables } from '@/integrations/supabase/types';
+import { useState, useEffect, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { MessageSquare, Send, Users } from "lucide-react";
+import { useDeviceType } from "@/hooks/use-mobile";
+import type { Tables } from "@/integrations/supabase/types";
 
 interface Message {
   id: string;
@@ -24,11 +24,14 @@ interface ChatSystemProps {
   isGlobalChat?: boolean;
 }
 
-export const ChatSystem = ({ gameId, isGlobalChat = false }: ChatSystemProps) => {
+export const ChatSystem = ({
+  gameId,
+  isGlobalChat = false,
+}: ChatSystemProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [currentUser, setCurrentUser] = useState<string | null>(null);
-  const [currentUsername, setCurrentUsername] = useState<string>('');
+  const [currentUsername, setCurrentUsername] = useState<string>("");
   const [isMobile, setIsMobile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -37,24 +40,24 @@ export const ChatSystem = ({ gameId, isGlobalChat = false }: ChatSystemProps) =>
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
+    window.addEventListener("resize", checkMobile);
+
     getCurrentUser();
     fetchMessages();
-    
+
     // Subscribe to new messages
     const channel = supabase
-      .channel(`chat_${gameId || 'global'}`)
-      .on('broadcast', { event: 'new_message' }, (payload) => {
-        setMessages(prev => [...prev, payload.payload as Message]);
+      .channel(`chat_${gameId || "global"}`)
+      .on("broadcast", { event: "new_message" }, (payload) => {
+        setMessages((prev) => [...prev, payload.payload as Message]);
         scrollToBottom();
       })
       .subscribe();
 
     return () => {
-      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener("resize", checkMobile);
       supabase.removeChannel(channel);
     };
   }, [gameId]);
@@ -64,18 +67,20 @@ export const ChatSystem = ({ gameId, isGlobalChat = false }: ChatSystemProps) =>
   }, [messages]);
 
   const getCurrentUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
     setCurrentUser(user.id);
 
     const { data: profile } = await supabase
-      .from('profiles')
-      .select('username')
-      .eq('id', user.id)
+      .from("profiles")
+      .select("username")
+      .eq("id", user.id)
       .single();
 
-    setCurrentUsername(profile?.username || 'Anonymous');
+    setCurrentUsername(profile?.username || "Anonymous");
   };
 
   const fetchMessages = async () => {
@@ -83,23 +88,23 @@ export const ChatSystem = ({ gameId, isGlobalChat = false }: ChatSystemProps) =>
     // In a real implementation, you'd fetch from a messages table
     const simulatedMessages: Message[] = [
       {
-        id: '1',
-        content: 'Welcome to ChessCash! Good luck in your games!',
-        sender_id: 'system',
-        sender_username: 'System',
+        id: "1",
+        content: "Welcome to ChessCash! Good luck in your games!",
+        sender_id: "system",
+        sender_username: "System",
         created_at: new Date().toISOString(),
-        game_id: gameId
-      }
+        game_id: gameId,
+      },
     ];
 
     if (!isGlobalChat && gameId) {
       simulatedMessages.push({
-        id: '2',
-        content: 'Game started! May the best player win!',
-        sender_id: 'system',
-        sender_username: 'Game System',
+        id: "2",
+        content: "Game started! May the best player win!",
+        sender_id: "system",
+        sender_username: "Game System",
         created_at: new Date().toISOString(),
-        game_id: gameId
+        game_id: gameId,
       });
     }
 
@@ -115,29 +120,29 @@ export const ChatSystem = ({ gameId, isGlobalChat = false }: ChatSystemProps) =>
       sender_id: currentUser,
       sender_username: currentUsername,
       created_at: new Date().toISOString(),
-      game_id: gameId
+      game_id: gameId,
     };
 
     // Broadcast message to other users
-    const channel = supabase.channel(`chat_${gameId || 'global'}`);
+    const channel = supabase.channel(`chat_${gameId || "global"}`);
     await channel.send({
-      type: 'broadcast',
-      event: 'new_message',
-      payload: message
+      type: "broadcast",
+      event: "new_message",
+      payload: message,
     });
 
     // Add to local state
-    setMessages(prev => [...prev, message]);
-    setNewMessage('');
+    setMessages((prev) => [...prev, message]);
+    setNewMessage("");
     scrollToBottom();
   };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
@@ -153,8 +158,11 @@ export const ChatSystem = ({ gameId, isGlobalChat = false }: ChatSystemProps) =>
       <CardHeader className="pb-3">
         <CardTitle className="text-white flex items-center gap-2">
           <MessageSquare className="h-5 w-5" />
-          {isGlobalChat ? 'Global Chat' : 'Game Chat'}
-          <Badge variant="outline" className="ml-auto text-green-400 border-green-400">
+          {isGlobalChat ? "Global Chat" : "Game Chat"}
+          <Badge
+            variant="outline"
+            className="ml-auto text-green-400 border-green-400"
+          >
             <Users className="h-3 w-3 mr-1" />
             Online
           </Badge>
@@ -167,21 +175,30 @@ export const ChatSystem = ({ gameId, isGlobalChat = false }: ChatSystemProps) =>
             {messages.map((message) => (
               <div key={message.id} className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className={`text-sm font-medium ${
-                    message.sender_id === 'system' ? 'text-yellow-400' :
-                    message.sender_id === currentUser ? 'text-blue-400' : 'text-gray-300'
-                  }`}>
+                  <span
+                    className={`text-sm font-medium ${
+                      message.sender_id === "system"
+                        ? "text-yellow-400"
+                        : message.sender_id === currentUser
+                          ? "text-blue-400"
+                          : "text-gray-300"
+                    }`}
+                  >
                     {message.sender_username}
                   </span>
                   <span className="text-xs text-gray-500">
                     {new Date(message.created_at).toLocaleTimeString()}
                   </span>
                 </div>
-                <div className={`text-sm p-2 rounded-lg ${
-                  message.sender_id === 'system' ? 'bg-yellow-500/10 text-yellow-300' :
-                  message.sender_id === currentUser ? 'bg-blue-500/20 text-white ml-4' : 
-                  'bg-gray-700/50 text-gray-300'
-                }`}>
+                <div
+                  className={`text-sm p-2 rounded-lg ${
+                    message.sender_id === "system"
+                      ? "bg-yellow-500/10 text-yellow-300"
+                      : message.sender_id === currentUser
+                        ? "bg-blue-500/20 text-white ml-4"
+                        : "bg-gray-700/50 text-gray-300"
+                  }`}
+                >
                   {message.content}
                 </div>
               </div>
