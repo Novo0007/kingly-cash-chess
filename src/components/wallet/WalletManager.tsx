@@ -366,52 +366,60 @@ export const WalletManager = () => {
     return ["withdrawal", "game_entry"].includes(type) ? "-" : "+";
   };
 
-  return (
-    <div className="space-y-4 md:space-y-6 p-3 md:p-4 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
-      <WithdrawalForm
-        open={withdrawalForm.open}
-        onOpenChange={(open) =>
-          setWithdrawalForm((prev) => ({ ...prev, open }))
-        }
-        amount={withdrawalForm.amount}
-        onWithdraw={handleWithdrawalSubmit}
-      />
+  // Mobile-optimized styles
+  const cardGradient = isMobile
+    ? "bg-slate-800/80 border border-slate-600"
+    : "bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-600 shadow-lg";
 
-      {/* Wallet Balance */}
-      <Card className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-2 border-yellow-500/40 shadow-xl rounded-xl backdrop-blur-sm">
-        <CardHeader className="pb-3 md:pb-6">
-          <CardTitle className="text-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div className="flex items-center gap-2 md:gap-3">
-              <CreditCard className="h-5 w-5 md:h-6 md:w-6" />
-              <span className="text-lg md:text-xl">💰 Wallet Balance</span>
+  const animationClass = isMobile ? "" : "transition-all duration-300 hover:scale-105";
+
+  return (
+    <MobileContainer maxWidth="xl">
+      <div className="space-y-4 md:space-y-6">
+        <WithdrawalForm
+          open={withdrawalForm.open}
+          onOpenChange={(open) =>
+            setWithdrawalForm((prev) => ({ ...prev, open }))
+          }
+          amount={withdrawalForm.amount}
+          onWithdraw={handleWithdrawalSubmit}
+        />
+
+        {/* Wallet Balance */}
+        <Card className={`${cardGradient} ${animationClass} border-yellow-600/30`}>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-yellow-400 flex items-center justify-between font-semibold text-base md:text-lg">
+              <div className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5 md:h-6 md:w-6" />
+                Wallet Balance
+              </div>
+              <Button
+                onClick={handleRefresh}
+                variant="ghost"
+                size="sm"
+                disabled={refreshing}
+                className="text-yellow-400 hover:bg-slate-700/50 h-8 w-8 p-0"
+              >
+                <RefreshCw
+                  className={`h-3 w-3 md:h-4 md:w-4 ${refreshing && !isMobile ? "animate-spin" : ""}`}
+                />
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl md:text-4xl font-bold text-white mb-2">
+              ₹{wallet?.balance?.toFixed(2) || "0.00"}
             </div>
-            <Button
-              onClick={handleRefresh}
-              variant="ghost"
-              size="sm"
-              disabled={refreshing}
-              className="text-yellow-400 hover:bg-yellow-500/10 border border-yellow-500/30 self-start sm:self-auto"
-            >
-              <RefreshCw
-                className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
-              />
-            </Button>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="text-3xl md:text-4xl font-bold text-yellow-400 mb-2">
-            ₹{wallet?.balance?.toFixed(2) || "0.00"}
-          </div>
-          {wallet?.locked_balance && wallet.locked_balance > 0 && (
-            <p className="text-sm text-gray-400 flex items-center gap-2">
-              🔒 Locked Balance: ₹{wallet.locked_balance.toFixed(2)}
+            {wallet?.locked_balance && wallet.locked_balance > 0 && (
+              <p className="text-sm text-slate-400 flex items-center gap-2">
+                🔒 Locked Balance: ₹{wallet.locked_balance.toFixed(2)}
+              </p>
+            )}
+            <p className="text-xs text-slate-500 mt-2">
+              Available for games and withdrawals
             </p>
-          )}
-          <p className="text-xs text-gray-500 mt-2">
-            Available for games and withdrawals
-          </p>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
       {/* Deposit/Withdraw */}
       <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-2 border-slate-600/30 shadow-xl rounded-xl backdrop-blur-sm">
