@@ -98,7 +98,12 @@ const Index = () => {
   const renderCurrentView = () => {
     switch (currentView) {
       case "games":
-        return <GameSelection onSelectGame={handleSelectGame} />;
+        return (
+          <GameSelection
+            onSelectGame={handleSelectGame}
+            onShowChessRules={() => setCurrentView("chess-rules")}
+          />
+        );
       case "lobby":
         return (
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
