@@ -456,24 +456,51 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
     );
   };
 
+  // Mobile-optimized styles
+  const cardGradient = isMobile
+    ? "bg-slate-800/80 border border-slate-600"
+    : "bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-600 shadow-lg";
+
+  const animationClass = isMobile ? "" : "transition-all duration-300 hover:scale-105";
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchGames();
+    await fetchWallet();
+    setRefreshing(false);
+    toast.success('Lobby refreshed!');
+  };
+
   return (
-    <div className="space-y-4 sm:space-y-6 pb-20 px-2 sm:px-0">
-      {/* Wallet Balance */}
-      <Card className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/20">
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
-              <span className="text-white font-medium text-sm sm:text-base">
-                Wallet Balance
-              </span>
+    <MobileContainer maxWidth="xl">
+      <div className="space-y-4 md:space-y-6">
+        {/* Header with Wallet Balance */}
+        <Card className={`${cardGradient} ${animationClass} border-blue-600/30`}>
+          <CardContent className="p-3 md:p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-blue-400" />
+                <span className="text-white font-semibold text-sm md:text-base">
+                  Wallet Balance
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="text-lg md:text-xl font-bold text-blue-400">
+                  ₹{wallet?.balance?.toFixed(2) || "0.00"}
+                </div>
+                <Button
+                  onClick={handleRefresh}
+                  variant="ghost"
+                  size="sm"
+                  disabled={refreshing}
+                  className="text-blue-400 hover:bg-slate-700/50 h-8 w-8 p-0"
+                >
+                  <RefreshCw className={`h-3 w-3 md:h-4 md:w-4 ${refreshing && !isMobile ? 'animate-spin' : ''}`} />
+                </Button>
+              </div>
             </div>
-            <div className="text-lg sm:text-xl font-bold text-blue-400">
-              ₹{wallet?.balance?.toFixed(2) || "0.00"}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
       {/* Create Game */}
       <Card className="bg-slate-800/50 border-slate-700">
