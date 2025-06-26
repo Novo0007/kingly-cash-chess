@@ -23,6 +23,7 @@ import {
   Heart,
   Globe,
   Smartphone,
+  Bell,
 } from "lucide-react";
 
 export const MoreAppsGames = () => {

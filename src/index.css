@@ -2,83 +2,90 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+/* Beautiful Lavender Theme - Elegant and Professional */
 
 @layer base {
   :root {
-    /* Futuristic Cyberpunk Theme */
-    --background: 224 71% 4%;
-    --foreground: 213 31% 91%;
+    /* Lavender Theme Variables */
+    --background: 250 100% 98%;
+    --foreground: 250 30% 15%;
 
-    --card: 224 71% 4%;
-    --card-foreground: 213 31% 91%;
+    --card: 250 100% 96%;
+    --card-foreground: 250 30% 15%;
 
-    --popover: 224 71% 4%;
-    --popover-foreground: 213 31% 91%;
+    --popover: 250 100% 97%;
+    --popover-foreground: 250 30% 15%;
 
-    --primary: 263 70% 50%;
-    --primary-foreground: 210 20% 98%;
+    --primary: 250 85% 70%;
+    --primary-foreground: 250 100% 98%;
 
-    --secondary: 215 25% 27%;
-    --secondary-foreground: 210 20% 98%;
+    --secondary: 250 20% 88%;
+    --secondary-foreground: 250 30% 25%;
 
-    --muted: 215 25% 27%;
-    --muted-foreground: 213 31% 91%;
+    --muted: 250 15% 92%;
+    --muted-foreground: 250 30% 40%;
 
-    --accent: 263 70% 50%;
-    --accent-foreground: 210 20% 98%;
+    --accent: 270 80% 75%;
+    --accent-foreground: 250 100% 98%;
 
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 20% 98%;
+    --destructive: 0 80% 65%;
+    --destructive-foreground: 250 100% 98%;
 
-    --border: 215 25% 27%;
-    --input: 215 25% 27%;
-    --ring: 263 70% 50%;
+    --border: 250 20% 85%;
+    --input: 250 20% 90%;
+    --ring: 250 85% 70%;
 
     --radius: 0.75rem;
 
-    /* Cyberpunk specific colors */
-    --neon-cyan: 180 100% 50%;
-    --neon-purple: 263 70% 50%;
-    --neon-pink: 322 81% 60%;
-    --neon-green: 120 100% 50%;
-    --neon-orange: 30 100% 50%;
-    --electric-blue: 200 100% 60%;
-    --cyber-dark: 224 71% 4%;
-    --cyber-gray: 215 25% 27%;
-    --matrix-green: 120 100% 25%;
+    /* Lavender specific colors */
+    --lavender-50: 250 100% 98%;
+    --lavender-100: 250 100% 95%;
+    --lavender-200: 250 90% 88%;
+    --lavender-300: 250 80% 80%;
+    --lavender-400: 250 75% 70%;
+    --lavender-500: 250 70% 60%;
+    --lavender-600: 250 65% 50%;
+    --lavender-700: 250 60% 40%;
+    --lavender-800: 250 55% 30%;
+    --lavender-900: 250 50% 20%;
 
-    --sidebar-background: 224 71% 4%;
-    --sidebar-foreground: 213 31% 91%;
-    --sidebar-primary: 263 70% 50%;
-    --sidebar-primary-foreground: 210 20% 98%;
-    --sidebar-accent: 215 25% 27%;
-    --sidebar-accent-foreground: 213 31% 91%;
-    --sidebar-border: 215 25% 27%;
-    --sidebar-ring: 263 70% 50%;
+    /* Complementary colors */
+    --lavender-accent: 270 80% 75%;
+    --lavender-soft: 280 60% 85%;
+    --lavender-muted: 250 30% 88%;
+    --lavender-text: 250 40% 25%;
+    --lavender-light: 250 100% 99%;
   }
 
   .dark {
-    /* Enhanced dark mode for futuristic theme */
-    --background: 224 71% 4%;
-    --foreground: 213 31% 91%;
-    --card: 224 71% 4%;
-    --card-foreground: 213 31% 91%;
-    --popover: 224 71% 4%;
-    --popover-foreground: 213 31% 91%;
-    --primary: 263 70% 50%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 215 25% 27%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 25% 27%;
-    --muted-foreground: 213 31% 91%;
-    --accent: 263 70% 50%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 25% 27%;
-    --input: 215 25% 27%;
-    --ring: 263 70% 50%;
+    /* Dark lavender theme */
+    --background: 250 20% 8%;
+    --foreground: 250 100% 95%;
+
+    --card: 250 25% 12%;
+    --card-foreground: 250 100% 95%;
+
+    --popover: 250 25% 10%;
+    --popover-foreground: 250 100% 95%;
+
+    --primary: 250 70% 60%;
+    --primary-foreground: 250 20% 8%;
+
+    --secondary: 250 20% 18%;
+    --secondary-foreground: 250 100% 95%;
+
+    --muted: 250 20% 15%;
+    --muted-foreground: 250 40% 70%;
+
+    --accent: 270 70% 65%;
+    --accent-foreground: 250 20% 8%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 250 100% 95%;
+
+    --border: 250 20% 20%;
+    --input: 250 20% 15%;
+    --ring: 250 70% 60%;
   }
 }
 
@@ -86,345 +93,221 @@
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
-  }
-
-  /* Mobile-first responsive improvements */
-  html {
-    @apply text-base antialiased;
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  /* Improved touch targets for mobile */
-  button,
-  [role="button"],
-  input[type="submit"],
-  input[type="button"] {
-    @apply min-h-[44px] min-w-[44px];
-    touch-action: manipulation;
-  }
-
-  /* Safe area insets for mobile devices */
-  .safe-area-inset-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  .safe-area-inset-top {
-    padding-top: env(safe-area-inset-top);
-  }
-
-  /* Better scrolling on mobile */
-  * {
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Prevent zoom on input focus */
-  input[type="text"],
-  input[type="number"],
-  input[type="email"],
-  input[type="password"],
-  input[type="search"],
-  input[type="tel"],
-  input[type="url"],
-  select,
-  textarea {
-    font-size: 16px;
-  }
-
-  @media (min-width: 768px) {
-    input[type="text"],
-    input[type="number"],
-    input[type="email"],
-    input[type="password"],
-    input[type="search"],
-    input[type="tel"],
-    input[type="url"],
-    select,
-    textarea {
-      font-size: 14px;
-    }
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
   }
 }
 
-/* Futuristic Gaming Theme Utilities */
-@layer utilities {
-  /* Neon glow effects */
-  .glow-cyan {
-    @apply shadow-[0_0_20px_hsl(var(--neon-cyan))] border border-cyan-400;
-  }
-
-  .glow-purple {
-    @apply shadow-[0_0_20px_hsl(var(--neon-purple))] border border-purple-400;
-  }
-
-  .glow-pink {
-    @apply shadow-[0_0_20px_hsl(var(--neon-pink))] border border-pink-400;
-  }
-
-  .glow-green {
-    @apply shadow-[0_0_20px_hsl(var(--neon-green))] border border-green-400;
-  }
-
-  /* Cyberpunk text effects */
-  .text-neon-cyan {
-    @apply text-cyan-400;
-    text-shadow:
-      0 0 10px hsl(var(--neon-cyan)),
-      0 0 20px hsl(var(--neon-cyan)),
-      0 0 30px hsl(var(--neon-cyan));
-  }
-
-  .text-neon-purple {
-    @apply text-purple-400;
-    text-shadow:
-      0 0 10px hsl(var(--neon-purple)),
-      0 0 20px hsl(var(--neon-purple)),
-      0 0 30px hsl(var(--neon-purple));
-  }
-
-  .text-neon-pink {
-    @apply text-pink-400;
-    text-shadow:
-      0 0 10px hsl(var(--neon-pink)),
-      0 0 20px hsl(var(--neon-pink)),
-      0 0 30px hsl(var(--neon-pink));
-  }
-
-  .text-neon-green {
-    @apply text-green-400;
-    text-shadow:
-      0 0 10px hsl(var(--neon-green)),
-      0 0 20px hsl(var(--neon-green)),
-      0 0 30px hsl(var(--neon-green));
-  }
-
-  /* Holographic border effect */
-  .border-holographic {
-    border: 2px solid transparent;
-    background:
-      linear-gradient(45deg, #1a1a2e, #16213e) padding-box,
-      linear-gradient(45deg, #00ffff, #ff00ff, #ffff00, #00ffff) border-box;
-    position: relative;
-  }
-
-  .border-holographic::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    padding: 2px;
-    background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00, #00ffff);
-    border-radius: inherit;
-    mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    mask-composite: xor;
-    animation: holographic-border 3s linear infinite;
-  }
-
-  /* Matrix rain effect background */
-  .matrix-bg {
-    background:
-      linear-gradient(90deg, transparent 98%, #00ff41 100%),
-      linear-gradient(transparent 98%, #00ff41 100%);
-    background-size: 20px 20px;
-    animation: matrix-rain 20s linear infinite;
-  }
-
-  /* Cyber grid pattern */
-  .cyber-grid {
-    background-image:
-      linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
-    background-size: 50px 50px;
-    animation: cyber-grid-move 10s linear infinite;
-  }
-
-  /* Scanning line effect */
-  .scan-lines {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .scan-lines::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      transparent 49%,
-      rgba(0, 255, 255, 0.1) 50%,
-      transparent 51%
-    );
-    background-size: 100% 4px;
-    animation: scan-lines 2s linear infinite;
-    pointer-events: none;
-  }
-
-  /* Glitch effect */
-  .glitch {
-    position: relative;
-  }
-
-  .glitch::before,
-  .glitch::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .glitch::before {
-    animation: glitch-1 0.5s infinite;
-    color: #ff00ff;
-    z-index: -1;
-  }
-
-  .glitch::after {
-    animation: glitch-2 0.5s infinite;
-    color: #00ffff;
-    z-index: -2;
-  }
-
-  /* Pulse effect for important elements */
-  .cyber-pulse {
-    animation: cyber-pulse 2s ease-in-out infinite alternate;
-  }
+/* Lavender-themed custom classes */
+.lavender-gradient {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--lavender-100)) 0%,
+    hsl(var(--lavender-200)) 25%,
+    hsl(var(--lavender-300)) 50%,
+    hsl(var(--lavender-200)) 75%,
+    hsl(var(--lavender-100)) 100%
+  );
 }
 
-/* Keyframe animations */
-@keyframes holographic-border {
-  0% {
-    filter: hue-rotate(0deg);
-  }
-  100% {
-    filter: hue-rotate(360deg);
-  }
+.lavender-gradient-dark {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--lavender-800)) 0%,
+    hsl(var(--lavender-700)) 25%,
+    hsl(var(--lavender-600)) 50%,
+    hsl(var(--lavender-700)) 75%,
+    hsl(var(--lavender-800)) 100%
+  );
 }
 
-@keyframes matrix-rain {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 20px 20px;
-  }
+.lavender-glass {
+  background: rgba(230, 220, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(230, 220, 255, 0.2);
 }
 
-@keyframes cyber-grid-move {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 50px 50px;
-  }
+.lavender-shadow {
+  box-shadow:
+    0 4px 20px rgba(199, 180, 255, 0.15),
+    0 1px 3px rgba(199, 180, 255, 0.1);
 }
 
-@keyframes scan-lines {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(100vh);
-  }
+.lavender-shadow-lg {
+  box-shadow:
+    0 10px 40px rgba(199, 180, 255, 0.2),
+    0 4px 12px rgba(199, 180, 255, 0.15),
+    0 1px 3px rgba(199, 180, 255, 0.1);
 }
 
-@keyframes glitch-1 {
+.lavender-text-gradient {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--lavender-600)) 0%,
+    hsl(var(--lavender-accent)) 50%,
+    hsl(var(--lavender-500)) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+.lavender-button {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--lavender-500)) 0%,
+    hsl(var(--lavender-600)) 100%
+  );
+  color: white;
+  border: 1px solid hsl(var(--lavender-400));
+  transition: all 0.3s ease;
+}
+
+.lavender-button:hover {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--lavender-600)) 0%,
+    hsl(var(--lavender-700)) 100%
+  );
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(199, 180, 255, 0.3);
+}
+
+.lavender-border {
+  border-color: hsl(var(--lavender-300));
+}
+
+.lavender-bg {
+  background-color: hsl(var(--lavender-50));
+}
+
+.lavender-bg-soft {
+  background-color: hsl(var(--lavender-100));
+}
+
+.lavender-text {
+  color: hsl(var(--lavender-text));
+}
+
+/* Professional animations */
+@keyframes gradientShift {
   0%,
   100% {
-    transform: translate(0);
-  }
-  20% {
-    transform: translate(-2px, 2px);
-  }
-  40% {
-    transform: translate(-2px, -2px);
-  }
-  60% {
-    transform: translate(2px, 2px);
-  }
-  80% {
-    transform: translate(2px, -2px);
-  }
-}
-
-@keyframes glitch-2 {
-  0%,
-  100% {
-    transform: translate(0);
-  }
-  20% {
-    transform: translate(2px, 0);
-  }
-  40% {
-    transform: translate(0, 2px);
-  }
-  60% {
-    transform: translate(-2px, 0);
-  }
-  80% {
-    transform: translate(0, -2px);
-  }
-}
-
-@keyframes cyber-pulse {
-  0% {
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-    transform: scale(1);
-  }
-  100% {
-    box-shadow: 0 0 40px rgba(0, 255, 255, 0.8);
-    transform: scale(1.02);
-  }
-}
-
-@keyframes neon-flicker {
-  0%,
-  100% {
-    opacity: 1;
+    background-position: 0% 50%;
   }
   50% {
-    opacity: 0.8;
+    background-position: 100% 50%;
   }
 }
 
-@keyframes data-stream {
-  0% {
-    transform: translateY(-100%);
-    opacity: 0;
+@keyframes lavenderFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
   }
-  10%,
-  90% {
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes lavenderPulse {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
     opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.lavender-float {
+  animation: lavenderFloat 3s ease-in-out infinite;
+}
+
+.lavender-pulse {
+  animation: lavenderPulse 2s ease-in-out infinite;
+}
+
+/* Professional loading animations */
+.lavender-spinner {
+  border: 3px solid hsl(var(--lavender-200));
+  border-top: 3px solid hsl(var(--lavender-500));
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
   100% {
-    transform: translateY(100vh);
-    opacity: 0;
+    transform: rotate(360deg);
   }
 }
 
-/* Futuristic scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+.lavender-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(230, 220, 255, 0.4) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
 
-::-webkit-scrollbar-track {
-  background: hsl(var(--cyber-dark));
-  border-radius: 4px;
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #00ffff, #ff00ff);
-  border-radius: 4px;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+/* Enhanced professional styling for components */
+.lavender-card {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--lavender-50)) 0%,
+    hsl(var(--lavender-100)) 100%
+  );
+  border: 1px solid hsl(var(--lavender-200));
+  border-radius: 12px;
+  box-shadow:
+    0 4px 20px rgba(199, 180, 255, 0.08),
+    0 1px 3px rgba(199, 180, 255, 0.06);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+.lavender-card:hover {
+  box-shadow:
+    0 8px 30px rgba(199, 180, 255, 0.12),
+    0 4px 12px rgba(199, 180, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.lavender-input {
+  background: hsl(var(--lavender-50));
+  border: 2px solid hsl(var(--lavender-200));
+  color: hsl(var(--lavender-text));
+}
+
+.lavender-input:focus {
+  border-color: hsl(var(--lavender-500));
+  box-shadow: 0 0 0 3px rgba(199, 180, 255, 0.1);
+}
+
+/* Responsive design helpers */
+@media (max-width: 768px) {
+  .lavender-card {
+    border-radius: 8px;
+    margin: 4px;
+  }
 }

@@ -158,33 +158,40 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Dynamic Background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-cyan-600/5 animate-pulse"></div>
+    <div className="min-h-screen relative overflow-hidden lavender-bg">
+      {/* Elegant Lavender Background */}
+      <div className="fixed inset-0 lavender-gradient">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-purple-100/10"></div>
       </div>
 
-      {/* Animated Grid Pattern */}
+      {/* Subtle Pattern Overlay */}
       <div className="fixed inset-0 opacity-10">
-        <div className="cyber-grid h-full w-full"></div>
+        <div
+          className="h-full w-full"
+          style={{
+            backgroundImage: `radial-gradient(circle at 20% 20%, hsl(250, 70%, 80%) 0%, transparent 30%),
+                             radial-gradient(circle at 80% 80%, hsl(270, 80%, 85%) 0%, transparent 30%),
+                             radial-gradient(circle at 50% 50%, hsl(260, 75%, 82%) 0%, transparent 25%)`,
+          }}
+        ></div>
       </div>
 
-      {/* Floating Particles */}
+      {/* Elegant Floating Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div
-          className="absolute top-20 left-20 w-2 h-2 bg-blue-400 rounded-full animate-bounce"
-          style={{ animationDelay: "0s", animationDuration: "3s" }}
+          className="absolute top-20 left-20 w-3 h-3 bg-gradient-to-br from-purple-300 to-indigo-300 rounded-full lavender-float opacity-40"
+          style={{ animationDelay: "0s", animationDuration: "4s" }}
         ></div>
         <div
-          className="absolute top-40 right-40 w-1 h-1 bg-purple-400 rounded-full animate-bounce"
-          style={{ animationDelay: "1s", animationDuration: "4s" }}
+          className="absolute top-40 right-40 w-2 h-2 bg-gradient-to-br from-lavender-300 to-purple-300 rounded-full lavender-float opacity-50"
+          style={{ animationDelay: "1s", animationDuration: "5s" }}
         ></div>
         <div
-          className="absolute bottom-40 left-40 w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce"
+          className="absolute bottom-40 left-40 w-4 h-4 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full lavender-float opacity-30"
           style={{ animationDelay: "2s", animationDuration: "3.5s" }}
         ></div>
         <div
-          className="absolute bottom-20 right-20 w-1 h-1 bg-yellow-400 rounded-full animate-bounce"
+          className="absolute bottom-20 right-20 w-2 h-2 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full lavender-float opacity-60"
           style={{ animationDelay: "1.5s", animationDuration: "4.5s" }}
         ></div>
       </div>
@@ -195,13 +202,15 @@ const Index = () => {
       </div>
 
       {/* Main Content Area */}
-      <main className="relative z-20 max-w-7xl mx-auto px-3 md:px-4 py-4 md:py-8 pb-24 md:pb-8">
+      <main className="relative z-20 max-w-7xl mx-auto px-2 sm:px-3 md:px-4 py-2 sm:py-4 md:py-8 pb-20 sm:pb-24 md:pb-8">
         <div className="relative">
-          {/* Content Background with Glassmorphism */}
-          <div className="absolute inset-0 backdrop-blur-sm bg-white/2 rounded-3xl border border-white/5"></div>
+          {/* Content Background with Lavender Glass Effect */}
+          <div className="absolute inset-0 lavender-glass rounded-2xl sm:rounded-3xl lavender-shadow"></div>
 
           {/* Content */}
-          <div className="relative z-10 p-2 md:p-4">{renderCurrentView()}</div>
+          <div className="relative z-10 p-1 sm:p-2 md:p-4">
+            {renderCurrentView()}
+          </div>
         </div>
       </main>
 

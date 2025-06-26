@@ -20,13 +20,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-inset-bottom">
-      {/* Glass Background with Blur */}
-      <div className="absolute inset-0 backdrop-blur-2xl bg-slate-900/90 border-t-2 border-purple-500/30">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/15 to-cyan-600/10"></div>
+      {/* Lavender Glass Background */}
+      <div className="absolute inset-0 lavender-glass border-t-2 border-purple-300/50">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-100/10 via-lavender-100/15 to-indigo-100/10"></div>
       </div>
 
       {/* Navigation Content */}
-      <div className="relative z-10 flex items-center justify-around px-2 py-3 max-w-sm mx-auto">
+      <div className="relative z-10 flex items-center justify-around px-3 py-4 max-w-md mx-auto">
         {navItems.map((item, index) => {
           const Icon = item.icon;
           const isActive =
@@ -42,17 +42,17 @@ export const BottomNav: React.FC<BottomNavProps> = ({
             <div key={item.id} className="relative group">
               {/* Active Background Glow */}
               {isActive && (
-                <div className="absolute -inset-2 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-2xl blur-xl opacity-60 animate-pulse"></div>
+                <div className="absolute -inset-2 bg-gradient-to-r from-purple-400 via-lavender-400 to-indigo-400 rounded-2xl blur-xl opacity-60 lavender-pulse"></div>
               )}
 
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onViewChange(item.id)}
-                className={`relative flex flex-col items-center gap-1 px-3 py-3 h-auto min-w-0 flex-1 min-h-[60px] rounded-2xl transition-all duration-300 transform ${
+                className={`relative flex flex-col items-center gap-1 px-4 py-4 h-auto min-w-0 flex-1 min-h-[68px] rounded-2xl transition-all duration-300 transform ${
                   isActive
-                    ? "text-white bg-gradient-to-b from-blue-500/20 to-purple-500/20 scale-110 shadow-lg border border-purple-400/50"
-                    : "text-gray-400 hover:text-white hover:bg-gray-800/50 active:bg-gray-700/50 active:scale-95 hover:scale-105"
+                    ? "text-purple-700 bg-gradient-to-b from-purple-100/40 to-lavender-200/40 scale-110 lavender-shadow border border-purple-300/50"
+                    : "text-purple-500 hover:text-purple-700 hover:bg-purple-50/30 active:bg-purple-100/50 active:scale-95 hover:scale-105"
                 }`}
               >
                 {/* Background Effects */}

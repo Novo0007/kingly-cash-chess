@@ -90,12 +90,12 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
 
   return (
     <nav className="relative">
-      {/* Background with Glassmorphism */}
+      {/* Background with Lavender Glassmorphism */}
       <div
-        className={`absolute inset-0 ${isMobile ? "bg-slate-900/95" : "backdrop-blur-2xl bg-slate-900/90"} border-b border-slate-600/50`}
+        className={`absolute inset-0 ${isMobile ? "lavender-card" : "lavender-glass"} border-b border-purple-200/50`}
       >
         {!isMobile && (
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-cyan-600/5"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-100/10 via-lavender-100/10 to-indigo-100/10"></div>
         )}
       </div>
 
@@ -104,21 +104,21 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
           {/* Enhanced Logo */}
           <div className="flex items-center gap-3 group">
             <div className="relative">
-              <div className="absolute -inset-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative p-2 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full">
+              <div className="absolute -inset-2 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative p-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full">
                 <Crown className="h-7 w-7 md:h-8 md:w-8 text-white drop-shadow-lg" />
               </div>
             </div>
             <div>
-              <span className="text-xl md:text-2xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
+              <span className="text-xl md:text-2xl font-black lavender-text-gradient">
                 NNC GAMES
               </span>
               <div className="flex items-center gap-1 mt-0.5">
-                <Star className="h-3 w-3 text-yellow-400" />
-                <span className="text-xs text-gray-400 font-medium">
+                <Star className="h-3 w-3 text-purple-400" />
+                <span className="text-xs text-purple-600 font-medium">
                   Chess Arena
                 </span>
-                <Star className="h-3 w-3 text-yellow-400" />
+                <Star className="h-3 w-3 text-purple-400" />
               </div>
             </div>
           </div>
