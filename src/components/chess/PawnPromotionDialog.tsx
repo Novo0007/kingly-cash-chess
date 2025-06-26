@@ -5,7 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Crown, Castle, Triangle, Swords } from "lucide-react";
+import { Crown, Castle, Swords } from "lucide-react";
 
 type PieceType = "q" | "r" | "b" | "n";
 
@@ -42,7 +42,7 @@ export const PawnPromotionDialog = ({
     {
       type: "b" as PieceType,
       name: "Bishop",
-      icon: Triangle,
+      icon: BishopIcon,
       symbol: playerColor === "white" ? "♗" : "♝",
       description: "Moves diagonally",
       color: "text-green-600",
@@ -115,8 +115,8 @@ export const PawnPromotionDialog = ({
   );
 };
 
-// Triangle component for Bishop icon
-const Triangle = ({ className }: { className?: string }) => (
+// BishopIcon component for Bishop representation
+const BishopIcon = ({ className }: { className?: string }) => (
   <svg
     className={className}
     viewBox="0 0 24 24"
