@@ -60,7 +60,7 @@
 
   .dark {
     /* Enhanced dark mode for futuristic theme */
-    --background: 224 71% 4%;
+    --background: 164, 15%, 100%;
     --foreground: 213 31% 91%;
     --card: 224 71% 4%;
     --card-foreground: 213 31% 91%;
