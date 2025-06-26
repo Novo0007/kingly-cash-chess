@@ -187,7 +187,7 @@ export const DotsAndBoxes: React.FC<DotsAndBoxesProps> = ({
           )}
         </div>
 
-        <div className="grid grid-cols-9 gap-1 bg-white p-4 rounded-lg">
+        <div className="grid grid-cols-9 gap-1 bg-white p-3 sm:p-4 rounded-lg w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto">
           {Array(9)
             .fill(null)
             .map((_, rowIndex) =>
