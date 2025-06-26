@@ -609,288 +609,289 @@ export const FriendsSystem = () => {
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
-      <ChallengePopup
-        open={challengePopup.open}
-        onOpenChange={(open) =>
-          setChallengePopup((prev) => ({ ...prev, open }))
-        }
-        friendName={challengePopup.friendName}
-        onChallenge={(amount) =>
-          createGameInvitation(
-            challengePopup.friendId,
-            amount,
-            challengePopup.gameType,
-          )
-        }
-      />
+        <ChallengePopup
+          open={challengePopup.open}
+          onOpenChange={(open) =>
+            setChallengePopup((prev) => ({ ...prev, open }))
+          }
+          friendName={challengePopup.friendName}
+          onChallenge={(amount) =>
+            createGameInvitation(
+              challengePopup.friendId,
+              amount,
+              challengePopup.gameType,
+            )
+          }
+        />
 
-      {/* Received Challenges */}
-      {receivedChallenges.length > 0 && (
-        <Card className="bg-gradient-to-br from-emerald-900/40 to-green-800/40 border-2 border-emerald-400/60 shadow-xl rounded-xl">
-          <CardHeader>
-            <CardTitle className="text-emerald-200 flex items-center gap-3 text-xl font-bold">
-              <Trophy className="h-6 w-6 text-yellow-400" />
-              🏆 Incoming Challenges ({receivedChallenges.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {receivedChallenges.map((challenge) => (
-              <div
-                key={challenge.id}
-                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-emerald-300/30 space-y-3 sm:space-y-0"
-              >
-                <div className="flex-1">
-                  <p className="text-white font-bold text-lg">
-                    {challenge.from_user?.username}
-                  </p>
-                  <p className="text-emerald-200 text-base font-medium">
-                    💰 {challenge.game_type || "chess"} Challenge: ₹
-                    {challenge.entry_fee}
-                  </p>
+        {/* Received Challenges */}
+        {receivedChallenges.length > 0 && (
+          <Card className="bg-gradient-to-br from-emerald-900/40 to-green-800/40 border-2 border-emerald-400/60 shadow-xl rounded-xl">
+            <CardHeader>
+              <CardTitle className="text-emerald-200 flex items-center gap-3 text-xl font-bold">
+                <Trophy className="h-6 w-6 text-yellow-400" />
+                🏆 Incoming Challenges ({receivedChallenges.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {receivedChallenges.map((challenge) => (
+                <div
+                  key={challenge.id}
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-emerald-300/30 space-y-3 sm:space-y-0"
+                >
+                  <div className="flex-1">
+                    <p className="text-white font-bold text-lg">
+                      {challenge.from_user?.username}
+                    </p>
+                    <p className="text-emerald-200 text-base font-medium">
+                      💰 {challenge.game_type || "chess"} Challenge: ₹
+                      {challenge.entry_fee}
+                    </p>
+                  </div>
+                  <div className="flex gap-3 w-full sm:w-auto">
+                    <Button
+                      onClick={() =>
+                        acceptChallenge(
+                          challenge.id,
+                          challenge.game_id,
+                          challenge.entry_fee,
+                          challenge.game_type || "chess",
+                        )
+                      }
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
+                    >
+                      <Check className="h-4 w-4 mr-2" />
+                      Accept
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        declineChallenge(
+                          challenge.id,
+                          challenge.game_id,
+                          challenge.game_type || "chess",
+                        )
+                      }
+                      size="sm"
+                      className="bg-red-600 hover:bg-red-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Decline
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex gap-3 w-full sm:w-auto">
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Sent Challenges */}
+        {sentChallenges.length > 0 && (
+          <Card className="bg-gradient-to-br from-amber-900/40 to-orange-800/40 border-2 border-amber-400/60 shadow-xl rounded-xl">
+            <CardHeader>
+              <CardTitle className="text-amber-200 flex items-center gap-3 text-xl font-bold">
+                <Gamepad2 className="h-6 w-6 text-yellow-400" />⏳ Sent
+                Challenges ({sentChallenges.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {sentChallenges.map((challenge) => (
+                <div
+                  key={challenge.id}
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-amber-300/30 space-y-3 sm:space-y-0"
+                >
+                  <div className="flex-1">
+                    <p className="text-white font-bold text-lg">
+                      {challenge.to_user?.username}
+                    </p>
+                    <p className="text-amber-200 text-base font-medium flex items-center gap-2">
+                      <Clock className="h-4 w-4" />
+                      💰 {challenge.game_type || "chess"} Challenge: ₹
+                      {challenge.entry_fee}
+                    </p>
+                  </div>
                   <Button
                     onClick={() =>
-                      acceptChallenge(
+                      cancelChallenge(
                         challenge.id,
                         challenge.game_id,
-                        challenge.entry_fee,
                         challenge.game_type || "chess",
                       )
                     }
                     size="sm"
-                    className="bg-green-600 hover:bg-green-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
-                  >
-                    <Check className="h-4 w-4 mr-2" />
-                    Accept
-                  </Button>
-                  <Button
-                    onClick={() =>
-                      declineChallenge(
-                        challenge.id,
-                        challenge.game_id,
-                        challenge.game_type || "chess",
-                      )
-                    }
-                    size="sm"
-                    className="bg-red-600 hover:bg-red-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
+                    className="bg-red-600 hover:bg-red-700 font-bold px-4 py-2 rounded-lg w-full sm:w-auto"
                   >
                     <X className="h-4 w-4 mr-2" />
-                    Decline
+                    Cancel
                   </Button>
                 </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
-      {/* Sent Challenges */}
-      {sentChallenges.length > 0 && (
-        <Card className="bg-gradient-to-br from-amber-900/40 to-orange-800/40 border-2 border-amber-400/60 shadow-xl rounded-xl">
+        {/* Search Users */}
+        <Card className="bg-gradient-to-br from-indigo-900/40 to-purple-800/40 border-2 border-indigo-400/60 shadow-xl rounded-xl">
           <CardHeader>
-            <CardTitle className="text-amber-200 flex items-center gap-3 text-xl font-bold">
-              <Gamepad2 className="h-6 w-6 text-yellow-400" />⏳ Sent Challenges
-              ({sentChallenges.length})
+            <CardTitle className="text-indigo-200 flex items-center gap-3 text-xl font-bold">
+              <UserPlus className="h-6 w-6 text-purple-400" />
+              ���� Find Players
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {sentChallenges.map((challenge) => (
-              <div
-                key={challenge.id}
-                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-amber-300/30 space-y-3 sm:space-y-0"
-              >
-                <div className="flex-1">
-                  <p className="text-white font-bold text-lg">
-                    {challenge.to_user?.username}
-                  </p>
-                  <p className="text-amber-200 text-base font-medium flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
-                    💰 {challenge.game_type || "chess"} Challenge: ₹
-                    {challenge.entry_fee}
-                  </p>
-                </div>
-                <Button
-                  onClick={() =>
-                    cancelChallenge(
-                      challenge.id,
-                      challenge.game_id,
-                      challenge.game_type || "chess",
-                    )
-                  }
-                  size="sm"
-                  className="bg-red-600 hover:bg-red-700 font-bold px-4 py-2 rounded-lg w-full sm:w-auto"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Cancel
-                </Button>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
+            <Input
+              placeholder="Search players..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="border-indigo-400 bg-black/30 text-white placeholder:text-gray-400 text-lg py-3 px-4 rounded-lg font-medium"
+            />
 
-      {/* Search Users */}
-      <Card className="bg-gradient-to-br from-indigo-900/40 to-purple-800/40 border-2 border-indigo-400/60 shadow-xl rounded-xl">
-        <CardHeader>
-          <CardTitle className="text-indigo-200 flex items-center gap-3 text-xl font-bold">
-            <UserPlus className="h-6 w-6 text-purple-400" />
-            ���� Find Players
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Input
-            placeholder="Search players..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="border-indigo-400 bg-black/30 text-white placeholder:text-gray-400 text-lg py-3 px-4 rounded-lg font-medium"
-          />
-
-          <div className="space-y-3 max-h-60 overflow-y-auto">
-            {filteredUsers.map((user) => (
-              <div
-                key={user.id}
-                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-indigo-300/30 hover:bg-white/15 transition-colors space-y-3 sm:space-y-0"
-              >
-                <div className="flex-1">
-                  <p className="text-white font-bold text-lg flex items-center gap-2">
-                    <Crown className="h-5 w-5 text-yellow-400" />
-                    👤 {user.username}
-                  </p>
-                  <p className="text-indigo-200 text-base font-medium flex items-center gap-2">
-                    <Star className="h-4 w-4" />⭐ Rating: {user.chess_rating}
-                  </p>
-                </div>
-                <Button
-                  onClick={() => sendFriendRequest(user.id)}
-                  size="sm"
-                  className="bg-purple-600 hover:bg-purple-700 font-bold text-base px-4 py-2 rounded-lg w-full sm:w-auto"
-                >
-                  ➕ Add Friend
-                </Button>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Pending Requests */}
-      {pendingRequests.length > 0 && (
-        <Card className="bg-gradient-to-br from-blue-900/40 to-cyan-800/40 border-2 border-blue-400/60 shadow-xl rounded-xl">
-          <CardHeader>
-            <CardTitle className="text-blue-200 flex items-center gap-3 text-xl font-bold">
-              <Users className="h-6 w-6 text-blue-400" />
-              📨 Friend Requests ({pendingRequests.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {pendingRequests.map((request) => (
-              <div
-                key={request.id}
-                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-blue-300/30 space-y-3 sm:space-y-0"
-              >
-                <div className="flex-1">
-                  <p className="text-white font-bold text-lg">
-                    👤 {request.requester?.username}
-                  </p>
-                  <p className="text-blue-200 text-base font-medium">
-                    ⭐ Rating: {request.requester?.chess_rating}
-                  </p>
-                </div>
-                <div className="flex gap-3 w-full sm:w-auto">
-                  <Button
-                    onClick={() => acceptFriendRequest(request.id)}
-                    size="sm"
-                    className="bg-green-600 hover:bg-green-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
-                  >
-                    <Check className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    onClick={() => declineFriendRequest(request.id)}
-                    size="sm"
-                    className="bg-red-600 hover:bg-red-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Online Friends */}
-      <Card className="bg-gradient-to-br from-teal-900/40 to-green-800/40 border-2 border-teal-400/60 shadow-xl rounded-xl">
-        <CardHeader>
-          <CardTitle className="text-teal-200 flex items-center gap-3 text-xl font-bold">
-            <Users className="h-6 w-6 text-teal-400" />
-            👥 My Friends ({friends.filter((f) => f.isOnline).length} online)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {friends.filter((f) => f.isOnline).length === 0 ? (
-            <p className="text-gray-300 text-center py-8 text-lg font-medium">
-              😴 No friends online. Send some friend requests!
-            </p>
-          ) : (
-            friends
-              .filter((f) => f.isOnline)
-              .map((friendship) => (
+            <div className="space-y-3 max-h-60 overflow-y-auto">
+              {filteredUsers.map((user) => (
                 <div
-                  key={friendship.id}
-                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-teal-300/30 hover:bg-white/15 transition-colors space-y-3 sm:space-y-0"
+                  key={user.id}
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-indigo-300/30 hover:bg-white/15 transition-colors space-y-3 sm:space-y-0"
                 >
                   <div className="flex-1">
                     <p className="text-white font-bold text-lg flex items-center gap-2">
                       <Crown className="h-5 w-5 text-yellow-400" />
-                      👤 {friendship.friend?.username}
+                      👤 {user.username}
                     </p>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-base text-teal-200 font-medium">
-                      <span className="flex items-center gap-1">
-                        <Star className="h-4 w-4" />⭐ Rating:{" "}
-                        {friendship.friend?.chess_rating}
-                      </span>
-                      <span>🏆 Games: {friendship.friend?.games_played}</span>
-                      <Badge className="bg-green-500 text-white font-bold border border-green-600">
-                        🟢 Online
-                      </Badge>
-                    </div>
+                    <p className="text-indigo-200 text-base font-medium flex items-center gap-2">
+                      <Star className="h-4 w-4" />⭐ Rating: {user.chess_rating}
+                    </p>
                   </div>
-                  <div className="flex gap-2 w-full sm:w-auto">
+                  <Button
+                    onClick={() => sendFriendRequest(user.id)}
+                    size="sm"
+                    className="bg-purple-600 hover:bg-purple-700 font-bold text-base px-4 py-2 rounded-lg w-full sm:w-auto"
+                  >
+                    ➕ Add Friend
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Pending Requests */}
+        {pendingRequests.length > 0 && (
+          <Card className="bg-gradient-to-br from-blue-900/40 to-cyan-800/40 border-2 border-blue-400/60 shadow-xl rounded-xl">
+            <CardHeader>
+              <CardTitle className="text-blue-200 flex items-center gap-3 text-xl font-bold">
+                <Users className="h-6 w-6 text-blue-400" />
+                📨 Friend Requests ({pendingRequests.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {pendingRequests.map((request) => (
+                <div
+                  key={request.id}
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-blue-300/30 space-y-3 sm:space-y-0"
+                >
+                  <div className="flex-1">
+                    <p className="text-white font-bold text-lg">
+                      👤 {request.requester?.username}
+                    </p>
+                    <p className="text-blue-200 text-base font-medium">
+                      ⭐ Rating: {request.requester?.chess_rating}
+                    </p>
+                  </div>
+                  <div className="flex gap-3 w-full sm:w-auto">
                     <Button
-                      onClick={() =>
-                        openChallengePopup(
-                          friendship.friend?.id || "",
-                          friendship.friend?.username || "",
-                          "chess",
-                        )
-                      }
+                      onClick={() => acceptFriendRequest(request.id)}
                       size="sm"
-                      className="bg-purple-600 hover:bg-purple-700 font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-1 flex-1 sm:flex-none"
+                      className="bg-green-600 hover:bg-green-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
                     >
-                      <Gamepad2 className="h-3 w-3" />
-                      Chess
+                      <Check className="h-4 w-4" />
                     </Button>
                     <Button
-                      onClick={() =>
-                        openChallengePopup(
-                          friendship.friend?.id || "",
-                          friendship.friend?.username || "",
-                          "dots-and-boxes",
-                        )
-                      }
+                      onClick={() => declineFriendRequest(request.id)}
                       size="sm"
-                      className="bg-blue-600 hover:bg-blue-700 font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-1 flex-1 sm:flex-none"
+                      className="bg-red-600 hover:bg-red-700 font-bold px-4 py-2 rounded-lg flex-1 sm:flex-none"
                     >
-                      <Gamepad2 className="h-3 w-3" />
-                      D&B
+                      <X className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-              ))
-          )}
-        </CardContent>
-      </Card>
-    </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Online Friends */}
+        <Card className="bg-gradient-to-br from-teal-900/40 to-green-800/40 border-2 border-teal-400/60 shadow-xl rounded-xl">
+          <CardHeader>
+            <CardTitle className="text-teal-200 flex items-center gap-3 text-xl font-bold">
+              <Users className="h-6 w-6 text-teal-400" />
+              👥 My Friends ({friends.filter((f) => f.isOnline).length} online)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {friends.filter((f) => f.isOnline).length === 0 ? (
+              <p className="text-gray-300 text-center py-8 text-lg font-medium">
+                😴 No friends online. Send some friend requests!
+              </p>
+            ) : (
+              friends
+                .filter((f) => f.isOnline)
+                .map((friendship) => (
+                  <div
+                    key={friendship.id}
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-teal-300/30 hover:bg-white/15 transition-colors space-y-3 sm:space-y-0"
+                  >
+                    <div className="flex-1">
+                      <p className="text-white font-bold text-lg flex items-center gap-2">
+                        <Crown className="h-5 w-5 text-yellow-400" />
+                        👤 {friendship.friend?.username}
+                      </p>
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-base text-teal-200 font-medium">
+                        <span className="flex items-center gap-1">
+                          <Star className="h-4 w-4" />⭐ Rating:{" "}
+                          {friendship.friend?.chess_rating}
+                        </span>
+                        <span>🏆 Games: {friendship.friend?.games_played}</span>
+                        <Badge className="bg-green-500 text-white font-bold border border-green-600">
+                          🟢 Online
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 w-full sm:w-auto">
+                      <Button
+                        onClick={() =>
+                          openChallengePopup(
+                            friendship.friend?.id || "",
+                            friendship.friend?.username || "",
+                            "chess",
+                          )
+                        }
+                        size="sm"
+                        className="bg-purple-600 hover:bg-purple-700 font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-1 flex-1 sm:flex-none"
+                      >
+                        <Gamepad2 className="h-3 w-3" />
+                        Chess
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          openChallengePopup(
+                            friendship.friend?.id || "",
+                            friendship.friend?.username || "",
+                            "dots-and-boxes",
+                          )
+                        }
+                        size="sm"
+                        className="bg-blue-600 hover:bg-blue-700 font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-1 flex-1 sm:flex-none"
+                      >
+                        <Gamepad2 className="h-3 w-3" />
+                        D&B
+                      </Button>
+                    </div>
+                  </div>
+                ))
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </MobileContainer>
   );
 };
