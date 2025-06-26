@@ -29,6 +29,8 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
   const [wallet, setWallet] = useState<Tables<"wallets"> | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const { isMobile, isTablet } = useDeviceType();
+
   useEffect(() => {
     getUser();
 
