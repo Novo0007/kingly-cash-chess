@@ -104,8 +104,9 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       setBoard(newBoard);
       setSelectedSquare(null);
       setPossibleMoves([]);
+      console.log("ChessBoard: Successfully updated board state");
     } catch (error) {
-      console.error("Invalid FEN:", fen, error);
+      console.error("ChessBoard: Invalid FEN:", fen, error);
     }
   }, [fen]);
 
