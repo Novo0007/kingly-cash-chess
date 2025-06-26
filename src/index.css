@@ -7,7 +7,7 @@
 @layer base {
   :root {
     /* Futuristic Cyberpunk Theme */
-    --background: 224 71% 4%;
+    --background: 164, 15%, 100%;
     --foreground: 213 31% 91%;
 
     --card: 224 71% 4%;
@@ -135,6 +135,7 @@
   }
 
   @media (min-width: 768px) {
+
     input[type="text"],
     input[type="number"],
     input[type="email"],
@@ -151,6 +152,7 @@
 
 /* Futuristic Gaming Theme Utilities */
 @layer utilities {
+
   /* Neon glow effects */
   .glow-cyan {
     @apply shadow-[0_0_20px_hsl(var(--neon-cyan))] border border-cyan-400;
@@ -255,11 +257,9 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(
-      transparent 49%,
-      rgba(0, 255, 255, 0.1) 50%,
-      transparent 51%
-    );
+    background: linear-gradient(transparent 49%,
+        rgba(0, 255, 255, 0.1) 50%,
+        transparent 51%);
     background-size: 100% 4px;
     animation: scan-lines 2s linear infinite;
     pointer-events: none;
@@ -303,6 +303,7 @@
   0% {
     filter: hue-rotate(0deg);
   }
+
   100% {
     filter: hue-rotate(360deg);
   }
@@ -312,6 +313,7 @@
   0% {
     background-position: 0 0;
   }
+
   100% {
     background-position: 20px 20px;
   }
@@ -321,6 +323,7 @@
   0% {
     background-position: 0 0;
   }
+
   100% {
     background-position: 50px 50px;
   }
@@ -330,44 +333,55 @@
   0% {
     transform: translateY(-100%);
   }
+
   100% {
     transform: translateY(100vh);
   }
 }
 
 @keyframes glitch-1 {
+
   0%,
   100% {
     transform: translate(0);
   }
+
   20% {
     transform: translate(-2px, 2px);
   }
+
   40% {
     transform: translate(-2px, -2px);
   }
+
   60% {
     transform: translate(2px, 2px);
   }
+
   80% {
     transform: translate(2px, -2px);
   }
 }
 
 @keyframes glitch-2 {
+
   0%,
   100% {
     transform: translate(0);
   }
+
   20% {
     transform: translate(2px, 0);
   }
+
   40% {
     transform: translate(0, 2px);
   }
+
   60% {
     transform: translate(-2px, 0);
   }
+
   80% {
     transform: translate(0, -2px);
   }
@@ -378,6 +392,7 @@
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
     transform: scale(1);
   }
+
   100% {
     box-shadow: 0 0 40px rgba(0, 255, 255, 0.8);
     transform: scale(1.02);
@@ -385,10 +400,12 @@
 }
 
 @keyframes neon-flicker {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.8;
   }
@@ -399,10 +416,12 @@
     transform: translateY(-100%);
     opacity: 0;
   }
+
   10%,
   90% {
     opacity: 1;
   }
+
   100% {
     transform: translateY(100vh);
     opacity: 0;
