@@ -183,6 +183,14 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           return;
         }
 
+        // Check if this is a pawn promotion
+        if (isPawnPromotion(selectedSquare, square)) {
+          console.log("Pawn promotion detected:", selectedSquare, "to", square);
+          setPromotionMove({ from: selectedSquare, to: square });
+          setShowPromotionDialog(true);
+          return;
+        }
+
         playMoveSound();
         onMove?.(selectedSquare, square);
         setSelectedSquare(null);
