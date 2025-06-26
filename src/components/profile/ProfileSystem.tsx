@@ -651,6 +651,65 @@ export const ProfileSystem = () => {
 
               <Separator className="bg-slate-600/30" />
 
+              {/* Information & Support */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4 text-cyan-400" />
+                  <h4 className="text-white font-medium text-sm">
+                    Information & Support
+                  </h4>
+                </div>
+                <div className="space-y-2 pl-6">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                    onClick={() => toast.info("About section coming soon!")}
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    About NNC Games
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                    onClick={() => toast.info("User guide coming soon!")}
+                  >
+                    <Gamepad2 className="h-4 w-4 mr-2" />
+                    User Guide
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                    onClick={() => toast.info("More games coming soon!")}
+                  >
+                    <Trophy className="h-4 w-4 mr-2" />
+                    Our More Apps & Games
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                    onClick={() => toast.info("Contact support coming soon!")}
+                  >
+                    <Bell className="h-4 w-4 mr-2" />
+                    Contact Support
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                    onClick={() => toast.info("Privacy policy coming soon!")}
+                  >
+                    <Shield className="h-4 w-4 mr-2" />
+                    Privacy Policy
+                  </Button>
+                </div>
+              </div>
+
+              <Separator className="bg-slate-600/30" />
+
               {/* Account Settings */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
