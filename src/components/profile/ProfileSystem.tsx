@@ -37,9 +37,18 @@ export const ProfileSystem = () => {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     full_name: "",
+  });
+  const [settings, setSettings] = useState({
+    soundEnabled: true,
+    notificationsEnabled: true,
+    gameNotifications: true,
+    darkMode: true,
+    reducedAnimations: false,
+    autoRefresh: true,
   });
 
   const { isMobile, isTablet } = useDeviceType();
