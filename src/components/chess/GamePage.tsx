@@ -582,10 +582,17 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
       // Validate the move before attempting it
       const moves = chess.moves({ verbose: true });
-      const validMove = moves.find((m) => m.from === from && m.to === to);
+      let validMove = moves.find((m) => m.from === from && m.to === to);
+
+      // For promotion moves, we need to check if any promotion option is valid
+      if (!validMove && promotion) {
+        validMove = moves.find(
+          (m) => m.from === from && m.to === to && m.promotion === promotion,
+        );
+      }
 
       if (!validMove) {
-        console.log("Invalid move attempted:", { from, to });
+        console.log("Invalid move attempted:", { from, to, promotion });
         console.log(
           "Valid moves from",
           from,
