@@ -424,7 +424,7 @@ export const OnlineDotsAndBoxes: React.FC<OnlineDotsAndBoxesProps> = ({
                         <button
                           key={`${rowIndex}-${colIndex}`}
                           onClick={() => makeMove("vertical", lineRow, lineCol)}
-                          className={`w-1 h-8 transition-colors ${
+                          className={`w-2 h-10 sm:w-1 sm:h-8 transition-colors ${
                             isDrawn
                               ? "bg-blue-600"
                               : "bg-gray-300 hover:bg-gray-400"
