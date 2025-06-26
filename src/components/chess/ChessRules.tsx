@@ -58,12 +58,16 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
             <BookOpen className="h-6 w-6" />
             Quick Navigation
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {[
               { title: "Basic Rules", icon: "🏁", href: "#basic-rules" },
               { title: "Piece Movement", icon: "♚", href: "#piece-movement" },
               { title: "Special Moves", icon: "⚡", href: "#special-moves" },
-              { title: "Online Play", icon: "🌐", href: "#online-play" },
+              { title: "Game Endings", icon: "🏆", href: "#game-endings" },
+              { title: "Online Rules", icon: "🌐", href: "#online-play" },
+              { title: "Fair Play", icon: "⚖️", href: "#fair-play" },
+              { title: "Tournaments", icon: "🏆", href: "#tournaments" },
+              { title: "Pro Tips", icon: "💡", href: "#pro-tips" },
             ].map((item, index) => (
               <a
                 key={index}
