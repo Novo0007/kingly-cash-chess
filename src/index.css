@@ -8,14 +8,10 @@
   :root {
     /* Futuristic Cyberpunk Theme */
     --background: 164, 15%, 100%;
-    --foreground: 164,
-      15%,
-      100%;
+    --foreground: 164,15%,100%;
 
     --card: 224 71% 4%;
-    --card-foreground: 164,
-      15%,
-      100%;
+    --card-foreground: 164,15%,100%;
 
     --popover: 224 71% 4%;
     --popover-foreground: 213 31% 91%;
@@ -71,7 +67,7 @@
     --popover: 224 71% 4%;
     --popover-foreground: 213 31% 91%;
     --primary: 263 70% 50%;
-    --primary-foreground: 210 20% 98%;
+    --primary-foreground: 164, 15%, 100%;
     --secondary: 215 25% 27%;
     --secondary-foreground: 210 20% 98%;
     --muted: 215 25% 27%;
@@ -443,7 +439,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #00ffff, #ff00ff);
+  background: linear-gradient(180deg, #e5ffff, #ffcfff);
   border-radius: 4px;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
