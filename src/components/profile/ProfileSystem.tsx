@@ -7,6 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
   User,
@@ -29,6 +35,11 @@ import {
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
+import { About } from "./About";
+import { PrivacyPolicy } from "./PrivacyPolicy";
+import { Contact } from "./Contact";
+import { UserGuide } from "./UserGuide";
+import { MoreAppsGames } from "./MoreAppsGames";
 import type { Tables } from "@/integrations/supabase/types";
 
 export const ProfileSystem = () => {
