@@ -228,7 +228,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     }
                     ${
                       isSquareHighlighted(displayRow, displayCol)
-                        ? "ring-4 ring-yellow-400 bg-yellow-200"
+                        ? "ring-4 ring-purple-400 bg-purple-200"
                         : ""
                     }
                     ${
