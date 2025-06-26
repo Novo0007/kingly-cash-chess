@@ -5,7 +5,7 @@ import { PawnPromotionDialog } from "./PawnPromotionDialog";
 
 interface ChessBoardProps {
   fen?: string;
-  onMove?: (from: string, to: string) => void;
+  onMove?: (from: string, to: string, promotion?: string) => void;
   playerColor?: "white" | "black";
   disabled?: boolean;
   isPlayerTurn?: boolean;
