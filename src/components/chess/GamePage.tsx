@@ -620,7 +620,10 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       console.log("Valid move made:", move);
 
       // Update game state in real-time
-      const newMoveHistory = [...(game.move_history || []), `${from}-${to}`];
+      const moveNotation = promotion
+        ? `${from}-${to}=${promotion}`
+        : `${from}-${to}`;
+      const newMoveHistory = [...(game.move_history || []), moveNotation];
       const nextTurn = game.current_turn === "white" ? "black" : "white";
       const newBoardState = chess.fen();
 
