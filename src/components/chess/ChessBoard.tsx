@@ -25,6 +25,11 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   const [lastMove, setLastMove] = useState<{ from: string; to: string } | null>(
     null,
   );
+  const [promotionMove, setPromotionMove] = useState<{
+    from: string;
+    to: string;
+  } | null>(null);
+  const [showPromotionDialog, setShowPromotionDialog] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
 
   // Create audio context for move sounds
