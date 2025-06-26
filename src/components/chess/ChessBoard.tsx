@@ -219,7 +219,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 <div
                   key={`${displayRow}-${displayCol}`}
                   className={`
-                    aspect-square flex items-center justify-center text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold cursor-pointer
+                    aspect-square flex items-center justify-center text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-10xl font-bold cursor-pointer
                     transition-colors duration-200 active:scale-95 relative overflow-hidden
                     ${
                       isLightSquare(displayRow, displayCol)
