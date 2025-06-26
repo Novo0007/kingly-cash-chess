@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Chess, Square } from "chess.js";
+import { toast } from "sonner";
 
 interface ChessBoardProps {
   fen?: string;
