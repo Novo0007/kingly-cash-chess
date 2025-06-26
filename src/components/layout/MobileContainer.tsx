@@ -32,7 +32,7 @@ export const MobileContainer: React.FC<MobileContainerProps> = ({
   return (
     <div
       className={cn(
-        "mx-auto w-full",
+        "mx-100% w-full",
         paddingClasses[padding],
         maxWidthClasses[maxWidth],
         className,
