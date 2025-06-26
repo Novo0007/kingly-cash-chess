@@ -153,6 +153,8 @@ const Index = () => {
         return <FriendsSystem />;
       case "profile":
         return <ProfileSystem />;
+      case "chess-rules":
+        return <ChessRules onBackToGames={() => setCurrentView("games")} />;
       default:
         return <GameSelection onSelectGame={handleSelectGame} />;
     }
