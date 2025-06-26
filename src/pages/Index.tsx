@@ -13,6 +13,7 @@ import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
 import { ChatSystem } from "@/components/chat/ChatSystem";
+import { ChessRules } from "@/components/chess/ChessRules";
 import type { User } from "@supabase/supabase-js";
 
 const Index = () => {
