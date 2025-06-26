@@ -32,18 +32,10 @@ export const ChatSystem = ({
   const [newMessage, setNewMessage] = useState("");
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [currentUsername, setCurrentUsername] = useState<string>("");
-  const [isMobile, setIsMobile] = useState(false);
+  const { isMobile, isTablet } = useDeviceType();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Check if device is mobile/tablet
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
     getCurrentUser();
     fetchMessages();
 
