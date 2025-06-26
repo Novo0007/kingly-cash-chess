@@ -42,7 +42,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
             <div key={item.id} className="relative group">
               {/* Active Background Glow */}
               {isActive && (
-                <div className="absolute -inset-2 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-2xl blur-xl opacity-60 animate-pulse"></div>
+                <div className="absolute -inset-2 bg-gradient-to-r from-purple-400 via-lavender-400 to-indigo-400 rounded-2xl blur-xl opacity-60 lavender-pulse"></div>
               )}
 
               <Button
