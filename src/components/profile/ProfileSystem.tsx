@@ -481,6 +481,219 @@ export const ProfileSystem = () => {
             </Card>
           </>
         )}
+
+        {/* Settings Section */}
+        <Separator className="bg-slate-600/50" />
+        <Card
+          className={`${cardGradient} ${animationClass} border-cyan-600/30`}
+        >
+          <CardHeader className="pb-3">
+            <CardTitle className="text-cyan-400 flex items-center justify-between font-semibold text-base md:text-lg">
+              <div className="flex items-center gap-2">
+                <Settings className="h-5 w-5 md:h-6 md:w-6" />
+                Settings & Preferences
+              </div>
+              <Button
+                onClick={() => setShowSettings(!showSettings)}
+                variant="ghost"
+                size="sm"
+                className="text-cyan-400 hover:bg-slate-700/50 h-8 w-8 p-0"
+              >
+                <Settings
+                  className={`h-4 w-4 transition-transform duration-300 ${showSettings ? "rotate-90" : ""}`}
+                />
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          {showSettings && (
+            <CardContent className="space-y-4">
+              {/* Sound Settings */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Volume2 className="h-4 w-4 text-cyan-400" />
+                  <h4 className="text-white font-medium text-sm">
+                    Sound & Audio
+                  </h4>
+                </div>
+                <div className="space-y-3 pl-6">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="sound" className="text-slate-300 text-sm">
+                      Enable Sound Effects
+                    </Label>
+                    <Switch
+                      id="sound"
+                      checked={settings.soundEnabled}
+                      onCheckedChange={(checked) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          soundEnabled: checked,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="bg-slate-600/30" />
+
+              {/* Notification Settings */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Bell className="h-4 w-4 text-cyan-400" />
+                  <h4 className="text-white font-medium text-sm">
+                    Notifications
+                  </h4>
+                </div>
+                <div className="space-y-3 pl-6">
+                  <div className="flex items-center justify-between">
+                    <Label
+                      htmlFor="notifications"
+                      className="text-slate-300 text-sm"
+                    >
+                      Push Notifications
+                    </Label>
+                    <Switch
+                      id="notifications"
+                      checked={settings.notificationsEnabled}
+                      onCheckedChange={(checked) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          notificationsEnabled: checked,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label
+                      htmlFor="gameNotifications"
+                      className="text-slate-300 text-sm"
+                    >
+                      Game Alerts
+                    </Label>
+                    <Switch
+                      id="gameNotifications"
+                      checked={settings.gameNotifications}
+                      onCheckedChange={(checked) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          gameNotifications: checked,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="bg-slate-600/30" />
+
+              {/* Display Settings */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Palette className="h-4 w-4 text-cyan-400" />
+                  <h4 className="text-white font-medium text-sm">
+                    Display & Performance
+                  </h4>
+                </div>
+                <div className="space-y-3 pl-6">
+                  <div className="flex items-center justify-between">
+                    <Label
+                      htmlFor="darkMode"
+                      className="text-slate-300 text-sm"
+                    >
+                      Dark Mode
+                    </Label>
+                    <Switch
+                      id="darkMode"
+                      checked={settings.darkMode}
+                      onCheckedChange={(checked) =>
+                        setSettings((prev) => ({ ...prev, darkMode: checked }))
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label
+                      htmlFor="reducedAnimations"
+                      className="text-slate-300 text-sm"
+                    >
+                      Reduce Animations (Mobile)
+                    </Label>
+                    <Switch
+                      id="reducedAnimations"
+                      checked={settings.reducedAnimations}
+                      onCheckedChange={(checked) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          reducedAnimations: checked,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label
+                      htmlFor="autoRefresh"
+                      className="text-slate-300 text-sm"
+                    >
+                      Auto-refresh Data
+                    </Label>
+                    <Switch
+                      id="autoRefresh"
+                      checked={settings.autoRefresh}
+                      onCheckedChange={(checked) =>
+                        setSettings((prev) => ({
+                          ...prev,
+                          autoRefresh: checked,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="bg-slate-600/30" />
+
+              {/* Account Settings */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-cyan-400" />
+                  <h4 className="text-white font-medium text-sm">
+                    Account & Security
+                  </h4>
+                </div>
+                <div className="space-y-2 pl-6">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                  >
+                    <Shield className="h-4 w-4 mr-2" />
+                    Change Password
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-red-400 border-red-600/30 hover:bg-red-500/10"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Delete Account
+                  </Button>
+                </div>
+              </div>
+
+              {/* Save Settings */}
+              <div className="pt-4">
+                <Button
+                  onClick={() => {
+                    toast.success("Settings saved successfully!");
+                    setShowSettings(false);
+                  }}
+                  className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
+                >
+                  Save Settings
+                </Button>
+              </div>
+            </CardContent>
+          )}
+        </Card>
       </div>
     </MobileContainer>
   );
