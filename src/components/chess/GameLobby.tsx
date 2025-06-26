@@ -25,8 +25,11 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
   const [entryFee, setEntryFee] = useState("10");
   const [gameName, setGameName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [wallet, setWallet] = useState<Tables<"wallets"> | null>(null);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+
+  const { isMobile, isTablet } = useDeviceType();
 
   useEffect(() => {
     getCurrentUser();
