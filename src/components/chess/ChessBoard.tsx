@@ -233,12 +233,12 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     }
                     ${
                       isPossibleMove(displayRow, displayCol)
-                        ? "after:absolute after:inset-1/3 after:bg-blue-500 after:rounded-full after:opacity-70"
+                        ? "after:absolute after:inset-1/3 after:bg-purple-500 after:rounded-full after:opacity-70"
                         : ""
                     }
                     ${
                       isLastMove(displayRow, displayCol)
-                        ? "bg-yellow-300 ring-2 ring-yellow-500"
+                        ? "bg-lavender-300 ring-2 ring-purple-500"
                         : ""
                     }
                     ${disabled || !isPlayerTurn ? "cursor-default opacity-70" : "cursor-pointer"}
