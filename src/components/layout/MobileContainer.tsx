@@ -22,10 +22,10 @@ export const MobileContainer: React.FC<MobileContainerProps> = ({
   };
 
   const maxWidthClasses = {
-    sm: "max-w-sm",
-    md: "max-w-md",
-    lg: "max-w-lg",
-    xl: "max-w-xl",
+    sm: "max-w-full sm:max-w-sm",
+    md: "max-w-full sm:max-w-md",
+    lg: "max-w-full sm:max-w-lg",
+    xl: "max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-4xl",
     full: "max-w-full",
   };
 
