@@ -54,6 +54,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   useEffect(() => {
     try {
+      console.log("ChessBoard: Updating with FEN:", fen);
       const newChess = new Chess(fen);
       const newBoard = newChess.board();
 
