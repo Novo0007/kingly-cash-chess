@@ -1,5 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Crown,
   Grid3X3,
@@ -8,7 +10,10 @@ import {
   Star,
   Sparkles,
   Target,
+  Gamepad2,
 } from "lucide-react";
+import { useDeviceType } from "@/hooks/use-mobile";
+import { MobileContainer } from "@/components/layout/MobileContainer";
 
 interface GameSelectionProps {
   onSelectGame: (gameType: "chess" | "dots-and-boxes") => void;
