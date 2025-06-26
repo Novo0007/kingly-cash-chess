@@ -283,31 +283,15 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
               </h3>
               <div className="bg-purple-50 p-4 rounded-xl space-y-3">
                 <p className="text-gray-700 font-semibold">
-                  When a pawn reaches the 8th rank, it{" "}
-                  <strong>must be promoted</strong> to a queen, rook, bishop, or
-                  knight.
+                  When a pawn reaches the 8th rank, it <strong>must be promoted</strong> to a queen, rook, bishop, or knight.
                 </p>
                 <div>
-                  <h4 className="font-semibold text-purple-700 mb-2">
-                    Important Notes:
-                  </h4>
+                  <h4 className="font-semibold text-purple-700 mb-2">Important Notes:</h4>
                   <ul className="space-y-1 text-gray-700 text-sm">
-                    <li>
-                      • <strong>Mandatory:</strong> You cannot leave the pawn as
-                      a pawn
-                    </li>
-                    <li>
-                      • <strong>Choice:</strong> You can choose any piece, not
-                      just queen
-                    </li>
-                    <li>
-                      • <strong>Multiple Queens:</strong> You can have multiple
-                      queens on the board
-                    </li>
-                    <li>
-                      • <strong>Online Play:</strong> Most platforms
-                      auto-promote to queen unless specified
-                    </li>
+                    <li>• <strong>Mandatory:</strong> You cannot leave the pawn as a pawn</li>
+                    <li>• <strong>Choice:</strong> You can choose any piece, not just queen</li>
+                    <li>• <strong>Multiple Queens:</strong> You can have multiple queens on the board</li>
+                    <li>• <strong>Online Play:</strong> Most platforms auto-promote to queen unless specified</li>
                   </ul>
                 </div>
               </div>
@@ -356,65 +340,42 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
               </h3>
               <div className="bg-gray-50 p-4 rounded-xl space-y-4">
                 <div className="p-3 bg-yellow-100 border-l-4 border-yellow-500 rounded-lg">
-                  <h4 className="font-bold text-yellow-800 mb-2">
-                    💡 STALEMATE - Critical Rule!
-                  </h4>
+                  <h4 className="font-bold text-yellow-800 mb-2">💡 STALEMATE - Critical Rule!</h4>
                   <p className="text-gray-700">
-                    <strong>
-                      A player has no legal move and is not in check
-                    </strong>{" "}
-                    — the game is a draw. This is often misunderstood but
-                    crucial to know!
+                    <strong>A player has no legal move and is not in check</strong> — the game is a draw.
+                    This is often misunderstood but crucial to know!
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold text-gray-700 mb-3">
-                    All Draw Conditions:
-                  </h4>
+                  <h4 className="font-semibold text-gray-700 mb-3">All Draw Conditions:</h4>
                   <div className="space-y-2">
                     <div className="flex items-start gap-3 p-2 bg-white rounded-lg">
                       <span className="text-yellow-600 font-bold">1.</span>
                       <div>
                         <strong className="text-gray-800">Stalemate:</strong>
-                        <span className="text-gray-600">
-                          {" "}
-                          No legal moves, king not in check
-                        </span>
+                        <span className="text-gray-600"> No legal moves, king not in check</span>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-2 bg-white rounded-lg">
                       <span className="text-yellow-600 font-bold">2.</span>
                       <div>
-                        <strong className="text-gray-800">
-                          Threefold Repetition:
-                        </strong>
-                        <span className="text-gray-600">
-                          {" "}
-                          Same position repeated 3 times
-                        </span>
+                        <strong className="text-gray-800">Threefold Repetition:</strong>
+                        <span className="text-gray-600"> Same position repeated 3 times</span>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-2 bg-white rounded-lg">
                       <span className="text-yellow-600 font-bold">3.</span>
                       <div>
                         <strong className="text-gray-800">50-Move Rule:</strong>
-                        <span className="text-gray-600">
-                          {" "}
-                          50 moves with no pawn move or capture
-                        </span>
+                        <span className="text-gray-600"> 50 moves with no pawn move or capture</span>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-2 bg-white rounded-lg">
                       <span className="text-yellow-600 font-bold">4.</span>
                       <div>
-                        <strong className="text-gray-800">
-                          Insufficient Material:
-                        </strong>
-                        <span className="text-gray-600">
-                          {" "}
-                          Neither side can checkmate (e.g., only kings left)
-                        </span>
+                        <strong className="text-gray-800">Insufficient Material:</strong>
+                        <span className="text-gray-600"> Neither side can checkmate (e.g., only kings left)</span>
                       </div>
                     </div>
                   </div>
@@ -441,23 +402,42 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
             <div className="border-l-4 border-blue-500 pl-6">
               <div className="flex items-center gap-3 mb-3">
                 <Clock className="h-6 w-6 text-blue-600" />
-                <h3 className="text-xl font-bold text-blue-600">
-                  10. Time Controls
-                </h3>
+                <h3 className="text-xl font-bold text-blue-600">10. Time Controls ⏱️</h3>
               </div>
-              <div className="bg-blue-50 p-4 rounded-xl space-y-3">
+              <div className="bg-blue-50 p-4 rounded-xl space-y-4">
+                <div className="p-3 bg-blue-100 border-l-4 border-blue-600 rounded-lg">
+                  <h4 className="font-bold text-blue-800 mb-2">🎯 Key Time Rule</h4>
+                  <p className="text-gray-700 font-semibold">
+                    Games often have timers (e.g. <strong>3|0</strong> means 3 minutes per player with no increment).
+                  </p>
+                </div>
+
                 <div>
-                  <h4 className="font-semibold text-blue-700 mb-2">
-                    Common Time Formats:
-                  </h4>
-                  <ul className="space-y-1 text-gray-700 text-sm">
-                    <li>
-                      • <strong>3|0</strong> - 3 minutes per player, no
-                      increment
-                    </li>
-                    <li>
-                      • <strong>5|3</strong> - 5 minutes + 3 seconds per move
-                    </li>
+                  <h4 className="font-semibold text-blue-700 mb-2">Common Time Formats:</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-white p-2 rounded-lg">
+                      <strong className="text-blue-700">3|0</strong> - 3 minutes, no increment
+                    </div>
+                    <div className="bg-white p-2 rounded-lg">
+                      <strong className="text-blue-700">5|3</strong> - 5 minutes + 3 sec/move
+                    </div>
+                    <div className="bg-white p-2 rounded-lg">
+                      <strong className="text-blue-700">10|0</strong> - 10 minutes total
+                    </div>
+                    <div className="bg-white p-2 rounded-lg">
+                      <strong className="text-blue-700">15|10</strong> - 15 min + 10 sec/move
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-red-100 border-l-4 border-red-500 rounded-lg">
+                  <h4 className="font-bold text-red-700 mb-2">⚠️ Time Forfeit Rule</h4>
+                  <p className="text-gray-700">
+                    <strong>Running out of time results in a loss</strong> unless the opponent cannot checkmate (insufficient material = draw).
+                  </p>
+                </div>
+              </div>
+            </div>
                     <li>
                       • <strong>10|0</strong> - 10 minutes per player
                     </li>
