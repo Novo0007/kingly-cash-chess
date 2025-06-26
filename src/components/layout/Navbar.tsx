@@ -14,6 +14,7 @@ import {
   Zap,
   Sparkles,
 } from "lucide-react";
+import { useDeviceType } from "@/hooks/use-mobile";
 import type { User } from "@supabase/supabase-js";
 import type { Tables } from "@/integrations/supabase/types";
 
