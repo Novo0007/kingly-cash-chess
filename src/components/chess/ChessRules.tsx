@@ -568,6 +568,127 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
         </div>
       </section>
 
+      {/* Tournament and Competitive Rules */}
+      <section className="relative">
+        <div className="absolute inset-0 lavender-glass rounded-2xl lavender-shadow"></div>
+        <div className="relative z-10 p-6">
+          <h2 className="text-3xl font-bold text-purple-700 mb-6 flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-gold-500 to-yellow-600 rounded-xl">
+              <Trophy className="h-6 w-6 text-white" />
+            </div>
+            Tournament & Competitive Rules
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Tournament Structure */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-gold-600">
+                17. Tournament Play
+              </h3>
+              <div className="bg-yellow-50 p-4 rounded-xl space-y-3">
+                <div>
+                  <h4 className="font-semibold text-yellow-700 mb-2">
+                    Common Tournament Formats:
+                  </h4>
+                  <ul className="space-y-1 text-gray-700 text-sm">
+                    <li>
+                      • <strong>Swiss System:</strong> Multiple rounds, never
+                      eliminated
+                    </li>
+                    <li>
+                      • <strong>Knockout:</strong> Single elimination tournament
+                    </li>
+                    <li>
+                      • <strong>Round Robin:</strong> Everyone plays everyone
+                    </li>
+                    <li>
+                      • <strong>Arena:</strong> Continuous play within time
+                      limit
+                    </li>
+                  </ul>
+                </div>
+                <p className="text-gray-700 text-sm">
+                  <strong>Entry Requirements:</strong> Some tournaments require
+                  minimum rating or entry fees.
+                </p>
+              </div>
+            </div>
+
+            {/* Prize Rules */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-green-600">
+                18. Prize & Betting Rules
+              </h3>
+              <div className="bg-green-50 p-4 rounded-xl space-y-3">
+                <div>
+                  <h4 className="font-semibold text-green-700 mb-2">
+                    Money Games:
+                  </h4>
+                  <ul className="space-y-1 text-gray-700 text-sm">
+                    <li>• Entry fees are deducted before game starts</li>
+                    <li>• Winner takes the prize pool (minus platform fees)</li>
+                    <li>• Draws may split the prize or trigger sudden death</li>
+                    <li>• Forfeits result in automatic loss of entry fee</li>
+                  </ul>
+                </div>
+                <p className="text-gray-700 text-sm">
+                  <strong>Age Requirement:</strong> Must be 18+ to participate
+                  in money games.
+                </p>
+              </div>
+            </div>
+
+            {/* Dispute Resolution */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-red-600">
+                19. Disputes & Appeals
+              </h3>
+              <div className="bg-red-50 p-4 rounded-xl space-y-3">
+                <div>
+                  <h4 className="font-semibold text-red-700 mb-2">
+                    Common Disputes:
+                  </h4>
+                  <ul className="space-y-1 text-gray-700 text-sm">
+                    <li>• Technical disconnections during critical moments</li>
+                    <li>• Suspected cheating or engine use</li>
+                    <li>• Prize distribution issues</li>
+                    <li>• Unfair pairing complaints</li>
+                  </ul>
+                </div>
+                <p className="text-gray-700 text-sm">
+                  <strong>Resolution:</strong> Contact platform support with
+                  game details for investigation.
+                </p>
+              </div>
+            </div>
+
+            {/* Account Security */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-blue-600">
+                20. Account & Security
+              </h3>
+              <div className="bg-blue-50 p-4 rounded-xl space-y-3">
+                <div>
+                  <h4 className="font-semibold text-blue-700 mb-2">
+                    Account Safety:
+                  </h4>
+                  <ul className="space-y-1 text-gray-700 text-sm">
+                    <li>• Use strong, unique passwords</li>
+                    <li>• Enable two-factor authentication</li>
+                    <li>• Never share account credentials</li>
+                    <li>• Report suspicious activity immediately</li>
+                  </ul>
+                </div>
+                <p className="text-gray-700 text-sm">
+                  <strong>Account Responsibility:</strong> Players are
+                  responsible for all activity on their accounts.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Tips for Players */}
       <section className="relative">
         <div className="absolute inset-0 lavender-glass rounded-2xl lavender-shadow"></div>
@@ -576,7 +697,7 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
             <div className="p-2 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl">
               <Trophy className="h-6 w-6 text-white" />
             </div>
-            Tips for Players
+            Essential Tips for Success
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
