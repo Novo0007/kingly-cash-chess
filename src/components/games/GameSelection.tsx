@@ -63,14 +63,14 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
     { name: "Teen Patti", emoji: "🃏", progress: 30 },
   ];
 
-  // Mobile-optimized styles
+  // Mobile-optimized lavender styles
   const cardGradient = isMobile
-    ? "bg-slate-800/80 border border-slate-600"
-    : "bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-600 shadow-lg";
+    ? "lavender-card border border-purple-200"
+    : "lavender-card lavender-shadow-lg";
 
   const animationClass = isMobile
     ? ""
-    : "transition-all duration-300 hover:scale-105";
+    : "transition-all duration-300 hover:scale-105 hover:lavender-shadow-lg";
 
   return (
     <MobileContainer maxWidth="xl">
