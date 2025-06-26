@@ -49,7 +49,6 @@ export const ChatSystem = ({
       .subscribe();
 
     return () => {
-      window.removeEventListener("resize", checkMobile);
       supabase.removeChannel(channel);
     };
   }, [gameId]);
