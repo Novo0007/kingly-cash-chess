@@ -354,6 +354,14 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           )}
         </div>
       </div>
+
+      {/* Pawn Promotion Dialog */}
+      <PawnPromotionDialog
+        isOpen={showPromotionDialog}
+        playerColor={playerColor}
+        onSelect={handlePromotionSelect}
+        onCancel={handlePromotionCancel}
+      />
     </div>
   );
 };
