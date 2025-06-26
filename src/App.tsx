@@ -145,8 +145,8 @@ const App = () => {
             </div>
 
             {/* Loading Messages */}
-            <div className="space-y-2">
-              <p className="text-gray-400 text-lg font-medium">
+            <div className="space-y-2 px-4">
+              <p className="text-gray-400 text-base sm:text-lg font-medium text-center leading-tight">
                 {loadingProgress < 30
                   ? "🔥 Initializing Gaming Engine..."
                   : loadingProgress < 60
@@ -155,7 +155,7 @@ const App = () => {
                       ? "🎯 Preparing Your Experience..."
                       : "🚀 Almost Ready..."}
               </p>
-              <p className="text-gray-500 text-sm">
+              <p className="text-gray-500 text-xs sm:text-sm text-center">
                 Get ready for epic gaming battles!
               </p>
             </div>
