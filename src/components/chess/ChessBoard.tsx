@@ -131,6 +131,19 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
     return symbols[piece.type as keyof typeof symbols] || "";
   };
 
+  const isPawnPromotion = (from: string, to: string): boolean => {
+    const piece = chess.get(from);
+    if (!piece || piece.type !== "p") return false;
+
+    const toRank = parseInt(to[1]);
+
+    // White pawn reaching rank 8, black pawn reaching rank 1
+    return (
+      (piece.color === "w" && toRank === 8) ||
+      (piece.color === "b" && toRank === 1)
+    );
+  };
+
   const getSquareName = (row: number, col: number): Square => {
     const files = "abcdefgh";
     const rank = playerColor === "white" ? 8 - row : row + 1;
