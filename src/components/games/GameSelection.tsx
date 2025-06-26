@@ -35,7 +35,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       color: "yellow",
       features: [
         "🏆 Tournaments",
-        "⚡ Quick Matches",
+        "��� Quick Matches",
         "💰 Real Prizes",
         "📈 Rankings",
       ],
@@ -77,10 +77,10 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       <div className="space-y-4 md:space-y-6">
         {/* Header */}
         <Card
-          className={`${cardGradient} ${animationClass} border-blue-600/30`}
+          className={`${cardGradient} ${animationClass} border-purple-300/50`}
         >
           <CardHeader className="text-center pb-3">
-            <CardTitle className="text-white">
+            <CardTitle className="lavender-text">
               <div className="flex items-center justify-center gap-3 mb-3">
                 <div className="relative">
                   <Gamepad2 className="h-8 w-8 md:h-10 md:w-10 text-blue-400" />
