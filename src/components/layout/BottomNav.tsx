@@ -51,8 +51,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 onClick={() => onViewChange(item.id)}
                 className={`relative flex flex-col items-center gap-1 px-4 py-4 h-auto min-w-0 flex-1 min-h-[68px] rounded-2xl transition-all duration-300 transform ${
                   isActive
-                    ? "text-white bg-gradient-to-b from-blue-500/20 to-purple-500/20 scale-110 shadow-lg border border-purple-400/50"
-                    : "text-gray-400 hover:text-white hover:bg-gray-800/50 active:bg-gray-700/50 active:scale-95 hover:scale-105"
+                    ? "text-purple-700 bg-gradient-to-b from-purple-100/40 to-lavender-200/40 scale-110 lavender-shadow border border-purple-300/50"
+                    : "text-purple-500 hover:text-purple-700 hover:bg-purple-50/30 active:bg-purple-100/50 active:scale-95 hover:scale-105"
                 }`}
               >
                 {/* Background Effects */}
