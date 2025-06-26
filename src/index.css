@@ -8,7 +8,9 @@
   :root {
     /* Futuristic Cyberpunk Theme */
     --background: 164, 15%, 100%;
-    --foreground: 213 31% 91%;
+    --foreground: 164,
+      15%,
+      100%;
 
     --card: 224 71% 4%;
     --card-foreground: 213 31% 91%;
