@@ -32,7 +32,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         "Classic strategy game with timed matches and real money prizes",
       icon: Crown,
       emoji: "♛",
-      color: "yellow",
+      color: "purple",
       features: [
         "🏆 Tournaments",
         "⚡ Quick Matches",
@@ -46,7 +46,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       description: "Connect dots to complete boxes and dominate the grid",
       icon: Grid3X3,
       emoji: "📦",
-      color: "blue",
+      color: "lavender",
       features: [
         "🎯 Strategy",
         "⚡ Fast Paced",
@@ -63,22 +63,11 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
     { name: "Teen Patti", emoji: "🃏", progress: 30 },
   ];
 
-  // Mobile-optimized lavender styles
-  const cardGradient = isMobile
-    ? "lavender-card border border-purple-200"
-    : "lavender-card lavender-shadow-lg";
-
-  const animationClass = isMobile
-    ? ""
-    : "transition-all duration-300 hover:scale-105 hover:lavender-shadow-lg";
-
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
         {/* Header */}
-        <Card
-          className={`${cardGradient} ${animationClass} border-purple-300/50`}
-        >
+        <Card className="lavender-card lavender-shadow border-purple-200/50">
           <CardHeader className="text-center pb-3">
             <CardTitle className="lavender-text">
               <div className="flex items-center justify-center gap-3 mb-3">
@@ -105,12 +94,10 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
           {games.map((game, index) => (
             <Card
               key={game.id}
-              className={`${cardGradient} ${animationClass} ${game.color === "yellow" ? "border-yellow-600/30" : "border-blue-600/30"}`}
+              className="lavender-card lavender-shadow-lg border-purple-200/50 transition-all duration-300 hover:scale-105 hover:lavender-shadow-lg"
             >
               <CardHeader className="pb-3">
-                <CardTitle
-                  className={`${game.color === "yellow" ? "text-yellow-400" : "text-blue-400"} flex items-center gap-3 text-lg md:text-xl`}
-                >
+                <CardTitle className="text-purple-600 flex items-center gap-3 text-lg md:text-xl">
                   <div className="relative">
                     <game.icon className="h-6 w-6 md:h-7 md:w-7" />
                     {!isMobile && (
@@ -123,7 +110,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-slate-300 text-sm md:text-base">
+                <p className="text-purple-700 text-sm md:text-base">
                   {game.description}
                 </p>
 
@@ -133,7 +120,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                     <Badge
                       key={idx}
                       variant="secondary"
-                      className="bg-slate-700/50 text-slate-300 text-xs p-2 justify-center"
+                      className="bg-purple-100/50 text-purple-700 border-purple-200 text-xs p-2 justify-center"
                     >
                       {feature}
                     </Badge>
@@ -145,7 +132,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   onClick={() =>
                     onSelectGame(game.id as "chess" | "dots-and-boxes")
                   }
-                  className={`w-full ${game.color === "yellow" ? "bg-yellow-600 hover:bg-yellow-700" : "bg-blue-600 hover:bg-blue-700"} text-white font-bold py-3 md:py-4 text-sm md:text-base`}
+                  className="w-full lavender-button py-3 md:py-4 text-sm md:text-base"
                 >
                   <Zap className="h-4 w-4 mr-2" />
                   Play Now
@@ -157,38 +144,36 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         </div>
 
         {/* Coming Soon Section */}
-        <Card
-          className={`${cardGradient} ${animationClass} border-gray-600/30`}
-        >
+        <Card className="lavender-card lavender-shadow border-purple-200/50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-gray-400 text-center flex items-center justify-center gap-2 text-lg md:text-xl">
-              <Star className="h-5 w-5 text-yellow-400" />
+            <CardTitle className="text-purple-600 text-center flex items-center justify-center gap-2 text-lg md:text-xl">
+              <Star className="h-5 w-5 text-purple-400" />
               🚀 Coming Soon
-              <Star className="h-5 w-5 text-yellow-400" />
+              <Star className="h-5 w-5 text-purple-400" />
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {comingSoonGames.map((game, index) => (
                 <div key={index} className="text-center space-y-2">
-              <div className="flex justify-center mb-3">
-                <div className="relative">
-                  <Gamepad2 className="h-8 w-8 md:h-10 md:w-10 text-purple-500" />
-                  {!isMobile && (
-                    <Star className="h-3 w-3 text-purple-400 absolute -top-1 -right-1" />
-                  )}
+                  <div className="text-3xl md:text-4xl">{game.emoji}</div>
+                  <h4 className="text-purple-700 font-semibold text-xs md:text-sm">
+                    {game.name}
+                  </h4>
+                  <div className="w-full bg-purple-100 rounded-full h-2">
+                    <div
+                      className="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full transition-all duration-1000"
+                      style={{ width: `${game.progress}%` }}
+                    ></div>
+                  </div>
+                  <span className="text-purple-500 text-xs">
+                    {game.progress}%
+                  </span>
                 </div>
-                <span className="text-2xl md:text-3xl font-bold lavender-text-gradient">
-                  Choose Your Game
-                </span>
-              </div>
-              <p className="text-purple-600 text-sm md:text-base font-normal max-w-2xl mx-auto">
-                Select your favorite game and start competing with players
-                worldwide for real money prizes!
-              </p>
+              ))}
             </div>
             <div className="text-center mt-4">
-              <p className="text-slate-400 text-xs md:text-sm">
+              <p className="text-purple-600 text-xs md:text-sm">
                 More exciting games are in development! Stay tuned for updates.
               </p>
             </div>
@@ -197,7 +182,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 
         {/* Footer Message */}
         <div className="text-center">
-          <p className="text-slate-400 text-xs md:text-sm">
+          <p className="text-purple-500 text-xs md:text-sm">
             🎯 Play responsibly • 🔒 Secure platform • 💰 Fair play guaranteed
           </p>
         </div>
