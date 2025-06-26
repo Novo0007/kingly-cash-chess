@@ -132,7 +132,10 @@ const Index = () => {
             </div>
           </div>
         ) : (
-          <GameLobby onJoinGame={handleJoinGame} />
+          <GameLobby
+            onJoinGame={handleJoinGame}
+            onShowChessRules={() => setCurrentView("chess-rules")}
+          />
         );
       case "dots-and-boxes":
         return <DotsAndBoxes onBackToLobby={handleBackToGameSelection} />;
