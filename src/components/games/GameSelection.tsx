@@ -22,6 +22,8 @@ interface GameSelectionProps {
 export const GameSelection: React.FC<GameSelectionProps> = ({
   onSelectGame,
 }) => {
+  const { isMobile, isTablet } = useDeviceType();
+
   const games = [
     {
       id: "chess",
@@ -30,9 +32,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         "Classic strategy game with timed matches and real money prizes",
       icon: Crown,
       emoji: "♛",
-      gradient: "from-yellow-600 via-orange-600 to-red-600",
-      borderColor: "border-yellow-400/50",
-      glowColor: "from-yellow-400 via-orange-400 to-red-400",
+      color: "yellow",
       features: [
         "🏆 Tournaments",
         "⚡ Quick Matches",
@@ -46,9 +46,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       description: "Connect dots to complete boxes and dominate the grid",
       icon: Grid3X3,
       emoji: "📦",
-      gradient: "from-blue-600 via-cyan-600 to-teal-600",
-      borderColor: "border-blue-400/50",
-      glowColor: "from-blue-400 via-cyan-400 to-teal-400",
+      color: "blue",
       features: [
         "🎯 Strategy",
         "⚡ Fast Paced",
@@ -64,6 +62,15 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
     { name: "Snake & Ladder", emoji: "🐍", progress: 45 },
     { name: "Teen Patti", emoji: "🃏", progress: 30 },
   ];
+
+  // Mobile-optimized styles
+  const cardGradient = isMobile
+    ? "bg-slate-800/80 border border-slate-600"
+    : "bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-600 shadow-lg";
+
+  const animationClass = isMobile
+    ? ""
+    : "transition-all duration-300 hover:scale-105";
 
   return (
     <div className="space-y-6 md:space-y-8 p-4 md:p-6">
