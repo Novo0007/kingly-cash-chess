@@ -222,9 +222,9 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     aspect-square flex items-center justify-center text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold cursor-pointer
                     transition-colors duration-200 active:scale-95 relative overflow-hidden
                     ${
-                      isLightSquare(displayRow, displayCol)
-                        ? "bg-green-100 hover:bg-green-200"
-                        : "bg-green-600 hover:bg-green-700"
+                    ${isLightSquare(displayRow, displayCol)
+                      ? 'bg-lavender-50 hover:bg-lavender-100'
+                      : 'bg-purple-300 hover:bg-purple-400'
                     }
                     ${
                       isSquareHighlighted(displayRow, displayCol)
