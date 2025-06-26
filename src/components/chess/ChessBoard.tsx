@@ -144,11 +144,26 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       // Try to make a move
       if (possibleMoves.includes(square)) {
         console.log("Making move:", selectedSquare, "to", square);
+
+        // Double-check the move is valid before calling onMove
+        const moveAttempt = chess.moves({ verbose: true }).find(
+          m => m.from === selectedSquare && m.to === square
+        );
+
+        if (!moveAttempt) {
+          console.error("Move was in possibleMoves but not valid:", { from: selectedSquare, to: square });
+          toast.error("Invalid move");
+          setSelectedSquare(null);
+          setPossibleMoves([]);
+          return;
+        }
+
         playMoveSound();
         onMove?.(selectedSquare, square);
         setSelectedSquare(null);
         setPossibleMoves([]);
         return;
+      }
       } else {
         // Check if clicking on another piece of same color
         const piece = chess.get(square);
