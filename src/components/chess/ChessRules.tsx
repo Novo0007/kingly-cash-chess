@@ -354,63 +354,213 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
             Online Chess Specific Rules
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
             {/* Time Controls */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
+            <div className="border-l-4 border-blue-500 pl-6">
+              <div className="flex items-center gap-3 mb-3">
                 <Clock className="h-6 w-6 text-blue-600" />
                 <h3 className="text-xl font-bold text-blue-600">
                   10. Time Controls
                 </h3>
               </div>
               <div className="bg-blue-50 p-4 rounded-xl space-y-3">
+                <div>
+                  <h4 className="font-semibold text-blue-700 mb-2">
+                    Common Time Formats:
+                  </h4>
+                  <ul className="space-y-1 text-gray-700 text-sm">
+                    <li>
+                      • <strong>3|0</strong> - 3 minutes per player, no
+                      increment
+                    </li>
+                    <li>
+                      • <strong>5|3</strong> - 5 minutes + 3 seconds per move
+                    </li>
+                    <li>
+                      • <strong>10|0</strong> - 10 minutes per player
+                    </li>
+                    <li>
+                      • <strong>15|10</strong> - 15 minutes + 10 seconds
+                      increment
+                    </li>
+                  </ul>
+                </div>
                 <p className="text-gray-700">
-                  Games often have timers (e.g. <strong>3|0</strong> means 3
-                  minutes per player with no increment).
-                </p>
-                <p className="text-gray-700">
-                  Running out of time results in a loss unless the opponent
-                  cannot checkmate (draw).
+                  <strong>Time Forfeit:</strong> Running out of time results in
+                  an automatic loss unless the opponent cannot deliver checkmate
+                  (insufficient material = draw).
                 </p>
               </div>
             </div>
 
-            {/* Fair Play */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold text-green-600">
-                11. Disconnection & Fair Play
+            {/* Move Validation */}
+            <div className="border-l-4 border-indigo-500 pl-6">
+              <h3 className="text-xl font-bold text-indigo-600 mb-3">
+                11. Legal Move Requirements
+              </h3>
+              <div className="bg-indigo-50 p-4 rounded-xl space-y-3">
+                <p className="text-gray-700">
+                  <strong>Every move must be legal:</strong> You cannot make a
+                  move that leaves your own king in check.
+                </p>
+                <div>
+                  <h4 className="font-semibold text-indigo-700 mb-2">
+                    Touch-Move Rule (Online Equivalent):
+                  </h4>
+                  <ul className="space-y-1 text-gray-700 text-sm">
+                    <li>
+                      • Once you click and release a piece on a valid square,
+                      the move is final
+                    </li>
+                    <li>• No "take-back" moves in rated games</li>
+                    <li>• Some platforms allow "confirm move" feature</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Fair Play & Conduct */}
+            <div className="border-l-4 border-green-500 pl-6">
+              <h3 className="text-xl font-bold text-green-600 mb-3">
+                12. Fair Play & Conduct
               </h3>
               <div className="bg-green-50 p-4 rounded-xl space-y-3">
+                <div>
+                  <h4 className="font-semibold text-green-700 mb-2">
+                    Prohibited Actions:
+                  </h4>
+                  <ul className="space-y-1 text-gray-700 text-sm">
+                    <li>• Using chess engines or computer assistance</li>
+                    <li>
+                      • Getting help from other players or books during the game
+                    </li>
+                    <li>• Creating multiple accounts to manipulate ratings</li>
+                    <li>• Deliberately disconnecting to avoid losses</li>
+                    <li>• Abusive language or unsportsmanlike conduct</li>
+                  </ul>
+                </div>
                 <p className="text-gray-700">
-                  If you disconnect for too long, you forfeit the game.
-                </p>
-                <p className="text-gray-700">
-                  <strong>Cheating</strong> (using engines or external help) is
-                  strictly prohibited and can lead to bans.
+                  <strong>Penalties:</strong> Violations can result in warnings,
+                  rating penalties, or permanent bans.
                 </p>
               </div>
             </div>
 
-            {/* Premoves */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold text-purple-600">
-                12. Premoves
+            {/* Connection & Technical Rules */}
+            <div className="border-l-4 border-orange-500 pl-6">
+              <h3 className="text-xl font-bold text-orange-600 mb-3">
+                13. Connection & Technical Rules
               </h3>
-              <div className="bg-purple-50 p-4 rounded-xl">
+              <div className="bg-orange-50 p-4 rounded-xl space-y-3">
+                <div>
+                  <h4 className="font-semibold text-orange-700 mb-2">
+                    Disconnection Rules:
+                  </h4>
+                  <ul className="space-y-1 text-gray-700 text-sm">
+                    <li>• If you disconnect, your clock continues running</li>
+                    <li>
+                      • Extended disconnection (usually 5+ minutes) = forfeit
+                    </li>
+                    <li>• Brief disconnections are usually tolerated</li>
+                    <li>
+                      • Some platforms pause games for mutual disconnections
+                    </li>
+                  </ul>
+                </div>
                 <p className="text-gray-700">
-                  Some platforms allow "premoves" — moves you make during your
-                  opponent's turn that execute instantly if legal.
+                  <strong>Tip:</strong> Ensure stable internet connection before
+                  starting rated games.
                 </p>
               </div>
             </div>
 
-            {/* Auto-Flag */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold text-red-600">13. Auto-Flag</h3>
-              <div className="bg-red-50 p-4 rounded-xl">
+            {/* Advanced Online Features */}
+            <div className="border-l-4 border-purple-500 pl-6">
+              <h3 className="text-xl font-bold text-purple-600 mb-3">
+                14. Advanced Online Features
+              </h3>
+              <div className="bg-purple-50 p-4 rounded-xl space-y-3">
+                <div>
+                  <h4 className="font-semibold text-purple-700 mb-2">
+                    Premoves:
+                  </h4>
+                  <p className="text-gray-700 text-sm mb-2">
+                    Queue moves during opponent's turn that execute instantly if
+                    legal.
+                  </p>
+                  <ul className="space-y-1 text-gray-700 text-sm">
+                    <li>• Useful in time-pressed situations</li>
+                    <li>• Only executes if the move remains legal</li>
+                    <li>• Can premove multiple moves in sequence</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-purple-700 mb-2">
+                    Auto-Queen Promotion:
+                  </h4>
+                  <p className="text-gray-700 text-sm">
+                    Most platforms auto-promote pawns to queens unless you
+                    specify otherwise.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Rating & Ranking System */}
+            <div className="border-l-4 border-yellow-500 pl-6">
+              <h3 className="text-xl font-bold text-yellow-600 mb-3">
+                15. Rating & Competition
+              </h3>
+              <div className="bg-yellow-50 p-4 rounded-xl space-y-3">
+                <div>
+                  <h4 className="font-semibold text-yellow-700 mb-2">
+                    Rating Changes:
+                  </h4>
+                  <ul className="space-y-1 text-gray-700 text-sm">
+                    <li>
+                      • Win: Gain rating points (more vs higher-rated opponents)
+                    </li>
+                    <li>
+                      • Loss: Lose rating points (less vs higher-rated
+                      opponents)
+                    </li>
+                    <li>
+                      • Draw: Small rating change based on opponent's rating
+                    </li>
+                    <li>• Forfeit/Timeout: Treated as a loss</li>
+                  </ul>
+                </div>
                 <p className="text-gray-700">
-                  If your clock hits 0, you lose — even if you have a winning
-                  position.
+                  <strong>Fair Pairing:</strong> System matches players of
+                  similar skill levels for balanced games.
+                </p>
+              </div>
+            </div>
+
+            {/* Game Analysis */}
+            <div className="border-l-4 border-cyan-500 pl-6">
+              <h3 className="text-xl font-bold text-cyan-600 mb-3">
+                16. Post-Game Analysis
+              </h3>
+              <div className="bg-cyan-50 p-4 rounded-xl space-y-3">
+                <div>
+                  <h4 className="font-semibold text-cyan-700 mb-2">
+                    Learning Features:
+                  </h4>
+                  <ul className="space-y-1 text-gray-700 text-sm">
+                    <li>
+                      • Review game moves and see where improvements can be made
+                    </li>
+                    <li>• Computer analysis showing best moves</li>
+                    <li>
+                      • Identify blunders, mistakes, and missed opportunities
+                    </li>
+                    <li>• Study opening and endgame patterns</li>
+                  </ul>
+                </div>
+                <p className="text-gray-700">
+                  <strong>Growth:</strong> Regular analysis is key to improving
+                  your chess skills.
                 </p>
               </div>
             </div>
