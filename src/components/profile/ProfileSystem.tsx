@@ -35,6 +35,8 @@ export const ProfileSystem = () => {
     full_name: "",
   });
 
+  const { isMobile, isTablet } = useDeviceType();
+
   useEffect(() => {
     fetchProfile();
     fetchWallet();
