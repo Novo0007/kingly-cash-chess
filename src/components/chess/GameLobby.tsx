@@ -5,7 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, Crown, Clock, Users, DollarSign } from "lucide-react";
+import { Plus, Crown, Clock, Users, DollarSign, RefreshCw } from "lucide-react";
+import { useDeviceType } from "@/hooks/use-mobile";
+import { MobileContainer } from "@/components/layout/MobileContainer";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
