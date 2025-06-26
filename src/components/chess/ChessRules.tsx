@@ -694,7 +694,7 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
       </section>
 
       {/* Tips for Players */}
-      <section className="relative">
+      <section id="pro-tips" className="relative">
         <div className="absolute inset-0 lavender-glass rounded-2xl lavender-shadow"></div>
         <div className="relative z-10 p-6">
           <h2 className="text-3xl font-bold text-purple-700 mb-6 flex items-center gap-3">
