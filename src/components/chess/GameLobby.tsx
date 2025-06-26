@@ -509,6 +509,32 @@ export const GameLobby = ({ onJoinGame, onShowChessRules }: GameLobbyProps) => {
           </CardContent>
         </Card>
 
+        {/* Chess Rules Helper */}
+        {onShowChessRules && (
+          <Card
+            className={`${cardGradient} ${animationClass} border-yellow-600/30`}
+          >
+            <CardContent className="p-3 md:p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Crown className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
+                  <span className="text-white font-semibold text-sm md:text-base">
+                    Need help with chess rules?
+                  </span>
+                </div>
+                <Button
+                  onClick={onShowChessRules}
+                  variant="ghost"
+                  size="sm"
+                  className="text-yellow-400 hover:bg-slate-700/50 text-xs md:text-sm"
+                >
+                  📚 View Rules Guide
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Create Game */}
         <Card
           className={`${cardGradient} ${animationClass} border-green-600/30`}
