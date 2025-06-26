@@ -352,20 +352,72 @@ export const ChessRules: React.FC<ChessRulesProps> = ({ onBackToGames }) => {
             {/* Draw Conditions */}
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-gray-600">
-                8. Stalemate & Draw Conditions
+                8. Stalemate & Draw Conditions 🤝
               </h3>
-              <div className="space-y-2">
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <strong className="text-gray-700">Stalemate:</strong>
-                  <span className="text-gray-600">
-                    {" "}
-                    No legal move and not in check — draw.
-                  </span>
+              <div className="bg-gray-50 p-4 rounded-xl space-y-4">
+                <div className="p-3 bg-yellow-100 border-l-4 border-yellow-500 rounded-lg">
+                  <h4 className="font-bold text-yellow-800 mb-2">
+                    💡 STALEMATE - Critical Rule!
+                  </h4>
+                  <p className="text-gray-700">
+                    <strong>
+                      A player has no legal move and is not in check
+                    </strong>{" "}
+                    — the game is a draw. This is often misunderstood but
+                    crucial to know!
+                  </p>
                 </div>
-                <div className="text-sm text-gray-600 space-y-1">
-                  <p>• Threefold repetition (same position 3 times)</p>
-                  <p>• 50-move rule (50 moves with no pawn move or capture)</p>
-                  <p>• Insufficient material (e.g., only kings left)</p>
+
+                <div>
+                  <h4 className="font-semibold text-gray-700 mb-3">
+                    All Draw Conditions:
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex items-start gap-3 p-2 bg-white rounded-lg">
+                      <span className="text-yellow-600 font-bold">1.</span>
+                      <div>
+                        <strong className="text-gray-800">Stalemate:</strong>
+                        <span className="text-gray-600">
+                          {" "}
+                          No legal moves, king not in check
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-2 bg-white rounded-lg">
+                      <span className="text-yellow-600 font-bold">2.</span>
+                      <div>
+                        <strong className="text-gray-800">
+                          Threefold Repetition:
+                        </strong>
+                        <span className="text-gray-600">
+                          {" "}
+                          Same position repeated 3 times
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-2 bg-white rounded-lg">
+                      <span className="text-yellow-600 font-bold">3.</span>
+                      <div>
+                        <strong className="text-gray-800">50-Move Rule:</strong>
+                        <span className="text-gray-600">
+                          {" "}
+                          50 moves with no pawn move or capture
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-2 bg-white rounded-lg">
+                      <span className="text-yellow-600 font-bold">4.</span>
+                      <div>
+                        <strong className="text-gray-800">
+                          Insufficient Material:
+                        </strong>
+                        <span className="text-gray-600">
+                          {" "}
+                          Neither side can checkmate (e.g., only kings left)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
