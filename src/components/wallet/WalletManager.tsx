@@ -34,6 +34,8 @@ export const WalletManager = () => {
     amount: 0,
   });
 
+  const { isMobile, isTablet } = useDeviceType();
+
   useEffect(() => {
     fetchWallet();
     fetchTransactions();
