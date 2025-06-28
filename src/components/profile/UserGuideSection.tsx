@@ -68,7 +68,7 @@ export const UserGuideSection = ({ onBack }: UserGuideSectionProps) => {
           title: "Joining Games",
           content: [
             "Navigate to the Games section from the bottom menu",
-            "Select your preferred game (Chess, Dots & Boxes, etc.)",
+            "Select your preferred game (Chess)",
             "Choose between Practice mode or Competitive mode",
             "Wait for matchmaking or create a custom room",
             "Game starts automatically when both players are ready",
