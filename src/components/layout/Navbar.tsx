@@ -104,21 +104,21 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
           {/* Enhanced Logo */}
           <div className="flex items-center gap-3 group">
             <div className="relative">
-              <div className="absolute -inset-2 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative p-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full">
+              <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative p-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full">
                 <Crown className="h-7 w-7 md:h-8 md:w-8 text-white drop-shadow-lg" />
               </div>
             </div>
             <div>
-              <span className="text-xl md:text-2xl font-black lavender-text-gradient">
+              <span className="text-xl md:text-2xl font-black electric-text-gradient font-heading">
                 NNC GAMES
               </span>
               <div className="flex items-center gap-1 mt-0.5">
-                <Star className="h-3 w-3 text-purple-400" />
-                <span className="text-xs text-purple-600 font-medium">
+                <Star className="h-3 w-3 text-blue-400" />
+                <span className="text-xs text-blue-600 font-medium font-body">
                   Chess Arena
                 </span>
-                <Star className="h-3 w-3 text-purple-400" />
+                <Star className="h-3 w-3 text-blue-400" />
               </div>
             </div>
           </div>
