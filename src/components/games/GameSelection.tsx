@@ -11,13 +11,14 @@ import {
   Target,
   Gamepad2,
   BookOpen,
+  Dice1,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import { useNavigate } from "react-router-dom";
 
 interface GameSelectionProps {
-  onSelectGame: (gameType: "chess") => void;
+  onSelectGame: (gameType: "chess" | "ludo") => void;
 }
 
 export const GameSelection: React.FC<GameSelectionProps> = ({
@@ -38,14 +39,27 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       features: [
         "🏆 Tournaments",
         "⚡ Quick Matches",
-        "�� Real Prizes",
+        "💰 Real Prizes",
         "📈 Rankings",
+      ],
+    },
+    {
+      id: "ludo",
+      title: "Ludo King",
+      description: "Classic board game with 2-4 players and real money prizes",
+      icon: Dice1,
+      emoji: "🎲",
+      color: "blue",
+      features: [
+        "👥 2-4 Players",
+        "🎯 Strategy",
+        "💰 Real Prizes",
+        "⚡ Quick Games",
       ],
     },
   ];
 
   const comingSoonGames = [
-    { name: "Ludo King", emoji: "🎲", progress: 75 },
     { name: "Carrom", emoji: "🏅", progress: 60 },
     { name: "Snake & Ladder", emoji: "🐍", progress: 45 },
     { name: "Teen Patti", emoji: "🃏", progress: 30 },
@@ -117,7 +131,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 
                 {/* Play Button */}
                 <Button
-                  onClick={() => onSelectGame(game.id as "chess")}
+                  onClick={() => onSelectGame(game.id as "chess" | "ludo")}
                   className="w-full lavender-button py-3 md:py-4 text-sm md:text-base"
                 >
                   <Zap className="h-4 w-4 mr-2" />
