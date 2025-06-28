@@ -213,9 +213,9 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden relative group text-white p-3 rounded-xl hover:bg-gray-800/50 transition-all duration-300 min-w-[48px] min-h-[48px] flex items-center justify-center"
+              className="lg:hidden relative group text-white p-3 rounded-xl hover:bg-blue-800/50 transition-all duration-300 tap-target flex items-center justify-center"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-gray-500/20 to-slate-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-electric-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               {mobileMenuOpen ? (
                 <X className="relative h-6 w-6 transform rotate-90 group-hover:rotate-0 transition-transform duration-300" />
               ) : (
