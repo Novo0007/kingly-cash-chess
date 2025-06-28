@@ -247,6 +247,20 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
 
       if (error) {
         console.error("Error fetching ludo game:", error);
+
+        // Handle table not found error gracefully
+        if (
+          error.code === "42P01" ||
+          error.message?.includes("does not exist")
+        ) {
+          console.warn("Ludo games table does not exist yet.");
+          toast.error(
+            "Ludo games are not available yet. Please try again later.",
+          );
+          onBackToLobby();
+          return;
+        }
+
         toast.error("Error loading game");
         return;
       }
