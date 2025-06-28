@@ -79,8 +79,10 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
             // Find where a piece disappeared (from square)
             if (oldPiece && !newPiece) {
-              const square = getSquareName(row, col);
-              moveFrom = square;
+              const files = "abcdefgh";
+              const rank = 8 - row;
+              const file = files[col];
+              moveFrom = `${file}${rank}`;
             }
 
             // Find where a piece appeared or changed (to square)
@@ -91,9 +93,11 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 (oldPiece.type !== newPiece.type ||
                   oldPiece.color !== newPiece.color))
             ) {
-              const square = getSquareName(row, col);
+              const files = "abcdefgh";
+              const rank = 8 - row;
+              const file = files[col];
               if (newPiece) {
-                moveTo = square;
+                moveTo = `${file}${rank}`;
               }
             }
           }
