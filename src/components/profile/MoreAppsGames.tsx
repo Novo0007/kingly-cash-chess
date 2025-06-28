@@ -92,9 +92,7 @@ export const MoreAppsGames = () => {
   ];
 
   const handleGameAction = (gameId: string, action: string) => {
-    if (action === "play" && gameId === "dots-boxes") {
-      toast.success("Redirecting to Dots and Boxes!");
-    } else if (action === "download") {
+    if (action === "download") {
       toast.info("Download link coming soon!");
     } else {
       toast.info(`${action} for ${gameId} - Coming soon!`);
