@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Crown,
-  Grid3X3,
   Trophy,
   Zap,
   Star,
@@ -15,15 +14,17 @@ import {
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
+import { useNavigate } from "react-router-dom";
 
 interface GameSelectionProps {
-  onSelectGame: (gameType: "chess" | "dots-and-boxes") => void;
+  onSelectGame: (gameType: "chess") => void;
 }
 
 export const GameSelection: React.FC<GameSelectionProps> = ({
   onSelectGame,
 }) => {
   const { isMobile, isTablet } = useDeviceType();
+  const navigate = useNavigate();
 
   const games = [
     {
@@ -37,22 +38,8 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       features: [
         "🏆 Tournaments",
         "⚡ Quick Matches",
-        "💰 Real Prizes",
+        "�� Real Prizes",
         "📈 Rankings",
-      ],
-    },
-    {
-      id: "dots-and-boxes",
-      title: "Dots & Boxes",
-      description: "Connect dots to complete boxes and dominate the grid",
-      icon: Grid3X3,
-      emoji: "📦",
-      color: "lavender",
-      features: [
-        "🎯 Strategy",
-        "⚡ Fast Paced",
-        "🧠 Mind Games",
-        "🔥 Addictive",
       ],
     },
   ];
@@ -130,9 +117,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 
                 {/* Play Button */}
                 <Button
-                  onClick={() =>
-                    onSelectGame(game.id as "chess" | "dots-and-boxes")
-                  }
+                  onClick={() => onSelectGame(game.id as "chess")}
                   className="w-full lavender-button py-3 md:py-4 text-sm md:text-base"
                 >
                   <Zap className="h-4 w-4 mr-2" />
@@ -197,7 +182,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </div>
               </div>
               <Button
-                onClick={() => window.open("/chess-rules", "_blank")}
+                onClick={() => navigate("/chess-rules")}
                 variant="outline"
                 size="sm"
                 className="text-indigo-600 border-indigo-300 hover:bg-indigo-50 text-xs px-3 py-2"

@@ -6,9 +6,6 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { GameLobby } from "@/components/chess/GameLobby";
 import { GamePage } from "@/components/chess/GamePage";
 import { GameSelection } from "@/components/games/GameSelection";
-import { DotsAndBoxes } from "@/components/games/DotsAndBoxes";
-import { DotsAndBoxesLobby } from "@/components/games/DotsAndBoxesLobby";
-import { OnlineDotsAndBoxes } from "@/components/games/OnlineDotsAndBoxes";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -20,9 +17,9 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
-  const [selectedGameType, setSelectedGameType] = useState<
-    "chess" | "dots-and-boxes" | null
-  >(null);
+  const [selectedGameType, setSelectedGameType] = useState<"chess" | null>(
+    null,
+  );
 
   useEffect(() => {
     getUser();
@@ -45,31 +42,19 @@ const Index = () => {
     setLoading(false);
   };
 
-  const handleSelectGame = (gameType: "chess" | "dots-and-boxes") => {
+  const handleSelectGame = (gameType: "chess") => {
     setSelectedGameType(gameType);
-    if (gameType === "chess") {
-      setCurrentView("lobby");
-    } else {
-      setCurrentView("dots-and-boxes-lobby");
-    }
+    setCurrentView("lobby");
   };
 
   const handleJoinGame = (gameId: string) => {
     setCurrentGameId(gameId);
-    if (selectedGameType === "chess") {
-      setCurrentView("game");
-    } else {
-      setCurrentView("online-dots-and-boxes");
-    }
+    setCurrentView("game");
   };
 
   const handleBackToLobby = () => {
     setCurrentGameId(null);
-    if (selectedGameType === "chess") {
-      setCurrentView("lobby");
-    } else {
-      setCurrentView("dots-and-boxes-lobby");
-    }
+    setCurrentView("lobby");
   };
 
   const handleBackToGameSelection = () => {
@@ -124,27 +109,6 @@ const Index = () => {
           </div>
         ) : (
           <GameLobby onJoinGame={handleJoinGame} />
-        );
-      case "dots-and-boxes":
-        return <DotsAndBoxes onBackToLobby={handleBackToGameSelection} />;
-      case "dots-and-boxes-lobby":
-        return (
-          <DotsAndBoxesLobby
-            onJoinGame={handleJoinGame}
-            onBackToGameSelection={handleBackToGameSelection}
-          />
-        );
-      case "online-dots-and-boxes":
-        return currentGameId ? (
-          <OnlineDotsAndBoxes
-            gameId={currentGameId}
-            onBackToLobby={handleBackToLobby}
-          />
-        ) : (
-          <DotsAndBoxesLobby
-            onJoinGame={handleJoinGame}
-            onBackToGameSelection={handleBackToGameSelection}
-          />
         );
       case "wallet":
         return <WalletManager />;
