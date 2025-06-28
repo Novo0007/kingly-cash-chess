@@ -319,10 +319,12 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
                   {/* Mobile Sign Out */}
                   <button
                     onClick={handleSignOut}
-                    className="w-full flex items-center gap-4 px-4 py-4 text-red-400 hover:bg-red-500/10 active:bg-red-500/20 rounded-xl transition-all duration-300 min-h-[56px]"
+                    className="w-full flex items-center gap-4 px-4 py-4 text-red-400 hover:bg-red-500/10 active:bg-red-500/20 rounded-xl transition-all duration-300 tap-target font-body"
                   >
                     <LogOut className="h-6 w-6 flex-shrink-0" />
-                    <span className="font-bold text-lg">Sign Out</span>
+                    <span className="font-bold text-lg font-heading">
+                      Sign Out
+                    </span>
                     <div className="ml-auto text-xl">🚪</div>
                   </button>
                 </>
