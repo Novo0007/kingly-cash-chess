@@ -130,7 +130,14 @@ export const LudoLobby = ({
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Error fetching games:", error);
+        console.error("Error fetching ludo games:", error);
+        console.error("Error details:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        });
+        toast.error(`Failed to load games: ${error.message}`);
         return;
       }
 
@@ -171,7 +178,12 @@ export const LudoLobby = ({
 
       setGames(gamesWithPlayers);
     } catch (error) {
-      console.error("Error fetching games:", error);
+      console.error("Error in fetchGames:", error);
+      console.error("Error details:", {
+        message: error?.message,
+        stack: error?.stack,
+      });
+      toast.error("Failed to load games. Please try again.");
     }
   };
 
