@@ -580,8 +580,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         } else if (gameWithPlayers.game_result === "abandoned") {
           message =
             gameWithPlayers.winner_id === currentUser
-              ? "You won by forfeit!"
-              : "You lost by forfeit!";
+              ? "Opponent abandoned the game. You win!"
+              : "You abandoned the game. Opponent wins!";
           type = "disconnect";
         } else if (gameWithPlayers.winner_id === currentUser) {
           message = "Congratulations! You won! 🎉";
