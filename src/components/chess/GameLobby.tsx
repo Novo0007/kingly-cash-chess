@@ -529,7 +529,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                 </span>
               </div>
               <Button
-                onClick={() => window.open("/chess-rules", "_blank")}
+                onClick={() => (window.location.href = "/chess-rules")}
                 variant="outline"
                 size="sm"
                 className="text-indigo-400 border-indigo-400 hover:bg-indigo-500/10 text-xs px-3 py-1"

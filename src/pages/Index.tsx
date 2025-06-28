@@ -6,9 +6,8 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { GameLobby } from "@/components/chess/GameLobby";
 import { GamePage } from "@/components/chess/GamePage";
 import { GameSelection } from "@/components/games/GameSelection";
-import { DotsAndBoxes } from "@/components/games/DotsAndBoxes";
-import { DotsAndBoxesLobby } from "@/components/games/DotsAndBoxesLobby";
-import { OnlineDotsAndBoxes } from "@/components/games/OnlineDotsAndBoxes";
+import { LudoLobby } from "@/components/games/ludo/LudoLobby";
+import { LudoGame } from "@/components/games/ludo/LudoGame";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -21,9 +20,8 @@ const Index = () => {
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
   const [selectedGameType, setSelectedGameType] = useState<
-    "chess" | "dots-and-boxes" | null
+    "chess" | "ludo" | null
   >(null);
-
   useEffect(() => {
     getUser();
 
@@ -45,12 +43,12 @@ const Index = () => {
     setLoading(false);
   };
 
-  const handleSelectGame = (gameType: "chess" | "dots-and-boxes") => {
+  const handleSelectGame = (gameType: "chess" | "ludo") => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
       setCurrentView("lobby");
-    } else {
-      setCurrentView("dots-and-boxes-lobby");
+    } else if (gameType === "ludo") {
+      setCurrentView("ludo-lobby");
     }
   };
 
@@ -58,8 +56,8 @@ const Index = () => {
     setCurrentGameId(gameId);
     if (selectedGameType === "chess") {
       setCurrentView("game");
-    } else {
-      setCurrentView("online-dots-and-boxes");
+    } else if (selectedGameType === "ludo") {
+      setCurrentView("ludo-game");
     }
   };
 
@@ -67,8 +65,8 @@ const Index = () => {
     setCurrentGameId(null);
     if (selectedGameType === "chess") {
       setCurrentView("lobby");
-    } else {
-      setCurrentView("dots-and-boxes-lobby");
+    } else if (selectedGameType === "ludo") {
+      setCurrentView("ludo-lobby");
     }
   };
 
@@ -125,23 +123,28 @@ const Index = () => {
         ) : (
           <GameLobby onJoinGame={handleJoinGame} />
         );
-      case "dots-and-boxes":
-        return <DotsAndBoxes onBackToLobby={handleBackToGameSelection} />;
-      case "dots-and-boxes-lobby":
+      case "ludo-lobby":
         return (
-          <DotsAndBoxesLobby
+          <LudoLobby
             onJoinGame={handleJoinGame}
             onBackToGameSelection={handleBackToGameSelection}
           />
         );
-      case "online-dots-and-boxes":
+      case "ludo-game":
         return currentGameId ? (
-          <OnlineDotsAndBoxes
-            gameId={currentGameId}
-            onBackToLobby={handleBackToLobby}
-          />
+          <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 md:gap-6">
+            <div className="xl:col-span-3">
+              <LudoGame
+                gameId={currentGameId}
+                onBackToLobby={handleBackToLobby}
+              />
+            </div>
+            <div className="hidden xl:block">
+              <ChatSystem gameId={currentGameId} />
+            </div>
+          </div>
         ) : (
-          <DotsAndBoxesLobby
+          <LudoLobby
             onJoinGame={handleJoinGame}
             onBackToGameSelection={handleBackToGameSelection}
           />

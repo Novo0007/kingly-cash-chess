@@ -132,10 +132,8 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
                 (item.id === "games" &&
                   (currentView === "lobby" ||
                     currentView === "game" ||
-                    currentView === "dots-and-boxes" ||
-                    currentView === "dots-and-boxes-lobby" ||
-                    currentView === "online-dots-and-boxes"));
-
+                    currentView === "ludo-lobby" ||
+                    currentView === "ludo-game"));
               return (
                 <div key={item.id} className="relative group">
                   {isActive && (
@@ -238,9 +236,8 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
                   (item.id === "games" &&
                     (currentView === "lobby" ||
                       currentView === "game" ||
-                      currentView === "dots-and-boxes" ||
-                      currentView === "dots-and-boxes-lobby" ||
-                      currentView === "online-dots-and-boxes"));
+                      currentView === "ludo-lobby" ||
+                      currentView === "ludo-game"));
 
                 return (
                   <div key={item.id} className="relative">

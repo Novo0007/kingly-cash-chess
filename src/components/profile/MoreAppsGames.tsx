@@ -29,18 +29,6 @@ import {
 export const MoreAppsGames = () => {
   const featuredGames = [
     {
-      id: "dots-boxes",
-      title: "Dots and Boxes",
-      description:
-        "Classic paper-and-pencil strategy game with multiplayer competition",
-      status: "available",
-      players: "2.5K+",
-      rating: 4.8,
-      icon: Target,
-      color: "from-blue-500 to-cyan-500",
-      features: ["Real-time Multiplayer", "Tournaments", "Rating System"],
-    },
-    {
       id: "chess-variants",
       title: "Chess Variants",
       description:
@@ -104,9 +92,7 @@ export const MoreAppsGames = () => {
   ];
 
   const handleGameAction = (gameId: string, action: string) => {
-    if (action === "play" && gameId === "dots-boxes") {
-      toast.success("Redirecting to Dots and Boxes!");
-    } else if (action === "download") {
+    if (action === "download") {
       toast.info("Download link coming soon!");
     } else {
       toast.info(`${action} for ${gameId} - Coming soon!`);

@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Crown,
-  Grid3X3,
   Trophy,
   Zap,
   Star,
@@ -12,18 +11,21 @@ import {
   Target,
   Gamepad2,
   BookOpen,
+  Dice1,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
+import { useNavigate } from "react-router-dom";
 
 interface GameSelectionProps {
-  onSelectGame: (gameType: "chess" | "dots-and-boxes") => void;
+  onSelectGame: (gameType: "chess" | "ludo") => void;
 }
 
 export const GameSelection: React.FC<GameSelectionProps> = ({
   onSelectGame,
 }) => {
   const { isMobile, isTablet } = useDeviceType();
+  const navigate = useNavigate();
 
   const games = [
     {
@@ -42,23 +44,22 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       ],
     },
     {
-      id: "dots-and-boxes",
-      title: "Dots & Boxes",
-      description: "Connect dots to complete boxes and dominate the grid",
-      icon: Grid3X3,
-      emoji: "📦",
-      color: "lavender",
+      id: "ludo",
+      title: "Ludo King",
+      description: "Classic board game with 2-4 players and real money prizes",
+      icon: Dice1,
+      emoji: "🎲",
+      color: "blue",
       features: [
+        "👥 2-4 Players",
         "🎯 Strategy",
-        "⚡ Fast Paced",
-        "🧠 Mind Games",
-        "🔥 Addictive",
+        "💰 Real Prizes",
+        "⚡ Quick Games",
       ],
     },
   ];
 
   const comingSoonGames = [
-    { name: "Ludo King", emoji: "🎲", progress: 75 },
     { name: "Carrom", emoji: "🏅", progress: 60 },
     { name: "Snake & Ladder", emoji: "🐍", progress: 45 },
     { name: "Teen Patti", emoji: "🃏", progress: 30 },
@@ -130,9 +131,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 
                 {/* Play Button */}
                 <Button
-                  onClick={() =>
-                    onSelectGame(game.id as "chess" | "dots-and-boxes")
-                  }
+                  onClick={() => onSelectGame(game.id as "chess" | "ludo")}
                   className="w-full lavender-button py-3 md:py-4 text-sm md:text-base"
                 >
                   <Zap className="h-4 w-4 mr-2" />
@@ -197,7 +196,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </div>
               </div>
               <Button
-                onClick={() => window.open("/chess-rules", "_blank")}
+                onClick={() => navigate("/chess-rules")}
                 variant="outline"
                 size="sm"
                 className="text-indigo-600 border-indigo-300 hover:bg-indigo-50 text-xs px-3 py-2"

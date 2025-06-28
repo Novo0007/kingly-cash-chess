@@ -42,7 +42,7 @@ export const FriendsSystem = () => {
     open: boolean;
     friendId: string;
     friendName: string;
-    gameType: "chess" | "dots-and-boxes";
+    gameType: "chess";
   }>({
     open: false,
     friendId: "",
@@ -252,7 +252,7 @@ export const FriendsSystem = () => {
   const createGameInvitation = async (
     friendId: string,
     amount: number,
-    gameType: "chess" | "dots-and-boxes" = "chess",
+    gameType: "chess" = "chess",
   ) => {
     const {
       data: { user },
@@ -583,7 +583,7 @@ export const FriendsSystem = () => {
   const openChallengePopup = (
     friendId: string,
     friendName: string,
-    gameType: "chess" | "dots-and-boxes" = "chess",
+    gameType: "chess" = "chess",
   ) => {
     setChallengePopup({
       open: true,
@@ -870,20 +870,6 @@ export const FriendsSystem = () => {
                       >
                         <Gamepad2 className="h-3 w-3" />
                         Chess
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          openChallengePopup(
-                            friendship.friend?.id || "",
-                            friendship.friend?.username || "",
-                            "dots-and-boxes",
-                          )
-                        }
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-1 flex-1 sm:flex-none"
-                      >
-                        <Gamepad2 className="h-3 w-3" />
-                        D&B
                       </Button>
                     </div>
                   </div>
