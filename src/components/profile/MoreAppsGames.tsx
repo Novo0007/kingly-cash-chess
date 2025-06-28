@@ -29,18 +29,6 @@ import {
 export const MoreAppsGames = () => {
   const featuredGames = [
     {
-      id: "dots-boxes",
-      title: "Dots and Boxes",
-      description:
-        "Classic paper-and-pencil strategy game with multiplayer competition",
-      status: "available",
-      players: "2.5K+",
-      rating: 4.8,
-      icon: Target,
-      color: "from-blue-500 to-cyan-500",
-      features: ["Real-time Multiplayer", "Tournaments", "Rating System"],
-    },
-    {
       id: "chess-variants",
       title: "Chess Variants",
       description:
