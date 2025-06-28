@@ -29,7 +29,7 @@ export const PawnPromotionDialog = ({
       icon: Crown,
       symbol: playerColor === "white" ? "♕" : "♛",
       description: "Most powerful piece",
-      color: "text-purple-600",
+      color: "text-blue-600",
     },
     {
       type: "r" as PieceType,
@@ -37,7 +37,7 @@ export const PawnPromotionDialog = ({
       icon: Castle,
       symbol: playerColor === "white" ? "♖" : "♜",
       description: "Moves horizontally/vertically",
-      color: "text-blue-600",
+      color: "text-blue-500",
     },
     {
       type: "b" as PieceType,
@@ -45,7 +45,7 @@ export const PawnPromotionDialog = ({
       icon: BishopIcon,
       symbol: playerColor === "white" ? "♗" : "♝",
       description: "Moves diagonally",
-      color: "text-green-600",
+      color: "text-blue-700",
     },
     {
       type: "n" as PieceType,
@@ -53,7 +53,7 @@ export const PawnPromotionDialog = ({
       icon: Swords,
       symbol: playerColor === "white" ? "♘" : "♞",
       description: "Moves in L-shape",
-      color: "text-orange-600",
+      color: "text-blue-800",
     },
   ];
 
