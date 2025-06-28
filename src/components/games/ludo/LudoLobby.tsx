@@ -215,6 +215,13 @@ export const LudoLobby = ({
       return;
     }
 
+    // Check if tables exist first
+    const tablesExist = await checkLudoTablesExist();
+    if (!tablesExist) {
+      toast.error("Ludo games are not available yet. Database setup required.");
+      return;
+    }
+
     const fee = parseInt(entryFee);
     if (fee < 5) {
       toast.error("Minimum entry fee is ₹5");
