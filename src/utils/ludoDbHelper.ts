@@ -2,6 +2,19 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const checkLudoTablesExist = async (): Promise<boolean> => {
   try {
+    console.log("🔗 Testing Supabase connection...");
+    // First test if Supabase is working at all with a table we know exists
+    const { error: testError } = await supabase
+      .from("profiles")
+      .select("count", { count: "exact", head: true });
+
+    if (testError) {
+      console.error("❌ Supabase connection test failed:", testError);
+      return false;
+    }
+    console.log("✅ Supabase connection working");
+
+    console.log("🎯 Testing ludo_games table...");
     // Try a simple query to see if the table exists
     const { error } = await supabase
       .from("ludo_games")
