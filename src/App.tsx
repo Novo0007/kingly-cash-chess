@@ -89,10 +89,10 @@ const App = () => {
             {/* Brand Name */}
             <div className="space-y-4">
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-heading electric-text-gradient leading-tight">
-                NNC GAMES
+                GAME HUB
               </h1>
               <p className="text-lg sm:text-xl md:text-2xl font-medium text-gray-700 font-body">
-                Modern Gaming Platform
+                BY NNC GAMES
               </p>
             </div>
 
