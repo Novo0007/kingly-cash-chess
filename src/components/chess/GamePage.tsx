@@ -54,6 +54,10 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const [lastActiveTime, setLastActiveTime] = useState<number>(Date.now());
   const [presenceTracked, setPresenceTracked] = useState(false);
   const [showMobileChat, setShowMobileChat] = useState(false);
+  const [abandonmentTimer, setAbandonmentTimer] =
+    useState<NodeJS.Timeout | null>(null);
+  const [showAbandonmentWarning, setShowAbandonmentWarning] = useState(false);
+  const [abandonmentCountdown, setAbandonmentCountdown] = useState(10);
   const { isMobile, isTablet } = useDeviceType();
 
   useEffect(() => {
@@ -110,15 +114,38 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       .on("presence", { event: "sync" }, () => {
         console.log("Presence synced");
         setLastActiveTime(Date.now());
+        // Cancel abandonment timer if player returns
+        if (abandonmentTimer) {
+          clearTimeout(abandonmentTimer);
+          setAbandonmentTimer(null);
+          setShowAbandonmentWarning(false);
+          toast.success("Player reconnected!");
+        }
       })
       .on("presence", { event: "join" }, ({ key, newPresences }) => {
         console.log("User joined:", key, newPresences);
         setLastActiveTime(Date.now());
+        // Cancel abandonment timer if player returns
+        if (abandonmentTimer) {
+          clearTimeout(abandonmentTimer);
+          setAbandonmentTimer(null);
+          setShowAbandonmentWarning(false);
+          toast.success("Player reconnected!");
+        }
       })
       .on("presence", { event: "leave" }, ({ key, leftPresences }) => {
         console.log("User left:", key, leftPresences);
-        // Only trigger disconnection check after a reasonable delay
-        setTimeout(() => checkForDisconnection(), 20000); // 20 seconds delay
+
+        // Check if the left user is one of the players
+        const leftUser = leftPresences[0];
+        if (
+          leftUser &&
+          (leftUser.user_id === game.white_player_id ||
+            leftUser.user_id === game.black_player_id)
+        ) {
+          // Start 10-second abandonment timer
+          startAbandonmentTimer(leftUser.user_id);
+        }
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED" && currentUser && !presenceTracked) {
@@ -134,6 +161,12 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     return () => {
       supabase.removeChannel(presenceChannel);
       setPresenceTracked(false);
+      // Clean up abandonment timer
+      if (abandonmentTimer) {
+        clearTimeout(abandonmentTimer);
+        setAbandonmentTimer(null);
+        setShowAbandonmentWarning(false);
+      }
     };
   }, [currentUser, game?.id, game?.game_status]);
 
@@ -142,6 +175,65 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       data: { user },
     } = await supabase.auth.getUser();
     setCurrentUser(user?.id || null);
+  };
+
+  const startAbandonmentTimer = (leftUserId: string) => {
+    if (!game || game.game_status !== "active") return;
+
+    // Don't start timer if the current user is the one who left
+    if (leftUserId === currentUser) return;
+
+    console.log("Starting abandonment timer for user:", leftUserId);
+    setShowAbandonmentWarning(true);
+    setAbandonmentCountdown(10);
+
+    // Update countdown every second
+    const countdownInterval = setInterval(() => {
+      setAbandonmentCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(countdownInterval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    // Set main abandonment timer
+    const timer = setTimeout(async () => {
+      clearInterval(countdownInterval);
+      setShowAbandonmentWarning(false);
+      await handlePlayerAbandonment(leftUserId);
+    }, 10000); // 10 seconds
+
+    setAbandonmentTimer(timer);
+  };
+
+  const handlePlayerAbandonment = async (abandonedUserId: string) => {
+    if (!game || !currentUser) return;
+
+    console.log("Player abandoned:", abandonedUserId);
+
+    // Determine winner (the player who didn't abandon)
+    const winnerId =
+      abandonedUserId === game.white_player_id
+        ? game.black_player_id
+        : game.white_player_id;
+
+    const loserId = abandonedUserId;
+
+    await completeGame(winnerId, loserId, "abandoned");
+
+    // Show appropriate message
+    if (abandonedUserId === currentUser) {
+      setGameEndMessage("You abandoned the game. Opponent wins!");
+      toast.error("You abandoned the game!");
+    } else {
+      setGameEndMessage("Opponent abandoned the game. You win!");
+      toast.success("You won by abandonment!");
+    }
+
+    setGameEndType("disconnect");
+    setShowGameEndDialog(true);
   };
 
   const checkForDisconnection = async () => {
@@ -791,6 +883,35 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             >
               Join Game
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Abandonment Warning Dialog */}
+      <Dialog open={showAbandonmentWarning} onOpenChange={() => {}}>
+        <DialogContent className="text-center w-[95vw] max-w-sm mx-auto bg-gradient-to-br from-orange-900 to-red-900 border-2 border-orange-400 shadow-2xl rounded-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-center gap-2 text-xl text-white font-bold">
+              <Clock className="h-6 w-6 text-orange-400" />
+              Player Disconnected!
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="text-orange-200 font-medium">
+              Opponent has left the game.
+              <br />
+              <span className="text-2xl font-bold text-orange-400">
+                {abandonmentCountdown}
+              </span>
+              <br />
+              seconds until forfeit...
+            </div>
+            <div className="w-full bg-orange-800 rounded-full h-2">
+              <div
+                className="bg-gradient-to-r from-orange-400 to-red-500 h-2 rounded-full transition-all duration-1000"
+                style={{ width: `${(abandonmentCountdown / 10) * 100}%` }}
+              ></div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
