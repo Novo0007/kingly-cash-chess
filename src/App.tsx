@@ -38,22 +38,22 @@ const App = () => {
     };
   }, []);
 
-  // Professional Lavender Loading Screen
+  // Modern Electric Blue Loading Screen
   if (appLoading) {
     return (
-      <div className="fixed inset-0 overflow-hidden">
-        {/* Elegant Lavender Background */}
-        <div className="absolute inset-0 lavender-gradient">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-white/10"></div>
+      <div className="fixed inset-0 overflow-hidden font-body">
+        {/* Dynamic Electric Blue Background */}
+        <div className="absolute inset-0 electric-gradient">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-blue-500/5"></div>
         </div>
 
-        {/* Subtle Pattern Overlay */}
-        <div className="absolute inset-0 opacity-5">
+        {/* Vibrant Pattern Overlay */}
+        <div className="absolute inset-0 opacity-10">
           <div
             className="h-full w-full"
             style={{
-              backgroundImage: `radial-gradient(circle at 25% 25%, hsl(250, 70%, 60%) 0%, transparent 50%),
-                               radial-gradient(circle at 75% 75%, hsl(270, 80%, 70%) 0%, transparent 50%)`,
+              backgroundImage: `radial-gradient(circle at 25% 25%, hsl(205, 100%, 50%) 0%, transparent 50%),
+                               radial-gradient(circle at 75% 75%, hsl(195, 100%, 55%) 0%, transparent 50%)`,
             }}
           ></div>
         </div>
@@ -61,15 +61,15 @@ const App = () => {
         {/* Main Content */}
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-6 sm:p-8">
           <div className="text-center space-y-8 sm:space-y-10 max-w-md sm:max-w-lg mx-auto w-full">
-            {/* Professional Logo */}
+            {/* Modern Logo */}
             <div className="relative">
-              <div className="lavender-shadow-lg rounded-full p-2">
-                <div className="lavender-glass rounded-full p-8 sm:p-10 backdrop-blur-xl">
+              <div className="electric-shadow-lg rounded-full p-2">
+                <div className="electric-glass rounded-full p-8 sm:p-10 backdrop-blur-xl">
                   <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl lavender-pulse"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl electric-pulse"></div>
                     <div className="absolute inset-2 bg-white rounded-xl flex items-center justify-center">
                       <svg
-                        className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600"
+                        className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -88,37 +88,37 @@ const App = () => {
 
             {/* Brand Name */}
             <div className="space-y-4">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold lavender-text-gradient leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-heading electric-text-gradient leading-tight">
                 NNC GAMES
               </h1>
-              <p className="text-lg sm:text-xl md:text-2xl font-medium text-gray-600">
-                Professional Gaming Platform
+              <p className="text-lg sm:text-xl md:text-2xl font-medium text-gray-700 font-body">
+                Modern Gaming Platform
               </p>
             </div>
 
-            {/* Elegant Loading Spinner */}
+            {/* Modern Loading Spinner */}
             <div className="relative">
               <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto">
-                <div className="lavender-spinner w-full h-full"></div>
+                <div className="electric-spinner w-full h-full"></div>
               </div>
             </div>
 
             {/* Progress Bar */}
             <div className="w-full max-w-sm mx-auto">
-              <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden lavender-shadow">
-                <div className="absolute inset-0 lavender-shimmer"></div>
+              <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden electric-shadow">
+                <div className="absolute inset-0 electric-shimmer"></div>
                 <div
-                  className="h-full bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full transition-all duration-500 ease-out relative overflow-hidden"
+                  className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500 ease-out relative overflow-hidden"
                   style={{ width: `${Math.min(loadingProgress, 100)}%` }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
                 </div>
               </div>
               <div className="flex justify-between items-center mt-3">
-                <span className="text-sm font-medium text-gray-600">
+                <span className="text-sm font-medium text-gray-600 font-body">
                   Loading...
                 </span>
-                <span className="text-sm font-bold text-purple-600">
+                <span className="text-sm font-bold text-blue-600 font-body">
                   {Math.round(loadingProgress)}%
                 </span>
               </div>
@@ -126,7 +126,7 @@ const App = () => {
 
             {/* Loading Status */}
             <div className="space-y-2">
-              <p className="text-base sm:text-lg font-medium text-gray-700">
+              <p className="text-base sm:text-lg font-medium text-gray-700 font-body">
                 {loadingProgress < 30
                   ? "Initializing Platform..."
                   : loadingProgress < 60
@@ -135,48 +135,54 @@ const App = () => {
                       ? "Preparing Interface..."
                       : "Almost Ready..."}
               </p>
-              <p className="text-sm text-gray-500">
-                Welcome to premium gaming experience
+              <p className="text-sm text-gray-500 font-body">
+                Welcome to the modern gaming experience
               </p>
             </div>
 
-            {/* Professional Features */}
+            {/* Modern Features */}
             <div className="grid grid-cols-3 gap-4 mt-8">
-              <div className="text-center">
-                <div className="w-10 h-10 mx-auto mb-2 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-lg flex items-center justify-center">
+              <div className="text-center tap-target">
+                <div className="w-10 h-10 mx-auto mb-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
                   <svg
-                    className="w-5 h-5 text-purple-600"
+                    className="w-5 h-5 text-blue-600"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
                     <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <p className="text-xs font-medium text-gray-600">Secure</p>
+                <p className="text-xs font-medium text-gray-600 font-body">
+                  Secure
+                </p>
               </div>
-              <div className="text-center">
-                <div className="w-10 h-10 mx-auto mb-2 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-lg flex items-center justify-center">
+              <div className="text-center tap-target">
+                <div className="w-10 h-10 mx-auto mb-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
                   <svg
-                    className="w-5 h-5 text-purple-600"
+                    className="w-5 h-5 text-blue-600"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
                     <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
                   </svg>
                 </div>
-                <p className="text-xs font-medium text-gray-600">Multiplayer</p>
+                <p className="text-xs font-medium text-gray-600 font-body">
+                  Multiplayer
+                </p>
               </div>
-              <div className="text-center">
-                <div className="w-10 h-10 mx-auto mb-2 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-lg flex items-center justify-center">
+              <div className="text-center tap-target">
+                <div className="w-10 h-10 mx-auto mb-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
                   <svg
-                    className="w-5 h-5 text-purple-600"
+                    className="w-5 h-5 text-blue-600"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
                     <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
                   </svg>
                 </div>
-                <p className="text-xs font-medium text-gray-600">Real-time</p>
+                <p className="text-xs font-medium text-gray-600 font-body">
+                  Real-time
+                </p>
               </div>
             </div>
           </div>
@@ -184,8 +190,8 @@ const App = () => {
 
         {/* Bottom Branding */}
         <div className="absolute bottom-8 left-0 right-0 text-center">
-          <p className="text-sm text-gray-500 font-medium">
-            © 2024 NNC Games • Professional Gaming Platform
+          <p className="text-sm text-gray-500 font-medium font-body">
+            © 2024 NNC Games • Modern Gaming Platform
           </p>
         </div>
       </div>
