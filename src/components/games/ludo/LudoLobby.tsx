@@ -144,12 +144,17 @@ export const LudoLobby = ({
           message: error.message,
           details: error.details,
           hint: error.hint,
-          code: error.code
+          code: error.code,
         });
 
         // Handle table not found error gracefully
-        if (error.code === "42P01" || error.message?.includes("does not exist")) {
-          console.warn("Ludo games table does not exist yet. This is expected in development.");
+        if (
+          error.code === "42P01" ||
+          error.message?.includes("does not exist")
+        ) {
+          console.warn(
+            "Ludo games table does not exist yet. This is expected in development.",
+          );
           setGames([]);
           return;
         }
@@ -198,7 +203,7 @@ export const LudoLobby = ({
       console.error("Error in fetchGames:", error);
       console.error("Error details:", {
         message: error?.message,
-        stack: error?.stack
+        stack: error?.stack,
       });
       toast.error("Failed to load games. Please try again.");
     }
@@ -279,8 +284,13 @@ export const LudoLobby = ({
         console.error("Game creation error:", gameError);
 
         // Handle table not found error
-        if (gameError.code === "42P01" || gameError.message?.includes("does not exist")) {
-          toast.error("Ludo games are not available yet. Database setup in progress.");
+        if (
+          gameError.code === "42P01" ||
+          gameError.message?.includes("does not exist")
+        ) {
+          toast.error(
+            "Ludo games are not available yet. Database setup in progress.",
+          );
         } else {
           toast.error(`Failed to create game: ${gameError.message}`);
         }
@@ -510,7 +520,8 @@ export const LudoLobby = ({
 
           {/* Debug info - temporary */}
           <div className="text-xs text-blue-300 bg-blue-900/20 p-2 rounded">
-            Debug: Ludo games loaded successfully. Check console for any database errors.
+            Debug: Ludo games loaded successfully. Check console for any
+            database errors.
           </div>
 
           {games.length === 0 ? (
@@ -519,14 +530,14 @@ export const LudoLobby = ({
                 <Dice1 className="h-12 w-12 text-gray-500 mx-auto mb-3" />
                 <p className="text-gray-400 mb-2">No Ludo games available</p>
                 <p className="text-gray-500 text-sm">
-                  Create a new game to get started!<br/>
+                  Create a new game to get started!
+                  <br />
                   <span className="text-xs">
-                    If you can't create games, the database may still be setting up.
+                    If you can't create games, the database may still be setting
+                    up.
                   </span>
                 </p>
               </CardContent>
-            </Card>
-          ) : (
             </Card>
           ) : (
             games.map((game) => (
