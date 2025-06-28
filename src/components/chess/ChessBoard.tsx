@@ -304,22 +304,22 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     transition-colors duration-200 active:scale-95 relative overflow-hidden
                     ${
                       isLightSquare(rowIndex, colIndex)
-                        ? "bg-lavender-50 hover:bg-lavender-100"
-                        : "bg-purple-300 hover:bg-purple-400"
+                        ? "bg-electric-50 hover:bg-electric-100"
+                        : "bg-blue-300 hover:bg-blue-400"
                     }
                     ${
                       isSquareHighlighted(rowIndex, colIndex)
-                        ? "ring-4 ring-purple-400 bg-purple-200"
+                        ? "ring-4 ring-blue-400 bg-blue-200"
                         : ""
                     }
                     ${
                       isPossibleMove(rowIndex, colIndex)
-                        ? "after:absolute after:inset-1/3 after:bg-purple-500 after:rounded-full after:opacity-70"
+                        ? "after:absolute after:inset-1/3 after:bg-blue-500 after:rounded-full after:opacity-70"
                         : ""
                     }
                     ${
                       isLastMove(rowIndex, colIndex)
-                        ? "bg-lavender-300 ring-2 ring-purple-500"
+                        ? "bg-electric-300 ring-2 ring-blue-500"
                         : ""
                     }
                     ${disabled || !isPlayerTurn ? "cursor-default opacity-70" : "cursor-pointer"}
