@@ -137,19 +137,19 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
               return (
                 <div key={item.id} className="relative group">
                   {isActive && (
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-xl blur-lg opacity-60 animate-pulse"></div>
+                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-electric-500 to-cyan-500 rounded-xl blur-lg opacity-60 animate-pulse"></div>
                   )}
                   <button
                     onClick={() => onViewChange(item.id)}
-                    className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 ${
+                    className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 tap-target font-body ${
                       isActive
-                        ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-purple-400/50 shadow-lg"
+                        ? "bg-gradient-to-r from-blue-500/20 to-electric-500/20 text-white border border-blue-400/50 shadow-lg"
                         : "text-gray-300 hover:text-white hover:bg-gray-800/50 backdrop-blur-sm"
                     }`}
                   >
                     <div className="relative">
                       {isActive && (
-                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-sm opacity-60"></div>
+                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-electric-400 rounded-full blur-sm opacity-60"></div>
                       )}
                       <Icon
                         className={`relative h-5 w-5 transition-all duration-300 ${isActive ? "text-white drop-shadow-lg" : ""}`}
