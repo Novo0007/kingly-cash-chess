@@ -172,22 +172,22 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
               <div className="hidden lg:flex items-center gap-4">
                 {/* User Profile Card */}
                 <div className="relative group">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-xl blur-lg opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
-                  <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 backdrop-blur-sm border border-purple-500/30 rounded-xl p-3">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl blur-lg opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
+                  <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 backdrop-blur-sm border border-blue-500/30 rounded-xl p-3 tap-target">
                     <div className="flex items-center gap-3">
                       <div className="relative">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-sm opacity-60"></div>
-                        <div className="relative w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-lg">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-electric-400 rounded-full blur-sm opacity-60"></div>
+                        <div className="relative w-8 h-8 bg-gradient-to-r from-blue-500 to-electric-500 rounded-full flex items-center justify-center text-lg">
                           👤
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-white font-bold text-sm flex items-center gap-1">
+                        <p className="text-white font-bold text-sm flex items-center gap-1 font-heading">
                           {profile?.username || "Player"}
                           <Sparkles className="h-3 w-3 text-yellow-400" />
                         </p>
                         <div className="flex items-center gap-1">
-                          <span className="text-green-400 text-xs font-bold">
+                          <span className="text-green-400 text-xs font-bold font-body">
                             ₹{wallet?.balance?.toFixed(2) || "0.00"}
                           </span>
                           <Zap className="h-3 w-3 text-yellow-400" />
