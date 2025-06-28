@@ -350,11 +350,23 @@
 }
 
 .electric-float {
-  animation: electricFloat 3s ease-in-out infinite;
+  animation: electricFloat 4s ease-in-out infinite;
 }
 
 .electric-pulse {
-  animation: electricPulse 2s ease-in-out infinite;
+  animation: electricPulse 2.5s ease-in-out infinite;
+}
+
+.particle-float {
+  animation: particleFloat 6s ease-in-out infinite;
+}
+
+.rotate-glow {
+  animation: rotateGlow 10s linear infinite;
+}
+
+.mesh-gradient {
+  animation: meshGradient 8s ease-in-out infinite;
 }
 
 /* Professional loading animations */
