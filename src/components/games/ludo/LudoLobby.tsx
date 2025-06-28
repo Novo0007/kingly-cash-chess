@@ -502,6 +502,12 @@ export const LudoLobby = ({
             </h3>
           </div>
 
+          {/* Debug info - temporary */}
+          <div className="text-xs text-blue-300 bg-blue-900/20 p-2 rounded">
+            Debug: Ludo games loaded successfully. Check console for any
+            database errors.
+          </div>
+
           {games.length === 0 ? (
             <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-gray-600">
               <CardContent className="p-6 text-center">
