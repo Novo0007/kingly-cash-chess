@@ -38,47 +38,113 @@ const App = () => {
     };
   }, []);
 
-  // Modern Electric Blue Loading Screen
+  // Ultra-Modern Professional Gaming Loading Experience
   if (appLoading) {
     return (
       <div className="fixed inset-0 overflow-hidden font-body">
-        {/* Dynamic Electric Blue Background */}
-        <div className="absolute inset-0 electric-gradient">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-blue-500/5"></div>
+        {/* Advanced Multi-Layer Background System */}
+        <div className="absolute inset-0">
+          {/* Primary Gradient Layer */}
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900"></div>
+
+          {/* Dynamic Mesh Gradient */}
+          <div className="absolute inset-0 opacity-40">
+            <div
+              className="h-full w-full"
+              style={{
+                backgroundImage: `
+                  radial-gradient(circle at 20% 80%, hsl(205, 100%, 50%) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, hsl(195, 100%, 55%) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 40%, hsl(215, 100%, 45%) 0%, transparent 40%),
+                  conic-gradient(from 180deg at 50% 50%, transparent 0deg, hsl(205, 100%, 50%) 180deg, transparent 360deg)
+                `,
+              }}
+            ></div>
+          </div>
+
+          {/* Animated Particle System */}
+          <div className="absolute inset-0 opacity-20">
+            {[...Array(50)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-1 h-1 bg-blue-400 rounded-full"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 3}s`,
+                }}
+              ></div>
+            ))}
+          </div>
+
+          {/* Geometric Pattern Overlay */}
+          <div className="absolute inset-0 opacity-10">
+            <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern
+                  id="grid"
+                  width="40"
+                  height="40"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M 40 0 L 0 0 0 40"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    className="text-blue-300"
+                  />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid)" />
+            </svg>
+          </div>
         </div>
 
-        {/* Vibrant Pattern Overlay */}
-        <div className="absolute inset-0 opacity-10">
+        {/* Floating Interactive Elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Floating Orbs */}
           <div
-            className="h-full w-full"
-            style={{
-              backgroundImage: `radial-gradient(circle at 25% 25%, hsl(205, 100%, 50%) 0%, transparent 50%),
-                               radial-gradient(circle at 75% 75%, hsl(195, 100%, 55%) 0%, transparent 50%)`,
-            }}
+            className="absolute top-1/4 left-1/4 w-20 h-20 bg-gradient-to-r from-blue-400/30 to-cyan-400/30 rounded-full blur-xl electric-float"
+            style={{ animationDelay: "0s" }}
+          ></div>
+          <div
+            className="absolute top-3/4 right-1/4 w-16 h-16 bg-gradient-to-r from-purple-400/30 to-blue-400/30 rounded-full blur-xl electric-float"
+            style={{ animationDelay: "1s" }}
+          ></div>
+          <div
+            className="absolute top-1/2 left-3/4 w-12 h-12 bg-gradient-to-r from-cyan-400/30 to-blue-400/30 rounded-full blur-xl electric-float"
+            style={{ animationDelay: "2s" }}
           ></div>
         </div>
 
-        {/* Main Content */}
+        {/* Main Content Container */}
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-6 sm:p-8">
-          <div className="text-center space-y-8 sm:space-y-10 max-w-md sm:max-w-lg mx-auto w-full">
-            {/* Modern Logo */}
-            <div className="relative">
-              <div className="electric-shadow-lg rounded-full p-2">
-                <div className="electric-glass rounded-full p-8 sm:p-10 backdrop-blur-xl">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl electric-pulse"></div>
-                    <div className="absolute inset-2 bg-white rounded-xl flex items-center justify-center">
+          <div className="text-center space-y-10 sm:space-y-12 max-w-lg sm:max-w-xl mx-auto w-full">
+            {/* Revolutionary Logo Design */}
+            <div className="relative group">
+              {/* Outer Glow Ring */}
+              <div className="absolute -inset-8 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-cyan-500/20 rounded-full blur-2xl group-hover:blur-3xl transition-all duration-1000"></div>
+
+              {/* Logo Container */}
+              <div className="relative">
+                <div className="electric-glass backdrop-blur-2xl rounded-full p-8 sm:p-12 border border-blue-300/30">
+                  {/* Rotating Border */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 opacity-75 blur-sm"></div>
+                  <div className="absolute inset-0.5 rounded-full bg-slate-900/80 backdrop-blur-xl"></div>
+
+                  {/* Logo Icon */}
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-500 to-cyan-400 rounded-3xl electric-pulse transform rotate-45"></div>
+                    <div className="absolute inset-3 bg-gradient-to-br from-white to-blue-50 rounded-2xl flex items-center justify-center transform -rotate-45">
                       <svg
-                        className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600"
+                        className="w-10 h-10 sm:w-12 sm:h-12 text-blue-600"
                         fill="currentColor"
-                        viewBox="0 0 20 20"
+                        viewBox="0 0 24 24"
                       >
-                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                        <path
-                          fillRule="evenodd"
-                          d="M4 5a2 2 0 012-2h8a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 1a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                          clipRule="evenodd"
-                        />
+                        <path d="M12 2C13.1 2 14 2.9 14 4V10L16 12L14 14V20C14 21.1 13.1 22 12 22S10 21.1 10 20V14L8 12L10 10V4C10 2.9 10.9 2 12 2Z" />
+                        <circle cx="12" cy="8" r="2" />
+                        <circle cx="12" cy="16" r="2" />
                       </svg>
                     </div>
                   </div>
@@ -86,113 +152,130 @@ const App = () => {
               </div>
             </div>
 
-            {/* Brand Name */}
-            <div className="space-y-4">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-heading electric-text-gradient leading-tight">
-                GAME HUB
-              </h1>
-              <p className="text-lg sm:text-xl md:text-2xl font-medium text-gray-700 font-body">
-                BY NNC GAMES
-              </p>
-            </div>
+            {/* Advanced Typography System */}
+            <div className="space-y-6">
+              {/* Main Title */}
+              <div className="relative">
+                <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-heading leading-none">
+                  <span className="block bg-gradient-to-r from-blue-200 via-white to-cyan-200 bg-clip-text text-transparent drop-shadow-2xl">
+                    GAME
+                  </span>
+                  <span className="block bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent electric-text-gradient">
+                    HUB
+                  </span>
+                </h1>
 
-            {/* Modern Loading Spinner */}
-            <div className="relative">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto">
-                <div className="electric-spinner w-full h-full"></div>
+                {/* Subtitle with Enhanced Styling */}
+                <div className="mt-4 relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent blur-xl"></div>
+                  <p className="relative text-xl sm:text-2xl md:text-3xl font-medium text-blue-200 font-body tracking-widest">
+                    BY
+                    <span className="mx-3 font-black text-white electric-text-gradient">
+                      NNC GAMES
+                    </span>
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Progress Bar */}
-            <div className="w-full max-w-sm mx-auto">
-              <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden electric-shadow">
-                <div className="absolute inset-0 electric-shimmer"></div>
+            {/* Sophisticated Loading Animation */}
+            <div className="relative space-y-8">
+              {/* Multi-Ring Spinner */}
+              <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto">
+                <div className="absolute inset-0 rounded-full border-4 border-blue-500/30"></div>
+                <div className="absolute inset-2 rounded-full border-4 border-transparent border-t-blue-400 animate-spin"></div>
                 <div
-                  className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500 ease-out relative overflow-hidden"
-                  style={{ width: `${Math.min(loadingProgress, 100)}%` }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
-                </div>
+                  className="absolute inset-4 rounded-full border-4 border-transparent border-r-purple-400 animate-spin"
+                  style={{
+                    animationDirection: "reverse",
+                    animationDuration: "2s",
+                  }}
+                ></div>
+                <div
+                  className="absolute inset-6 rounded-full border-4 border-transparent border-b-cyan-400 animate-spin"
+                  style={{ animationDuration: "3s" }}
+                ></div>
+
+                {/* Center Glow */}
+                <div className="absolute inset-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-lg opacity-60 electric-pulse"></div>
               </div>
-              <div className="flex justify-between items-center mt-3">
-                <span className="text-sm font-medium text-gray-600 font-body">
-                  Loading...
-                </span>
-                <span className="text-sm font-bold text-blue-600 font-body">
-                  {Math.round(loadingProgress)}%
-                </span>
+
+              {/* Enhanced Progress System */}
+              <div className="w-full max-w-md mx-auto space-y-4">
+                {/* Progress Track */}
+                <div className="relative h-3 bg-slate-800/50 rounded-full overflow-hidden backdrop-blur-sm border border-blue-500/20">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/20 to-transparent electric-shimmer"></div>
+                  <div
+                    className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+                    style={{ width: `${Math.min(loadingProgress, 100)}%` }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-pulse"></div>
+                    <div className="absolute inset-0 electric-shimmer"></div>
+                  </div>
+                </div>
+
+                {/* Progress Info */}
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-blue-300 font-body">
+                    {loadingProgress < 25
+                      ? "🚀 Initializing Platform..."
+                      : loadingProgress < 50
+                        ? "⚡ Loading Game Engine..."
+                        : loadingProgress < 75
+                          ? "🎮 Preparing Interface..."
+                          : loadingProgress < 95
+                            ? "🎯 Finalizing Setup..."
+                            : "✨ Almost Ready..."}
+                  </span>
+                  <span className="text-lg font-black text-white font-heading">
+                    {Math.round(loadingProgress)}%
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Loading Status */}
-            <div className="space-y-2">
-              <p className="text-base sm:text-lg font-medium text-gray-700 font-body">
-                {loadingProgress < 30
-                  ? "Initializing Platform..."
-                  : loadingProgress < 60
-                    ? "Loading Game Engine..."
-                    : loadingProgress < 90
-                      ? "Preparing Interface..."
-                      : "Almost Ready..."}
-              </p>
-              <p className="text-sm text-gray-500 font-body">
-                Welcome to the modern gaming experience
-              </p>
+            {/* Interactive Feature Cards */}
+            <div className="grid grid-cols-3 gap-4 sm:gap-6 mt-12">
+              {[
+                { icon: "🔒", title: "Secure", desc: "End-to-end encryption" },
+                { icon: "👥", title: "Multiplayer", desc: "Real-time battles" },
+                { icon: "⚡", title: "Lightning", desc: "Ultra-fast gaming" },
+              ].map((feature, index) => (
+                <div key={index} className="relative group tap-target">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                  <div className="relative electric-glass backdrop-blur-xl p-4 sm:p-6 rounded-xl border border-blue-300/20 hover:border-blue-300/40 transition-all duration-300">
+                    <div className="text-2xl sm:text-3xl mb-2">
+                      {feature.icon}
+                    </div>
+                    <h3 className="text-xs sm:text-sm font-bold text-white font-heading">
+                      {feature.title}
+                    </h3>
+                    <p className="text-xs text-blue-200 font-body mt-1">
+                      {feature.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {/* Modern Features */}
-            <div className="grid grid-cols-3 gap-4 mt-8">
-              <div className="text-center tap-target">
-                <div className="w-10 h-10 mx-auto mb-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5 text-blue-600"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <p className="text-xs font-medium text-gray-600 font-body">
-                  Secure
-                </p>
-              </div>
-              <div className="text-center tap-target">
-                <div className="w-10 h-10 mx-auto mb-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5 text-blue-600"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
-                  </svg>
-                </div>
-                <p className="text-xs font-medium text-gray-600 font-body">
-                  Multiplayer
-                </p>
-              </div>
-              <div className="text-center tap-target">
-                <div className="w-10 h-10 mx-auto mb-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5 text-blue-600"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-                  </svg>
-                </div>
-                <p className="text-xs font-medium text-gray-600 font-body">
-                  Real-time
+            {/* Status Message */}
+            <div className="relative">
+              <div className="electric-glass backdrop-blur-xl rounded-2xl p-4 border border-blue-300/20">
+                <p className="text-blue-100 font-body text-sm sm:text-base">
+                  🌟 Welcome to the next generation gaming experience
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom Branding */}
-        <div className="absolute bottom-8 left-0 right-0 text-center">
-          <p className="text-sm text-gray-500 font-medium font-body">
-            © 2024 NNC Games • Modern Gaming Platform
-          </p>
+        {/* Enhanced Footer */}
+        <div className="absolute bottom-6 left-0 right-0 text-center">
+          <div className="electric-glass backdrop-blur-xl inline-block px-6 py-2 rounded-full border border-blue-300/20">
+            <p className="text-xs sm:text-sm text-blue-200 font-medium font-body">
+              © 2024 NNC Games • Professional Gaming Platform
+            </p>
+          </div>
         </div>
       </div>
     );
