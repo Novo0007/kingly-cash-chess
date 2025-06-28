@@ -6,6 +6,8 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { GameLobby } from "@/components/chess/GameLobby";
 import { GamePage } from "@/components/chess/GamePage";
 import { GameSelection } from "@/components/games/GameSelection";
+import { LudoLobby } from "@/components/games/ludo/LudoLobby";
+import { LudoGame } from "@/components/games/ludo/LudoGame";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -17,10 +19,9 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
-  const [selectedGameType, setSelectedGameType] = useState<"chess" | null>(
-    null,
-  );
-
+  const [selectedGameType, setSelectedGameType] = useState<
+    "chess" | "ludo" | null
+  >(null);
   useEffect(() => {
     getUser();
 
@@ -42,19 +43,31 @@ const Index = () => {
     setLoading(false);
   };
 
-  const handleSelectGame = (gameType: "chess") => {
+  const handleSelectGame = (gameType: "chess" | "ludo") => {
     setSelectedGameType(gameType);
-    setCurrentView("lobby");
+    if (gameType === "chess") {
+      setCurrentView("lobby");
+    } else if (gameType === "ludo") {
+      setCurrentView("ludo-lobby");
+    }
   };
 
   const handleJoinGame = (gameId: string) => {
     setCurrentGameId(gameId);
-    setCurrentView("game");
+    if (selectedGameType === "chess") {
+      setCurrentView("game");
+    } else if (selectedGameType === "ludo") {
+      setCurrentView("ludo-game");
+    }
   };
 
   const handleBackToLobby = () => {
     setCurrentGameId(null);
-    setCurrentView("lobby");
+    if (selectedGameType === "chess") {
+      setCurrentView("lobby");
+    } else if (selectedGameType === "ludo") {
+      setCurrentView("ludo-lobby");
+    }
   };
 
   const handleBackToGameSelection = () => {
@@ -109,6 +122,32 @@ const Index = () => {
           </div>
         ) : (
           <GameLobby onJoinGame={handleJoinGame} />
+        );
+      case "ludo-lobby":
+        return (
+          <LudoLobby
+            onJoinGame={handleJoinGame}
+            onBackToGameSelection={handleBackToGameSelection}
+          />
+        );
+      case "ludo-game":
+        return currentGameId ? (
+          <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 md:gap-6">
+            <div className="xl:col-span-3">
+              <LudoGame
+                gameId={currentGameId}
+                onBackToLobby={handleBackToLobby}
+              />
+            </div>
+            <div className="hidden xl:block">
+              <ChatSystem gameId={currentGameId} />
+            </div>
+          </div>
+        ) : (
+          <LudoLobby
+            onJoinGame={handleJoinGame}
+            onBackToGameSelection={handleBackToGameSelection}
+          />
         );
       case "wallet":
         return <WalletManager />;
