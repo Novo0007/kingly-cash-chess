@@ -296,18 +296,18 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
                   <div className="px-4 py-4 border-t border-gray-700/50 mt-4">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="relative">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-sm opacity-60"></div>
-                        <div className="relative w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-xl">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-electric-400 rounded-full blur-sm opacity-60"></div>
+                        <div className="relative w-10 h-10 bg-gradient-to-r from-blue-500 to-electric-500 rounded-full flex items-center justify-center text-xl">
                           👤
                         </div>
                       </div>
                       <div>
-                        <p className="text-white font-bold text-base flex items-center gap-2">
+                        <p className="text-white font-bold text-base flex items-center gap-2 font-heading">
                           {profile?.username || "Player"}
                           <Sparkles className="h-4 w-4 text-yellow-400" />
                         </p>
                         <div className="flex items-center gap-2">
-                          <span className="text-green-400 text-sm font-bold">
+                          <span className="text-green-400 text-sm font-bold font-body">
                             Balance: ₹{wallet?.balance?.toFixed(2) || "0.00"}
                           </span>
                           <Zap className="h-4 w-4 text-yellow-400" />
