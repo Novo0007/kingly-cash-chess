@@ -280,10 +280,10 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full px-1 sm:px-2">
-      <div className="lavender-card p-2 sm:p-4 md:p-6 lg:p-8 rounded-lg sm:rounded-xl lavender-shadow-lg w-full h-full max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl border-2 sm:border-4 border-purple-300">
+      <div className="electric-card p-2 sm:p-4 md:p-6 lg:p-8 rounded-lg sm:rounded-xl electric-shadow-lg w-full h-full max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl border-2 sm:border-4 electric-border">
         <div
           ref={boardRef}
-          className="grid grid-cols-8 gap-0 aspect-square w-full h-full border-2 sm:border-4 border-purple-400 rounded-md sm:rounded-lg overflow-hidden lavender-shadow-lg"
+          className="grid grid-cols-8 gap-0 aspect-square w-full h-full border-2 sm:border-4 border-blue-400 rounded-md sm:rounded-lg overflow-hidden electric-shadow-lg"
         >
           {Array.from({ length: 8 }, (_, rowIndex) =>
             Array.from({ length: 8 }, (_, colIndex) => {
