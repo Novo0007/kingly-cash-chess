@@ -20,6 +20,7 @@ import {
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import type { Tables } from "@/integrations/supabase/types";
+import { LudoTableChecker } from "../debug/LudoTableChecker";
 
 type Profile = Tables<"profiles">;
 type LudoGame = {
@@ -402,6 +403,8 @@ export const LudoLobby = ({
   return (
     <MobileContainer>
       <div className="space-y-4 pb-20 px-1 sm:px-2">
+        {/* Debug: Check if Ludo tables exist */}
+        <LudoTableChecker />
         {/* Header */}
         <Card className="bg-gradient-to-br from-blue-900 to-purple-900 border-2 border-blue-400 shadow-2xl">
           <CardHeader className="text-center pb-3">
