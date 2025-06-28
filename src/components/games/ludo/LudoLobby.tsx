@@ -123,15 +123,20 @@ export const LudoLobby = ({
   };
 
   const fetchGames = async () => {
+    console.log("🎲 Starting fetchGames for Ludo...");
     try {
       // Check if tables exist first
+      console.log("🔍 Checking if Ludo tables exist...");
       const tablesExist = await checkLudoTablesExist();
+      console.log("✅ Tables exist result:", tablesExist);
+
       if (!tablesExist) {
-        console.warn("Ludo tables do not exist. Skipping game fetch.");
+        console.warn("⚠️ Ludo tables do not exist. Skipping game fetch.");
         setGames([]);
         return;
       }
 
+      console.log("📊 Fetching Ludo games from database...");
       const { data: gameData, error } = await supabase
         .from("ludo_games")
         .select("*")
