@@ -59,16 +59,16 @@ export const PawnPromotionDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={() => onCancel()}>
-      <DialogContent className="sm:max-w-md lavender-glass lavender-shadow border-purple-200/50">
+      <DialogContent className="sm:max-w-md electric-glass electric-shadow border-blue-200/50">
         <DialogHeader>
-          <DialogTitle className="text-center text-purple-600 flex items-center justify-center gap-2">
+          <DialogTitle className="text-center text-blue-600 flex items-center justify-center gap-2 font-heading">
             <Crown className="h-5 w-5" />
             Pawn Promotion
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <p className="text-center text-gray-600 text-sm">
+        <div className="space-y-4 clean-spacing">
+          <p className="text-center text-gray-600 text-sm font-body">
             Your pawn has reached the end! Choose which piece to promote it to:
           </p>
 
@@ -78,17 +78,17 @@ export const PawnPromotionDialog = ({
                 key={piece.type}
                 onClick={() => onSelect(piece.type)}
                 variant="outline"
-                className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-purple-50 border-purple-200"
+                className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-blue-50 border-blue-200 tap-target electric-shadow font-body min-h-[60px]"
               >
                 <div className="flex items-center gap-2">
                   <piece.icon className={`h-5 w-5 ${piece.color}`} />
                   <span className="text-2xl">{piece.symbol}</span>
                 </div>
                 <div className="text-center">
-                  <div className="font-semibold text-gray-800">
+                  <div className="font-semibold text-gray-800 font-heading">
                     {piece.name}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-500 font-body">
                     {piece.description}
                   </div>
                 </div>
@@ -97,7 +97,7 @@ export const PawnPromotionDialog = ({
           </div>
 
           <div className="text-center">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 font-body">
               Most players choose Queen (most powerful)
             </p>
           </div>
@@ -105,7 +105,7 @@ export const PawnPromotionDialog = ({
           <Button
             onClick={onCancel}
             variant="ghost"
-            className="w-full text-gray-500 hover:text-gray-700"
+            className="w-full text-gray-500 hover:text-gray-700 tap-target font-body"
           >
             Cancel Move
           </Button>
