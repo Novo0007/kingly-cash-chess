@@ -42,7 +42,7 @@ export const FriendsSystem = () => {
     open: boolean;
     friendId: string;
     friendName: string;
-    gameType: "chess" | "dots-and-boxes";
+    gameType: "chess";
   }>({
     open: false,
     friendId: "",
