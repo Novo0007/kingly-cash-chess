@@ -352,16 +352,16 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         </div>
 
         <div className="mt-2 sm:mt-4 md:mt-8 text-center">
-          <div className="lavender-text text-sm sm:text-lg md:text-2xl font-bold lavender-glass rounded-md sm:rounded-lg px-3 py-2 sm:px-6 sm:py-4 border border-purple-300 sm:border-2 lavender-shadow">
+          <div className="electric-text text-sm sm:text-lg md:text-2xl font-bold electric-glass rounded-md sm:rounded-lg px-3 py-2 sm:px-6 sm:py-4 border electric-border sm:border-2 electric-shadow tap-target">
             Playing as {playerColor === "white" ? "⚪ White" : "⚫ Black"}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-purple-600 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold lavender-glass rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border border-purple-300 sm:border-2 lavender-shadow">
+            <div className="text-blue-600 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold electric-glass rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border electric-border sm:border-2 electric-shadow tap-target">
               Opponent's turn...
             </div>
           )}
           {disabled && (
-            <div className="text-gray-600 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold lavender-glass rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border border-gray-300 sm:border-2 lavender-shadow">
+            <div className="text-gray-600 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold electric-glass rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border border-gray-300 sm:border-2 electric-shadow tap-target">
               Spectating
             </div>
           )}
