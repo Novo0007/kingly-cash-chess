@@ -242,28 +242,30 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
                 return (
                   <div key={item.id} className="relative">
                     {isActive && (
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-xl blur-lg opacity-60"></div>
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 via-electric-500 to-cyan-500 rounded-xl blur-lg opacity-60"></div>
                     )}
                     <button
                       onClick={() => {
                         onViewChange(item.id);
                         setMobileMenuOpen(false);
                       }}
-                      className={`relative w-full flex items-center gap-4 px-4 py-4 rounded-xl transition-all duration-300 text-left min-h-[56px] ${
+                      className={`relative w-full flex items-center gap-4 px-4 py-4 rounded-xl transition-all duration-300 text-left tap-target font-body ${
                         isActive
-                          ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-purple-400/50"
+                          ? "bg-gradient-to-r from-blue-500/20 to-electric-500/20 text-white border border-blue-400/50"
                           : "text-gray-300 hover:text-white hover:bg-gray-800/50 active:bg-gray-700/50"
                       }`}
                     >
                       <div className="relative">
                         {isActive && (
-                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-sm opacity-60"></div>
+                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-electric-400 rounded-full blur-sm opacity-60"></div>
                         )}
                         <Icon
                           className={`relative h-6 w-6 flex-shrink-0 ${isActive ? "text-white drop-shadow-lg" : ""}`}
                         />
                       </div>
-                      <span className="font-bold text-lg">{item.label}</span>
+                      <span className="font-bold text-lg font-heading">
+                        {item.label}
+                      </span>
 
                       {isActive && (
                         <div className="ml-auto flex items-center gap-2">
