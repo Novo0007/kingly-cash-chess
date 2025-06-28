@@ -252,7 +252,7 @@ export const FriendsSystem = () => {
   const createGameInvitation = async (
     friendId: string,
     amount: number,
-    gameType: "chess" | "dots-and-boxes" = "chess",
+    gameType: "chess" = "chess",
   ) => {
     const {
       data: { user },
