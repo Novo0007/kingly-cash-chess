@@ -32,11 +32,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           const isActive =
             currentView === item.id ||
             (item.id === "games" &&
-              (currentView === "lobby" ||
-                currentView === "game" ||
-                currentView === "dots-and-boxes" ||
-                currentView === "dots-and-boxes-lobby" ||
-                currentView === "online-dots-and-boxes"));
+              (currentView === "lobby" || currentView === "game"));
 
           return (
             <div key={item.id} className="relative group">
