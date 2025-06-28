@@ -583,7 +583,7 @@ export const FriendsSystem = () => {
   const openChallengePopup = (
     friendId: string,
     friendName: string,
-    gameType: "chess" | "dots-and-boxes" = "chess",
+    gameType: "chess" = "chess",
   ) => {
     setChallengePopup({
       open: true,
