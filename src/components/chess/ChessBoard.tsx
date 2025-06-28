@@ -146,9 +146,13 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   const getSquareName = (row: number, col: number): Square => {
     const files = "abcdefgh";
-    // For the display coordinates (row, col), calculate the actual square name
-    const rank = 8 - row; // Row 0 is rank 8, row 7 is rank 1
-    const file = files[col]; // Col 0 is file 'a', col 7 is file 'h'
+    // Calculate the actual board position based on player perspective
+    const actualRow = playerColor === "white" ? row : 7 - row;
+    const actualCol = playerColor === "white" ? col : 7 - col;
+
+    // Convert to chess notation
+    const rank = 8 - actualRow; // Row 0 is rank 8, row 7 is rank 1
+    const file = files[actualCol]; // Col 0 is file 'a', col 7 is file 'h'
     return `${file}${rank}` as Square;
   };
 
