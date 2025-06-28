@@ -140,12 +140,11 @@ export const LudoLobby = ({
 
       if (error) {
         console.error("Error fetching ludo games:", error);
-        console.error("Error details:", {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code,
-        });
+        console.error("Error message:", error?.message || "Unknown error");
+        console.error("Error code:", error?.code || "No code");
+        console.error("Error details:", error?.details || "No details");
+        console.error("Error hint:", error?.hint || "No hint");
+        console.error("Full error object:", JSON.stringify(error, null, 2));
 
         // Handle table not found error gracefully
         if (
@@ -201,10 +200,10 @@ export const LudoLobby = ({
       setGames(gamesWithPlayers);
     } catch (error) {
       console.error("Error in fetchGames:", error);
-      console.error("Error details:", {
-        message: error?.message,
-        stack: error?.stack,
-      });
+      console.error("Error message:", error?.message || "Unknown error");
+      console.error("Error stack:", error?.stack || "No stack trace");
+      console.error("Error type:", typeof error);
+      console.error("Full error object:", JSON.stringify(error, null, 2));
       toast.error("Failed to load games. Please try again.");
     }
   };
