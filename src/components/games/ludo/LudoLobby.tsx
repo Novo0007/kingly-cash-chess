@@ -137,6 +137,19 @@ export const LudoLobby = ({
           hint: error.hint,
           code: error.code,
         });
+
+        // Handle table not found error gracefully
+        if (
+          error.code === "42P01" ||
+          error.message?.includes("does not exist")
+        ) {
+          console.warn(
+            "Ludo games table does not exist yet. This is expected in development.",
+          );
+          setGames([]);
+          return;
+        }
+
         toast.error(`Failed to load games: ${error.message}`);
         return;
       }
@@ -252,8 +265,19 @@ export const LudoLobby = ({
         .single();
 
       if (gameError) {
-        toast.error("Failed to create game");
         console.error("Game creation error:", gameError);
+
+        // Handle table not found error
+        if (
+          gameError.code === "42P01" ||
+          gameError.message?.includes("does not exist")
+        ) {
+          toast.error(
+            "Ludo games are not available yet. Database setup in progress.",
+          );
+        } else {
+          toast.error(`Failed to create game: ${gameError.message}`);
+        }
         return;
       }
 
