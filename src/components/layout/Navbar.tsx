@@ -90,12 +90,12 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
 
   return (
     <nav className="relative">
-      {/* Background with Lavender Glassmorphism */}
+      {/* Background with Electric Blue Glassmorphism */}
       <div
-        className={`absolute inset-0 ${isMobile ? "lavender-card" : "lavender-glass"} border-b border-purple-200/50`}
+        className={`absolute inset-0 ${isMobile ? "electric-card" : "electric-glass"} border-b border-blue-200/50`}
       >
         {!isMobile && (
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-100/10 via-lavender-100/10 to-indigo-100/10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-100/10 via-electric-100/10 to-cyan-100/10"></div>
         )}
       </div>
 
@@ -104,21 +104,21 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
           {/* Enhanced Logo */}
           <div className="flex items-center gap-3 group">
             <div className="relative">
-              <div className="absolute -inset-2 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative p-2 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full">
+              <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative p-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full">
                 <Crown className="h-7 w-7 md:h-8 md:w-8 text-white drop-shadow-lg" />
               </div>
             </div>
             <div>
-              <span className="text-xl md:text-2xl font-black lavender-text-gradient">
+              <span className="text-xl md:text-2xl font-black electric-text-gradient font-heading">
                 NNC GAMES
               </span>
               <div className="flex items-center gap-1 mt-0.5">
-                <Star className="h-3 w-3 text-purple-400" />
-                <span className="text-xs text-purple-600 font-medium">
+                <Star className="h-3 w-3 text-blue-400" />
+                <span className="text-xs text-blue-600 font-medium font-body">
                   Chess Arena
                 </span>
-                <Star className="h-3 w-3 text-purple-400" />
+                <Star className="h-3 w-3 text-blue-400" />
               </div>
             </div>
           </div>
@@ -137,19 +137,19 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
               return (
                 <div key={item.id} className="relative group">
                   {isActive && (
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-xl blur-lg opacity-60 animate-pulse"></div>
+                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-electric-500 to-cyan-500 rounded-xl blur-lg opacity-60 animate-pulse"></div>
                   )}
                   <button
                     onClick={() => onViewChange(item.id)}
-                    className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 ${
+                    className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 tap-target font-body ${
                       isActive
-                        ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-purple-400/50 shadow-lg"
+                        ? "bg-gradient-to-r from-blue-500/20 to-electric-500/20 text-white border border-blue-400/50 shadow-lg"
                         : "text-gray-300 hover:text-white hover:bg-gray-800/50 backdrop-blur-sm"
                     }`}
                   >
                     <div className="relative">
                       {isActive && (
-                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-sm opacity-60"></div>
+                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-electric-400 rounded-full blur-sm opacity-60"></div>
                       )}
                       <Icon
                         className={`relative h-5 w-5 transition-all duration-300 ${isActive ? "text-white drop-shadow-lg" : ""}`}
@@ -172,22 +172,22 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
               <div className="hidden lg:flex items-center gap-4">
                 {/* User Profile Card */}
                 <div className="relative group">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-xl blur-lg opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
-                  <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 backdrop-blur-sm border border-purple-500/30 rounded-xl p-3">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl blur-lg opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
+                  <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 backdrop-blur-sm border border-blue-500/30 rounded-xl p-3 tap-target">
                     <div className="flex items-center gap-3">
                       <div className="relative">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-sm opacity-60"></div>
-                        <div className="relative w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-lg">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-electric-400 rounded-full blur-sm opacity-60"></div>
+                        <div className="relative w-8 h-8 bg-gradient-to-r from-blue-500 to-electric-500 rounded-full flex items-center justify-center text-lg">
                           👤
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-white font-bold text-sm flex items-center gap-1">
+                        <p className="text-white font-bold text-sm flex items-center gap-1 font-heading">
                           {profile?.username || "Player"}
                           <Sparkles className="h-3 w-3 text-yellow-400" />
                         </p>
                         <div className="flex items-center gap-1">
-                          <span className="text-green-400 text-xs font-bold">
+                          <span className="text-green-400 text-xs font-bold font-body">
                             ₹{wallet?.balance?.toFixed(2) || "0.00"}
                           </span>
                           <Zap className="h-3 w-3 text-yellow-400" />
@@ -213,9 +213,9 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden relative group text-white p-3 rounded-xl hover:bg-gray-800/50 transition-all duration-300 min-w-[48px] min-h-[48px] flex items-center justify-center"
+              className="lg:hidden relative group text-white p-3 rounded-xl hover:bg-blue-800/50 transition-all duration-300 tap-target flex items-center justify-center"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-gray-500/20 to-slate-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-electric-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               {mobileMenuOpen ? (
                 <X className="relative h-6 w-6 transform rotate-90 group-hover:rotate-0 transition-transform duration-300" />
               ) : (
@@ -242,28 +242,30 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
                 return (
                   <div key={item.id} className="relative">
                     {isActive && (
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-xl blur-lg opacity-60"></div>
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 via-electric-500 to-cyan-500 rounded-xl blur-lg opacity-60"></div>
                     )}
                     <button
                       onClick={() => {
                         onViewChange(item.id);
                         setMobileMenuOpen(false);
                       }}
-                      className={`relative w-full flex items-center gap-4 px-4 py-4 rounded-xl transition-all duration-300 text-left min-h-[56px] ${
+                      className={`relative w-full flex items-center gap-4 px-4 py-4 rounded-xl transition-all duration-300 text-left tap-target font-body ${
                         isActive
-                          ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-purple-400/50"
+                          ? "bg-gradient-to-r from-blue-500/20 to-electric-500/20 text-white border border-blue-400/50"
                           : "text-gray-300 hover:text-white hover:bg-gray-800/50 active:bg-gray-700/50"
                       }`}
                     >
                       <div className="relative">
                         {isActive && (
-                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-sm opacity-60"></div>
+                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-electric-400 rounded-full blur-sm opacity-60"></div>
                         )}
                         <Icon
                           className={`relative h-6 w-6 flex-shrink-0 ${isActive ? "text-white drop-shadow-lg" : ""}`}
                         />
                       </div>
-                      <span className="font-bold text-lg">{item.label}</span>
+                      <span className="font-bold text-lg font-heading">
+                        {item.label}
+                      </span>
 
                       {isActive && (
                         <div className="ml-auto flex items-center gap-2">
@@ -294,18 +296,18 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
                   <div className="px-4 py-4 border-t border-gray-700/50 mt-4">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="relative">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-sm opacity-60"></div>
-                        <div className="relative w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-xl">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-electric-400 rounded-full blur-sm opacity-60"></div>
+                        <div className="relative w-10 h-10 bg-gradient-to-r from-blue-500 to-electric-500 rounded-full flex items-center justify-center text-xl">
                           👤
                         </div>
                       </div>
                       <div>
-                        <p className="text-white font-bold text-base flex items-center gap-2">
+                        <p className="text-white font-bold text-base flex items-center gap-2 font-heading">
                           {profile?.username || "Player"}
                           <Sparkles className="h-4 w-4 text-yellow-400" />
                         </p>
                         <div className="flex items-center gap-2">
-                          <span className="text-green-400 text-sm font-bold">
+                          <span className="text-green-400 text-sm font-bold font-body">
                             Balance: ₹{wallet?.balance?.toFixed(2) || "0.00"}
                           </span>
                           <Zap className="h-4 w-4 text-yellow-400" />
@@ -317,10 +319,12 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
                   {/* Mobile Sign Out */}
                   <button
                     onClick={handleSignOut}
-                    className="w-full flex items-center gap-4 px-4 py-4 text-red-400 hover:bg-red-500/10 active:bg-red-500/20 rounded-xl transition-all duration-300 min-h-[56px]"
+                    className="w-full flex items-center gap-4 px-4 py-4 text-red-400 hover:bg-red-500/10 active:bg-red-500/20 rounded-xl transition-all duration-300 tap-target font-body"
                   >
                     <LogOut className="h-6 w-6 flex-shrink-0" />
-                    <span className="font-bold text-lg">Sign Out</span>
+                    <span className="font-bold text-lg font-heading">
+                      Sign Out
+                    </span>
                     <div className="ml-auto text-xl">🚪</div>
                   </button>
                 </>

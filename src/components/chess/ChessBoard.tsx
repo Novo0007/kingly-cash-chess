@@ -280,10 +280,10 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full px-1 sm:px-2">
-      <div className="lavender-card p-2 sm:p-4 md:p-6 lg:p-8 rounded-lg sm:rounded-xl lavender-shadow-lg w-full h-full max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl border-2 sm:border-4 border-purple-300">
+      <div className="electric-card p-2 sm:p-4 md:p-6 lg:p-8 rounded-lg sm:rounded-xl electric-shadow-lg w-full h-full max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl border-2 sm:border-4 electric-border">
         <div
           ref={boardRef}
-          className="grid grid-cols-8 gap-0 aspect-square w-full h-full border-2 sm:border-4 border-purple-400 rounded-md sm:rounded-lg overflow-hidden lavender-shadow-lg"
+          className="grid grid-cols-8 gap-0 aspect-square w-full h-full border-2 sm:border-4 border-blue-400 rounded-md sm:rounded-lg overflow-hidden electric-shadow-lg"
         >
           {Array.from({ length: 8 }, (_, rowIndex) =>
             Array.from({ length: 8 }, (_, colIndex) => {
@@ -304,22 +304,22 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     transition-colors duration-200 active:scale-95 relative overflow-hidden
                     ${
                       isLightSquare(rowIndex, colIndex)
-                        ? "bg-lavender-50 hover:bg-lavender-100"
-                        : "bg-purple-300 hover:bg-purple-400"
+                        ? "bg-electric-50 hover:bg-electric-100"
+                        : "bg-blue-300 hover:bg-blue-400"
                     }
                     ${
                       isSquareHighlighted(rowIndex, colIndex)
-                        ? "ring-4 ring-purple-400 bg-purple-200"
+                        ? "ring-4 ring-blue-400 bg-blue-200"
                         : ""
                     }
                     ${
                       isPossibleMove(rowIndex, colIndex)
-                        ? "after:absolute after:inset-1/3 after:bg-purple-500 after:rounded-full after:opacity-70"
+                        ? "after:absolute after:inset-1/3 after:bg-blue-500 after:rounded-full after:opacity-70"
                         : ""
                     }
                     ${
                       isLastMove(rowIndex, colIndex)
-                        ? "bg-lavender-300 ring-2 ring-purple-500"
+                        ? "bg-electric-300 ring-2 ring-blue-500"
                         : ""
                     }
                     ${disabled || !isPlayerTurn ? "cursor-default opacity-70" : "cursor-pointer"}
@@ -352,16 +352,16 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         </div>
 
         <div className="mt-2 sm:mt-4 md:mt-8 text-center">
-          <div className="lavender-text text-sm sm:text-lg md:text-2xl font-bold lavender-glass rounded-md sm:rounded-lg px-3 py-2 sm:px-6 sm:py-4 border border-purple-300 sm:border-2 lavender-shadow">
+          <div className="electric-text text-sm sm:text-lg md:text-2xl font-bold electric-glass rounded-md sm:rounded-lg px-3 py-2 sm:px-6 sm:py-4 border electric-border sm:border-2 electric-shadow tap-target">
             Playing as {playerColor === "white" ? "⚪ White" : "⚫ Black"}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-purple-600 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold lavender-glass rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border border-purple-300 sm:border-2 lavender-shadow">
+            <div className="text-blue-600 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold electric-glass rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border electric-border sm:border-2 electric-shadow tap-target">
               Opponent's turn...
             </div>
           )}
           {disabled && (
-            <div className="text-gray-600 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold lavender-glass rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border border-gray-300 sm:border-2 lavender-shadow">
+            <div className="text-gray-600 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold electric-glass rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border border-gray-300 sm:border-2 electric-shadow tap-target">
               Spectating
             </div>
           )}
