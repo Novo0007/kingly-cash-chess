@@ -54,14 +54,6 @@ export const MoreGamesSection = ({ onBack }: MoreGamesSectionProps) => {
       title: "🎯 Puzzle Games",
       games: [
         {
-          name: "Dots & Boxes",
-          description: "Connect the dots strategy game",
-          icon: "📦",
-          status: "Available",
-          statusColor: "bg-green-500/20 text-green-400 border-green-500/30",
-          gradient: "from-cyan-600 to-blue-600",
-        },
-        {
           name: "Sudoku Arena",
           description: "Number puzzle challenge",
           icon: "🔢",
