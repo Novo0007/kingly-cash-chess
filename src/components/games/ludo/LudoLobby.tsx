@@ -20,6 +20,7 @@ import {
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import type { Tables } from "@/integrations/supabase/types";
+import { checkLudoTablesExist } from "@/utils/ludoDbHelper";
 
 type Profile = Tables<"profiles">;
 type LudoGame = {
@@ -123,6 +124,14 @@ export const LudoLobby = ({
 
   const fetchGames = async () => {
     try {
+      // Check if tables exist first
+      const tablesExist = await checkLudoTablesExist();
+      if (!tablesExist) {
+        console.warn("Ludo tables do not exist. Skipping game fetch.");
+        setGames([]);
+        return;
+      }
+
       const { data: gameData, error } = await supabase
         .from("ludo_games")
         .select("*")
