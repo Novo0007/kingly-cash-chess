@@ -79,8 +79,10 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
             // Find where a piece disappeared (from square)
             if (oldPiece && !newPiece) {
-              const square = getSquareName(row, col);
-              moveFrom = square;
+              const files = "abcdefgh";
+              const rank = 8 - row;
+              const file = files[col];
+              moveFrom = `${file}${rank}`;
             }
 
             // Find where a piece appeared or changed (to square)
@@ -91,9 +93,11 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 (oldPiece.type !== newPiece.type ||
                   oldPiece.color !== newPiece.color))
             ) {
-              const square = getSquareName(row, col);
+              const files = "abcdefgh";
+              const rank = 8 - row;
+              const file = files[col];
               if (newPiece) {
-                moveTo = square;
+                moveTo = `${file}${rank}`;
               }
             }
           }
@@ -146,8 +150,13 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   const getSquareName = (row: number, col: number): Square => {
     const files = "abcdefgh";
-    const rank = playerColor === "white" ? 8 - row : row + 1;
-    const file = playerColor === "white" ? files[col] : files[7 - col];
+    // Calculate the actual board position based on player perspective
+    const actualRow = playerColor === "white" ? row : 7 - row;
+    const actualCol = playerColor === "white" ? col : 7 - col;
+
+    // Convert to chess notation
+    const rank = 8 - actualRow; // Row 0 is rank 8, row 7 is rank 1
+    const file = files[actualCol]; // Col 0 is file 'a', col 7 is file 'h'
     return `${file}${rank}` as Square;
   };
 
@@ -276,43 +285,47 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           ref={boardRef}
           className="grid grid-cols-8 gap-0 aspect-square w-full h-full border-2 sm:border-4 border-purple-400 rounded-md sm:rounded-lg overflow-hidden lavender-shadow-lg"
         >
-          {board.map((row, rowIndex) =>
-            row.map((piece, colIndex) => {
-              const displayRow =
+          {Array.from({ length: 8 }, (_, rowIndex) =>
+            Array.from({ length: 8 }, (_, colIndex) => {
+              // Calculate the actual board position based on player perspective
+              const actualRow =
                 playerColor === "white" ? rowIndex : 7 - rowIndex;
-              const displayCol =
+              const actualCol =
                 playerColor === "white" ? colIndex : 7 - colIndex;
+
+              // Get the piece from the board array
+              const piece = board[actualRow] && board[actualRow][actualCol];
 
               return (
                 <div
-                  key={`${displayRow}-${displayCol}`}
+                  key={`${rowIndex}-${colIndex}`}
                   className={`
                     aspect-square flex items-center justify-center text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold cursor-pointer
                     transition-colors duration-200 active:scale-95 relative overflow-hidden
                     ${
-                      isLightSquare(displayRow, displayCol)
+                      isLightSquare(rowIndex, colIndex)
                         ? "bg-lavender-50 hover:bg-lavender-100"
                         : "bg-purple-300 hover:bg-purple-400"
                     }
                     ${
-                      isSquareHighlighted(displayRow, displayCol)
+                      isSquareHighlighted(rowIndex, colIndex)
                         ? "ring-4 ring-purple-400 bg-purple-200"
                         : ""
                     }
                     ${
-                      isPossibleMove(displayRow, displayCol)
+                      isPossibleMove(rowIndex, colIndex)
                         ? "after:absolute after:inset-1/3 after:bg-purple-500 after:rounded-full after:opacity-70"
                         : ""
                     }
                     ${
-                      isLastMove(displayRow, displayCol)
+                      isLastMove(rowIndex, colIndex)
                         ? "bg-lavender-300 ring-2 ring-purple-500"
                         : ""
                     }
                     ${disabled || !isPlayerTurn ? "cursor-default opacity-70" : "cursor-pointer"}
                     ${!isPlayerTurn ? "pointer-events-none" : ""}
                   `}
-                  onClick={() => handleSquareClick(displayRow, displayCol)}
+                  onClick={() => handleSquareClick(rowIndex, colIndex)}
                 >
                   <span
                     className={`z-10 drop-shadow-2xl select-none ${
@@ -335,7 +348,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                 </div>
               );
             }),
-          )}
+          ).flat()}
         </div>
 
         <div className="mt-2 sm:mt-4 md:mt-8 text-center">
