@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { LudoBoard } from "./LudoBoard";
@@ -381,9 +380,10 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
         .map((_, index) => ({
           id: index,
           position: "home", // All pieces start at home
-          row: null,
-          col: null,
+          row: getHomePosition(color)[0],
+          col: getHomePosition(color)[1],
           isOut: false, // Track if piece has left home
+          pathPosition: -1, // Position on the path (-1 = in home)
         }));
     });
 
@@ -395,10 +395,190 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
       playerColors: activeColors,
       moveHistory: [],
       lastRoll: null,
+      consecutiveSixes: 0,
     };
 
     console.log("🎯 Initialized game state:", gameState);
     return gameState;
+  };
+
+  const getHomePosition = (color: string) => {
+    const positions = {
+      red: [2, 2],
+      blue: [2, 12],
+      green: [12, 12],
+      yellow: [12, 2],
+    };
+    return positions[color as keyof typeof positions] || [2, 2];
+  };
+
+  const getStartPosition = (color: string) => {
+    const positions = {
+      red: [6, 1],
+      blue: [1, 8],
+      green: [8, 13],
+      yellow: [13, 6],
+    };
+    return positions[color as keyof typeof positions] || [6, 1];
+  };
+
+  const handleMove = async (
+    playerId: string,
+    pieceId: number,
+    steps: number,
+  ) => {
+    if (!game || !currentUser) return;
+
+    // Validate turn
+    if (game.current_turn !== getPlayerColor()) {
+      toast.error("Not your turn!");
+      return;
+    }
+
+    try {
+      console.log(`🎯 Player ${playerId} moving piece ${pieceId} by ${steps} steps`);
+      
+      // Process the move
+      const newGameState = { ...game.game_state };
+      const piece = newGameState.pieces[playerId][pieceId];
+      
+      if (!piece) {
+        toast.error("Invalid piece!");
+        return;
+      }
+
+      // Handle moving out of home
+      if (piece.position === "home" && steps === 6) {
+        const startPos = getStartPosition(playerId);
+        piece.position = "active";
+        piece.row = startPos[0];
+        piece.col = startPos[1];
+        piece.pathPosition = 0;
+        piece.isOut = true;
+        
+        toast.success("Moved piece out of home!");
+        console.log(`✅ Moved ${playerId} piece ${pieceId} out of home`);
+      } 
+      // Handle moving active pieces
+      else if (piece.position === "active") {
+        const newPathPosition = piece.pathPosition + steps;
+        
+        // Check if piece reaches home (simplified - full implementation would calculate exact path)
+        if (newPathPosition >= 52) {
+          piece.position = "finished";
+          piece.row = 7; // Center position
+          piece.col = 7;
+          piece.pathPosition = 52;
+          
+          toast.success("Piece reached home!");
+          console.log(`🏠 ${playerId} piece ${pieceId} reached home!`);
+          
+          // Check for win condition
+          const finishedPieces = newGameState.pieces[playerId].filter(
+            (p: any) => p.position === "finished"
+          ).length;
+          
+          if (finishedPieces === 4) {
+            await completeGame(currentUser, "normal");
+            toast.success("🎉 You won the game!");
+            return;
+          }
+        } else {
+          // Move piece along the path (simplified positioning)
+          piece.pathPosition = newPathPosition;
+          // Update row/col based on path position (simplified)
+          const newPos = calculateBoardPosition(playerId, newPathPosition);
+          piece.row = newPos[0];
+          piece.col = newPos[1];
+          
+          console.log(`➡️ Moved ${playerId} piece ${pieceId} to position ${newPathPosition}`);
+        }
+      }
+
+      // Handle bonus turn for rolling 6
+      let nextPlayer = playerId;
+      let bonusTurn = false;
+      
+      if (steps === 6) {
+        bonusTurn = true;
+        newGameState.consecutiveSixes = (newGameState.consecutiveSixes || 0) + 1;
+        
+        // Three consecutive sixes rule
+        if (newGameState.consecutiveSixes >= 3) {
+          bonusTurn = false;
+          newGameState.consecutiveSixes = 0;
+          toast.info("Three sixes in a row! Turn forfeited.");
+        }
+      } else {
+        newGameState.consecutiveSixes = 0;
+      }
+
+      // Determine next player if no bonus turn
+      if (!bonusTurn) {
+        const activeColors = newGameState.playerColors || ["red", "blue", "green", "yellow"].slice(0, game.current_players);
+        const currentIndex = activeColors.indexOf(game.current_turn);
+        nextPlayer = activeColors[(currentIndex + 1) % activeColors.length];
+      }
+
+      // Add move to history
+      newGameState.moveHistory = newGameState.moveHistory || [];
+      newGameState.moveHistory.push({
+        player: playerId,
+        piece: pieceId,
+        steps: steps,
+        timestamp: Date.now(),
+        bonusTurn: bonusTurn,
+      });
+
+      // Update game in database
+      const { error } = await supabase
+        .from("ludo_games")
+        .update({
+          game_state: newGameState,
+          current_turn: nextPlayer,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", gameId);
+
+      if (error) {
+        toast.error("Failed to make move");
+        console.error("❌ Ludo move error:", error);
+      } else {
+        console.log(`✅ Move completed! Next player: ${nextPlayer}`);
+        if (bonusTurn) {
+          toast.success("You get another turn!");
+        }
+      }
+    } catch (error) {
+      console.error("❌ Error making ludo move:", error);
+      toast.error("Failed to make move");
+    }
+  };
+
+  const calculateBoardPosition = (playerId: string, pathPosition: number): [number, number] => {
+    // Simplified path calculation - in a full implementation, 
+    // this would map the exact path around the board
+    const basePositions = {
+      red: [6, 1],
+      blue: [1, 8], 
+      green: [8, 13],
+      yellow: [13, 6],
+    };
+    
+    const base = basePositions[playerId as keyof typeof basePositions];
+    
+    // Simple approximation - move along edges
+    const edgeLength = 6;
+    const side = Math.floor(pathPosition / edgeLength);
+    const offset = pathPosition % edgeLength;
+    
+    switch (side % 4) {
+      case 0: return [base[0], base[1] + offset]; // Move right
+      case 1: return [base[0] + offset, base[1] + edgeLength]; // Move down
+      case 2: return [base[0] + edgeLength, base[1] + edgeLength - offset]; // Move left
+      case 3: return [base[0] + edgeLength - offset, base[1]]; // Move up
+      default: return base;
+    }
   };
 
   const completeGame = async (winnerId: string | null, gameResult: string) => {
@@ -472,52 +652,6 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
       console.log("Ludo game completion processing finished");
     } catch (error) {
       console.error("Error processing ludo game completion:", error);
-    }
-  };
-
-  const handleMove = async (
-    playerId: string,
-    pieceId: number,
-    steps: number,
-  ) => {
-    if (!game || !currentUser) return;
-
-    // Validate turn
-    if (game.current_turn !== getPlayerColor()) {
-      toast.error("Not your turn!");
-      return;
-    }
-
-    try {
-      // Process the move (simplified for demo)
-      const newGameState = { ...game.game_state };
-
-      // Update piece position (simplified logic)
-      const piece = newGameState.pieces[playerId][pieceId];
-      // Add actual Ludo movement logic here
-
-      // Determine next player from active colors
-      const activeColors = newGameState.playerColors || ["red", "blue", "green", "yellow"].slice(0, game.current_players);
-      const currentIndex = activeColors.indexOf(game.current_turn);
-      const nextPlayer = activeColors[(currentIndex + 1) % activeColors.length];
-
-      // Update game in database
-      const { error } = await supabase
-        .from("ludo_games")
-        .update({
-          game_state: newGameState,
-          current_turn: nextPlayer,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", gameId);
-
-      if (error) {
-        toast.error("Failed to make move");
-        console.error("Ludo move error:", error);
-      }
-    } catch (error) {
-      console.error("Error making ludo move:", error);
-      toast.error("Failed to make move");
     }
   };
 
