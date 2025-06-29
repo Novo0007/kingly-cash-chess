@@ -80,7 +80,6 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
           toast.info("Three consecutive 6s! Your turn is forfeited.");
           setConsecutiveSixes(0);
           setDiceValue(null);
-          // Pass turn to next player
           return;
         }
         
@@ -89,13 +88,12 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
         setConsecutiveSixes(0);
       }
 
-      // Check if any pieces can move
+      // Check if any pieces can move with improved logic
       const canMove = checkIfCanMove(finalValue);
       if (!canMove) {
         toast.info("No valid moves available!");
         setTimeout(() => {
           setDiceValue(null);
-          // Pass turn automatically after 3 seconds
         }, 3000);
       } else {
         toast.info(`You rolled ${finalValue}. Click a piece to move!`);
@@ -107,13 +105,22 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
     const playerPieces = gameState?.pieces?.[playerColor] || [];
     
     return playerPieces.some((piece: any, index: number) => {
-      // Can move out of home with a 6
-      if (piece.position === "home" && diceVal === 6) return true;
+      console.log(`Checking piece ${index}:`, piece);
       
-      // Can move pieces already on the board
-      if (piece.position !== "home" && piece.position !== "finished") {
-        // Check if the move would be valid (not landing on own piece, etc.)
-        return canMovePiece(index, diceVal);
+      // Can move out of home with a 6
+      if (piece.position === "home" && diceVal === 6) {
+        console.log(`Piece ${index} can move out of home`);
+        return true;
+      }
+      
+      // Can move pieces already on the board (active pieces)
+      if (piece.position === "active") {
+        // Check if piece won't go beyond the finish line
+        const newPathPosition = (piece.pathPosition || 0) + diceVal;
+        if (newPathPosition <= 57) { // 52 squares + 5 home column squares
+          console.log(`Piece ${index} can move on board from position ${piece.pathPosition} to ${newPathPosition}`);
+          return true;
+        }
       }
       
       return false;
@@ -124,16 +131,30 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
     const piece = gameState?.pieces?.[playerColor]?.[pieceId];
     if (!piece) return false;
 
+    console.log(`Validating move for piece ${pieceId}:`, piece, `steps: ${steps}`);
+
     // Can't move finished pieces
-    if (piece.position === "finished") return false;
+    if (piece.position === "finished") {
+      console.log(`Piece ${pieceId} already finished`);
+      return false;
+    }
 
     // Can only move out of home with a 6
-    if (piece.position === "home") return steps === 6;
+    if (piece.position === "home") {
+      const canMoveOut = steps === 6;
+      console.log(`Piece ${pieceId} in home, can move out: ${canMoveOut}`);
+      return canMoveOut;
+    }
 
-    // Check if destination would be valid
-    // This is a simplified check - in a full implementation, 
-    // you'd calculate the exact destination and check for conflicts
-    return true;
+    // Check if active piece can move
+    if (piece.position === "active") {
+      const newPathPosition = (piece.pathPosition || 0) + steps;
+      const canMove = newPathPosition <= 57; // Don't go beyond finish
+      console.log(`Piece ${pieceId} on board, current position: ${piece.pathPosition}, new position: ${newPathPosition}, can move: ${canMove}`);
+      return canMove;
+    }
+
+    return false;
   };
 
   const handlePieceClick = (pieceId: number) => {
@@ -148,22 +169,21 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
       return;
     }
 
+    console.log(`Clicked piece ${pieceId}:`, piece, `dice: ${diceValue}`);
+
     // Check if move is valid
-    if (piece.position === "home" && diceValue !== 6) {
-      toast.error("Need to roll a 6 to move out of home!");
-      return;
-    }
-
-    if (piece.position === "finished") {
-      toast.error("This piece has already reached home!");
-      return;
-    }
-
     if (!canMovePiece(pieceId, diceValue)) {
-      toast.error("Invalid move!");
+      if (piece.position === "home" && diceValue !== 6) {
+        toast.error("Need to roll a 6 to move out of home!");
+      } else if (piece.position === "finished") {
+        toast.error("This piece has already reached home!");
+      } else {
+        toast.error("Invalid move!");
+      }
       return;
     }
 
+    console.log(`Making move: piece ${pieceId}, steps ${diceValue}`);
     setSelectedPiece(pieceId);
     onMove(playerColor, pieceId, diceValue);
     
@@ -185,44 +205,41 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
     }[diceValue || 1];
 
     return (
-      <div className="flex flex-col items-center gap-3">
+      <div className="flex flex-col items-center gap-2 sm:gap-3 px-2">
         <div className="relative">
           <Button
             onClick={rollDice}
             disabled={
               !isPlayerTurn || disabled || isRolling || (diceValue !== null && diceValue !== 6)
             }
-            className={`w-20 h-20 p-0 rounded-2xl border-4 transition-all duration-300 shadow-2xl relative overflow-hidden ${
+            className={`w-16 h-16 sm:w-20 sm:h-20 p-0 rounded-2xl border-3 sm:border-4 transition-all duration-300 shadow-2xl relative overflow-hidden ${
               isPlayerTurn && !disabled && (diceValue === null || diceValue === 6)
-                ? "bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 border-yellow-300 hover:scale-110 shadow-yellow-500/50 animate-pulse"
+                ? "bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-600 border-yellow-300 hover:scale-110 shadow-yellow-500/50 animate-pulse active:scale-95"
                 : "bg-gradient-to-br from-gray-400 to-gray-600 border-gray-300 cursor-not-allowed"
             }`}
           >
-            {/* Dice background pattern */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl" />
             
             <DiceIcon
-              className={`w-10 h-10 text-white drop-shadow-lg relative z-10 ${
+              className={`w-8 h-8 sm:w-10 sm:h-10 text-white drop-shadow-lg relative z-10 ${
                 isRolling ? "animate-spin" : ""
               }`}
             />
             
-            {/* Glowing effect when active */}
             {isPlayerTurn && !disabled && (diceValue === null || diceValue === 6) && (
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-yellow-400/0 via-yellow-400/50 to-yellow-400/0 animate-pulse" />
             )}
           </Button>
           
-          {/* Dice value display */}
           {diceValue && !isRolling && (
-            <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-red-500 to-red-700 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+            <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-red-500 to-red-700 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-lg">
               {diceValue}
             </div>
           )}
         </div>
         
         <div className="text-center">
-          <p className="text-sm font-bold text-white bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm">
+          <p className="text-xs sm:text-sm font-bold text-white bg-black/30 px-2 py-1 sm:px-3 sm:py-1 rounded-full backdrop-blur-sm">
             {isPlayerTurn ? (diceValue === 6 ? "🎲 Roll Again!" : "🎲 Roll Dice") : "⏳ Wait Turn"}
           </p>
           {consecutiveSixes > 0 && (
@@ -268,45 +285,40 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
         cells.push(
           <div
             key={`${row}-${col}`}
-            className={`w-7 h-7 ${cellColor} ${borderClass} flex items-center justify-center text-xs relative transition-all duration-200 hover:scale-105 ${
+            className={`w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 ${cellColor} ${borderClass} flex items-center justify-center text-xs relative transition-all duration-200 hover:scale-105 ${
               isSafe ? "shadow-inner" : ""
             }`}
           >
-            {/* Center crown */}
             {isCenter && (
-              <Crown className="w-4 h-4 text-yellow-800 drop-shadow-sm" />
+              <Crown className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-800 drop-shadow-sm" />
             )}
             
-            {/* Safe zone star */}
             {isSafe && (
-              <Star className="w-3 h-3 text-green-600 absolute top-0.5 right-0.5" />
+              <Star className="w-2 h-2 sm:w-3 sm:h-3 text-green-600 absolute top-0.5 right-0.5" />
             )}
             
-            {/* Start position indicator */}
             {isStart && (
-              <div className="w-2 h-2 bg-white rounded-full border border-gray-400 shadow-sm" />
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full border border-gray-400 shadow-sm" />
             )}
             
-            {/* Game pieces */}
             {pieces.length > 0 && (
               <div className="absolute inset-0 flex items-center justify-center">
                 {pieces.map((piece, index) => (
                   <div
                     key={piece.id}
                     onClick={() => handlePieceClick(piece.id)}
-                    className={`w-5 h-5 rounded-full border-3 border-white cursor-pointer transition-all duration-200 ${getPieceColor(piece.color)} ${
-                      selectedPiece === piece.id ? "ring-3 ring-yellow-400 ring-offset-1 scale-110" : ""
+                    className={`w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full border-2 border-white cursor-pointer transition-all duration-200 ${getPieceColor(piece.color)} ${
+                      selectedPiece === piece.id ? "ring-2 sm:ring-3 ring-yellow-400 ring-offset-1 scale-110" : ""
                     } ${
                       isPlayerTurn && piece.color === playerColor 
-                        ? "hover:scale-125 hover:ring-2 hover:ring-blue-400 shadow-lg" 
+                        ? "hover:scale-125 hover:ring-2 hover:ring-blue-400 shadow-lg active:scale-95" 
                         : ""
                     } shadow-md`}
                     style={{
-                      transform: `translate(${index * 3}px, ${index * 3}px) ${selectedPiece === piece.id ? 'scale(1.1)' : ''}`,
+                      transform: `translate(${index * 2}px, ${index * 2}px) ${selectedPiece === piece.id ? 'scale(1.1)' : ''}`,
                       zIndex: index + 10,
                     }}
                   >
-                    {/* Piece inner glow */}
                     <div className="absolute inset-0.5 rounded-full bg-white/30" />
                   </div>
                 ))}
@@ -318,23 +330,21 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
     }
 
     return (
-      <div className="relative">
-        {/* Board shadow and border */}
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-900 to-amber-800 rounded-3xl transform rotate-1 scale-105 opacity-20" />
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-800 to-amber-700 rounded-2xl transform -rotate-0.5 scale-102 opacity-30" />
+      <div className="relative flex justify-center px-2 sm:px-4">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-900 to-amber-800 rounded-2xl sm:rounded-3xl transform rotate-1 scale-105 opacity-20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-800 to-amber-700 rounded-xl sm:rounded-2xl transform -rotate-0.5 scale-102 opacity-30" />
         
         <div
-          className="relative grid gap-0 border-4 border-amber-700 bg-gradient-to-br from-amber-100 to-amber-50 mx-auto rounded-2xl shadow-2xl overflow-hidden"
+          className="relative grid gap-0 border-3 sm:border-4 border-amber-700 bg-gradient-to-br from-amber-100 to-amber-50 rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden"
           style={{
             gridTemplateColumns: `repeat(${BOARD_SIZE}, 1fr)`,
-            width: "min(85vw, 420px)",
-            height: "min(85vw, 420px)",
+            width: "min(90vw, 380px)",
+            height: "min(90vw, 380px)",
           }}
         >
           {cells}
           
-          {/* Board inner glow */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/5 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/5 rounded-xl sm:rounded-2xl pointer-events-none" />
         </div>
       </div>
     );
@@ -493,12 +503,12 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4 space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-2 sm:p-4 space-y-4 sm:space-y-6">
       {/* Game Status */}
-      <div className="text-center space-y-3">
-        <div className="flex items-center justify-center gap-3">
+      <div className="text-center space-y-2 sm:space-y-3">
+        <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
           <Badge
-            className={`px-6 py-3 text-lg font-bold rounded-full shadow-lg transition-all duration-300 ${
+            className={`px-3 py-2 sm:px-6 sm:py-3 text-sm sm:text-lg font-bold rounded-full shadow-lg transition-all duration-300 ${
               isPlayerTurn 
                 ? "bg-gradient-to-r from-green-500 to-green-600 text-white animate-pulse" 
                 : "bg-gradient-to-r from-gray-500 to-gray-600 text-white"
@@ -511,16 +521,16 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
             onClick={() => setShowRules(true)}
             variant="ghost"
             size="sm"
-            className="text-blue-300 hover:text-blue-100 hover:bg-blue-800/50 rounded-full px-4 py-2"
+            className="text-blue-300 hover:text-blue-100 hover:bg-blue-800/50 rounded-full px-3 py-2 sm:px-4 sm:py-2 text-sm"
           >
-            <Info className="h-4 w-4 mr-1" />
+            <Info className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
             Rules
           </Button>
         </div>
 
         {isPlayerTurn && (
-          <div className="bg-black/30 backdrop-blur-sm rounded-2xl px-6 py-3 inline-block">
-            <p className="text-white text-lg font-medium">
+          <div className="bg-black/30 backdrop-blur-sm rounded-2xl px-4 py-2 sm:px-6 sm:py-3 inline-block">
+            <p className="text-white text-sm sm:text-lg font-medium">
               {diceValue === null
                 ? "🎲 Roll the dice to start your turn!"
                 : diceValue === 6
@@ -538,21 +548,21 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
       <div className="flex justify-center">{renderBoard()}</div>
 
       {/* Player Info */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 max-w-4xl mx-auto px-2">
         {Object.entries(gameState?.pieces || {}).map(([color, pieces]) => (
           <Card
             key={color}
-            className={`${getPieceColor(color).replace("bg-gradient-to-br", "border-gradient")} border-3 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 ${
-              currentPlayer === color ? "ring-4 ring-yellow-400 ring-offset-2 scale-105" : ""
+            className={`${getPieceColor(color).replace("bg-gradient-to-br", "border-gradient")} border-2 sm:border-3 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg transition-all duration-300 ${
+              currentPlayer === color ? "ring-2 sm:ring-4 ring-yellow-400 ring-offset-1 sm:ring-offset-2 scale-105" : ""
             }`}
           >
-            <CardContent className="p-4 text-center bg-gradient-to-br from-white/10 to-black/10">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <div className={`w-4 h-4 rounded-full ${getPieceColor(color)}`} />
-                <p className="font-bold capitalize text-white text-lg">{color}</p>
-                {currentPlayer === color && <Crown className="w-4 h-4 text-yellow-400" />}
+            <CardContent className="p-2 sm:p-4 text-center bg-gradient-to-br from-white/10 to-black/10">
+              <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full ${getPieceColor(color)}`} />
+                <p className="font-bold capitalize text-white text-sm sm:text-lg">{color}</p>
+                {currentPlayer === color && <Crown className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" />}
               </div>
-              <div className="space-y-1 text-sm">
+              <div className="space-y-1 text-xs sm:text-sm">
                 <p className="text-gray-200">
                   🏠 Home: {(pieces as any[]).filter((p) => p.position === "home").length}/4
                 </p>
