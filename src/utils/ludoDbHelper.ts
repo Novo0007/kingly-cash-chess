@@ -1,9 +1,10 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export const checkLudoTablesExist = async (): Promise<boolean> => {
   try {
     console.log("🔗 Testing Supabase connection...");
-    // First test if Supabase is working at all with a table we know exists
+    // Test if Supabase is working with a simple query
     const { error: testError } = await supabase
       .from("profiles")
       .select("count", { count: "exact", head: true });
@@ -15,33 +16,20 @@ export const checkLudoTablesExist = async (): Promise<boolean> => {
     console.log("✅ Supabase connection working");
 
     console.log("🎯 Testing ludo_games table...");
-    // Try a simple query to see if the table exists
+    // Try a simple query to see if the table exists and is accessible
     const { error } = await supabase
       .from("ludo_games")
       .select("count", { count: "exact", head: true });
 
     if (error) {
-      console.error("Ludo tables check failed:");
-      console.error("Error message:", error?.message || "Unknown error");
-      console.error("Error code:", error?.code || "No code");
-      console.error("Full error:", JSON.stringify(error, null, 2));
-
-      if (error.code === "42P01" || error.message?.includes("does not exist")) {
-        console.warn(
-          "Table does not exist - this is expected if migration hasn't been run",
-        );
-        return false;
-      }
-      // If it's another error, we can't be sure, so return true to let normal error handling work
-      return true;
+      console.error("Ludo tables check failed:", error);
+      return false;
     }
 
+    console.log("✅ Ludo tables are accessible and working");
     return true;
   } catch (err) {
-    console.error("Error checking Ludo tables:");
-    console.error("Error message:", err?.message || "Unknown error");
-    console.error("Error type:", typeof err);
-    console.error("Full error:", JSON.stringify(err, null, 2));
+    console.error("Error checking Ludo tables:", err);
     return false;
   }
 };
@@ -51,12 +39,11 @@ export const createLudoTablesIfNeeded = async (): Promise<boolean> => {
     const tablesExist = await checkLudoTablesExist();
 
     if (!tablesExist) {
-      console.warn(
-        "Ludo tables do not exist. They need to be created through database migration.",
-      );
+      console.warn("Ludo tables are not accessible or don't exist.");
       return false;
     }
 
+    console.log("✅ Ludo tables are ready to use");
     return true;
   } catch (err) {
     console.error("Error in createLudoTablesIfNeeded:", err);
