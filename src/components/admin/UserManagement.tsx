@@ -58,7 +58,14 @@ export const UserManagement = ({ adminUser }: UserManagementProps) => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setUsers(data || []);
+      
+      // Handle the case where wallets might be null or have errors
+      const processedData = (data || []).map(user => ({
+        ...user,
+        wallets: Array.isArray(user.wallets) ? user.wallets : []
+      })) as UserWithWallet[];
+      
+      setUsers(processedData);
     } catch (error) {
       console.error("Error fetching users:", error);
       toast.error("Failed to load users");
@@ -168,7 +175,7 @@ export const UserManagement = ({ adminUser }: UserManagementProps) => {
                             </Badge>
                             <Badge className="bg-green-600 text-white text-xs">
                               <Gamepad2 className="h-3 w-3 mr-1" />
-                              {user.games_won}/{user.games_played}
+                              {user.games_won || 0}/{user.games_played || 0}
                             </Badge>
                           </div>
                         </div>

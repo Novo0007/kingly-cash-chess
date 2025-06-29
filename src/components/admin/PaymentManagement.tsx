@@ -52,7 +52,16 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
         .limit(100);
 
       if (error) throw error;
-      setTransactions(data || []);
+      
+      // Handle the case where profiles might be null or have errors
+      const processedData = (data || []).map(transaction => ({
+        ...transaction,
+        profiles: transaction.profiles && typeof transaction.profiles === 'object' && 'username' in transaction.profiles
+          ? transaction.profiles
+          : null
+      }));
+      
+      setTransactions(processedData);
     } catch (error) {
       console.error("Error fetching transactions:", error);
       toast.error("Failed to load transactions");
@@ -194,7 +203,7 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
                           <span className="text-white font-semibold">
                             {transaction.profiles?.username || "Unknown User"}
                           </span>
-                          <Badge className={getStatusColor(transaction.status)}>
+                          <Badge className={getStatusColor(transaction.status || "pending")}>
                             {transaction.status}
                           </Badge>
                         </div>

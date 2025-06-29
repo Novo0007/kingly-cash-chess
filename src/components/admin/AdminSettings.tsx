@@ -115,6 +115,14 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
     }
   };
 
+  const hasInvitePermission = () => {
+    if (!adminUser.permissions || typeof adminUser.permissions !== 'object') {
+      return false;
+    }
+    const permissions = adminUser.permissions as Record<string, any>;
+    return permissions.invite_admins === true;
+  };
+
   if (loading) {
     return (
       <Card className="bg-slate-800 border-slate-600">
@@ -139,7 +147,7 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
         <CardContent>
           <div className="space-y-4">
             {/* Invite New Admin */}
-            {adminUser.permissions?.invite_admins && (
+            {hasInvitePermission() && (
               <Card className="bg-slate-700 border-slate-600">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-4">

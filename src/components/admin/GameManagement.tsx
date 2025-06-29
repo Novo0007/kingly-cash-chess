@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Gamepad2, Chess, Dice6, Users, Clock, Trophy } from "lucide-react";
+import { Gamepad2, Crown, Dice6, Users, Clock, Trophy } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface GameManagementProps {
@@ -104,7 +104,7 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
         <Card className="bg-blue-900/20 border-blue-600/30">
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
-              <Chess className="h-5 w-5 text-blue-400" />
+              <Crown className="h-5 w-5 text-blue-400" />
               <div>
                 <p className="text-blue-300 text-sm">Chess Games</p>
                 <p className="text-white font-bold text-lg">{chessGames.length}</p>
@@ -166,7 +166,7 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
               onClick={() => setActiveTab("chess")}
               className={activeTab === "chess" ? "bg-blue-600" : "text-slate-300 border-slate-600"}
             >
-              <Chess className="h-4 w-4 mr-2" />
+              <Crown className="h-4 w-4 mr-2" />
               Chess Games
             </Button>
             <Button
@@ -188,13 +188,13 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <Chess className="h-6 w-6 text-blue-400" />
+                        <Crown className="h-6 w-6 text-blue-400" />
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="text-white font-semibold">
                               {game.game_name || `Game ${game.id.slice(0, 8)}`}
                             </span>
-                            <Badge className={getStatusColor(game.game_status)}>
+                            <Badge className={getStatusColor(game.game_status || "waiting")}>
                               {game.game_status}
                             </Badge>
                           </div>
