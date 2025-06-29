@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { MessageSquare, Send, Users } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
-import type { Tables } from "@/integrations/supabase/types";
 
 interface Message {
   id: string;
@@ -34,35 +33,19 @@ export const ChatSystem = ({
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [currentUsername, setCurrentUsername] = useState<string>("");
   const [isTyping, setIsTyping] = useState<string | null>(null);
+  const [channel, setChannel] = useState<any>(null);
   const { isMobile, isTablet } = useDeviceType();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     getCurrentUser();
-    fetchMessages();
-
-    // Subscribe to new messages
-    const channel = supabase
-      .channel(`chat_${gameId || "global"}`)
-      .on("broadcast", { event: "new_message" }, (payload) => {
-        setMessages((prev) => [...prev, payload.payload as Message]);
-        scrollToBottom();
-      })
-      .on("broadcast", { event: "typing" }, (payload) => {
-        const { user_id, username, isTyping: typing } = payload.payload;
-        if (user_id !== currentUser) {
-          setIsTyping(typing ? username : null);
-          if (typing) {
-            // Clear typing indicator after 3 seconds
-            setTimeout(() => setIsTyping(null), 3000);
-          }
-        }
-      })
-      .subscribe();
-
+    setupRealtimeChannel();
+    
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, [gameId]);
 
@@ -87,39 +70,81 @@ export const ChatSystem = ({
     setCurrentUsername(profile?.username || "Anonymous");
   };
 
-  const fetchMessages = async () => {
-    // For now, we'll simulate messages since we don't have a messages table
-    // In a real implementation, you'd fetch from a messages table
-    const simulatedMessages: Message[] = [
-      {
-        id: "1",
-        content: isGlobalChat ? "Welcome to ChessCash! Good luck in your games!" : "Game started! Good luck!",
-        sender_id: "system",
-        sender_username: "System",
-        created_at: new Date().toISOString(),
-        game_id: gameId,
-      },
-    ];
+  const setupRealtimeChannel = () => {
+    const channelName = gameId ? `game-chat-${gameId}` : 'global-chat';
+    
+    const chatChannel = supabase
+      .channel(channelName)
+      .on("broadcast", { event: "message" }, (payload) => {
+        console.log('Received message broadcast:', payload);
+        const newMsg = payload.payload as Message;
+        setMessages((prev) => {
+          // Avoid duplicates
+          if (prev.some(m => m.id === newMsg.id)) {
+            return prev;
+          }
+          return [...prev, newMsg];
+        });
+      })
+      .on("broadcast", { event: "typing" }, (payload) => {
+        const { user_id, username, isTyping: typing } = payload.payload;
+        if (user_id !== currentUser) {
+          setIsTyping(typing ? username : null);
+          if (typing) {
+            // Clear typing indicator after 3 seconds
+            setTimeout(() => setIsTyping(null), 3000);
+          }
+        }
+      })
+      .subscribe(async (status) => {
+        console.log('Chat channel status:', status);
+        if (status === 'SUBSCRIBED') {
+          // Add welcome message when channel is ready
+          addWelcomeMessage();
+        }
+      });
+
+    setChannel(chatChannel);
+  };
+
+  const addWelcomeMessage = () => {
+    const welcomeMessage: Message = {
+      id: "welcome-" + Date.now(),
+      content: isGlobalChat ? "Welcome to ChessCash! Good luck in your games!" : "Game started! Good luck!",
+      sender_id: "system",
+      sender_username: "System",
+      created_at: new Date().toISOString(),
+      game_id: gameId,
+    };
+
+    setMessages([welcomeMessage]);
 
     if (!isGlobalChat && gameId) {
-      simulatedMessages.push({
-        id: "2",
+      const gameMessage: Message = {
+        id: "game-welcome-" + Date.now(),
         content: "May the best player win! 🏆",
         sender_id: "system",
         sender_username: "Game System",
         created_at: new Date().toISOString(),
         game_id: gameId,
-      });
+      };
+      
+      setTimeout(() => {
+        setMessages(prev => [...prev, gameMessage]);
+      }, 500);
     }
-
-    setMessages(simulatedMessages);
   };
 
   const sendMessage = async () => {
-    if (!newMessage.trim() || !currentUser) return;
+    if (!newMessage.trim() || !currentUser || !channel) {
+      if (!currentUser) {
+        toast.error("Please log in to send messages");
+      }
+      return;
+    }
 
     const message: Message = {
-      id: Date.now().toString(),
+      id: `${currentUser}_${Date.now()}_${Math.random()}`,
       content: newMessage.trim(),
       sender_id: currentUser,
       sender_username: currentUsername,
@@ -127,36 +152,53 @@ export const ChatSystem = ({
       game_id: gameId,
     };
 
-    // Stop typing indicator
-    await sendTypingIndicator(false);
+    console.log('Sending message:', message);
 
-    // Broadcast message to other users
-    const channel = supabase.channel(`chat_${gameId || "global"}`);
-    await channel.send({
-      type: "broadcast",
-      event: "new_message",
-      payload: message,
-    });
+    try {
+      // Stop typing indicator
+      await sendTypingIndicator(false);
 
-    // Add to local state
-    setMessages((prev) => [...prev, message]);
-    setNewMessage("");
-    scrollToBottom();
+      // Broadcast message to other users
+      const result = await channel.send({
+        type: "broadcast",
+        event: "message",
+        payload: message,
+      });
+
+      console.log('Message broadcast result:', result);
+
+      // Add to local state
+      setMessages((prev) => {
+        if (prev.some(m => m.id === message.id)) {
+          return prev;
+        }
+        return [...prev, message];
+      });
+      
+      setNewMessage("");
+      scrollToBottom();
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error('Failed to send message');
+    }
   };
 
   const sendTypingIndicator = async (typing: boolean) => {
-    if (!currentUser) return;
+    if (!currentUser || !channel) return;
 
-    const channel = supabase.channel(`chat_${gameId || "global"}`);
-    await channel.send({
-      type: "broadcast",
-      event: "typing",
-      payload: {
-        user_id: currentUser,
-        username: currentUsername,
-        isTyping: typing,
-      },
-    });
+    try {
+      await channel.send({
+        type: "broadcast",
+        event: "typing",
+        payload: {
+          user_id: currentUser,
+          username: currentUsername,
+          isTyping: typing,
+        },
+      });
+    } catch (error) {
+      console.error('Error sending typing indicator:', error);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -263,16 +305,20 @@ export const ChatSystem = ({
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
               className="bg-gray-800/50 border-gray-600 text-white flex-1"
+              disabled={!currentUser}
             />
             <Button
               onClick={sendMessage}
-              disabled={!newMessage.trim()}
+              disabled={!newMessage.trim() || !currentUser}
               size="sm"
               className="bg-blue-600 hover:bg-blue-700"
             >
               <Send className="h-4 w-4" />
             </Button>
           </div>
+          {!currentUser && (
+            <p className="text-xs text-gray-400 mt-1">Please log in to send messages</p>
+          )}
         </div>
       </CardContent>
     </Card>

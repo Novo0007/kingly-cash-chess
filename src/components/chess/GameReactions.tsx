@@ -25,27 +25,16 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [currentUsername, setCurrentUsername] = useState<string>('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [channel, setChannel] = useState<any>(null);
 
   useEffect(() => {
     getCurrentUser();
+    setupRealtimeChannel();
     
-    // Subscribe to real-time reactions with proper channel setup
-    const channel = supabase
-      .channel(`game_reactions_${gameId}`)
-      .on('broadcast', { event: 'new_reaction' }, (payload) => {
-        console.log('Received reaction:', payload);
-        const newReaction = payload.payload as GameReaction;
-        setReactions(prev => [...prev, newReaction]);
-        
-        // Remove reaction after 5 seconds
-        setTimeout(() => {
-          setReactions(prev => prev.filter(r => r.id !== newReaction.id));
-        }, 5000);
-      })
-      .subscribe();
-
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, [gameId]);
 
@@ -64,14 +53,41 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
     setCurrentUsername(profile?.username || 'Anonymous');
   };
 
+  const setupRealtimeChannel = () => {
+    const gameChannel = supabase
+      .channel(`game-reactions-${gameId}`)
+      .on('broadcast', { event: 'reaction' }, (payload) => {
+        console.log('Received reaction broadcast:', payload);
+        const newReaction = payload.payload as GameReaction;
+        
+        setReactions(prev => {
+          // Avoid duplicates
+          if (prev.some(r => r.id === newReaction.id)) {
+            return prev;
+          }
+          return [...prev, newReaction];
+        });
+        
+        // Remove reaction after 5 seconds
+        setTimeout(() => {
+          setReactions(prev => prev.filter(r => r.id !== newReaction.id));
+        }, 5000);
+      })
+      .subscribe(async (status) => {
+        console.log('Game reactions channel status:', status);
+      });
+    
+    setChannel(gameChannel);
+  };
+
   const sendReaction = async (emoji: string) => {
-    if (!currentUser) {
+    if (!currentUser || !channel) {
       toast.error('Please log in to send reactions');
       return;
     }
 
     const reaction: GameReaction = {
-      id: `reaction_${Date.now()}_${Math.random()}`,
+      id: `${currentUser}_${Date.now()}_${Math.random()}`,
       emoji,
       user_id: currentUser,
       username: currentUsername,
@@ -81,38 +97,29 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
     console.log('Sending reaction:', reaction);
 
     try {
-      // Create a new channel instance for sending
-      const sendChannel = supabase.channel(`game_reactions_${gameId}`);
-      
-      // Wait for subscription before sending
-      await new Promise((resolve) => {
-        sendChannel.subscribe((status) => {
-          if (status === 'SUBSCRIBED') {
-            resolve(true);
-          }
-        });
-      });
-
-      // Send the reaction
-      const result = await sendChannel.send({
+      // Send the reaction via broadcast
+      const result = await channel.send({
         type: 'broadcast',
-        event: 'new_reaction',
+        event: 'reaction',
         payload: reaction
       });
 
-      console.log('Broadcast result:', result);
+      console.log('Reaction broadcast result:', result);
 
       // Add to local state immediately for the sender
-      setReactions(prev => [...prev, reaction]);
+      setReactions(prev => {
+        if (prev.some(r => r.id === reaction.id)) {
+          return prev;
+        }
+        return [...prev, reaction];
+      });
+      
       setShowEmojiPicker(false);
 
       // Remove reaction after 5 seconds
       setTimeout(() => {
         setReactions(prev => prev.filter(r => r.id !== reaction.id));
       }, 5000);
-
-      // Clean up the send channel
-      supabase.removeChannel(sendChannel);
       
     } catch (error) {
       console.error('Error sending reaction:', error);
@@ -122,17 +129,19 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
 
   return (
     <>
-      <style>{`
-        @keyframes fadeInOut {
-          0% { opacity: 0; transform: translateY(20px) scale(0.8); }
-          20% { opacity: 1; transform: translateY(-10px) scale(1.1); }
-          80% { opacity: 1; transform: translateY(-20px) scale(1); }
-          100% { opacity: 0; transform: translateY(-40px) scale(0.8); }
-        }
-        .reaction-animation {
-          animation: fadeInOut 5s ease-in-out forwards;
-        }
-      `}</style>
+      <style>
+        {`
+          @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+            20% { opacity: 1; transform: translateY(-10px) scale(1.1); }
+            80% { opacity: 1; transform: translateY(-20px) scale(1); }
+            100% { opacity: 0; transform: translateY(-40px) scale(0.8); }
+          }
+          .reaction-animation {
+            animation: fadeInOut 5s ease-in-out forwards;
+          }
+        `}
+      </style>
       
       <div className="relative">
         {/* Floating Reactions */}
@@ -154,7 +163,7 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
           ))}
         </div>
 
-        {/* Emoji Picker Button - Better positioned */}
+        {/* Emoji Picker Button */}
         <div className="relative">
           <Button
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
