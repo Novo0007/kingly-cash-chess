@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ChessBoard } from "./ChessBoard";
@@ -979,8 +978,6 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             <Users className="h-3 w-3 mr-1" />
             {playerCount}/2
           </Badge>
-          {/* Add Reactions Button */}
-          <GameReactions gameId={gameId} />
           {isMobile && (
             <Button
               onClick={() => setShowMobileChat(!showMobileChat)}
@@ -1063,20 +1060,29 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </CardContent>
       </Card>
 
-      {/* Chess Board */}
-      <div
-        className="w-full"
-        key={`${game.board_state}-${game.current_turn}-${Date.now()}`}
-      >
-        <ChessBoard
-          fen={game.board_state}
-          onMove={handleMove}
-          playerColor={getPlayerColor()}
-          disabled={game.game_status !== "active" || isSpectator()}
-          isPlayerTurn={
-            isPlayerTurn() && game.game_status === "active" && !isSpectator()
-          }
-        />
+      {/* Chess Board with Reactions Button */}
+      <div className="relative">
+        <div
+          className="w-full"
+          key={`${game.board_state}-${game.current_turn}-${Date.now()}`}
+        >
+          <ChessBoard
+            fen={game.board_state}
+            onMove={handleMove}
+            playerColor={getPlayerColor()}
+            disabled={game.game_status !== "active" || isSpectator()}
+            isPlayerTurn={
+              isPlayerTurn() && game.game_status === "active" && !isSpectator()
+            }
+          />
+        </div>
+        
+        {/* Reactions Button - Better positioned */}
+        {game.game_status === "active" && !isSpectator() && (
+          <div className="absolute bottom-4 right-4 z-30">
+            <GameReactions gameId={gameId} />
+          </div>
+        )}
       </div>
 
       {/* Desktop Chat - always available for players */}

@@ -29,10 +29,11 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
   useEffect(() => {
     getCurrentUser();
     
-    // Subscribe to real-time reactions
+    // Subscribe to real-time reactions with proper channel setup
     const channel = supabase
       .channel(`game_reactions_${gameId}`)
       .on('broadcast', { event: 'new_reaction' }, (payload) => {
+        console.log('Received reaction:', payload);
         const newReaction = payload.payload as GameReaction;
         setReactions(prev => [...prev, newReaction]);
         
@@ -64,32 +65,59 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
   };
 
   const sendReaction = async (emoji: string) => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      toast.error('Please log in to send reactions');
+      return;
+    }
 
     const reaction: GameReaction = {
-      id: Date.now().toString(),
+      id: `reaction_${Date.now()}_${Math.random()}`,
       emoji,
       user_id: currentUser,
       username: currentUsername,
       timestamp: Date.now()
     };
 
-    // Broadcast reaction to other users
-    const channel = supabase.channel(`game_reactions_${gameId}`);
-    await channel.send({
-      type: 'broadcast',
-      event: 'new_reaction',
-      payload: reaction
-    });
+    console.log('Sending reaction:', reaction);
 
-    // Add to local state
-    setReactions(prev => [...prev, reaction]);
-    setShowEmojiPicker(false);
+    try {
+      // Create a new channel instance for sending
+      const sendChannel = supabase.channel(`game_reactions_${gameId}`);
+      
+      // Wait for subscription before sending
+      await new Promise((resolve) => {
+        sendChannel.subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            resolve(true);
+          }
+        });
+      });
 
-    // Remove reaction after 5 seconds
-    setTimeout(() => {
-      setReactions(prev => prev.filter(r => r.id !== reaction.id));
-    }, 5000);
+      // Send the reaction
+      const result = await sendChannel.send({
+        type: 'broadcast',
+        event: 'new_reaction',
+        payload: reaction
+      });
+
+      console.log('Broadcast result:', result);
+
+      // Add to local state immediately for the sender
+      setReactions(prev => [...prev, reaction]);
+      setShowEmojiPicker(false);
+
+      // Remove reaction after 5 seconds
+      setTimeout(() => {
+        setReactions(prev => prev.filter(r => r.id !== reaction.id));
+      }, 5000);
+
+      // Clean up the send channel
+      supabase.removeChannel(sendChannel);
+      
+    } catch (error) {
+      console.error('Error sending reaction:', error);
+      toast.error('Failed to send reaction');
+    }
   };
 
   return (
@@ -118,28 +146,29 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
                 top: `${Math.random() * 60 + 20}%`,
               }}
             >
-              <div className="bg-black/80 text-white px-2 py-1 rounded-lg text-sm flex items-center gap-1 shadow-lg">
+              <div className="bg-black/80 text-white px-2 py-1 rounded-lg text-sm flex items-center gap-1 shadow-lg backdrop-blur-sm">
                 <span className="text-lg">{reaction.emoji}</span>
-                <span className="text-xs">{reaction.username}</span>
+                <span className="text-xs font-medium">{reaction.username}</span>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Emoji Picker Button */}
+        {/* Emoji Picker Button - Better positioned */}
         <div className="relative">
           <Button
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             variant="outline"
             size="sm"
-            className="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 border-2 border-yellow-400 text-white"
+            className="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 border-2 border-yellow-400 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+            title="Send Emoji Reaction"
           >
             <Smile className="h-4 w-4" />
           </Button>
 
           {/* Emoji Picker */}
           {showEmojiPicker && (
-            <Card className="absolute bottom-full mb-2 right-0 bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl z-50">
+            <Card className="absolute bottom-full mb-2 right-0 bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl z-50 animate-scale-in">
               <CardContent className="p-2">
                 <div className="grid grid-cols-5 gap-1">
                   {AVAILABLE_EMOJIS.map((emoji) => (
@@ -148,7 +177,8 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
                       onClick={() => sendReaction(emoji)}
                       variant="ghost"
                       size="sm"
-                      className="text-lg hover:bg-purple-800/50 w-8 h-8 p-0"
+                      className="text-lg hover:bg-purple-800/50 w-8 h-8 p-0 transition-all duration-150 hover:scale-110"
+                      title={`Send ${emoji}`}
                     >
                       {emoji}
                     </Button>
