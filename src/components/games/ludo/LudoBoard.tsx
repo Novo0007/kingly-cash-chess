@@ -105,38 +105,69 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
     const playerPieces = gameState?.pieces?.[playerColor] || [];
     
     return playerPieces.some((piece: any, index: number) => {
+      console.log(`Checking piece ${index}:`, piece);
+      
       // Can move out of home with a 6
       if (piece.position === "home" && diceVal === 6) {
+        console.log(`Piece ${index} can move out of home with 6`);
         return true;
       }
       
-      // Can move pieces already on the board
+      // Can move pieces already on the board (active pieces)
       if (piece.position === "active") {
-        const newPathPosition = (piece.pathPosition || 0) + diceVal;
+        const currentPathPosition = piece.pathPosition || 0;
+        const newPathPosition = currentPathPosition + diceVal;
+        
+        // Check if the new position is within the valid range (0-57)
+        // 52 is the last position on the main track, 53-57 are home stretch positions
         if (newPathPosition <= 57) {
+          console.log(`Piece ${index} can move from ${currentPathPosition} to ${newPathPosition}`);
           return true;
+        } else {
+          console.log(`Piece ${index} cannot move beyond finish line: ${currentPathPosition} + ${diceVal} = ${newPathPosition}`);
         }
       }
       
+      // Pieces that are finished cannot move
+      if (piece.position === "finished") {
+        console.log(`Piece ${index} is finished and cannot move`);
+        return false;
+      }
+      
+      console.log(`Piece ${index} cannot move: position=${piece.position}, pathPosition=${piece.pathPosition}`);
       return false;
     });
   };
 
   const canMovePiece = (pieceId: number, steps: number): boolean => {
     const piece = gameState?.pieces?.[playerColor]?.[pieceId];
-    if (!piece) return false;
+    if (!piece) {
+      console.log(`Invalid piece ID: ${pieceId}`);
+      return false;
+    }
 
-    if (piece.position === "finished") return false;
+    console.log(`Checking if piece ${pieceId} can move ${steps} steps:`, piece);
+
+    if (piece.position === "finished") {
+      console.log(`Piece ${pieceId} is already finished`);
+      return false;
+    }
 
     if (piece.position === "home") {
-      return steps === 6;
+      const canMoveOut = steps === 6;
+      console.log(`Piece ${pieceId} in home, can move out: ${canMoveOut} (need 6, got ${steps})`);
+      return canMoveOut;
     }
 
     if (piece.position === "active") {
-      const newPathPosition = (piece.pathPosition || 0) + steps;
-      return newPathPosition <= 57;
+      const currentPathPosition = piece.pathPosition || 0;
+      const newPathPosition = currentPathPosition + steps;
+      const canMove = newPathPosition <= 57;
+      console.log(`Piece ${pieceId} active at ${currentPathPosition}, can move to ${newPathPosition}: ${canMove}`);
+      return canMove;
     }
 
+    console.log(`Piece ${pieceId} in unknown position: ${piece.position}`);
     return false;
   };
 
@@ -152,11 +183,21 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
       return;
     }
 
+    console.log(`Attempting to move piece ${pieceId} with dice value ${diceValue}`);
+
     if (!canMovePiece(pieceId, diceValue)) {
       if (piece.position === "home" && diceValue !== 6) {
         toast.error("Need to roll a 6 to move out of home!");
       } else if (piece.position === "finished") {
         toast.error("This piece has already reached home!");
+      } else if (piece.position === "active") {
+        const currentPathPosition = piece.pathPosition || 0;
+        const newPathPosition = currentPathPosition + diceValue;
+        if (newPathPosition > 57) {
+          toast.error("Cannot move beyond the finish line!");
+        } else {
+          toast.error("Invalid move!");
+        }
       } else {
         toast.error("Invalid move!");
       }
