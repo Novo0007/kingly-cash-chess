@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { LudoBoard } from "./LudoBoard";
+import { LudoBoardEnhanced } from "./LudoBoardEnhanced";
 import { ChatSystem } from "../../chat/ChatSystem";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -365,40 +365,40 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
   };
 
   const initializeGameState = (playerCount: number) => {
-    console.log("🔧 Initializing game state for", playerCount, "players");
+    console.log("🔧 Initializing enhanced game state for", playerCount, "players");
     
-    // Map player colors based on how many players joined
     const availableColors = ["red", "blue", "green", "yellow"];
     const activeColors = availableColors.slice(0, playerCount);
     
     const pieces: any = {};
 
-    // Initialize pieces for each active color
     activeColors.forEach((color) => {
+      const homePos = getHomePosition(color);
       pieces[color] = Array(4)
         .fill(null)
         .map((_, index) => ({
           id: index,
-          position: "home", // All pieces start at home
-          row: getHomePosition(color)[0],
-          col: getHomePosition(color)[1],
-          isOut: false, // Track if piece has left home
-          pathPosition: -1, // Position on the path (-1 = in home)
+          position: "home",
+          row: homePos[0] + Math.floor(index / 2),
+          col: homePos[1] + (index % 2),
+          isOut: false,
+          pathPosition: -1,
         }));
     });
 
     const gameState = {
       pieces,
-      currentPlayer: "red", // Red always starts first
+      currentPlayer: "red",
       diceValue: null,
-      gamePhase: "rolling", // rolling, moving, ended
+      gamePhase: "rolling",
       playerColors: activeColors,
       moveHistory: [],
       lastRoll: null,
       consecutiveSixes: 0,
+      turnStartTime: Date.now(),
     };
 
-    console.log("🎯 Initialized game state:", gameState);
+    console.log("🎯 Initialized enhanced game state:", gameState);
     return gameState;
   };
 
@@ -422,23 +422,80 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
     return positions[color] || [6, 1];
   };
 
-  const handleMove = async (
-    playerId: string,
-    pieceId: number,
-    steps: number,
-  ) => {
+  const COLOR_PATHS: Record<string, [number, number][]> = {
+    red: [
+      [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6],
+      [5, 6], [4, 6], [3, 6], [2, 6], [1, 6], [1, 7], [1, 8],
+      [2, 8], [3, 8], [4, 8], [5, 8], [6, 8], [6, 9], [6, 10], [6, 11], [6, 12], [6, 13],
+      [7, 13], [8, 13], [8, 12], [8, 11], [8, 10], [8, 9], [8, 8],
+      [9, 8], [10, 8], [11, 8], [12, 8], [13, 8], [13, 7], [13, 6],
+      [12, 6], [11, 6], [10, 6], [9, 6], [8, 6], [8, 5], [8, 4], [8, 3], [8, 2], [8, 1],
+      [7, 1], [7, 2], [7, 3], [7, 4], [7, 5], [7, 6], [7, 7]
+    ],
+    blue: [
+      [1, 8], [2, 8], [3, 8], [4, 8], [5, 8], [6, 8],
+      [6, 9], [6, 10], [6, 11], [6, 12], [6, 13], [7, 13], [8, 13],
+      [8, 12], [8, 11], [8, 10], [8, 9], [8, 8], [9, 8], [10, 8], [11, 8], [12, 8], [13, 8],
+      [13, 7], [13, 6], [12, 6], [11, 6], [10, 6], [9, 6], [8, 6],
+      [8, 5], [8, 4], [8, 3], [8, 2], [8, 1], [7, 1], [6, 1],
+      [6, 2], [6, 3], [6, 4], [6, 5], [6, 6], [5, 6], [4, 6], [3, 6], [2, 6], [1, 6],
+      [1, 7], [2, 7], [3, 7], [4, 7], [5, 7], [6, 7], [7, 7]
+    ],
+    green: [
+      [8, 13], [8, 12], [8, 11], [8, 10], [8, 9], [8, 8],
+      [9, 8], [10, 8], [11, 8], [12, 8], [13, 8], [13, 7], [13, 6],
+      [12, 6], [11, 6], [10, 6], [9, 6], [8, 6], [8, 5], [8, 4], [8, 3], [8, 2], [8, 1],
+      [7, 1], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6],
+      [5, 6], [4, 6], [3, 6], [2, 6], [1, 6], [1, 7], [1, 8],
+      [2, 8], [3, 8], [4, 8], [5, 8], [6, 8], [6, 9], [6, 10], [6, 11], [6, 12], [6, 13],
+      [7, 13], [7, 12], [7, 11], [7, 10], [7, 9], [7, 8], [7, 7]
+    ],
+    yellow: [
+      [13, 6], [12, 6], [11, 6], [10, 6], [9, 6], [8, 6],
+      [8, 5], [8, 4], [8, 3], [8, 2], [8, 1], [7, 1], [6, 1],
+      [6, 2], [6, 3], [6, 4], [6, 5], [6, 6], [5, 6], [4, 6], [3, 6], [2, 6], [1, 6],
+      [1, 7], [1, 8], [2, 8], [3, 8], [4, 8], [5, 8], [6, 8],
+      [6, 9], [6, 10], [6, 11], [6, 12], [6, 13], [7, 13], [8, 13],
+      [8, 12], [8, 11], [8, 10], [8, 9], [8, 8], [9, 8], [10, 8], [11, 8], [12, 8], [13, 8],
+      [13, 7], [12, 7], [11, 7], [10, 7], [9, 7], [8, 7], [7, 7]
+    ],
+  };
+
+  const calculateNewPosition = (color: string, currentPathPosition: number, steps: number): [number, number] | null => {
+    const path = COLOR_PATHS[color];
+    const newPathPosition = currentPathPosition + steps;
+    
+    if (newPathPosition >= path.length) {
+      return null; // Can't move beyond finish
+    }
+    
+    return path[newPathPosition];
+  };
+
+  const canCapture = (fromPos: [number, number], toPos: [number, number], targetColor: string, movingColor: string): boolean => {
+    if (targetColor === movingColor) return false; // Can't capture own piece
+    
+    // Safe positions
+    const SAFE_POSITIONS = [
+      [1, 6], [6, 1], [8, 1], [13, 6],
+      [13, 8], [8, 13], [6, 13], [1, 8],
+      [6, 2], [2, 8], [8, 12], [12, 6]
+    ];
+    
+    return !SAFE_POSITIONS.some(([r, c]) => r === toPos[0] && c === toPos[1]);
+  };
+
+  const handleMove = async (playerId: string, pieceId: number, steps: number) => {
     if (!game || !currentUser) return;
 
-    // Validate turn
     if (game.current_turn !== getPlayerColor()) {
       toast.error("Not your turn!");
       return;
     }
 
     try {
-      console.log(`🎯 Player ${playerId} moving piece ${pieceId} by ${steps} steps`);
+      console.log(`🎯 Enhanced move: ${playerId} piece ${pieceId} by ${steps} steps`);
       
-      // Process the move
       const newGameState = { ...game.game_state };
       const piece = newGameState.pieces[playerId][pieceId];
       
@@ -447,9 +504,22 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
         return;
       }
 
+      let bonusTurn = false;
+      let capturedPiece = false;
+
       // Handle moving out of home
       if (piece.position === "home" && steps === 6) {
         const startPos = getStartPosition(playerId);
+        
+        // Check if start position is occupied by opponent
+        const occupant = findPieceAtPosition(newGameState, startPos[0], startPos[1]);
+        if (occupant && occupant.color !== playerId) {
+          // Capture the piece
+          sendPieceHome(newGameState, occupant);
+          capturedPiece = true;
+          toast.success(`Captured ${occupant.color} piece!`);
+        }
+        
         piece.position = "active";
         piece.row = startPos[0];
         piece.col = startPos[1];
@@ -457,70 +527,82 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
         piece.isOut = true;
         
         toast.success("Moved piece out of home!");
-        console.log(`✅ Moved ${playerId} piece ${pieceId} out of home`);
       } 
       // Handle moving active pieces
       else if (piece.position === "active") {
+        const newPos = calculateNewPosition(playerId, piece.pathPosition, steps);
+        
+        if (!newPos) {
+          toast.error("Cannot move beyond finish line!");
+          return;
+        }
+        
         const newPathPosition = piece.pathPosition + steps;
         
-        // Check if piece reaches home (simplified - full implementation would calculate exact path)
-        if (newPathPosition >= 52) {
+        // Check if reached home (center)
+        if (newPathPosition >= COLOR_PATHS[playerId].length - 1) {
           piece.position = "finished";
-          piece.row = 7; // Center position
+          piece.row = 7;
           piece.col = 7;
-          piece.pathPosition = 52;
+          piece.pathPosition = COLOR_PATHS[playerId].length - 1;
           
-          toast.success("Piece reached home!");
-          console.log(`🏠 ${playerId} piece ${pieceId} reached home!`);
+          toast.success("🏠 Piece reached home!");
           
-          // Check for win condition
-          const finishedPieces = newGameState.pieces[playerId].filter(
+          // Check win condition
+          const finishedCount = newGameState.pieces[playerId].filter(
             (p: any) => p.position === "finished"
           ).length;
           
-          if (finishedPieces === 4) {
+          if (finishedCount === 4) {
             await completeGame(currentUser, "normal");
             toast.success("🎉 You won the game!");
             return;
           }
         } else {
-          // Move piece along the path (simplified positioning)
+          // Check for capture
+          const occupant = findPieceAtPosition(newGameState, newPos[0], newPos[1]);
+          if (occupant && occupant.color !== playerId && canCapture([piece.row, piece.col], newPos, occupant.color, playerId)) {
+            sendPieceHome(newGameState, occupant);
+            capturedPiece = true;
+            bonusTurn = true; // Capturing gives bonus turn
+            toast.success(`💥 Captured ${occupant.color} piece!`);
+          }
+          
+          // Move piece to new position
           piece.pathPosition = newPathPosition;
-          // Update row/col based on path position (simplified)
-          const newPos = calculateBoardPosition(playerId, newPathPosition);
           piece.row = newPos[0];
           piece.col = newPos[1];
-          
-          console.log(`➡️ Moved ${playerId} piece ${pieceId} to position ${newPathPosition}`);
         }
+      } else {
+        toast.error("Invalid move!");
+        return;
       }
 
-      // Handle bonus turn for rolling 6
-      let nextPlayer = playerId;
-      let bonusTurn = false;
-      
+      // Handle bonus turns
       if (steps === 6) {
         bonusTurn = true;
         newGameState.consecutiveSixes = (newGameState.consecutiveSixes || 0) + 1;
         
-        // Three consecutive sixes rule
         if (newGameState.consecutiveSixes >= 3) {
           bonusTurn = false;
           newGameState.consecutiveSixes = 0;
-          toast.info("Three sixes in a row! Turn forfeited.");
+          toast.warning("Three sixes! Turn forfeited.");
+        } else {
+          toast.success("🎲 Six rolled! You get another turn!");
         }
       } else {
         newGameState.consecutiveSixes = 0;
       }
 
-      // Determine next player if no bonus turn
+      // Determine next player
+      let nextPlayer = playerId;
       if (!bonusTurn) {
         const activeColors = newGameState.playerColors || ["red", "blue", "green", "yellow"].slice(0, game.current_players);
         const currentIndex = activeColors.indexOf(game.current_turn);
         nextPlayer = activeColors[(currentIndex + 1) % activeColors.length];
       }
 
-      // Add move to history
+      // Add to move history
       newGameState.moveHistory = newGameState.moveHistory || [];
       newGameState.moveHistory.push({
         player: playerId,
@@ -528,7 +610,11 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
         steps: steps,
         timestamp: Date.now(),
         bonusTurn: bonusTurn,
+        captured: capturedPiece,
       });
+
+      // Clear dice value for database
+      newGameState.diceValue = null;
 
       // Update game in database
       const { error } = await supabase
@@ -542,43 +628,36 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
 
       if (error) {
         toast.error("Failed to make move");
-        console.error("❌ Ludo move error:", error);
+        console.error("❌ Enhanced move error:", error);
       } else {
-        console.log(`✅ Move completed! Next player: ${nextPlayer}`);
-        if (bonusTurn) {
-          toast.success("You get another turn!");
-        }
+        console.log(`✅ Enhanced move completed! Next: ${nextPlayer}`);
       }
     } catch (error) {
-      console.error("❌ Error making ludo move:", error);
+      console.error("❌ Error in enhanced move:", error);
       toast.error("Failed to make move");
     }
   };
 
-  const calculateBoardPosition = (playerId: string, pathPosition: number): [number, number] => {
-    // Simplified path calculation - in a full implementation, 
-    // this would map the exact path around the board
-    const basePositions: Record<string, [number, number]> = {
-      red: [6, 1],
-      blue: [1, 8], 
-      green: [8, 13],
-      yellow: [13, 6],
-    };
-    
-    const base = basePositions[playerId] || [6, 1];
-    
-    // Simple approximation - move along edges
-    const edgeLength = 6;
-    const side = Math.floor(pathPosition / edgeLength);
-    const offset = pathPosition % edgeLength;
-    
-    switch (side % 4) {
-      case 0: return [base[0], base[1] + offset]; // Move right
-      case 1: return [base[0] + offset, base[1] + edgeLength]; // Move down
-      case 2: return [base[0] + edgeLength, base[1] + edgeLength - offset]; // Move left
-      case 3: return [base[0] + edgeLength - offset, base[1]]; // Move up
-      default: return base;
+  const findPieceAtPosition = (gameState: any, row: number, col: number) => {
+    for (const [color, pieces] of Object.entries(gameState.pieces)) {
+      for (const [index, piece] of (pieces as any[]).entries()) {
+        if (piece.row === row && piece.col === col && piece.position === "active") {
+          return { ...piece, color, index };
+        }
+      }
     }
+    return null;
+  };
+
+  const sendPieceHome = (gameState: any, capturedPiece: any) => {
+    const piece = gameState.pieces[capturedPiece.color][capturedPiece.index];
+    const homePos = getHomePosition(capturedPiece.color);
+    
+    piece.position = "home";
+    piece.row = homePos[0] + Math.floor(capturedPiece.index / 2);
+    piece.col = homePos[1] + (capturedPiece.index % 2);
+    piece.pathPosition = -1;
+    piece.isOut = false;
   };
 
   const completeGame = async (winnerId: string | null, gameResult: string) => {
@@ -822,7 +901,7 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
           <CardTitle className="text-white flex items-center gap-2">
             <Dice1 className="h-5 w-5 text-blue-400" />
             <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              {game.game_name || "Ludo Game"}
+              {game.game_name || "Enhanced Ludo Game"}
             </span>
           </CardTitle>
         </CardHeader>
@@ -869,15 +948,19 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
         </CardContent>
       </Card>
 
-      {/* Ludo Board */}
+      {/* Enhanced Ludo Board */}
       {game.game_status === "active" && game.game_state && (
-        <LudoBoard
+        <LudoBoardEnhanced
           gameState={game.game_state}
           onMove={handleMove}
           playerColor={getPlayerColor()}
           currentPlayer={game.current_turn}
           isPlayerTurn={isPlayerTurn()}
           disabled={isSpectator()}
+          onGameEnd={(winner) => {
+            toast.success(`🎉 ${winner} wins the game!`);
+            setTimeout(() => onBackToLobby(), 3000);
+          }}
         />
       )}
 
