@@ -402,24 +402,24 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
     return gameState;
   };
 
-  const getHomePosition = (color: string) => {
-    const positions = {
+  const getHomePosition = (color: string): [number, number] => {
+    const positions: Record<string, [number, number]> = {
       red: [2, 2],
       blue: [2, 12],
       green: [12, 12],
       yellow: [12, 2],
     };
-    return positions[color as keyof typeof positions] || [2, 2];
+    return positions[color] || [2, 2];
   };
 
-  const getStartPosition = (color: string) => {
-    const positions = {
+  const getStartPosition = (color: string): [number, number] => {
+    const positions: Record<string, [number, number]> = {
       red: [6, 1],
       blue: [1, 8],
       green: [8, 13],
       yellow: [13, 6],
     };
-    return positions[color as keyof typeof positions] || [6, 1];
+    return positions[color] || [6, 1];
   };
 
   const handleMove = async (
@@ -558,14 +558,14 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
   const calculateBoardPosition = (playerId: string, pathPosition: number): [number, number] => {
     // Simplified path calculation - in a full implementation, 
     // this would map the exact path around the board
-    const basePositions = {
+    const basePositions: Record<string, [number, number]> = {
       red: [6, 1],
       blue: [1, 8], 
       green: [8, 13],
       yellow: [13, 6],
     };
     
-    const base = basePositions[playerId as keyof typeof basePositions];
+    const base = basePositions[playerId] || [6, 1];
     
     // Simple approximation - move along edges
     const edgeLength = 6;
