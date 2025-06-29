@@ -59,6 +59,7 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
         // Check if profiles exists and has the expected structure
         if (profiles && 
             typeof profiles === 'object' && 
+            !Array.isArray(profiles) &&
             'username' in profiles &&
             typeof profiles.username === 'string') {
           return {
