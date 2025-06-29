@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -374,9 +375,12 @@ export const LudoLobby = ({
         description: `Entry fee for joining Ludo game: ${game.game_name}`,
       });
 
+      // Calculate new player count
+      const newPlayerCount = game.current_players + 1;
+
       // Determine which player slot to fill
       let updateData: any = {
-        current_players: game.current_players + 1,
+        current_players: newPlayerCount,
         updated_at: new Date().toISOString(),
       };
 
@@ -384,9 +388,10 @@ export const LudoLobby = ({
       else if (!game.player3_id) updateData.player3_id = currentUser;
       else if (!game.player4_id) updateData.player4_id = currentUser;
 
-      // Update prize amount
-      updateData.prize_amount =
-        game.entry_fee * (game.current_players + 1) * 0.9;
+      // Update prize amount based on new player count
+      updateData.prize_amount = game.entry_fee * newPlayerCount * 0.9;
+
+      console.log("Joining game with update data:", updateData);
 
       // Update game
       const { error: gameError } = await supabase
@@ -400,7 +405,13 @@ export const LudoLobby = ({
         return;
       }
 
-      toast.success("Joined game successfully!");
+      toast.success(`Joined game successfully! (${newPlayerCount}/4 players)`);
+      
+      // Show auto-start message if we now have 2+ players
+      if (newPlayerCount >= 2) {
+        toast.info("Game will start automatically soon!");
+      }
+      
       fetchWallet();
       fetchGames();
 
@@ -522,12 +533,6 @@ export const LudoLobby = ({
             </h3>
           </div>
 
-          {/* Debug info - temporary */}
-          <div className="text-xs text-blue-300 bg-blue-900/20 p-2 rounded">
-            Debug: Ludo games loaded successfully. Check console for any
-            database errors.
-          </div>
-
           {games.length === 0 ? (
             <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-gray-600">
               <CardContent className="p-6 text-center">
@@ -537,8 +542,7 @@ export const LudoLobby = ({
                   Create a new game to get started!
                   <br />
                   <span className="text-xs">
-                    If you can't create games, the database may still be setting
-                    up.
+                    Games auto-start when 2+ players join
                   </span>
                 </p>
               </CardContent>
@@ -562,15 +566,22 @@ export const LudoLobby = ({
                           by {game.player1?.username || "Unknown"}
                         </p>
                       </div>
-                      <Badge
-                        className={`${
-                          game.game_status === "waiting"
-                            ? "bg-yellow-500 text-black"
-                            : "bg-green-500 text-white"
-                        } font-bold border-2 border-white`}
-                      >
-                        {game.game_status}
-                      </Badge>
+                      <div className="flex flex-col items-end gap-1">
+                        <Badge
+                          className={`${
+                            game.game_status === "waiting"
+                              ? "bg-yellow-500 text-black"
+                              : "bg-green-500 text-white"
+                          } font-bold border-2 border-white`}
+                        >
+                          {game.game_status}
+                        </Badge>
+                        {game.current_players >= 2 && game.game_status === "waiting" && (
+                          <Badge className="bg-green-600 text-white text-xs px-1 py-0">
+                            Auto-starting...
+                          </Badge>
+                        )}
+                      </div>
                     </div>
 
                     {/* Players */}
@@ -633,7 +644,7 @@ export const LudoLobby = ({
                               game.player4_id,
                             ].includes(currentUser)
                           ? "Rejoin Game"
-                          : "Join Game"}
+                          : `Join Game (${game.current_players}/4)`}
                     </Button>
                   </div>
                 </CardContent>

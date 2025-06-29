@@ -306,25 +306,39 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
         setShowGameEndDialog(true);
       }
 
-      // Auto-start game if enough players
+      // Improved auto-start logic - start game when we have 2+ players and game is still waiting
       if (
         gameWithPlayers.game_status === "waiting" &&
-        gameWithPlayers.current_players >= 2 // Minimum 2 players to start
+        gameWithPlayers.current_players >= 2
       ) {
         console.log(
-          "Starting ludo game with",
+          "Auto-starting Ludo game with",
           gameWithPlayers.current_players,
-          "players",
+          "players"
         );
-        await supabase
+        
+        // Initialize game state properly
+        const initialGameState = initializeGameState(gameWithPlayers.current_players);
+        
+        const { error: startError } = await supabase
           .from("ludo_games")
           .update({
             game_status: "active",
-            game_state: initializeGameState(gameWithPlayers.current_players),
-            current_turn: "red", // Red starts first
+            game_state: initialGameState,
+            current_turn: "red", // Red player always starts
             updated_at: new Date().toISOString(),
           })
           .eq("id", gameId);
+
+        if (startError) {
+          console.error("Error starting game:", startError);
+          toast.error("Failed to start game");
+        } else {
+          console.log("Game started successfully!");
+          toast.success("Game started! Red player goes first.");
+          // Refresh to get updated game state
+          setTimeout(() => fetchGame(), 1000);
+        }
       }
     } catch (error) {
       console.error("Error fetching ludo game:", error);
@@ -335,26 +349,39 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
   };
 
   const initializeGameState = (playerCount: number) => {
-    const colors = ["red", "blue", "green", "yellow"].slice(0, playerCount);
+    console.log("Initializing game state for", playerCount, "players");
+    
+    // Map player colors based on how many players joined
+    const availableColors = ["red", "blue", "green", "yellow"];
+    const activeColors = availableColors.slice(0, playerCount);
+    
     const pieces: any = {};
 
-    colors.forEach((color) => {
+    // Initialize pieces for each active color
+    activeColors.forEach((color) => {
       pieces[color] = Array(4)
         .fill(null)
         .map((_, index) => ({
           id: index,
-          position: "home",
+          position: "home", // All pieces start at home
           row: null,
           col: null,
+          isOut: false, // Track if piece has left home
         }));
     });
 
-    return {
+    const gameState = {
       pieces,
-      currentPlayer: "red",
+      currentPlayer: "red", // Red always starts first
       diceValue: null,
       gamePhase: "rolling", // rolling, moving, ended
+      playerColors: activeColors,
+      moveHistory: [],
+      lastRoll: null,
     };
+
+    console.log("Initialized game state:", gameState);
+    return gameState;
   };
 
   const completeGame = async (winnerId: string | null, gameResult: string) => {
@@ -452,10 +479,10 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
       const piece = newGameState.pieces[playerId][pieceId];
       // Add actual Ludo movement logic here
 
-      // Determine next player
-      const colors = ["red", "blue", "green", "yellow"];
-      const currentIndex = colors.indexOf(game.current_turn);
-      const nextPlayer = colors[(currentIndex + 1) % colors.length];
+      // Determine next player from active colors
+      const activeColors = newGameState.playerColors || ["red", "blue", "green", "yellow"].slice(0, game.current_players);
+      const currentIndex = activeColors.indexOf(game.current_turn);
+      const nextPlayer = activeColors[(currentIndex + 1) % activeColors.length];
 
       // Update game in database
       const { error } = await supabase
@@ -718,8 +745,13 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
               Waiting for players... ({game.current_players}/4)
             </p>
             <p className="text-yellow-300 text-xs mt-1">
-              Game starts with minimum 2 players
+              Game will auto-start when 2+ players join
             </p>
+            {game.current_players >= 2 && (
+              <p className="text-green-300 text-xs mt-1 font-bold">
+                ✓ Ready to start! Game will begin shortly...
+              </p>
+            )}
           </CardContent>
         </Card>
       )}
