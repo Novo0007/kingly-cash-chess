@@ -21,8 +21,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-inset-bottom">
       {/* Lavender Glass Background */}
-      <div className="absolute inset-0 lavender-glass border-t-2 border-purple-300/50">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-100/10 via-lavender-100/15 to-indigo-100/10"></div>
+      <div className="absolute inset-0 lavender-glass border-t-2 border-purple-300/50 rounded-t-3xl">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-100/10 via-lavender-100/15 to-indigo-100/10 rounded-t-3xl"></div>
       </div>
 
       {/* Navigation Content */}

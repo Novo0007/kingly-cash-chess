@@ -82,7 +82,7 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
   };
 
   const navItems = [
-    { id: "games", label: "Games", icon: Gamepad2, emoji: "🎮" },
+    { id: "games", label: "Games", icon: Gamepad2, emoji: "✨" },
     { id: "friends", label: "Friends", icon: Users, emoji: "👥" },
     { id: "wallet", label: "Wallet", icon: Wallet, emoji: "💰" },
     { id: "profile", label: "Profile", icon: UserIcon, emoji: "👤" },
