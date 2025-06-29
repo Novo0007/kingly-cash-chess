@@ -1,3 +1,4 @@
+
 import React from "react";
 import { cn } from "@/lib/utils";
 
@@ -6,6 +7,8 @@ interface MobileContainerProps {
   className?: string;
   padding?: "none" | "sm" | "md" | "lg";
   maxWidth?: "sm" | "md" | "lg" | "xl" | "full";
+  centerContent?: boolean;
+  disableScroll?: boolean;
 }
 
 export const MobileContainer: React.FC<MobileContainerProps> = ({
@@ -13,6 +16,8 @@ export const MobileContainer: React.FC<MobileContainerProps> = ({
   className,
   padding = "md",
   maxWidth = "lg",
+  centerContent = false,
+  disableScroll = false,
 }) => {
   const paddingClasses = {
     none: "",
@@ -33,10 +38,18 @@ export const MobileContainer: React.FC<MobileContainerProps> = ({
     <div
       className={cn(
         "mx-auto w-full",
+        "touch-manipulation",
         paddingClasses[padding],
         maxWidthClasses[maxWidth],
+        centerContent && "flex flex-col items-center justify-center",
+        disableScroll && "overflow-hidden",
         className,
       )}
+      style={{
+        WebkitTapHighlightColor: 'transparent',
+        WebkitTouchCallout: 'none',
+        touchAction: 'manipulation'
+      }}
     >
       {children}
     </div>

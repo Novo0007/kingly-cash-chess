@@ -1,8 +1,10 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthPage } from "@/components/auth/AuthPage";
 import { Navbar } from "@/components/layout/Navbar";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { MobileOptimized } from "@/components/layout/MobileOptimized";
 import { GameLobby } from "@/components/chess/GameLobby";
 import { GamePage } from "@/components/chess/GamePage";
 import { GameSelection } from "@/components/games/GameSelection";
@@ -19,9 +21,8 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
-  const [selectedGameType, setSelectedGameType] = useState<
-    "chess" | "ludo" | null
-  >(null);
+  const [selectedGameType, setSelectedGameType] = useState<"chess" | "ludo" | null>(null);
+
   useEffect(() => {
     getUser();
 
@@ -77,19 +78,23 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <MobileOptimized className="flex items-center justify-center">
         <div className="relative">
           <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-full blur-xl opacity-60 animate-pulse"></div>
           <div className="relative bg-gradient-to-r from-slate-800 to-slate-900 p-6 rounded-full border-2 border-purple-500/50 backdrop-blur-sm">
-            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         </div>
-      </div>
+      </MobileOptimized>
     );
   }
 
   if (!user) {
-    return <AuthPage />;
+    return (
+      <MobileOptimized>
+        <AuthPage />
+      </MobileOptimized>
+    );
   }
 
   const renderCurrentView = () => {
@@ -98,7 +103,7 @@ const Index = () => {
         return <GameSelection onSelectGame={handleSelectGame} />;
       case "lobby":
         return (
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-2 sm:gap-4 md:gap-6">
             <div className="xl:col-span-2">
               <GameLobby onJoinGame={handleJoinGame} />
             </div>
@@ -109,7 +114,7 @@ const Index = () => {
         );
       case "game":
         return currentGameId ? (
-          <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
             <div className="xl:col-span-3">
               <GamePage
                 gameId={currentGameId}
@@ -132,7 +137,7 @@ const Index = () => {
         );
       case "ludo-game":
         return currentGameId ? (
-          <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
             <div className="xl:col-span-3">
               <LudoGame
                 gameId={currentGameId}
@@ -161,14 +166,14 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden lavender-bg">
+    <MobileOptimized className="lavender-bg">
       {/* Elegant Lavender Background */}
       <div className="fixed inset-0 lavender-gradient">
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-purple-100/10"></div>
       </div>
 
       {/* Subtle Pattern Overlay */}
-      <div className="fixed inset-0 opacity-10">
+      <div className="fixed inset-0 opacity-5 sm:opacity-10">
         <div
           className="h-full w-full"
           style={{
@@ -179,23 +184,19 @@ const Index = () => {
         ></div>
       </div>
 
-      {/* Elegant Floating Elements */}
+      {/* Optimized Floating Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div
-          className="absolute top-20 left-20 w-3 h-3 bg-gradient-to-br from-purple-300 to-indigo-300 rounded-full lavender-float opacity-40"
-          style={{ animationDelay: "0s", animationDuration: "4s" }}
+          className="absolute top-20 left-20 w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-br from-purple-300 to-indigo-300 rounded-full lavender-float opacity-30 sm:opacity-40"
+          style={{ animationDelay: "0s", animationDuration: "6s" }}
         ></div>
         <div
-          className="absolute top-40 right-40 w-2 h-2 bg-gradient-to-br from-lavender-300 to-purple-300 rounded-full lavender-float opacity-50"
-          style={{ animationDelay: "1s", animationDuration: "5s" }}
+          className="absolute top-40 right-40 w-1 h-1 sm:w-2 sm:h-2 bg-gradient-to-br from-lavender-300 to-purple-300 rounded-full lavender-float opacity-40 sm:opacity-50"
+          style={{ animationDelay: "2s", animationDuration: "8s" }}
         ></div>
         <div
-          className="absolute bottom-40 left-40 w-4 h-4 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full lavender-float opacity-30"
-          style={{ animationDelay: "2s", animationDuration: "3.5s" }}
-        ></div>
-        <div
-          className="absolute bottom-20 right-20 w-2 h-2 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full lavender-float opacity-60"
-          style={{ animationDelay: "1.5s", animationDuration: "4.5s" }}
+          className="absolute bottom-40 left-40 w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full lavender-float opacity-20 sm:opacity-30"
+          style={{ animationDelay: "4s", animationDuration: "7s" }}
         ></div>
       </div>
 
@@ -204,11 +205,11 @@ const Index = () => {
         <Navbar currentView={currentView} onViewChange={setCurrentView} />
       </div>
 
-      {/* Main Content Area */}
-      <main className="relative z-20 max-w-7xl mx-auto px-2 sm:px-3 md:px-4 py-2 sm:py-4 md:py-8 pb-20 sm:pb-24 md:pb-8">
+      {/* Main Content Area - Mobile Optimized */}
+      <main className="relative z-20 max-w-7xl mx-auto px-1 sm:px-2 md:px-4 py-1 sm:py-2 md:py-8 pb-16 sm:pb-20 md:pb-8">
         <div className="relative">
           {/* Content Background with Lavender Glass Effect */}
-          <div className="absolute inset-0 lavender-glass rounded-2xl sm:rounded-3xl lavender-shadow"></div>
+          <div className="absolute inset-0 lavender-glass rounded-xl sm:rounded-2xl md:rounded-3xl lavender-shadow"></div>
 
           {/* Content */}
           <div className="relative z-10 p-1 sm:p-2 md:p-4">
@@ -221,7 +222,7 @@ const Index = () => {
       <div className="md:hidden relative z-30">
         <BottomNav currentView={currentView} onViewChange={setCurrentView} />
       </div>
-    </div>
+    </MobileOptimized>
   );
 };
 

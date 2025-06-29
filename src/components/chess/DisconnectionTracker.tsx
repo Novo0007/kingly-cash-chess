@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertTriangle, Wifi, WifiOff } from 'lucide-react';
@@ -25,84 +25,143 @@ export const DisconnectionTracker: React.FC<DisconnectionTrackerProps> = ({
   const [showDisconnectionWarning, setShowDisconnectionWarning] = useState(false);
   const [disconnectedPlayer, setDisconnectedPlayer] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(30);
+  
+  const presenceChannelRef = useRef<any>(null);
+  const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const disconnectionTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
+  const cleanup = useCallback(() => {
+    if (presenceChannelRef.current) {
+      supabase.removeChannel(presenceChannelRef.current);
+      presenceChannelRef.current = null;
+    }
+    if (heartbeatIntervalRef.current) {
+      clearInterval(heartbeatIntervalRef.current);
+      heartbeatIntervalRef.current = null;
+    }
+    if (disconnectionTimerRef.current) {
+      clearTimeout(disconnectionTimerRef.current);
+      disconnectionTimerRef.current = null;
+    }
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+  }, []);
+
+  const startDisconnectionTimer = useCallback((playerId: string) => {
+    setShowDisconnectionWarning(true);
+    setDisconnectedPlayer(playerId);
+    setCountdown(30);
+
+    countdownIntervalRef.current = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          if (countdownIntervalRef.current) {
+            clearInterval(countdownIntervalRef.current);
+            countdownIntervalRef.current = null;
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    disconnectionTimerRef.current = setTimeout(() => {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
+      }
+      setShowDisconnectionWarning(false);
+      onPlayerDisconnected(playerId);
+    }, 30000);
+  }, [onPlayerDisconnected]);
+
+  const setupPresenceTracking = useCallback(() => {
     if (!currentUser || gameStatus !== 'active') return;
 
-    let presenceChannel: any = null;
-    let heartbeatInterval: NodeJS.Timeout | null = null;
-    let disconnectionTimer: NodeJS.Timeout | null = null;
+    cleanup();
 
-    const setupPresenceTracking = () => {
-      presenceChannel = supabase
-        .channel(`presence-${gameId}`)
-        .on('presence', { event: 'sync' }, () => {
-          setConnectionStatus('connected');
-          setShowDisconnectionWarning(false);
-          
-          if (disconnectionTimer) {
-            clearTimeout(disconnectionTimer);
-            disconnectionTimer = null;
+    const channel = supabase
+      .channel(`presence-${gameId}`, {
+        config: {
+          presence: {
+            key: currentUser
           }
-        })
-        .on('presence', { event: 'join' }, ({ newPresences }) => {
-          console.log('Player joined:', newPresences);
-          setConnectionStatus('connected');
-        })
-        .on('presence', { event: 'leave' }, ({ leftPresences }) => {
+        }
+      })
+      .on('presence', { event: 'sync' }, () => {
+        setConnectionStatus('connected');
+        setShowDisconnectionWarning(false);
+        
+        if (disconnectionTimerRef.current) {
+          clearTimeout(disconnectionTimerRef.current);
+          disconnectionTimerRef.current = null;
+        }
+        if (countdownIntervalRef.current) {
+          clearInterval(countdownIntervalRef.current);
+          countdownIntervalRef.current = null;
+        }
+      })
+      .on('presence', { event: 'join' }, ({ newPresences }) => {
+        console.log('Player joined:', newPresences);
+        setConnectionStatus('connected');
+      })
+      .on('presence', { event: 'leave' }, ({ leftPresences }) => {
+        try {
           const leftUser = leftPresences[0];
-          if (leftUser && (leftUser.user_id === whitePlayerId || leftUser.user_id === blackPlayerId)) {
-            if (leftUser.user_id !== currentUser) {
-              startDisconnectionTimer(leftUser.user_id);
+          if (leftUser && 
+              (leftUser.user_id === whitePlayerId || leftUser.user_id === blackPlayerId) &&
+              leftUser.user_id !== currentUser) {
+            startDisconnectionTimer(leftUser.user_id);
+          }
+        } catch (error) {
+          console.error('Error handling presence leave:', error);
+        }
+      })
+      .subscribe(async (status) => {
+        console.log('Presence channel status:', status);
+        
+        if (status === 'SUBSCRIBED') {
+          await channel.track({
+            user_id: currentUser,
+            online_at: new Date().toISOString(),
+            game_id: gameId
+          });
+          setConnectionStatus('connected');
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          setConnectionStatus('reconnecting');
+          // Retry after delay
+          setTimeout(() => {
+            if (presenceChannelRef.current === channel) {
+              setupPresenceTracking();
             }
-          }
-        })
-        .subscribe(async (status) => {
-          if (status === 'SUBSCRIBED') {
-            await presenceChannel.track({
-              user_id: currentUser,
-              online_at: new Date().toISOString(),
-              game_id: gameId
-            });
-          }
-        });
+          }, 3000);
+        }
+      });
 
-      // Heartbeat to maintain connection
-      heartbeatInterval = setInterval(async () => {
-        if (presenceChannel) {
-          await presenceChannel.track({
+    presenceChannelRef.current = channel;
+
+    // Optimized heartbeat for mobile - less frequent
+    heartbeatIntervalRef.current = setInterval(async () => {
+      if (channel && navigator.onLine) {
+        try {
+          await channel.track({
             user_id: currentUser,
             online_at: new Date().toISOString(),
             game_id: gameId,
             heartbeat: Date.now()
           });
+        } catch (error) {
+          console.error('Heartbeat error:', error);
+          setConnectionStatus('reconnecting');
         }
-      }, 10000); // Every 10 seconds
-    };
+      }
+    }, 15000); // Every 15 seconds for mobile optimization
+  }, [gameId, currentUser, gameStatus, whitePlayerId, blackPlayerId, startDisconnectionTimer, cleanup]);
 
-    const startDisconnectionTimer = (playerId: string) => {
-      setShowDisconnectionWarning(true);
-      setDisconnectedPlayer(playerId);
-      setCountdown(30);
-
-      const countdownInterval = setInterval(() => {
-        setCountdown(prev => {
-          if (prev <= 1) {
-            clearInterval(countdownInterval);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      disconnectionTimer = setTimeout(() => {
-        clearInterval(countdownInterval);
-        setShowDisconnectionWarning(false);
-        onPlayerDisconnected(playerId);
-      }, 30000); // 30 seconds
-    };
-
-    // Check online status
+  useEffect(() => {
     const handleOnline = () => {
       setConnectionStatus('connected');
       setupPresenceTracking();
@@ -110,6 +169,7 @@ export const DisconnectionTracker: React.FC<DisconnectionTrackerProps> = ({
 
     const handleOffline = () => {
       setConnectionStatus('disconnected');
+      cleanup();
     };
 
     // Network status listeners
@@ -117,65 +177,65 @@ export const DisconnectionTracker: React.FC<DisconnectionTrackerProps> = ({
     window.addEventListener('offline', handleOffline);
 
     // Initial setup
-    if (navigator.onLine) {
+    if (navigator.onLine && currentUser && gameStatus === 'active') {
       setupPresenceTracking();
-    } else {
+    } else if (!navigator.onLine) {
       setConnectionStatus('disconnected');
     }
 
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      
-      if (presenceChannel) {
-        supabase.removeChannel(presenceChannel);
-      }
-      if (heartbeatInterval) {
-        clearInterval(heartbeatInterval);
-      }
-      if (disconnectionTimer) {
-        clearTimeout(disconnectionTimer);
-      }
+      cleanup();
     };
-  }, [gameId, currentUser, gameStatus, whitePlayerId, blackPlayerId]);
+  }, [setupPresenceTracking, cleanup, currentUser, gameStatus]);
 
   return (
     <>
-      {/* Connection Status Indicator */}
+      {/* Connection Status Indicator - Optimized for mobile */}
       <div className="flex items-center gap-1 text-xs">
         {connectionStatus === 'connected' ? (
-          <><Wifi className="h-3 w-3 text-green-400" /><span className="text-green-400">Connected</span></>
+          <>
+            <Wifi className="h-3 w-3 text-green-400" />
+            <span className="text-green-400 hidden sm:inline">Connected</span>
+          </>
         ) : connectionStatus === 'disconnected' ? (
-          <><WifiOff className="h-3 w-3 text-red-400" /><span className="text-red-400">Disconnected</span></>
+          <>
+            <WifiOff className="h-3 w-3 text-red-400" />
+            <span className="text-red-400 hidden sm:inline">Offline</span>
+          </>
         ) : (
-          <><Wifi className="h-3 w-3 text-yellow-400 animate-pulse" /><span className="text-yellow-400">Reconnecting...</span></>
+          <>
+            <Wifi className="h-3 w-3 text-yellow-400 animate-pulse" />
+            <span className="text-yellow-400 hidden sm:inline">Connecting...</span>
+          </>
         )}
       </div>
 
-      {/* Disconnection Warning Dialog */}
+      {/* Mobile-optimized Disconnection Warning Dialog */}
       <Dialog open={showDisconnectionWarning} onOpenChange={() => {}}>
-        <DialogContent className="text-center w-[95vw] max-w-sm mx-auto bg-gradient-to-br from-orange-900 to-red-900 border-2 border-orange-400">
+        <DialogContent className="text-center w-[90vw] max-w-xs mx-auto bg-gradient-to-br from-orange-900 to-red-900 border-2 border-orange-400 rounded-xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-center gap-2 text-xl text-white font-bold">
-              <AlertTriangle className="h-6 w-6 text-orange-400" />
-              Player Disconnected!
+            <DialogTitle className="flex items-center justify-center gap-2 text-lg sm:text-xl text-white font-bold">
+              <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-orange-400" />
+              Player Left!
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <div className="text-orange-200 font-medium">
-              Opponent has disconnected.
+            <div className="text-orange-200 font-medium text-sm">
+              Opponent disconnected.
               <br />
-              <span className="text-2xl font-bold text-orange-400">
+              <span className="text-xl sm:text-2xl font-bold text-orange-400">
                 {countdown}
               </span>
               <br />
-              seconds until forfeit...
+              seconds until you win...
             </div>
             <div className="w-full bg-orange-800 rounded-full h-2">
               <div
                 className="bg-gradient-to-r from-orange-400 to-red-500 h-2 rounded-full transition-all duration-1000"
                 style={{ width: `${(countdown / 30) * 100}%` }}
-              ></div>
+              />
             </div>
           </div>
         </DialogContent>

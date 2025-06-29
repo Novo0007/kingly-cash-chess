@@ -58,8 +58,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     getCurrentUser();
     fetchGame();
 
-    // Optimized refresh for mobile - less frequent
-    const refreshInterval = isMobile ? 8000 : 5000;
+    // Optimized refresh intervals for mobile
+    const refreshInterval = isMobile ? 10000 : 6000; // Less frequent on mobile
     const autoRefreshInterval = setInterval(() => {
       if (!loading) {
         fetchGame();
@@ -79,7 +79,12 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         (payload) => {
           console.log("Real-time game update received:", payload);
           if (payload.new) {
-            fetchGame();
+            // Debounce rapid updates on mobile
+            if (isMobile) {
+              setTimeout(() => fetchGame(), 500);
+            } else {
+              fetchGame();
+            }
           }
         },
       )
@@ -502,8 +507,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       const nextTurn = game.current_turn === "white" ? "black" : "white";
       const newBoardState = chess.fen();
 
-      // Update time remaining for current player
-      const timeUsed = 5; // Assume 5 seconds per move for demo
+      // Update time remaining for current player - mobile optimized
+      const timeUsed = isMobile ? 3 : 5; // Less time penalty on mobile
       const newWhiteTime = game.current_turn === "white" 
         ? Math.max(0, (game.white_time_remaining || 600) - timeUsed)
         : game.white_time_remaining || 600;
@@ -596,20 +601,20 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const playerCount = (game.white_player_id ? 1 : 0) + (game.black_player_id ? 1 : 0);
 
   return (
-    <div className="space-y-4 pb-20 px-1 sm:px-2">
+    <div className="space-y-2 sm:space-y-4 pb-16 sm:pb-20 px-1 sm:px-2">
       {/* Game End Dialog */}
       <Dialog open={showGameEndDialog} onOpenChange={setShowGameEndDialog}>
-        <DialogContent className="text-center w-[95vw] max-w-sm mx-auto bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl rounded-xl">
+        <DialogContent className="text-center w-[90vw] sm:w-[95vw] max-w-sm mx-auto bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl rounded-xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-center gap-2 text-xl text-white font-bold">
-              {gameEndType === "win" && <Trophy className="h-6 w-6 text-yellow-400" />}
-              {gameEndType === "draw" && <Handshake className="h-6 w-6 text-purple-400" />}
-              {gameEndType === "disconnect" && <Crown className="h-6 w-6 text-yellow-400" />}
+            <DialogTitle className="flex items-center justify-center gap-2 text-lg sm:text-xl text-white font-bold">
+              {gameEndType === "win" && <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />}
+              {gameEndType === "draw" && <Handshake className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />}
+              {gameEndType === "disconnect" && <Crown className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />}
               Game Over!
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <div className={`text-lg font-bold p-3 rounded-lg border-2 ${
+            <div className={`text-sm sm:text-lg font-bold p-3 rounded-lg border-2 ${
               gameEndType === "win" ? "text-yellow-300 bg-yellow-900/30 border-yellow-400" :
               gameEndType === "draw" ? "text-purple-300 bg-purple-900/30 border-purple-400" :
               "text-yellow-300 bg-yellow-900/30 border-yellow-400"
@@ -621,7 +626,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
                 setShowGameEndDialog(false);
                 onBackToLobby();
               }}
-              className="w-full bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 font-bold text-base py-2 rounded-lg border-2 border-yellow-400 text-white shadow-lg"
+              className="w-full bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 font-bold text-sm sm:text-base py-2 rounded-lg border-2 border-yellow-400 text-white shadow-lg"
             >
               Return to Lobby
             </Button>
@@ -629,17 +634,17 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </DialogContent>
       </Dialog>
 
-      {/* Header with Connection Status */}
+      {/* Header with Connection Status - Mobile Optimized */}
       <div className="flex items-center justify-between bg-gradient-to-r from-black to-purple-900 p-2 sm:p-3 rounded-lg shadow-lg border-2 border-yellow-400">
         <Button
           onClick={onBackToLobby}
           variant="ghost"
-          className="text-white hover:bg-purple-800/50 font-bold text-sm sm:text-base px-2 sm:px-3 py-1 sm:py-2 rounded-lg border-2 border-yellow-400 hover:border-purple-400"
+          className="text-white hover:bg-purple-800/50 font-bold text-xs sm:text-sm md:text-base px-2 sm:px-3 py-1 sm:py-2 rounded-lg border-2 border-yellow-400 hover:border-purple-400"
         >
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          Back
+          <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+          <span className="hidden sm:inline">Back</span>
         </Button>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <DisconnectionTracker
             gameId={gameId}
             currentUser={currentUser}
@@ -648,12 +653,12 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             gameStatus={game.game_status}
             onPlayerDisconnected={handlePlayerDisconnected}
           />
-          <Badge className="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold px-2 py-1 text-xs sm:text-sm border-2 border-yellow-400 shadow-lg">
-            <Zap className="h-3 w-3 mr-1" />
+          <Badge className="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold px-1 sm:px-2 py-1 text-xs border-2 border-yellow-400 shadow-lg">
+            <Zap className="h-2 w-2 sm:h-3 sm:w-3 mr-1" />
             {game.game_status}
           </Badge>
-          <Badge className="bg-gradient-to-r from-yellow-600 to-yellow-800 text-black font-bold px-2 py-1 text-xs sm:text-sm border-2 border-white shadow-lg">
-            <Users className="h-3 w-3 mr-1" />
+          <Badge className="bg-gradient-to-r from-yellow-600 to-yellow-800 text-black font-bold px-1 sm:px-2 py-1 text-xs border-2 border-white shadow-lg">
+            <Users className="h-2 w-2 sm:h-3 sm:w-3 mr-1" />
             {playerCount}/2
           </Badge>
           {isMobile && (
@@ -663,7 +668,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
               size="sm"
               className="p-1 text-white border-2 border-yellow-400 hover:border-purple-400 hover:bg-purple-800/50"
             >
-              <MessageSquare className="h-4 w-4" />
+              <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
           )}
         </div>
@@ -673,7 +678,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       {isMobile && showMobileChat && (
         <div className="bg-gradient-to-br from-black to-purple-900 rounded-lg shadow-lg border-2 border-yellow-400 p-2">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="font-bold text-sm text-white">Game Chat</h3>
+            <h3 className="font-bold text-xs sm:text-sm text-white">Game Chat</h3>
             <Button
               onClick={() => setShowMobileChat(false)}
               variant="ghost"
@@ -683,7 +688,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
               Close
             </Button>
           </div>
-          <div className="h-40">
+          <div className="h-32 sm:h-40">
             <ChatSystem gameId={gameId} />
           </div>
         </div>
@@ -701,43 +706,43 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         />
       )}
 
-      {/* Game Info */}
+      {/* Game Info - Mobile Optimized */}
       <Card className="bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl rounded-lg">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-white flex items-center gap-2 text-base sm:text-lg font-bold">
-            <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" />
-            <span className="truncate text-sm sm:text-base bg-gradient-to-r from-yellow-400 to-white bg-clip-text text-transparent">
+        <CardHeader className="pb-1 sm:pb-2">
+          <CardTitle className="text-white flex items-center gap-2 text-sm sm:text-base md:text-lg font-bold">
+            <Crown className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-yellow-400" />
+            <span className="truncate text-xs sm:text-sm md:text-base bg-gradient-to-r from-yellow-400 to-white bg-clip-text text-transparent">
               {game.game_name || "Chess Game"}
             </span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <div className="grid grid-cols-2 gap-2 text-white font-medium text-xs sm:text-sm">
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-2 rounded border-2 border-white shadow-lg">
+          <div className="grid grid-cols-2 gap-1 sm:gap-2 text-white font-medium text-xs sm:text-sm">
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 sm:p-2 rounded border-2 border-white shadow-lg">
               <p className="text-xs text-gray-400 font-medium">⚪ White</p>
-              <p className="font-bold truncate text-white">
+              <p className="font-bold truncate text-white text-xs sm:text-sm">
                 {game.white_player?.username || "Waiting..."}
               </p>
             </div>
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-2 rounded border-2 border-white shadow-lg">
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 sm:p-2 rounded border-2 border-white shadow-lg">
               <p className="text-xs text-gray-400 font-medium">⚫ Black</p>
-              <p className="font-bold truncate text-white">
+              <p className="font-bold truncate text-white text-xs sm:text-sm">
                 {game.black_player?.username || "Waiting..."}
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-2 text-xs">
-            <div className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/30 p-2 rounded border-2 border-yellow-400 text-center shadow-lg">
-              <p className="text-yellow-300 font-medium">Entry</p>
-              <p className="font-bold text-yellow-200">₹{game.entry_fee}</p>
+          <div className="grid grid-cols-3 gap-1 sm:gap-2 text-xs">
+            <div className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/30 p-1 sm:p-2 rounded border-2 border-yellow-400 text-center shadow-lg">
+              <p className="text-yellow-300 font-medium text-xs">Entry</p>
+              <p className="font-bold text-yellow-200 text-xs">₹{game.entry_fee}</p>
             </div>
-            <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/30 p-2 rounded border-2 border-purple-400 text-center shadow-lg">
-              <p className="text-purple-300 font-medium">Prize</p>
-              <p className="font-bold text-purple-200">₹{game.prize_amount}</p>
+            <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/30 p-1 sm:p-2 rounded border-2 border-purple-400 text-center shadow-lg">
+              <p className="text-purple-300 font-medium text-xs">Prize</p>
+              <p className="font-bold text-purple-200 text-xs">₹{game.prize_amount}</p>
             </div>
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-2 rounded border-2 border-white text-center shadow-lg">
-              <p className="text-gray-300 font-medium">Turn</p>
-              <p className="font-bold text-xs text-white">
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 sm:p-2 rounded border-2 border-white text-center shadow-lg">
+              <p className="text-gray-300 font-medium text-xs">Turn</p>
+              <p className="font-bold text-white text-xs">
                 {game.current_turn === "white" ? "⚪" : "⚫"}
               </p>
             </div>
@@ -763,7 +768,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         
         {/* Mobile-optimized Reactions */}
         {game.game_status === "active" && !isSpectator() && (
-          <div className="absolute bottom-4 right-4 z-30">
+          <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 z-30">
             <MobileGameReactions gameId={gameId} />
           </div>
         )}
@@ -776,11 +781,11 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </div>
       )}
 
-      {/* Game Status Messages */}
+      {/* Game Status Messages - Mobile Optimized */}
       {game.game_status === "waiting" && playerCount < 2 && (
         <Card className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/30 border-2 border-yellow-400 shadow-lg rounded-lg">
-          <CardContent className="p-3 text-center">
-            <p className="text-yellow-200 font-bold text-sm">
+          <CardContent className="p-2 sm:p-3 text-center">
+            <p className="text-yellow-200 font-bold text-xs sm:text-sm">
               Waiting for player... ({playerCount}/2)
             </p>
           </CardContent>
@@ -789,8 +794,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
       {game.game_status === "active" && (
         <Card className="bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-white shadow-lg rounded-lg">
-          <CardContent className="p-3 text-center">
-            <p className="text-white font-bold text-sm">
+          <CardContent className="p-2 sm:p-3 text-center">
+            <p className="text-white font-bold text-xs sm:text-sm">
               {isSpectator() ? "Spectating" : `${game.current_turn} to move`}
             </p>
           </CardContent>
