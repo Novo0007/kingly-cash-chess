@@ -1,7 +1,9 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ChessBoard } from "./ChessBoard";
 import { ChatSystem } from "../chat/ChatSystem";
+import { GameReactions } from "./GameReactions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -977,6 +979,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             <Users className="h-3 w-3 mr-1" />
             {playerCount}/2
           </Badge>
+          {/* Add Reactions Button */}
+          <GameReactions gameId={gameId} />
           {isMobile && (
             <Button
               onClick={() => setShowMobileChat(!showMobileChat)}

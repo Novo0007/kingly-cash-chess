@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -32,8 +33,10 @@ export const ChatSystem = ({
   const [newMessage, setNewMessage] = useState("");
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [currentUsername, setCurrentUsername] = useState<string>("");
+  const [isTyping, setIsTyping] = useState<string | null>(null);
   const { isMobile, isTablet } = useDeviceType();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     getCurrentUser();
@@ -45,6 +48,16 @@ export const ChatSystem = ({
       .on("broadcast", { event: "new_message" }, (payload) => {
         setMessages((prev) => [...prev, payload.payload as Message]);
         scrollToBottom();
+      })
+      .on("broadcast", { event: "typing" }, (payload) => {
+        const { user_id, username, isTyping: typing } = payload.payload;
+        if (user_id !== currentUser) {
+          setIsTyping(typing ? username : null);
+          if (typing) {
+            // Clear typing indicator after 3 seconds
+            setTimeout(() => setIsTyping(null), 3000);
+          }
+        }
       })
       .subscribe();
 
@@ -80,7 +93,7 @@ export const ChatSystem = ({
     const simulatedMessages: Message[] = [
       {
         id: "1",
-        content: "Welcome to ChessCash! Good luck in your games!",
+        content: isGlobalChat ? "Welcome to ChessCash! Good luck in your games!" : "Game started! Good luck!",
         sender_id: "system",
         sender_username: "System",
         created_at: new Date().toISOString(),
@@ -91,7 +104,7 @@ export const ChatSystem = ({
     if (!isGlobalChat && gameId) {
       simulatedMessages.push({
         id: "2",
-        content: "Game started! May the best player win!",
+        content: "May the best player win! 🏆",
         sender_id: "system",
         sender_username: "Game System",
         created_at: new Date().toISOString(),
@@ -114,6 +127,9 @@ export const ChatSystem = ({
       game_id: gameId,
     };
 
+    // Stop typing indicator
+    await sendTypingIndicator(false);
+
     // Broadcast message to other users
     const channel = supabase.channel(`chat_${gameId || "global"}`);
     await channel.send({
@@ -126,6 +142,38 @@ export const ChatSystem = ({
     setMessages((prev) => [...prev, message]);
     setNewMessage("");
     scrollToBottom();
+  };
+
+  const sendTypingIndicator = async (typing: boolean) => {
+    if (!currentUser) return;
+
+    const channel = supabase.channel(`chat_${gameId || "global"}`);
+    await channel.send({
+      type: "broadcast",
+      event: "typing",
+      payload: {
+        user_id: currentUser,
+        username: currentUsername,
+        isTyping: typing,
+      },
+    });
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(e.target.value);
+    
+    // Send typing indicator
+    sendTypingIndicator(true);
+    
+    // Clear previous timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    
+    // Set new timeout to stop typing indicator
+    typingTimeoutRef.current = setTimeout(() => {
+      sendTypingIndicator(false);
+    }, 1000);
   };
 
   const scrollToBottom = () => {
@@ -194,6 +242,14 @@ export const ChatSystem = ({
                 </div>
               </div>
             ))}
+            
+            {/* Typing Indicator */}
+            {isTyping && (
+              <div className="text-xs text-gray-400 italic">
+                {isTyping} is typing...
+              </div>
+            )}
+            
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
@@ -204,7 +260,7 @@ export const ChatSystem = ({
             <Input
               placeholder="Type your message..."
               value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
+              onChange={handleInputChange}
               onKeyPress={handleKeyPress}
               className="bg-gray-800/50 border-gray-600 text-white flex-1"
             />
