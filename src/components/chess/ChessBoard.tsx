@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Chess, Square } from "chess.js";
 import { toast } from "sonner";
@@ -136,7 +137,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   };
 
   const isPawnPromotion = (from: string, to: string): boolean => {
-    const piece = chess.get(from);
+    const piece = chess.get(from as Square);
     if (!piece || piece.type !== "p") return false;
 
     const toRank = parseInt(to[1]);

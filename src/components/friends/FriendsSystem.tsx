@@ -42,7 +42,7 @@ export const FriendsSystem = () => {
     open: boolean;
     friendId: string;
     friendName: string;
-    gameType: "chess";
+    gameType: "chess" | "ludo";
   }>({
     open: false,
     friendId: "",
@@ -169,7 +169,7 @@ export const FriendsSystem = () => {
         *,
         to_user:profiles!game_invitations_to_user_id_fkey(*),
         chess_game:chess_games(*),
-        dots_game:dots_and_boxes_games(*)
+        ludo_game:ludo_games(*)
       `,
       )
       .eq("from_user_id", user.id)
@@ -191,7 +191,7 @@ export const FriendsSystem = () => {
         *,
         from_user:profiles!game_invitations_from_user_id_fkey(*),
         chess_game:chess_games(*),
-        dots_game:dots_and_boxes_games(*)
+        ludo_game:ludo_games(*)
       `,
       )
       .eq("to_user_id", user.id)
@@ -252,7 +252,7 @@ export const FriendsSystem = () => {
   const createGameInvitation = async (
     friendId: string,
     amount: number,
-    gameType: "chess" = "chess",
+    gameType: "chess" | "ludo" = "chess",
   ) => {
     const {
       data: { user },
@@ -334,36 +334,28 @@ export const FriendsSystem = () => {
         }
         gameData = chessGameData;
       } else {
-        // Create a new dots and boxes game with is_friend_challenge flag
-        const { data: dotsGameData, error: gameError } = await supabase
-          .from("dots_and_boxes_games")
+        // Create a new ludo game with is_friend_challenge flag
+        const { data: ludoGameData, error: gameError } = await supabase
+          .from("ludo_games")
           .insert({
+            creator_id: user.id,
             player1_id: user.id,
             entry_fee: amount,
             prize_amount: amount * 2,
             game_status: "waiting",
             game_name: `Challenge - ₹${amount}`,
             is_friend_challenge: true,
-            horizontal_lines: Array(4)
-              .fill(null)
-              .map(() => Array(5).fill(false)),
-            vertical_lines: Array(5)
-              .fill(null)
-              .map(() => Array(4).fill(false)),
-            boxes: Array(4)
-              .fill(null)
-              .map(() => Array(4).fill(null)),
-            scores: { player1: 0, player2: 0 },
+            game_state: {},
           })
           .select()
           .single();
 
         if (gameError) {
-          console.error("Dots game creation error:", gameError);
+          console.error("Ludo game creation error:", gameError);
           toast.error("Failed to create challenge");
           return;
         }
-        gameData = dotsGameData;
+        gameData = ludoGameData;
       }
 
       console.log("Game created successfully:", gameData);
@@ -430,8 +422,7 @@ export const FriendsSystem = () => {
       .eq("id", invitationId);
 
     // Cancel the game in the appropriate table
-    const gameTable =
-      gameType === "chess" ? "chess_games" : "dots_and_boxes_games";
+    const gameTable = gameType === "chess" ? "chess_games" : "ludo_games";
     const { error: gameError } = await supabase
       .from(gameTable)
       .update({ game_status: "cancelled" })
@@ -515,9 +506,10 @@ export const FriendsSystem = () => {
       gameError = error;
     } else {
       const { error } = await supabase
-        .from("dots_and_boxes_games")
+        .from("ludo_games")
         .update({
           player2_id: user.id,
+          current_players: 2,
           game_status: "active",
         })
         .eq("id", gameId);
@@ -565,8 +557,7 @@ export const FriendsSystem = () => {
       .eq("id", invitationId);
 
     // Cancel the game in the appropriate table
-    const gameTable =
-      gameType === "chess" ? "chess_games" : "dots_and_boxes_games";
+    const gameTable = gameType === "chess" ? "chess_games" : "ludo_games";
     const { error: gameError } = await supabase
       .from(gameTable)
       .update({ game_status: "cancelled" })
@@ -583,7 +574,7 @@ export const FriendsSystem = () => {
   const openChallengePopup = (
     friendId: string,
     friendName: string,
-    gameType: "chess" = "chess",
+    gameType: "chess" | "ludo" = "chess",
   ) => {
     setChallengePopup({
       open: true,
@@ -735,7 +726,7 @@ export const FriendsSystem = () => {
           <CardHeader>
             <CardTitle className="text-indigo-200 flex items-center gap-3 text-xl font-bold">
               <UserPlus className="h-6 w-6 text-purple-400" />
-              ���� Find Players
+              🔍 Find Players
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -870,6 +861,20 @@ export const FriendsSystem = () => {
                       >
                         <Gamepad2 className="h-3 w-3" />
                         Chess
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          openChallengePopup(
+                            friendship.friend?.id || "",
+                            friendship.friend?.username || "",
+                            "ludo",
+                          )
+                        }
+                        size="sm"
+                        className="bg-orange-600 hover:bg-orange-700 font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-1 flex-1 sm:flex-none"
+                      >
+                        <Gamepad2 className="h-3 w-3" />
+                        Ludo
                       </Button>
                     </div>
                   </div>
