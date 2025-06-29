@@ -40,6 +40,7 @@ import { PrivacyPolicy } from "./PrivacyPolicy";
 import { Contact } from "./Contact";
 import { UserGuide } from "./UserGuide";
 import { MoreAppsGames } from "./MoreAppsGames";
+import { AdminPanel } from "@/components/admin/AdminPanel";
 import type { Tables } from "@/integrations/supabase/types";
 
 export const ProfileSystem = () => {
@@ -49,6 +50,9 @@ export const ProfileSystem = () => {
   const [editing, setEditing] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [currentView, setCurrentView] = useState<"profile" | "admin">("profile");
   const [formData, setFormData] = useState({
     username: "",
     full_name: "",
@@ -76,6 +80,7 @@ export const ProfileSystem = () => {
   useEffect(() => {
     fetchProfile();
     fetchWallet();
+    checkAdminStatus();
 
     // Auto-refresh every 15 seconds to catch updates
     const autoRefreshInterval = setInterval(() => {
@@ -105,6 +110,29 @@ export const ProfileSystem = () => {
       supabase.removeChannel(profileSubscription);
     };
   }, []);
+
+  const checkAdminStatus = async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      
+      if (!user?.email) return;
+      
+      setUserEmail(user.email);
+      
+      const { data: adminCheck } = await supabase
+        .from("admin_users")
+        .select("*")
+        .eq("email", user.email)
+        .eq("is_active", true)
+        .single();
+      
+      setIsAdmin(!!adminCheck);
+    } catch (error) {
+      console.error("Error checking admin status:", error);
+    }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -282,7 +310,7 @@ export const ProfileSystem = () => {
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
-        {/* Profile Header */}
+        {/* Profile Header with Admin Toggle */}
         <Card className={`${headerGradient} ${animationClass}`}>
           <CardHeader className="pb-3">
             <CardTitle className="text-white flex items-center justify-between text-sm md:text-base">
@@ -294,10 +322,27 @@ export const ProfileSystem = () => {
                   )}
                 </div>
                 <span className="font-bold text-lg md:text-xl">
-                  Player Profile
+                  {currentView === "admin" ? "Admin Panel" : "Player Profile"}
                 </span>
+                {isAdmin && (
+                  <Badge className="bg-purple-600 text-white text-xs">
+                    <Shield className="h-3 w-3 mr-1" />
+                    ADMIN
+                  </Badge>
+                )}
               </div>
               <div className="flex items-center gap-1 md:gap-2">
+                {isAdmin && (
+                  <Button
+                    onClick={() => setCurrentView(currentView === "profile" ? "admin" : "profile")}
+                    variant="ghost"
+                    size="sm"
+                    className="text-purple-400 hover:bg-slate-700/50 h-8 px-2 md:px-3"
+                  >
+                    <Shield className="h-3 w-3 md:h-4 md:w-4" />
+                    {!isMobile && <span className="ml-1">{currentView === "profile" ? "Admin" : "Profile"}</span>}
+                  </Button>
+                )}
                 <Button
                   onClick={handleRefresh}
                   variant="ghost"
@@ -309,7 +354,7 @@ export const ProfileSystem = () => {
                     className={`h-3 w-3 md:h-4 md:w-4 ${refreshing && !isMobile ? "animate-spin" : ""}`}
                   />
                 </Button>
-                {!editing ? (
+                {currentView === "profile" && !editing ? (
                   <Button
                     onClick={() => setEditing(true)}
                     variant="ghost"
@@ -318,7 +363,7 @@ export const ProfileSystem = () => {
                   >
                     <Edit2 className="h-3 w-3 md:h-4 md:w-4" />
                   </Button>
-                ) : (
+                ) : currentView === "profile" && editing ? (
                   <div className="flex gap-1">
                     <Button
                       onClick={handleSave}
@@ -337,7 +382,7 @@ export const ProfileSystem = () => {
                       <X className="h-3 w-3 md:h-4 md:w-4" />
                     </Button>
                   </div>
-                )}
+                ) : null}
                 <Button
                   onClick={handleSignOut}
                   variant="ghost"
@@ -350,429 +395,440 @@ export const ProfileSystem = () => {
               </div>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 md:space-y-4">
-            {editing ? (
-              <div className="space-y-3 md:space-y-4">
-                <div>
-                  <Label
-                    htmlFor="username"
-                    className="text-white font-semibold text-sm"
-                  >
-                    Username
-                  </Label>
-                  <Input
-                    id="username"
-                    value={formData.username}
-                    onChange={(e) =>
-                      setFormData({ ...formData, username: e.target.value })
-                    }
-                    className="bg-slate-700/50 border-slate-600 text-white mt-1"
-                  />
+          
+          {/* Show profile info only in profile view */}
+          {currentView === "profile" && (
+            <CardContent className="space-y-3 md:space-y-4">
+              {editing ? (
+                <div className="space-y-3 md:space-y-4">
+                  <div>
+                    <Label
+                      htmlFor="username"
+                      className="text-white font-semibold text-sm"
+                    >
+                      Username
+                    </Label>
+                    <Input
+                      id="username"
+                      value={formData.username}
+                      onChange={(e) =>
+                        setFormData({ ...formData, username: e.target.value })
+                      }
+                      className="bg-slate-700/50 border-slate-600 text-white mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label
+                      htmlFor="full_name"
+                      className="text-white font-semibold text-sm"
+                    >
+                      Full Name
+                    </Label>
+                    <Input
+                      id="full_name"
+                      value={formData.full_name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, full_name: e.target.value })
+                      }
+                      className="bg-slate-700/50 border-slate-600 text-white mt-1"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Label
-                    htmlFor="full_name"
-                    className="text-white font-semibold text-sm"
-                  >
-                    Full Name
-                  </Label>
-                  <Input
-                    id="full_name"
-                    value={formData.full_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, full_name: e.target.value })
-                    }
-                    className="bg-slate-700/50 border-slate-600 text-white mt-1"
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div>
-                  <h3 className="text-xl md:text-2xl font-bold text-white">
-                    {profile.username}
-                  </h3>
-                  {profile.full_name && (
-                    <p className="text-slate-300 font-medium text-sm md:text-base">
-                      {profile.full_name}
-                    </p>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge
-                    className={`${getRatingBadgeColor(profile.chess_rating || 1200)} font-semibold text-xs md:text-sm px-2 py-1`}
-                  >
-                    <Crown className="h-3 w-3 mr-1 text-yellow-400" />
-                    {profile.chess_rating || 1200} -{" "}
-                    {getRatingTitle(profile.chess_rating || 1200)}
-                  </Badge>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-          <Card
-            className={`${cardGradient} ${animationClass} border-green-600/30`}
-          >
-            <CardHeader className="pb-2">
-              <CardTitle className="text-green-400 flex items-center gap-2 font-semibold text-sm md:text-base">
-                <Trophy className="h-4 w-4 md:h-5 md:w-5" />
-                Games Won
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl md:text-3xl font-bold text-white">
-                {profile.games_won || 0}
-              </div>
-              <p className="text-xs md:text-sm text-green-300">
-                Win Rate: {getWinRate()}%
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card
-            className={`${cardGradient} ${animationClass} border-blue-600/30`}
-          >
-            <CardHeader className="pb-2">
-              <CardTitle className="text-blue-400 flex items-center gap-2 font-semibold text-sm md:text-base">
-                <Target className="h-4 w-4 md:h-5 md:w-5" />
-                Games Played
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl md:text-3xl font-bold text-white">
-                {profile.games_played || 0}
-              </div>
-              <p className="text-xs md:text-sm text-blue-300">Total matches</p>
-            </CardContent>
-          </Card>
-
-          <Card
-            className={`${cardGradient} ${animationClass} border-yellow-600/30 md:col-span-1 col-span-1`}
-          >
-            <CardHeader className="pb-2">
-              <CardTitle className="text-yellow-400 flex items-center gap-2 font-semibold text-sm md:text-base">
-                <Star className="h-4 w-4 md:h-5 md:w-5" />
-                Total Earnings
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl md:text-3xl font-bold text-white">
-                ₹{(profile.total_earnings || 0).toFixed(2)}
-              </div>
-              <p className="text-xs md:text-sm text-yellow-300">
-                All-time winnings
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Wallet Summary */}
-        {wallet && (
-          <>
-            <Separator className="bg-slate-600/50" />
-            <Card
-              className={`${cardGradient} ${animationClass} border-purple-600/30`}
-            >
-              <CardHeader className="pb-3">
-                <CardTitle className="text-purple-400 flex items-center gap-2 font-semibold text-base md:text-lg">
-                  <div className="relative">
-                    <Trophy className="h-5 w-5 md:h-6 md:w-6" />
-                    {!isMobile && (
-                      <Star className="h-2 w-2 text-yellow-400 absolute -top-1 -right-1" />
+              ) : (
+                <div className="space-y-3">
+                  <div>
+                    <h3 className="text-xl md:text-2xl font-bold text-white">
+                      {profile.username}
+                    </h3>
+                    {profile.full_name && (
+                      <p className="text-slate-300 font-medium text-sm md:text-base">
+                        {profile.full_name}
+                      </p>
                     )}
                   </div>
-                  Current Wallet Balance
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl md:text-4xl font-bold text-white mb-2">
-                  ₹{wallet.balance.toFixed(2)}
-                </div>
-                {wallet.locked_balance > 0 && (
-                  <p className="text-sm md:text-base text-purple-300 font-medium">
-                    Locked Balance: ₹{wallet.locked_balance.toFixed(2)}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          </>
-        )}
-
-        {/* Settings Section */}
-        <Separator className="bg-slate-600/50" />
-        <Card
-          className={`${cardGradient} ${animationClass} border-cyan-600/30`}
-        >
-          <CardHeader className="pb-3">
-            <CardTitle className="text-cyan-400 flex items-center justify-between font-semibold text-base md:text-lg">
-              <div className="flex items-center gap-2">
-                <Settings className="h-5 w-5 md:h-6 md:w-6" />
-                Settings & Preferences
-              </div>
-              <Button
-                onClick={() => setShowSettings(!showSettings)}
-                variant="ghost"
-                size="sm"
-                className="text-cyan-400 hover:bg-slate-700/50 h-8 w-8 p-0"
-              >
-                <Settings
-                  className={`h-4 w-4 transition-transform duration-300 ${showSettings ? "rotate-90" : ""}`}
-                />
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          {showSettings && (
-            <CardContent className="space-y-4">
-              {/* Sound Settings */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Volume2 className="h-4 w-4 text-cyan-400" />
-                  <h4 className="text-white font-medium text-sm">
-                    Sound & Audio
-                  </h4>
-                </div>
-                <div className="space-y-3 pl-6">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="sound" className="text-slate-300 text-sm">
-                      Enable Sound Effects
-                    </Label>
-                    <Switch
-                      id="sound"
-                      checked={settings.soundEnabled}
-                      onCheckedChange={(checked) =>
-                        setSettings((prev) => ({
-                          ...prev,
-                          soundEnabled: checked,
-                        }))
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <Separator className="bg-slate-600/30" />
-
-              {/* Notification Settings */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Bell className="h-4 w-4 text-cyan-400" />
-                  <h4 className="text-white font-medium text-sm">
-                    Notifications
-                  </h4>
-                </div>
-                <div className="space-y-3 pl-6">
-                  <div className="flex items-center justify-between">
-                    <Label
-                      htmlFor="notifications"
-                      className="text-slate-300 text-sm"
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      className={`${getRatingBadgeColor(profile.chess_rating || 1200)} font-semibold text-xs md:text-sm px-2 py-1`}
                     >
-                      Push Notifications
-                    </Label>
-                    <Switch
-                      id="notifications"
-                      checked={settings.notificationsEnabled}
-                      onCheckedChange={(checked) =>
-                        setSettings((prev) => ({
-                          ...prev,
-                          notificationsEnabled: checked,
-                        }))
-                      }
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label
-                      htmlFor="gameNotifications"
-                      className="text-slate-300 text-sm"
-                    >
-                      Game Alerts
-                    </Label>
-                    <Switch
-                      id="gameNotifications"
-                      checked={settings.gameNotifications}
-                      onCheckedChange={(checked) =>
-                        setSettings((prev) => ({
-                          ...prev,
-                          gameNotifications: checked,
-                        }))
-                      }
-                    />
+                      <Crown className="h-3 w-3 mr-1 text-yellow-400" />
+                      {profile.chess_rating || 1200} -{" "}
+                      {getRatingTitle(profile.chess_rating || 1200)}
+                    </Badge>
                   </div>
                 </div>
-              </div>
-
-              <Separator className="bg-slate-600/30" />
-
-              {/* Display Settings */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Palette className="h-4 w-4 text-cyan-400" />
-                  <h4 className="text-white font-medium text-sm">
-                    Display & Performance
-                  </h4>
-                </div>
-                <div className="space-y-3 pl-6">
-                  <div className="flex items-center justify-between">
-                    <Label
-                      htmlFor="darkMode"
-                      className="text-slate-300 text-sm"
-                    >
-                      Dark Mode
-                    </Label>
-                    <Switch
-                      id="darkMode"
-                      checked={settings.darkMode}
-                      onCheckedChange={(checked) =>
-                        setSettings((prev) => ({ ...prev, darkMode: checked }))
-                      }
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label
-                      htmlFor="reducedAnimations"
-                      className="text-slate-300 text-sm"
-                    >
-                      Reduce Animations (Mobile)
-                    </Label>
-                    <Switch
-                      id="reducedAnimations"
-                      checked={settings.reducedAnimations}
-                      onCheckedChange={(checked) =>
-                        setSettings((prev) => ({
-                          ...prev,
-                          reducedAnimations: checked,
-                        }))
-                      }
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label
-                      htmlFor="autoRefresh"
-                      className="text-slate-300 text-sm"
-                    >
-                      Auto-refresh Data
-                    </Label>
-                    <Switch
-                      id="autoRefresh"
-                      checked={settings.autoRefresh}
-                      onCheckedChange={(checked) =>
-                        setSettings((prev) => ({
-                          ...prev,
-                          autoRefresh: checked,
-                        }))
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <Separator className="bg-slate-600/30" />
-
-              {/* Information & Support */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-cyan-400" />
-                  <h4 className="text-white font-medium text-sm">
-                    Information & Support
-                  </h4>
-                </div>
-                <div className="space-y-2 pl-6">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                    onClick={() => setModals({ ...modals, about: true })}
-                  >
-                    <User className="h-4 w-4 mr-2" />
-                    About NNC Games
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                    onClick={() => setModals({ ...modals, userGuide: true })}
-                  >
-                    <Gamepad2 className="h-4 w-4 mr-2" />
-                    User Guide
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                    onClick={() => setModals({ ...modals, moreApps: true })}
-                  >
-                    <Trophy className="h-4 w-4 mr-2" />
-                    Our More Apps & Games
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                    onClick={() => setModals({ ...modals, contact: true })}
-                  >
-                    <Bell className="h-4 w-4 mr-2" />
-                    Contact Support
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                    onClick={() => setModals({ ...modals, privacy: true })}
-                  >
-                    <Shield className="h-4 w-4 mr-2" />
-                    Privacy Policy
-                  </Button>
-                </div>
-              </div>
-
-              <Separator className="bg-slate-600/30" />
-
-              {/* Account Settings */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Shield className="h-4 w-4 text-cyan-400" />
-                  <h4 className="text-white font-medium text-sm">
-                    Account & Security
-                  </h4>
-                </div>
-                <div className="space-y-2 pl-6">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                  >
-                    <Shield className="h-4 w-4 mr-2" />
-                    Change Password
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start text-red-400 border-red-600/30 hover:bg-red-500/10"
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    Delete Account
-                  </Button>
-                </div>
-              </div>
-
-              {/* Save Settings */}
-              <div className="pt-4">
-                <Button
-                  onClick={() => {
-                    toast.success("Settings saved successfully!");
-                    setShowSettings(false);
-                  }}
-                  className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
-                >
-                  Save Settings
-                </Button>
-              </div>
+              )}
             </CardContent>
           )}
         </Card>
+
+        {/* Render Admin Panel or Profile Content */}
+        {currentView === "admin" ? (
+          <AdminPanel userEmail={userEmail} />
+        ) : (
+          <div className="space-y-4 md:space-y-6">
+            {/* Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+              <Card
+                className={`${cardGradient} ${animationClass} border-green-600/30`}
+              >
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-green-400 flex items-center gap-2 font-semibold text-sm md:text-base">
+                    <Trophy className="h-4 w-4 md:h-5 md:w-5" />
+                    Games Won
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl md:text-3xl font-bold text-white">
+                    {profile.games_won || 0}
+                  </div>
+                  <p className="text-xs md:text-sm text-green-300">
+                    Win Rate: {getWinRate()}%
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card
+                className={`${cardGradient} ${animationClass} border-blue-600/30`}
+              >
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-blue-400 flex items-center gap-2 font-semibold text-sm md:text-base">
+                    <Target className="h-4 w-4 md:h-5 md:w-5" />
+                    Games Played
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl md:text-3xl font-bold text-white">
+                    {profile.games_played || 0}
+                  </div>
+                  <p className="text-xs md:text-sm text-blue-300">Total matches</p>
+                </CardContent>
+              </Card>
+
+              <Card
+                className={`${cardGradient} ${animationClass} border-yellow-600/30 md:col-span-1 col-span-1`}
+              >
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-yellow-400 flex items-center gap-2 font-semibold text-sm md:text-base">
+                    <Star className="h-4 w-4 md:h-5 md:w-5" />
+                    Total Earnings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl md:text-3xl font-bold text-white">
+                    ₹{(profile.total_earnings || 0).toFixed(2)}
+                  </div>
+                  <p className="text-xs md:text-sm text-yellow-300">
+                    All-time winnings
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Wallet Summary */}
+            {wallet && (
+              <>
+                <Separator className="bg-slate-600/50" />
+                <Card
+                  className={`${cardGradient} ${animationClass} border-purple-600/30`}
+                >
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-purple-400 flex items-center gap-2 font-semibold text-base md:text-lg">
+                      <div className="relative">
+                        <Trophy className="h-5 w-5 md:h-6 md:w-6" />
+                        {!isMobile && (
+                          <Star className="h-2 w-2 text-yellow-400 absolute -top-1 -right-1" />
+                        )}
+                      </div>
+                      Current Wallet Balance
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl md:text-4xl font-bold text-white mb-2">
+                      ₹{wallet.balance.toFixed(2)}
+                    </div>
+                    {wallet.locked_balance > 0 && (
+                      <p className="text-sm md:text-base text-purple-300 font-medium">
+                        Locked Balance: ₹{wallet.locked_balance.toFixed(2)}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              </>
+            )}
+
+            {/* Settings Section */}
+            <Separator className="bg-slate-600/50" />
+            <Card
+              className={`${cardGradient} ${animationClass} border-cyan-600/30`}
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="text-cyan-400 flex items-center justify-between font-semibold text-base md:text-lg">
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-5 w-5 md:h-6 md:w-6" />
+                    Settings & Preferences
+                  </div>
+                  <Button
+                    onClick={() => setShowSettings(!showSettings)}
+                    variant="ghost"
+                    size="sm"
+                    className="text-cyan-400 hover:bg-slate-700/50 h-8 w-8 p-0"
+                  >
+                    <Settings
+                      className={`h-4 w-4 transition-transform duration-300 ${showSettings ? "rotate-90" : ""}`}
+                    />
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              {showSettings && (
+                <CardContent className="space-y-4">
+                  {/* Sound Settings */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Volume2 className="h-4 w-4 text-cyan-400" />
+                      <h4 className="text-white font-medium text-sm">
+                        Sound & Audio
+                      </h4>
+                    </div>
+                    <div className="space-y-3 pl-6">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="sound" className="text-slate-300 text-sm">
+                          Enable Sound Effects
+                        </Label>
+                        <Switch
+                          id="sound"
+                          checked={settings.soundEnabled}
+                          onCheckedChange={(checked) =>
+                            setSettings((prev) => ({
+                              ...prev,
+                              soundEnabled: checked,
+                            }))
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator className="bg-slate-600/30" />
+
+                  {/* Notification Settings */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Bell className="h-4 w-4 text-cyan-400" />
+                      <h4 className="text-white font-medium text-sm">
+                        Notifications
+                      </h4>
+                    </div>
+                    <div className="space-y-3 pl-6">
+                      <div className="flex items-center justify-between">
+                        <Label
+                          htmlFor="notifications"
+                          className="text-slate-300 text-sm"
+                        >
+                          Push Notifications
+                        </Label>
+                        <Switch
+                          id="notifications"
+                          checked={settings.notificationsEnabled}
+                          onCheckedChange={(checked) =>
+                            setSettings((prev) => ({
+                              ...prev,
+                              notificationsEnabled: checked,
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label
+                          htmlFor="gameNotifications"
+                          className="text-slate-300 text-sm"
+                        >
+                          Game Alerts
+                        </Label>
+                        <Switch
+                          id="gameNotifications"
+                          checked={settings.gameNotifications}
+                          onCheckedChange={(checked) =>
+                            setSettings((prev) => ({
+                              ...prev,
+                              gameNotifications: checked,
+                            }))
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator className="bg-slate-600/30" />
+
+                  {/* Display Settings */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Palette className="h-4 w-4 text-cyan-400" />
+                      <h4 className="text-white font-medium text-sm">
+                        Display & Performance
+                      </h4>
+                    </div>
+                    <div className="space-y-3 pl-6">
+                      <div className="flex items-center justify-between">
+                        <Label
+                          htmlFor="darkMode"
+                          className="text-slate-300 text-sm"
+                        >
+                          Dark Mode
+                        </Label>
+                        <Switch
+                          id="darkMode"
+                          checked={settings.darkMode}
+                          onCheckedChange={(checked) =>
+                            setSettings((prev) => ({ ...prev, darkMode: checked }))
+                          }
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label
+                          htmlFor="reducedAnimations"
+                          className="text-slate-300 text-sm"
+                        >
+                          Reduce Animations (Mobile)
+                        </Label>
+                        <Switch
+                          id="reducedAnimations"
+                          checked={settings.reducedAnimations}
+                          onCheckedChange={(checked) =>
+                            setSettings((prev) => ({
+                              ...prev,
+                              reducedAnimations: checked,
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label
+                          htmlFor="autoRefresh"
+                          className="text-slate-300 text-sm"
+                        >
+                          Auto-refresh Data
+                        </Label>
+                        <Switch
+                          id="autoRefresh"
+                          checked={settings.autoRefresh}
+                          onCheckedChange={(checked) =>
+                            setSettings((prev) => ({
+                              ...prev,
+                              autoRefresh: checked,
+                            }))
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator className="bg-slate-600/30" />
+
+                  {/* Information & Support */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4 text-cyan-400" />
+                      <h4 className="text-white font-medium text-sm">
+                        Information & Support
+                      </h4>
+                    </div>
+                    <div className="space-y-2 pl-6">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                        onClick={() => setModals({ ...modals, about: true })}
+                      >
+                        <User className="h-4 w-4 mr-2" />
+                        About NNC Games
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                        onClick={() => setModals({ ...modals, userGuide: true })}
+                      >
+                        <Gamepad2 className="h-4 w-4 mr-2" />
+                        User Guide
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                        onClick={() => setModals({ ...modals, moreApps: true })}
+                      >
+                        <Trophy className="h-4 w-4 mr-2" />
+                        Our More Apps & Games
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                        onClick={() => setModals({ ...modals, contact: true })}
+                      >
+                        <Bell className="h-4 w-4 mr-2" />
+                        Contact Support
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                        onClick={() => setModals({ ...modals, privacy: true })}
+                      >
+                        <Shield className="h-4 w-4 mr-2" />
+                        Privacy Policy
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Separator className="bg-slate-600/30" />
+
+                  {/* Account Settings */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Shield className="h-4 w-4 text-cyan-400" />
+                      <h4 className="text-white font-medium text-sm">
+                        Account & Security
+                      </h4>
+                    </div>
+                    <div className="space-y-2 pl-6">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
+                      >
+                        <Shield className="h-4 w-4 mr-2" />
+                        Change Password
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-start text-red-400 border-red-600/30 hover:bg-red-500/10"
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Delete Account
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Save Settings */}
+                  <div className="pt-4">
+                    <Button
+                      onClick={() => {
+                        toast.success("Settings saved successfully!");
+                        setShowSettings(false);
+                      }}
+                      className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
+                    >
+                      Save Settings
+                    </Button>
+                  </div>
+                </CardContent>
+              )}
+            </Card>
+          </div>
+        )}
       </div>
 
       {/* Information Modals */}

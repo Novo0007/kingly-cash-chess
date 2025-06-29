@@ -9,6 +9,45 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          invited_at: string
+          invited_by: string | null
+          is_active: boolean
+          permissions: Json | null
+          role: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          invited_at?: string
+          invited_by?: string | null
+          is_active?: boolean
+          permissions?: Json | null
+          role?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          invited_at?: string
+          invited_by?: string | null
+          is_active?: boolean
+          permissions?: Json | null
+          role?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       chess_games: {
         Row: {
           black_player_id: string | null
@@ -387,6 +426,10 @@ export type Database = {
           increment_value: number
         }
         Returns: undefined
+      }
+      is_admin: {
+        Args: { user_email?: string }
+        Returns: boolean
       }
     }
     Enums: {
