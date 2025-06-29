@@ -53,15 +53,25 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
       if (error) throw error;
       
       // Handle the case where profiles might be null or have errors
-      const processedData = (data || []).map(transaction => ({
-        ...transaction,
-        profiles: transaction.profiles && 
-                 typeof transaction.profiles === 'object' && 
-                 'username' in transaction.profiles &&
-                 typeof transaction.profiles.username === 'string'
-          ? transaction.profiles as { username: string; full_name: string | null }
-          : null
-      }));
+      const processedData = (data || []).map(transaction => {
+        const profiles = transaction.profiles;
+        
+        // Check if profiles exists and has the expected structure
+        if (profiles && 
+            typeof profiles === 'object' && 
+            'username' in profiles &&
+            typeof profiles.username === 'string') {
+          return {
+            ...transaction,
+            profiles: profiles as { username: string; full_name: string | null }
+          };
+        }
+        
+        return {
+          ...transaction,
+          profiles: null
+        };
+      });
       
       setTransactions(processedData);
     } catch (error) {
