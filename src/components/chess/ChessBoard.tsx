@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Chess, Square } from "chess.js";
 import { toast } from "sonner";
 import { PawnPromotionDialog } from "./PawnPromotionDialog";
