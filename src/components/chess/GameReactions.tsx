@@ -26,52 +26,41 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
   const [currentUsername, setCurrentUsername] = useState<string>('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [connectionAttempts, setConnectionAttempts] = useState(0);
   const channelRef = useRef<any>(null);
   const timeoutRefs = useRef<Set<NodeJS.Timeout>>(new Set());
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
 
-  // Cleanup function
+  useEffect(() => {
+    return () => {
+      timeoutRefs.current.forEach(timeout => clearTimeout(timeout));
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    getCurrentUser();
+    setupRealtimeChannel();
+    
+    return () => {
+      cleanup();
+    };
+  }, [gameId]);
+
   const cleanup = useCallback(() => {
     if (channelRef.current) {
-      try {
-        supabase.removeChannel(channelRef.current);
-      } catch (error) {
-        console.log('Channel cleanup error:', error);
-      }
+      supabase.removeChannel(channelRef.current);
       channelRef.current = null;
     }
     timeoutRefs.current.forEach(timeout => clearTimeout(timeout));
     timeoutRefs.current.clear();
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-    }
     setIsConnected(false);
   }, []);
-
-  useEffect(() => {
-    return cleanup;
-  }, [cleanup]);
-
-  useEffect(() => {
-    getCurrentUser();
-  }, []);
-
-  useEffect(() => {
-    if (currentUser && gameId) {
-      setupRealtimeChannel();
-    }
-    
-    return cleanup;
-  }, [gameId, currentUser]);
 
   const getCurrentUser = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.log('No authenticated user found');
-        return;
-      }
+      if (!user) return;
 
       setCurrentUser(user.id);
 
@@ -81,71 +70,62 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
         .eq('id', user.id)
         .single();
 
-      setCurrentUsername(profile?.username || `User${user.id.slice(0, 4)}`);
+      setCurrentUsername(profile?.username || 'Anonymous');
     } catch (error) {
       console.error('Error getting user:', error);
     }
   }, []);
 
   const setupRealtimeChannel = useCallback(() => {
-    if (!gameId || !currentUser) return;
+    if (channelRef.current) {
+      cleanup();
+    }
 
-    cleanup();
-
-    console.log(`Setting up desktop reactions channel for game: ${gameId}`);
-    
     const channel = supabase
-      .channel(`game-reactions-desktop-${gameId}`, {
+      .channel(`game-reactions-${gameId}`, {
         config: {
-          broadcast: { self: true, ack: true },
-          presence: { key: currentUser }
+          broadcast: { self: true },
+          presence: { key: currentUser || 'anonymous' }
         }
       })
       .on('broadcast', { event: 'new_reaction' }, (payload) => {
         try {
-          console.log('Received desktop reaction:', payload);
+          console.log('Received reaction:', payload);
           const newReaction = payload.payload as GameReaction;
           
-          if (!newReaction?.id || !newReaction?.emoji) return;
+          if (!newReaction || !newReaction.id) return;
           
           setReactions(prev => {
             if (prev.some(r => r.id === newReaction.id)) return prev;
-            return [...prev, newReaction].slice(-10); // Keep more reactions for desktop
+            return [...prev, newReaction];
           });
           
-          // Remove reaction after 6 seconds (longer for desktop)
+          // Remove reaction after 5 seconds
           const timeout = setTimeout(() => {
             setReactions(prev => prev.filter(r => r.id !== newReaction.id));
             timeoutRefs.current.delete(timeout);
-          }, 6000);
+          }, 5000);
           
           timeoutRefs.current.add(timeout);
         } catch (error) {
-          console.error('Error handling desktop reaction:', error);
+          console.error('Error handling reaction:', error);
         }
       })
-      .subscribe(async (status, error) => {
-        console.log('Desktop reactions channel status:', status, error || '');
+      .subscribe(async (status) => {
+        console.log('Game reactions channel status:', status);
+        setIsConnected(status === 'SUBSCRIBED');
         
-        if (status === 'SUBSCRIBED') {
-          setIsConnected(true);
-          setConnectionAttempts(0);
-        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
-          setIsConnected(false);
-          
-          if (connectionAttempts < 3) {
-            const delay = Math.min(2000 * Math.pow(2, connectionAttempts), 8000);
-            
-            reconnectTimeoutRef.current = setTimeout(() => {
-              setConnectionAttempts(prev => prev + 1);
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          setTimeout(() => {
+            if (channelRef.current === channel) {
               setupRealtimeChannel();
-            }, delay);
-          }
+            }
+          }, 2000);
         }
       });
 
     channelRef.current = channel;
-  }, [gameId, currentUser, connectionAttempts, cleanup]);
+  }, [gameId, currentUser, cleanup]);
 
   const sendReaction = useCallback(async (emoji: string) => {
     if (!currentUser || !channelRef.current || !isConnected) {
@@ -162,7 +142,7 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
     };
 
     try {
-      console.log('Sending desktop reaction:', reaction);
+      console.log('Sending reaction:', reaction);
 
       const result = await channelRef.current.send({
         type: 'broadcast',
@@ -170,15 +150,16 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
         payload: reaction
       });
 
-      console.log('Desktop reaction broadcast result:', result);
+      console.log('Reaction broadcast result:', result);
 
       if (result === 'ok') {
         setShowEmojiPicker(false);
+        toast.success(`${emoji} sent!`);
       } else {
         throw new Error('Failed to send reaction');
       }
     } catch (error) {
-      console.error('Error sending desktop reaction:', error);
+      console.error('Error sending reaction:', error);
       toast.error('Failed to send reaction');
     }
   }, [currentUser, currentUsername, isConnected]);
@@ -189,13 +170,12 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
         {`
           @keyframes fadeInOut {
             0% { opacity: 0; transform: translateY(20px) scale(0.8); }
-            15% { opacity: 1; transform: translateY(-10px) scale(1.1); }
-            85% { opacity: 1; transform: translateY(-20px) scale(1); }
+            20% { opacity: 1; transform: translateY(-10px) scale(1.1); }
+            80% { opacity: 1; transform: translateY(-20px) scale(1); }
             100% { opacity: 0; transform: translateY(-40px) scale(0.8); }
           }
           .reaction-animation {
-            animation: fadeInOut 6s ease-in-out forwards;
-            will-change: transform, opacity;
+            animation: fadeInOut 5s ease-in-out forwards;
           }
         `}
       </style>
@@ -210,11 +190,10 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
               style={{
                 left: `${Math.random() * 80 + 10}%`,
                 top: `${Math.random() * 60 + 20}%`,
-                transform: 'translateZ(0)', // Hardware acceleration
               }}
             >
-              <div className="bg-black/80 text-white px-3 py-2 rounded-lg text-sm flex items-center gap-2 shadow-lg backdrop-blur-sm border border-white/20">
-                <span className="text-xl">{reaction.emoji}</span>
+              <div className="bg-black/80 text-white px-2 py-1 rounded-lg text-sm flex items-center gap-1 shadow-lg backdrop-blur-sm">
+                <span className="text-lg">{reaction.emoji}</span>
                 <span className="text-xs font-medium">{reaction.username}</span>
               </div>
             </div>
@@ -238,22 +217,22 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
             <Smile className="h-4 w-4" />
           </Button>
           
-          {!isConnected && currentUser && (
+          {!isConnected && (
             <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
           )}
 
           {/* Emoji Picker */}
           {showEmojiPicker && isConnected && currentUser && (
-            <Card className="absolute bottom-full mb-2 right-0 bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl z-50 animate-in slide-in-from-bottom-2 duration-200">
-              <CardContent className="p-3">
-                <div className="grid grid-cols-5 gap-2">
+            <Card className="absolute bottom-full mb-2 right-0 bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl z-50 animate-scale-in">
+              <CardContent className="p-2">
+                <div className="grid grid-cols-5 gap-1">
                   {AVAILABLE_EMOJIS.map((emoji) => (
                     <Button
                       key={emoji}
                       onClick={() => sendReaction(emoji)}
                       variant="ghost"
                       size="sm"
-                      className="text-lg hover:bg-purple-800/50 w-10 h-10 p-0 transition-all duration-150 hover:scale-110 active:scale-95"
+                      className="text-lg hover:bg-purple-800/50 w-8 h-8 p-0 transition-all duration-150 hover:scale-110"
                       title={`Send ${emoji}`}
                     >
                       {emoji}

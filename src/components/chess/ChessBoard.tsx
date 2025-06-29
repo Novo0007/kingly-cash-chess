@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Chess, Square } from "chess.js";
 import { toast } from "sonner";
 import { PawnPromotionDialog } from "./PawnPromotionDialog";
@@ -23,36 +23,22 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [possibleMoves, setPossibleMoves] = useState<string[]>([]);
   const [board, setBoard] = useState(chess.board());
-  const [lastMove, setLastMove] = useState<{ from: string; to: string } | null>(null);
-  const [promotionMove, setPromotionMove] = useState<{ from: string; to: string } | null>(null);
+  const [lastMove, setLastMove] = useState<{ from: string; to: string } | null>(
+    null,
+  );
+  const [promotionMove, setPromotionMove] = useState<{
+    from: string;
+    to: string;
+  } | null>(null);
   const [showPromotionDialog, setShowPromotionDialog] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
 
-  // Initialize audio context
-  const initAudioContext = useCallback(() => {
-    if (!audioContextRef.current) {
-      try {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-      } catch (error) {
-        console.log("Audio context not supported");
-      }
-    }
-  }, []);
-
-  // Improved move sound with error handling
-  const playMoveSound = useCallback(() => {
+  // Create audio context for move sounds
+  const playMoveSound = () => {
     try {
-      initAudioContext();
-      const audioContext = audioContextRef.current;
-      
-      if (!audioContext) return;
-
-      // Resume context if suspended (required by browser policies)
-      if (audioContext.state === 'suspended') {
-        audioContext.resume();
-      }
-
+      // Create a simple beep sound
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
 
@@ -60,36 +46,67 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       gainNode.connect(audioContext.destination);
 
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-      oscillator.type = 'sine';
-      
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+      gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioContext.currentTime + 0.3,
+      );
 
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.2);
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.3);
     } catch (error) {
-      console.log("Move sound failed:", error);
+      console.log("Audio not supported");
     }
-  }, [initAudioContext]);
+  };
 
-  // Improved FEN update logic
   useEffect(() => {
     try {
       console.log("ChessBoard: Updating with FEN:", fen);
       const newChess = new Chess(fen);
       const newBoard = newChess.board();
 
-      // Detect moves more reliably
+      // Check if this is a new move by comparing board states
       if (chess.fen() !== fen && board) {
-        const history = newChess.history({ verbose: true });
-        const lastMoveInHistory = history[history.length - 1];
-        
-        if (lastMoveInHistory) {
-          setLastMove({ 
-            from: lastMoveInHistory.from, 
-            to: lastMoveInHistory.to 
-          });
+        // Find the move that was made
+        const oldBoard = chess.board();
+        let moveFrom = "";
+        let moveTo = "";
+
+        // Compare boards to find the move
+        for (let row = 0; row < 8; row++) {
+          for (let col = 0; col < 8; col++) {
+            const oldPiece = oldBoard[row][col];
+            const newPiece = newBoard[row][col];
+
+            // Find where a piece disappeared (from square)
+            if (oldPiece && !newPiece) {
+              const files = "abcdefgh";
+              const rank = 8 - row;
+              const file = files[col];
+              moveFrom = `${file}${rank}`;
+            }
+
+            // Find where a piece appeared or changed (to square)
+            if (
+              (!oldPiece && newPiece) ||
+              (oldPiece &&
+                newPiece &&
+                (oldPiece.type !== newPiece.type ||
+                  oldPiece.color !== newPiece.color))
+            ) {
+              const files = "abcdefgh";
+              const rank = 8 - row;
+              const file = files[col];
+              if (newPiece) {
+                moveTo = `${file}${rank}`;
+              }
+            }
+          }
+        }
+
+        // Set last move and play sound
+        if (moveFrom && moveTo) {
+          setLastMove({ from: moveFrom, to: moveTo });
           playMoveSound();
         }
       }
@@ -98,13 +115,11 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       setBoard(newBoard);
       setSelectedSquare(null);
       setPossibleMoves([]);
-      
       console.log("ChessBoard: Successfully updated board state");
     } catch (error) {
       console.error("ChessBoard: Invalid FEN:", fen, error);
-      toast.error("Invalid board position received");
     }
-  }, [fen, chess, board, playMoveSound]);
+  }, [fen]);
 
   const getPieceSymbol = (piece: any) => {
     if (!piece) return "";
@@ -126,6 +141,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
     if (!piece || piece.type !== "p") return false;
 
     const toRank = parseInt(to[1]);
+
+    // White pawn reaching rank 8, black pawn reaching rank 1
     return (
       (piece.color === "w" && toRank === 8) ||
       (piece.color === "b" && toRank === 1)
@@ -134,26 +151,23 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   const getSquareName = (row: number, col: number): Square => {
     const files = "abcdefgh";
+    // Calculate the actual board position based on player perspective
     const actualRow = playerColor === "white" ? row : 7 - row;
     const actualCol = playerColor === "white" ? col : 7 - col;
 
-    const rank = 8 - actualRow;
-    const file = files[actualCol];
+    // Convert to chess notation
+    const rank = 8 - actualRow; // Row 0 is rank 8, row 7 is rank 1
+    const file = files[actualCol]; // Col 0 is file 'a', col 7 is file 'h'
     return `${file}${rank}` as Square;
   };
 
-  const handleSquareClick = useCallback((row: number, col: number) => {
-    if (disabled || !isPlayerTurn) {
-      console.log("Square click ignored - disabled or not player turn");
-      return;
-    }
+  const handleSquareClick = (row: number, col: number) => {
+    if (disabled || !isPlayerTurn) return;
 
     const square = getSquareName(row, col);
-    console.log("Square clicked:", square);
 
     if (selectedSquare) {
       if (selectedSquare === square) {
-        // Deselect current square
         setSelectedSquare(null);
         setPossibleMoves([]);
         return;
@@ -163,39 +177,43 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       if (possibleMoves.includes(square)) {
         console.log("Making move:", selectedSquare, "to", square);
 
-        // Validate move
+        // Double-check the move is valid before calling onMove
         const moveAttempt = chess
           .moves({ verbose: true })
           .find((m) => m.from === selectedSquare && m.to === square);
 
         if (!moveAttempt) {
-          console.error("Invalid move attempted:", { from: selectedSquare, to: square });
+          console.error("Move was in possibleMoves but not valid:", {
+            from: selectedSquare,
+            to: square,
+          });
           toast.error("Invalid move");
           setSelectedSquare(null);
           setPossibleMoves([]);
           return;
         }
 
-        // Handle pawn promotion
+        // Check if this is a pawn promotion
         if (isPawnPromotion(selectedSquare, square)) {
-          console.log("Pawn promotion detected");
+          console.log("Pawn promotion detected:", selectedSquare, "to", square);
           setPromotionMove({ from: selectedSquare, to: square });
           setShowPromotionDialog(true);
           return;
         }
 
-        // Make the move
         playMoveSound();
         onMove?.(selectedSquare, square);
         setSelectedSquare(null);
         setPossibleMoves([]);
         return;
       } else {
-        // Try to select a new piece
+        // Check if clicking on another piece of same color
         const piece = chess.get(square);
-        if (piece && 
-            ((playerColor === "white" && piece.color === "w") ||
-             (playerColor === "black" && piece.color === "b"))) {
+        if (
+          piece &&
+          ((playerColor === "white" && piece.color === "w") ||
+            (playerColor === "black" && piece.color === "b"))
+        ) {
           setSelectedSquare(square);
           const moves = chess.moves({ square, verbose: true });
           setPossibleMoves(moves.map((move) => move.to));
@@ -205,9 +223,9 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         }
       }
     } else {
-      // Select a piece
       const piece = chess.get(square);
       if (piece && !disabled && isPlayerTurn) {
+        // Only allow selecting your own pieces
         const canSelectPiece =
           (playerColor === "white" && piece.color === "w") ||
           (playerColor === "black" && piece.color === "b");
@@ -216,32 +234,31 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           setSelectedSquare(square);
           const moves = chess.moves({ square, verbose: true });
           setPossibleMoves(moves.map((move) => move.to));
-          console.log("Selected piece at:", square, "with", moves.length, "possible moves");
-        } else {
-          toast.error("You can only move your own pieces");
         }
       }
     }
-  }, [disabled, isPlayerTurn, selectedSquare, possibleMoves, chess, playerColor, onMove, playMoveSound]);
+  };
 
-  const handlePromotionSelect = useCallback((piece: "q" | "r" | "b" | "n") => {
+  const handlePromotionSelect = (piece: "q" | "r" | "b" | "n") => {
     if (!promotionMove) return;
 
     console.log("Promotion piece selected:", piece);
     playMoveSound();
     onMove?.(promotionMove.from, promotionMove.to, piece);
 
+    // Reset promotion state
     setPromotionMove(null);
     setShowPromotionDialog(false);
     setSelectedSquare(null);
     setPossibleMoves([]);
-  }, [promotionMove, onMove, playMoveSound]);
+  };
 
-  const handlePromotionCancel = useCallback(() => {
+  const handlePromotionCancel = () => {
     console.log("Promotion cancelled");
     setPromotionMove(null);
     setShowPromotionDialog(false);
-  }, []);
+    // Keep the square selected so user can try a different move
+  };
 
   const isSquareHighlighted = (row: number, col: number) => {
     const square = getSquareName(row, col);
@@ -271,9 +288,13 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         >
           {Array.from({ length: 8 }, (_, rowIndex) =>
             Array.from({ length: 8 }, (_, colIndex) => {
-              const actualRow = playerColor === "white" ? rowIndex : 7 - rowIndex;
-              const actualCol = playerColor === "white" ? colIndex : 7 - colIndex;
+              // Calculate the actual board position based on player perspective
+              const actualRow =
+                playerColor === "white" ? rowIndex : 7 - rowIndex;
+              const actualCol =
+                playerColor === "white" ? colIndex : 7 - colIndex;
 
+              // Get the piece from the board array
               const piece = board[actualRow] && board[actualRow][actualCol];
 
               return (
@@ -281,7 +302,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                   key={`${rowIndex}-${colIndex}`}
                   className={`
                     aspect-square flex items-center justify-center text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold cursor-pointer
-                    transition-all duration-150 active:scale-95 relative overflow-hidden select-none
+                    transition-colors duration-200 active:scale-95 relative overflow-hidden
                     ${
                       isLightSquare(rowIndex, colIndex)
                         ? "bg-electric-50 hover:bg-electric-100"
@@ -308,7 +329,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                   onClick={() => handleSquareClick(rowIndex, colIndex)}
                 >
                   <span
-                    className={`z-10 drop-shadow-2xl select-none transition-transform duration-150 ${
+                    className={`z-10 drop-shadow-2xl select-none ${
                       piece && piece.color === "b" ? "text-black" : "text-white"
                     }`}
                     style={{
