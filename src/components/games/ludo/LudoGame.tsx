@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { LudoBoardEnhanced } from "./LudoBoardEnhanced";
+import { LudoGameReactions } from "./LudoGameReactions";
 import { ChatSystem } from "../../chat/ChatSystem";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -638,6 +639,33 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
     }
   };
 
+  const handleTurnEnd = async () => {
+    if (!game || !currentUser) return;
+
+    try {
+      const activeColors = game.game_state?.playerColors || ["red", "blue", "green", "yellow"].slice(0, game.current_players);
+      const currentIndex = activeColors.indexOf(game.current_turn);
+      const nextPlayer = activeColors[(currentIndex + 1) % activeColors.length];
+
+      const { error } = await supabase
+        .from("ludo_games")
+        .update({
+          current_turn: nextPlayer,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", gameId);
+
+      if (error) {
+        console.error("❌ Error ending turn:", error);
+        toast.error("Failed to end turn");
+      } else {
+        console.log(`✅ Turn ended! Next: ${nextPlayer}`);
+      }
+    } catch (error) {
+      console.error("❌ Error in turn end:", error);
+    }
+  };
+
   const findPieceAtPosition = (gameState: any, row: number, col: number) => {
     for (const [color, pieces] of Object.entries(gameState.pieces)) {
       for (const [index, piece] of (pieces as any[]).entries()) {
@@ -844,7 +872,7 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
         </DialogContent>
       </Dialog>
 
-      {/* Header */}
+      {/* Header with Emoji Reactions */}
       <div className="flex items-center justify-between bg-gradient-to-r from-blue-900 to-purple-900 p-3 rounded-lg shadow-lg border-2 border-blue-400">
         <Button
           onClick={onBackToLobby}
@@ -862,6 +890,8 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
             <Users className="h-3 w-3 mr-1" />
             {game.current_players}/4
           </Badge>
+          {/* Emoji Reactions */}
+          <LudoGameReactions gameId={gameId} isMobile={isMobile} />
           {isMobile && (
             <Button
               onClick={() => setShowMobileChat(!showMobileChat)}
@@ -953,6 +983,7 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
         <LudoBoardEnhanced
           gameState={game.game_state}
           onMove={handleMove}
+          onTurnEnd={handleTurnEnd}
           playerColor={getPlayerColor()}
           currentPlayer={game.current_turn}
           isPlayerTurn={isPlayerTurn()}

@@ -22,6 +22,7 @@ import {
 interface LudoBoardEnhancedProps {
   gameState: LudoGameState;
   onMove: (color: string, pieceId: number, steps: number) => Promise<void>;
+  onTurnEnd: () => void;
   playerColor: "red" | "blue" | "green" | "yellow";
   currentPlayer: string;
   isPlayerTurn: boolean;
@@ -32,6 +33,7 @@ interface LudoBoardEnhancedProps {
 export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
   gameState,
   onMove,
+  onTurnEnd,
   playerColor,
   currentPlayer,
   isPlayerTurn,
@@ -39,11 +41,12 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
   onGameEnd,
 }) => {
   const [selectedPiece, setSelectedPiece] = useState<number | null>(null);
-  const [diceValue, setDiceValue] = useState<number | null>(gameState.diceValue);
+  const [diceValue, setDiceValue] = useState<number | null>(null);
   const [isRolling, setIsRolling] = useState(false);
   const [validMoves, setValidMoves] = useState<number[]>([]);
   const [turnTimeLeft, setTurnTimeLeft] = useState(30);
   const [hasRolledThisTurn, setHasRolledThisTurn] = useState(false);
+  const [hasMovedThisTurn, setHasMovedThisTurn] = useState(false);
 
   // Modern color palette
   const modernColors = {
@@ -63,8 +66,7 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
       setTurnTimeLeft(prev => {
         if (prev <= 1) {
           toast.error("Time's up! Turn passed.");
-          setDiceValue(null);
-          setHasRolledThisTurn(false);
+          handleTurnEnd();
           return 30;
         }
         return prev - 1;
@@ -74,21 +76,24 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
     return () => clearInterval(timer);
   }, [isPlayerTurn, disabled, currentPlayer]);
 
-  // Reset turn timer when turn changes
+  // Reset turn state when turn changes
   useEffect(() => {
     setTurnTimeLeft(30);
     setSelectedPiece(null);
     setValidMoves([]);
     setHasRolledThisTurn(false);
+    setHasMovedThisTurn(false);
+    setDiceValue(null);
   }, [currentPlayer]);
 
-  // Update dice value from game state
-  useEffect(() => {
-    setDiceValue(gameState.diceValue);
-    if (gameState.diceValue) {
-      calculateValidMoves(gameState.diceValue);
-    }
-  }, [gameState.diceValue]);
+  const handleTurnEnd = useCallback(() => {
+    setDiceValue(null);
+    setHasRolledThisTurn(false);
+    setHasMovedThisTurn(false);
+    setSelectedPiece(null);
+    setValidMoves([]);
+    onTurnEnd();
+  }, [onTurnEnd]);
 
   const rollDice = useCallback(async () => {
     if (!isPlayerTurn || disabled || isRolling || hasRolledThisTurn) return;
@@ -110,16 +115,15 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
       // Check for valid moves
       const moves = calculateValidMoves(finalValue);
       if (moves.length === 0) {
-        toast.info("No valid moves! Turn passed.");
+        toast.info("No valid moves! Turn ends.");
         setTimeout(() => {
-          setDiceValue(null);
-          setHasRolledThisTurn(false);
+          handleTurnEnd();
         }, 2000);
       } else {
         toast.success(`Rolled ${finalValue}! Choose a piece to move.`);
       }
     }, 800);
-  }, [isPlayerTurn, disabled, isRolling, hasRolledThisTurn]);
+  }, [isPlayerTurn, disabled, isRolling, hasRolledThisTurn, handleTurnEnd]);
 
   const calculateValidMoves = useCallback((steps: number): number[] => {
     if (!gameState.pieces[playerColor]) return [];
@@ -155,7 +159,7 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
   };
 
   const handlePieceClick = async (pieceId: number) => {
-    if (!isPlayerTurn || disabled || !diceValue || !validMoves.includes(pieceId)) {
+    if (!isPlayerTurn || disabled || !diceValue || !validMoves.includes(pieceId) || hasMovedThisTurn) {
       if (!validMoves.includes(pieceId)) {
         toast.error("This piece cannot be moved!");
       }
@@ -164,6 +168,8 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
 
     try {
       setSelectedPiece(pieceId);
+      setHasMovedThisTurn(true);
+      
       await onMove(playerColor, pieceId, diceValue);
       
       // Check for win condition
@@ -173,20 +179,26 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
         return;
       }
 
-      // If not a 6, clear dice and reset turn flags
-      if (diceValue !== 6) {
-        setDiceValue(null);
+      // Only continue turn if rolled a 6, otherwise end turn
+      if (diceValue === 6) {
+        toast.success("You rolled a 6! Take another turn!");
         setHasRolledThisTurn(false);
+        setHasMovedThisTurn(false);
+        setDiceValue(null);
+        setSelectedPiece(null);
+        setValidMoves([]);
       } else {
-        setHasRolledThisTurn(false); // Allow another roll for 6
+        toast.info("Turn complete!");
+        setTimeout(() => {
+          handleTurnEnd();
+        }, 1500);
       }
       
-      setSelectedPiece(null);
-      setValidMoves([]);
     } catch (error) {
       console.error("Error moving piece:", error);
       toast.error("Failed to move piece");
       setSelectedPiece(null);
+      setHasMovedThisTurn(false);
     }
   };
 
@@ -200,10 +212,10 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
         <div className="relative">
           <Button
             onClick={rollDice}
-            disabled={!isPlayerTurn || disabled || isRolling || hasRolledThisTurn}
+            disabled={!isPlayerTurn || disabled || isRolling || hasRolledThisTurn || hasMovedThisTurn}
             className={`
               w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-2 transition-all duration-200 shadow-lg
-              ${isPlayerTurn && !disabled && !hasRolledThisTurn
+              ${isPlayerTurn && !disabled && !hasRolledThisTurn && !hasMovedThisTurn
                 ? "bg-white border-blue-300 hover:border-blue-500 hover:scale-105 text-gray-700"
                 : "bg-gray-100 border-gray-300 cursor-not-allowed opacity-60 text-gray-400"
               }
@@ -234,11 +246,14 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
           {isRolling && (
             <p className="text-blue-600 font-medium text-sm">Rolling...</p>
           )}
-          {!isRolling && isPlayerTurn && !hasRolledThisTurn && (
+          {!isRolling && isPlayerTurn && !hasRolledThisTurn && !hasMovedThisTurn && (
             <p className="text-green-600 font-medium text-sm">Your Turn - Roll Dice!</p>
           )}
-          {!isRolling && isPlayerTurn && diceValue && validMoves.length > 0 && (
+          {!isRolling && isPlayerTurn && diceValue && validMoves.length > 0 && !hasMovedThisTurn && (
             <p className="text-blue-600 font-medium text-sm">Choose a piece to move</p>
+          )}
+          {!isRolling && isPlayerTurn && hasMovedThisTurn && diceValue !== 6 && (
+            <p className="text-orange-600 font-medium text-sm">Turn ending...</p>
           )}
           {!isPlayerTurn && (
             <p className="text-gray-500 text-sm">Waiting for {currentPlayer}...</p>
@@ -299,8 +314,8 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
                       w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-white cursor-pointer transition-all duration-200
                       ${getModernPieceColor(piece.color)}
                       ${selectedPiece === piece.id ? "ring-2 ring-blue-400 scale-110" : ""}
-                      ${validMoves.includes(piece.id) ? "ring-2 ring-green-400" : ""}
-                      ${piece.color === playerColor && isPlayerTurn ? "hover:scale-110 shadow-md" : ""}
+                      ${validMoves.includes(piece.id) && !hasMovedThisTurn ? "ring-2 ring-green-400" : ""}
+                      ${piece.color === playerColor && isPlayerTurn && !hasMovedThisTurn ? "hover:scale-110 shadow-md" : ""}
                       shadow-sm
                     `}
                     style={{
