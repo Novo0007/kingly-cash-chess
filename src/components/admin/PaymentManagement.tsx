@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -87,7 +86,7 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
     }
   };
 
-  const updateTransactionStatus = async (transactionId: string, status: "completed" | "failed") => {
+  const updateTransactionStatus = async (transactionId: string, status: "completed" | "failed" | "pending") => {
     try {
       const { error } = await supabase
         .from("transactions")
