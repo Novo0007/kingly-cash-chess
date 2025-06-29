@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ChessBoard } from "./ChessBoard";
 import { ChatSystem } from "../chat/ChatSystem";
-import { GameReactions } from "./GameReactions";
+import { MobileGameReactions } from "./MobileGameReactions";
+import { TimeControl } from "./TimeControl";
+import { DisconnectionTracker } from "./DisconnectionTracker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +25,6 @@ import {
   Trophy,
   Handshake,
   Zap,
-  Star,
   MessageSquare,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
@@ -49,30 +50,22 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [showGameEndDialog, setShowGameEndDialog] = useState(false);
   const [gameEndMessage, setGameEndMessage] = useState("");
-  const [gameEndType, setGameEndType] = useState<"win" | "draw" | "disconnect">(
-    "win",
-  );
-  const [lastActiveTime, setLastActiveTime] = useState<number>(Date.now());
-  const [presenceTracked, setPresenceTracked] = useState(false);
+  const [gameEndType, setGameEndType] = useState<"win" | "draw" | "disconnect">("win");
   const [showMobileChat, setShowMobileChat] = useState(false);
-  const [abandonmentTimer, setAbandonmentTimer] =
-    useState<NodeJS.Timeout | null>(null);
-  const [showAbandonmentWarning, setShowAbandonmentWarning] = useState(false);
-  const [abandonmentCountdown, setAbandonmentCountdown] = useState(10);
-  const { isMobile, isTablet } = useDeviceType();
+  const { isMobile } = useDeviceType();
 
   useEffect(() => {
     getCurrentUser();
     fetchGame();
 
-    // Auto-refresh game state every 5 seconds
+    // Optimized refresh for mobile - less frequent
+    const refreshInterval = isMobile ? 8000 : 5000;
     const autoRefreshInterval = setInterval(() => {
       if (!loading) {
         fetchGame();
       }
-    }, 5000);
+    }, refreshInterval);
 
-    // Subscribe to real-time game changes
     const gameSubscription = supabase
       .channel(`game_${gameId}`)
       .on(
@@ -90,221 +83,44 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
           }
         },
       )
-      .subscribe((status) => {
-        console.log("Real-time subscription status:", status);
-      });
+      .subscribe();
 
     return () => {
-      console.log("Cleaning up game subscription and auto-refresh");
       clearInterval(autoRefreshInterval);
       supabase.removeChannel(gameSubscription);
     };
-  }, [gameId, loading]);
-
-  useEffect(() => {
-    if (!currentUser || !game) return;
-
-    const isPlayer =
-      currentUser === game.white_player_id ||
-      currentUser === game.black_player_id;
-    if (!isPlayer || game.game_status !== "active") return;
-
-    // Track user presence
-    const presenceChannel = supabase
-      .channel(`presence_${gameId}`)
-      .on("presence", { event: "sync" }, () => {
-        console.log("Presence synced");
-        setLastActiveTime(Date.now());
-        // Cancel abandonment timer if player returns
-        if (abandonmentTimer) {
-          clearTimeout(abandonmentTimer);
-          setAbandonmentTimer(null);
-          setShowAbandonmentWarning(false);
-          toast.success("Player reconnected!");
-        }
-      })
-      .on("presence", { event: "join" }, ({ key, newPresences }) => {
-        console.log("User joined:", key, newPresences);
-        setLastActiveTime(Date.now());
-        // Cancel abandonment timer if player returns
-        if (abandonmentTimer) {
-          clearTimeout(abandonmentTimer);
-          setAbandonmentTimer(null);
-          setShowAbandonmentWarning(false);
-          toast.success("Player reconnected!");
-        }
-      })
-      .on("presence", { event: "leave" }, ({ key, leftPresences }) => {
-        console.log("User left:", key, leftPresences);
-
-        // Check if the left user is one of the players
-        const leftUser = leftPresences[0];
-        if (
-          leftUser &&
-          (leftUser.user_id === game.white_player_id ||
-            leftUser.user_id === game.black_player_id)
-        ) {
-          // Start 10-second abandonment timer
-          startAbandonmentTimer(leftUser.user_id);
-        }
-      })
-      .subscribe(async (status) => {
-        if (status === "SUBSCRIBED" && currentUser && !presenceTracked) {
-          await presenceChannel.track({
-            user_id: currentUser,
-            online_at: new Date().toISOString(),
-            last_seen: Date.now(),
-          });
-          setPresenceTracked(true);
-        }
-      });
-
-    return () => {
-      supabase.removeChannel(presenceChannel);
-      setPresenceTracked(false);
-      // Clean up abandonment timer
-      if (abandonmentTimer) {
-        clearTimeout(abandonmentTimer);
-        setAbandonmentTimer(null);
-        setShowAbandonmentWarning(false);
-      }
-    };
-  }, [currentUser, game?.id, game?.game_status]);
+  }, [gameId, loading, isMobile]);
 
   const getCurrentUser = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     setCurrentUser(user?.id || null);
   };
 
-  const startAbandonmentTimer = (leftUserId: string) => {
-    if (!game || game.game_status !== "active") return;
+  const handleTimeUp = async (player: 'white' | 'black') => {
+    if (!game || game.game_status !== 'active') return;
 
-    // Don't start timer if the current user is the one who left
-    if (leftUserId === currentUser) return;
+    const winnerId = player === 'white' ? game.black_player_id : game.white_player_id;
+    const loserId = player === 'white' ? game.white_player_id : game.black_player_id;
 
-    console.log("Starting abandonment timer for user:", leftUserId);
-    setShowAbandonmentWarning(true);
-    setAbandonmentCountdown(10);
+    await completeGame(winnerId, loserId, player === 'white' ? 'black_wins' : 'white_wins');
 
-    // Update countdown every second
-    const countdownInterval = setInterval(() => {
-      setAbandonmentCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(countdownInterval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    // Set main abandonment timer
-    const timer = setTimeout(async () => {
-      clearInterval(countdownInterval);
-      setShowAbandonmentWarning(false);
-      await handlePlayerAbandonment(leftUserId);
-    }, 10000); // 10 seconds
-
-    setAbandonmentTimer(timer);
+    setGameEndType("win");
+    setGameEndMessage(`${player === 'white' ? 'White' : 'Black'} ran out of time! ${player === 'white' ? 'Black' : 'White'} wins!`);
+    setShowGameEndDialog(true);
+    toast.success(`${player === 'white' ? 'Black' : 'White'} wins on time!`);
   };
 
-  const handlePlayerAbandonment = async (abandonedUserId: string) => {
-    if (!game || !currentUser) return;
+  const handlePlayerDisconnected = async (playerId: string) => {
+    if (!game || game.game_status !== 'active') return;
 
-    console.log("Player abandoned:", abandonedUserId);
-
-    // Determine winner (the player who didn't abandon)
-    const winnerId =
-      abandonedUserId === game.white_player_id
-        ? game.black_player_id
-        : game.white_player_id;
-
-    const loserId = abandonedUserId;
-
-    await completeGame(winnerId, loserId, "abandoned");
-
-    // Show appropriate message
-    if (abandonedUserId === currentUser) {
-      setGameEndMessage("You abandoned the game. Opponent wins!");
-      toast.error("You abandoned the game!");
-    } else {
-      setGameEndMessage("Opponent abandoned the game. You win!");
-      toast.success("You won by abandonment!");
-    }
+    const winnerId = playerId === game.white_player_id ? game.black_player_id : game.white_player_id;
+    
+    await completeGame(winnerId, playerId, 'abandoned');
 
     setGameEndType("disconnect");
+    setGameEndMessage(playerId === currentUser ? "You forfeited the game!" : "Opponent forfeited! You win!");
     setShowGameEndDialog(true);
-  };
-
-  const checkForDisconnection = async () => {
-    if (!game || game.game_status !== "active" || !currentUser) return;
-
-    const isPlayer =
-      currentUser === game.white_player_id ||
-      currentUser === game.black_player_id;
-    if (!isPlayer) return;
-
-    // Get current presence state
-    const presenceState = supabase
-      .channel(`presence_${gameId}`)
-      .presenceState();
-    const presentUserIds = Object.keys(presenceState);
-
-    // Check if both players are present
-    const whitePresent = presentUserIds.some((key) =>
-      presenceState[key].some(
-        (presence: any) => presence.user_id === game.white_player_id,
-      ),
-    );
-    const blackPresent = presentUserIds.some((key) =>
-      presenceState[key].some(
-        (presence: any) => presence.user_id === game.black_player_id,
-      ),
-    );
-
-    // Only trigger disconnection if one player is clearly absent for extended time
-    if ((!whitePresent || !blackPresent) && game.game_status === "active") {
-      // Additional check: verify the game hasn't been updated recently (within last 45 seconds)
-      const gameAge = Date.now() - new Date(game.updated_at!).getTime();
-      if (gameAge > 45000) {
-        // 45 seconds
-        setTimeout(async () => {
-          // Final check before marking as disconnected
-          const { data: currentGame } = await supabase
-            .from("chess_games")
-            .select("game_status, updated_at")
-            .eq("id", gameId)
-            .single();
-
-          if (currentGame?.game_status === "active") {
-            const finalGameAge =
-              Date.now() - new Date(currentGame.updated_at!).getTime();
-            if (finalGameAge > 60000) {
-              // 60 seconds total
-              await handleGameDisqualification();
-            }
-          }
-        }, 15000); // Additional 15 second delay
-      }
-    }
-  };
-
-  const handleGameDisqualification = async () => {
-    if (!game || !currentUser) return;
-
-    const winnerId =
-      currentUser === game.white_player_id
-        ? game.black_player_id
-        : game.white_player_id;
-    const loserId = currentUser;
-
-    await completeGame(winnerId, loserId, "abandoned");
-
-    setGameEndType("disconnect");
-    setGameEndMessage("Opponent disconnected. You win!");
-    setShowGameEndDialog(true);
-    toast.success("You won by forfeit!");
+    toast.success("Game won by forfeit!");
   };
 
   const completeGame = async (
@@ -315,7 +131,6 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     if (!game) return;
 
     try {
-      // Update game status
       const { error: gameError } = await supabase
         .from("chess_games")
         .update({
@@ -539,7 +354,6 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         return;
       }
 
-      // Fetch player profiles
       const gameWithPlayers: ChessGame = { ...gameData };
 
       if (gameData.white_player_id) {
@@ -559,14 +373,6 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
           .single();
         gameWithPlayers.black_player = blackPlayer;
       }
-
-      console.log("Game data updated:", {
-        id: gameWithPlayers.id,
-        board_state: gameWithPlayers.board_state,
-        current_turn: gameWithPlayers.current_turn,
-        move_history: gameWithPlayers.move_history?.length || 0,
-        status: gameWithPlayers.game_status,
-      });
 
       setGame(gameWithPlayers);
 
@@ -638,7 +444,6 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       return;
     }
 
-    // Check if it's the player's turn
     const isWhitePlayer = currentUser === game.white_player_id;
     const isBlackPlayer = currentUser === game.black_player_id;
 
@@ -656,7 +461,6 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       return;
     }
 
-    // Ensure game is active
     if (game.game_status !== "active") {
       if (game.game_status === "waiting") {
         toast.error("Waiting for another player to join");
@@ -667,17 +471,10 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     }
 
     try {
-      console.log("Attempting move:", from, "to", to);
-      console.log("Current board state:", game.board_state);
-
-      // Create a chess instance with current board state
       const chess = new Chess(game.board_state || undefined);
-
-      // Validate the move before attempting it
       const moves = chess.moves({ verbose: true });
       let validMove = moves.find((m) => m.from === from && m.to === to);
 
-      // For promotion moves, we need to check if any promotion option is valid
       if (!validMove && promotion) {
         validMove = moves.find(
           (m) => m.from === from && m.to === to && m.promotion === promotion,
@@ -685,89 +482,57 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       }
 
       if (!validMove) {
-        console.log("Invalid move attempted:", { from, to, promotion });
-        console.log(
-          "Valid moves from",
-          from,
-          ":",
-          moves.filter((m) => m.from === from),
-        );
         toast.error("Invalid move");
         return;
       }
 
-      // Try to make the move
-      const moveOptions: { from: string; to: string; promotion?: string } = {
-        from,
-        to,
-      };
+      const moveOptions: { from: string; to: string; promotion?: string } = { from, to };
       if (promotion) {
         moveOptions.promotion = promotion;
-        console.log("Making promotion move with piece:", promotion);
       }
 
       const move = chess.move(moveOptions);
       if (!move) {
-        console.error("Move validation passed but chess.move failed:", {
-          from,
-          to,
-          promotion,
-        });
         toast.error("Move failed");
         return;
       }
 
-      console.log("Valid move made:", move);
-
-      // Update game state in real-time
-      const moveNotation = promotion
-        ? `${from}-${to}=${promotion}`
-        : `${from}-${to}`;
+      const moveNotation = promotion ? `${from}-${to}=${promotion}` : `${from}-${to}`;
       const newMoveHistory = [...(game.move_history || []), moveNotation];
       const nextTurn = game.current_turn === "white" ? "black" : "white";
       const newBoardState = chess.fen();
 
-      // Check for game end conditions
-      let gameStatus: "waiting" | "active" | "completed" | "cancelled" =
-        game.game_status;
+      // Update time remaining for current player
+      const timeUsed = 5; // Assume 5 seconds per move for demo
+      const newWhiteTime = game.current_turn === "white" 
+        ? Math.max(0, (game.white_time_remaining || 600) - timeUsed)
+        : game.white_time_remaining || 600;
+      const newBlackTime = game.current_turn === "black" 
+        ? Math.max(0, (game.black_time_remaining || 600) - timeUsed)
+        : game.black_time_remaining || 600;
+
+      let gameStatus: "waiting" | "active" | "completed" | "cancelled" = game.game_status;
       let winnerId = null;
       let gameResult = null;
 
-      if (chess.isCheckmate()) {
+      // Check for time flag
+      if (newWhiteTime <= 0 || newBlackTime <= 0) {
         gameStatus = "completed";
-        winnerId =
-          game.current_turn === "white"
-            ? game.white_player_id
-            : game.black_player_id;
-        gameResult =
-          game.current_turn === "white" ? "white_wins" : "black_wins";
-        toast.success(
-          `Checkmate! ${game.current_turn === "white" ? "White" : "Black"} wins!`,
-        );
-
-        // Handle game completion
-        const loserId =
-          game.current_turn === "white"
-            ? game.black_player_id
-            : game.white_player_id;
-        await completeGame(winnerId, loserId, gameResult as any);
+        winnerId = newWhiteTime <= 0 ? game.black_player_id : game.white_player_id;
+        gameResult = newWhiteTime <= 0 ? "black_wins" : "white_wins";
+        toast.success(`${newWhiteTime <= 0 ? "White" : "Black"} flagged! ${newWhiteTime <= 0 ? "Black" : "White"} wins!`);
+      } else if (chess.isCheckmate()) {
+        gameStatus = "completed";
+        winnerId = game.current_turn === "white" ? game.white_player_id : game.black_player_id;
+        gameResult = game.current_turn === "white" ? "white_wins" : "black_wins";
+        toast.success(`Checkmate! ${game.current_turn === "white" ? "White" : "Black"} wins!`);
       } else if (chess.isDraw()) {
         gameStatus = "completed";
         gameResult = "draw";
         toast.success("Game ended in a draw!");
-
-        // Handle draw
-        await completeGame(null, null, "draw");
       } else if (chess.isCheck()) {
         toast.info(`${nextTurn === "white" ? "White" : "Black"} is in check!`);
       }
-
-      console.log("Updating database with:", {
-        move_history: newMoveHistory,
-        current_turn: nextTurn,
-        board_state: newBoardState,
-        game_status: gameStatus,
-      });
 
       const { error } = await supabase
         .from("chess_games")
@@ -775,6 +540,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
           move_history: newMoveHistory,
           current_turn: nextTurn,
           board_state: newBoardState,
+          white_time_remaining: newWhiteTime,
+          black_time_remaining: newBlackTime,
           game_status: gameStatus as any,
           winner_id: winnerId,
           game_result: gameResult as any,
@@ -787,7 +554,6 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         console.error("Move error:", error);
       } else {
         console.log("Move successfully saved to database");
-        setLastActiveTime(Date.now()); // Update last active time on successful move
       }
     } catch (error) {
       console.error("Error making move:", error);
@@ -795,38 +561,9 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     }
   };
 
-  const getPlayerColor = () => {
-    if (!game || !currentUser) return "white";
-    return currentUser === game.white_player_id ? "white" : "black";
-  };
-
-  const isPlayerTurn = () => {
-    if (!game || !currentUser) return false;
-    const isWhitePlayer = currentUser === game.white_player_id;
-    const isBlackPlayer = currentUser === game.black_player_id;
-
-    if (!isWhitePlayer && !isBlackPlayer) return false;
-
-    return (
-      (game.current_turn === "white" && isWhitePlayer) ||
-      (game.current_turn === "black" && isBlackPlayer)
-    );
-  };
-
   const isSpectator = () => {
     if (!game || !currentUser) return true;
-    return (
-      currentUser !== game.white_player_id &&
-      currentUser !== game.black_player_id
-    );
-  };
-
-  const getPlayerCount = () => {
-    if (!game) return 0;
-    let count = 0;
-    if (game.white_player_id) count++;
-    if (game.black_player_id) count++;
-    return count;
+    return currentUser !== game.white_player_id && currentUser !== game.black_player_id;
   };
 
   if (loading) {
@@ -856,94 +593,27 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     );
   }
 
-  const playerCount = getPlayerCount();
+  const playerCount = (game.white_player_id ? 1 : 0) + (game.black_player_id ? 1 : 0);
 
   return (
     <div className="space-y-4 pb-20 px-1 sm:px-2">
-      {/* Password Dialog */}
-      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-        <DialogContent className="w-[95vw] max-w-sm mx-auto bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl rounded-xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-white text-lg font-bold">
-              <Lock className="h-5 w-5 text-yellow-400" />
-              Enter Game Password
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3">
-            <Input
-              type="password"
-              placeholder="Enter password"
-              value={gamePassword}
-              onChange={(e) => setGamePassword(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handlePasswordSubmit()}
-              className="border-2 border-yellow-400 bg-gray-900 text-white font-medium text-base px-3 py-2 rounded-lg focus:border-purple-400"
-            />
-            <Button
-              onClick={handlePasswordSubmit}
-              className="w-full bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 font-bold text-base py-2 rounded-lg border-2 border-yellow-400 text-white shadow-lg"
-            >
-              Join Game
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Abandonment Warning Dialog */}
-      <Dialog open={showAbandonmentWarning} onOpenChange={() => {}}>
-        <DialogContent className="text-center w-[95vw] max-w-sm mx-auto bg-gradient-to-br from-orange-900 to-red-900 border-2 border-orange-400 shadow-2xl rounded-xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center justify-center gap-2 text-xl text-white font-bold">
-              <Clock className="h-6 w-6 text-orange-400" />
-              Player Disconnected!
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3">
-            <div className="text-orange-200 font-medium">
-              Opponent has left the game.
-              <br />
-              <span className="text-2xl font-bold text-orange-400">
-                {abandonmentCountdown}
-              </span>
-              <br />
-              seconds until forfeit...
-            </div>
-            <div className="w-full bg-orange-800 rounded-full h-2">
-              <div
-                className="bg-gradient-to-r from-orange-400 to-red-500 h-2 rounded-full transition-all duration-1000"
-                style={{ width: `${(abandonmentCountdown / 10) * 100}%` }}
-              ></div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Game End Dialog */}
       <Dialog open={showGameEndDialog} onOpenChange={setShowGameEndDialog}>
         <DialogContent className="text-center w-[95vw] max-w-sm mx-auto bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl rounded-xl">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-center gap-2 text-xl text-white font-bold">
-              {gameEndType === "win" && (
-                <Trophy className="h-6 w-6 text-yellow-400" />
-              )}
-              {gameEndType === "draw" && (
-                <Handshake className="h-6 w-6 text-purple-400" />
-              )}
-              {gameEndType === "disconnect" && (
-                <Crown className="h-6 w-6 text-yellow-400" />
-              )}
+              {gameEndType === "win" && <Trophy className="h-6 w-6 text-yellow-400" />}
+              {gameEndType === "draw" && <Handshake className="h-6 w-6 text-purple-400" />}
+              {gameEndType === "disconnect" && <Crown className="h-6 w-6 text-yellow-400" />}
               Game Over!
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <div
-              className={`text-lg font-bold p-3 rounded-lg border-2 ${
-                gameEndType === "win"
-                  ? "text-yellow-300 bg-yellow-900/30 border-yellow-400"
-                  : gameEndType === "draw"
-                    ? "text-purple-300 bg-purple-900/30 border-purple-400"
-                    : "text-yellow-300 bg-yellow-900/30 border-yellow-400"
-              }`}
-            >
+            <div className={`text-lg font-bold p-3 rounded-lg border-2 ${
+              gameEndType === "win" ? "text-yellow-300 bg-yellow-900/30 border-yellow-400" :
+              gameEndType === "draw" ? "text-purple-300 bg-purple-900/30 border-purple-400" :
+              "text-yellow-300 bg-yellow-900/30 border-yellow-400"
+            }`}>
               {gameEndMessage}
             </div>
             <Button
@@ -959,7 +629,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </DialogContent>
       </Dialog>
 
-      {/* Header */}
+      {/* Header with Connection Status */}
       <div className="flex items-center justify-between bg-gradient-to-r from-black to-purple-900 p-2 sm:p-3 rounded-lg shadow-lg border-2 border-yellow-400">
         <Button
           onClick={onBackToLobby}
@@ -970,6 +640,14 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
           Back
         </Button>
         <div className="flex items-center gap-2">
+          <DisconnectionTracker
+            gameId={gameId}
+            currentUser={currentUser}
+            whitePlayerId={game.white_player_id}
+            blackPlayerId={game.black_player_id}
+            gameStatus={game.game_status}
+            onPlayerDisconnected={handlePlayerDisconnected}
+          />
           <Badge className="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold px-2 py-1 text-xs sm:text-sm border-2 border-yellow-400 shadow-lg">
             <Zap className="h-3 w-3 mr-1" />
             {game.game_status}
@@ -991,7 +669,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </div>
       </div>
 
-      {/* Mobile Chat - Always available */}
+      {/* Mobile Chat */}
       {isMobile && showMobileChat && (
         <div className="bg-gradient-to-br from-black to-purple-900 rounded-lg shadow-lg border-2 border-yellow-400 p-2">
           <div className="flex items-center justify-between mb-2">
@@ -1011,7 +689,19 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </div>
       )}
 
-      {/* Game Info - Enhanced theme */}
+      {/* Time Controls */}
+      {game.game_status === 'active' && (
+        <TimeControl
+          whiteTime={game.white_time_remaining || 600}
+          blackTime={game.black_time_remaining || 600}
+          currentTurn={game.current_turn as 'white' | 'black'}
+          gameStatus={game.game_status}
+          onTimeUp={handleTimeUp}
+          isActive={!isSpectator()}
+        />
+      )}
+
+      {/* Game Info */}
       <Card className="bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl rounded-lg">
         <CardHeader className="pb-2">
           <CardTitle className="text-white flex items-center gap-2 text-base sm:text-lg font-bold">
@@ -1047,52 +737,46 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             </div>
             <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-2 rounded border-2 border-white text-center shadow-lg">
               <p className="text-gray-300 font-medium">Turn</p>
-              <p
-                className={`font-bold text-xs ${isPlayerTurn() ? "text-yellow-400" : "text-white"}`}
-              >
+              <p className="font-bold text-xs text-white">
                 {game.current_turn === "white" ? "⚪" : "⚫"}
-                {isPlayerTurn() && (
-                  <span className="block text-yellow-400">You!</span>
-                )}
               </p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Chess Board with Reactions Button */}
+      {/* Chess Board with Mobile Reactions */}
       <div className="relative">
-        <div
-          className="w-full"
-          key={`${game.board_state}-${game.current_turn}-${Date.now()}`}
-        >
+        <div className="w-full" key={`${game.board_state}-${game.current_turn}-${Date.now()}`}>
           <ChessBoard
             fen={game.board_state}
             onMove={handleMove}
-            playerColor={getPlayerColor()}
+            playerColor={currentUser === game.white_player_id ? "white" : "black"}
             disabled={game.game_status !== "active" || isSpectator()}
             isPlayerTurn={
-              isPlayerTurn() && game.game_status === "active" && !isSpectator()
+              ((game.current_turn === "white" && currentUser === game.white_player_id) ||
+               (game.current_turn === "black" && currentUser === game.black_player_id)) &&
+              game.game_status === "active" && !isSpectator()
             }
           />
         </div>
         
-        {/* Reactions Button - Better positioned */}
+        {/* Mobile-optimized Reactions */}
         {game.game_status === "active" && !isSpectator() && (
           <div className="absolute bottom-4 right-4 z-30">
-            <GameReactions gameId={gameId} />
+            <MobileGameReactions gameId={gameId} />
           </div>
         )}
       </div>
 
-      {/* Desktop Chat - always available for players */}
+      {/* Desktop Chat */}
       {!isMobile && !isSpectator() && (
         <div className="max-w-md mx-auto">
           <ChatSystem gameId={gameId} />
         </div>
       )}
 
-      {/* Game Status Messages - Enhanced theme */}
+      {/* Game Status Messages */}
       {game.game_status === "waiting" && playerCount < 2 && (
         <Card className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/30 border-2 border-yellow-400 shadow-lg rounded-lg">
           <CardContent className="p-3 text-center">
@@ -1103,25 +787,11 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </Card>
       )}
 
-      {game.game_status === "waiting" && playerCount === 2 && (
-        <Card className="bg-gradient-to-br from-purple-900/30 to-purple-800/30 border-2 border-purple-400 shadow-lg rounded-lg">
-          <CardContent className="p-3 text-center">
-            <p className="text-purple-200 font-bold text-sm">
-              Both players ready! Starting...
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
       {game.game_status === "active" && (
         <Card className="bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-white shadow-lg rounded-lg">
           <CardContent className="p-3 text-center">
             <p className="text-white font-bold text-sm">
-              {isSpectator()
-                ? "Spectating"
-                : isPlayerTurn()
-                  ? "Your move!"
-                  : `${game.current_turn} player's turn`}
+              {isSpectator() ? "Spectating" : `${game.current_turn} to move`}
             </p>
           </CardContent>
         </Card>
