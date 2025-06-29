@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,8 +55,11 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
       // Handle the case where profiles might be null or have errors
       const processedData = (data || []).map(transaction => ({
         ...transaction,
-        profiles: transaction.profiles && typeof transaction.profiles === 'object' && 'username' in transaction.profiles
-          ? transaction.profiles
+        profiles: transaction.profiles && 
+                 typeof transaction.profiles === 'object' && 
+                 'username' in transaction.profiles &&
+                 typeof transaction.profiles.username === 'string'
+          ? transaction.profiles as { username: string; full_name: string | null }
           : null
       }));
       
