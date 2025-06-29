@@ -93,68 +93,72 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
   };
 
   return (
-    <div className="relative">
-      {/* Floating Reactions */}
-      <div className="fixed inset-0 pointer-events-none z-40">
-        {reactions.map((reaction) => (
-          <div
-            key={reaction.id}
-            className="absolute animate-bounce"
-            style={{
-              left: `${Math.random() * 80 + 10}%`,
-              top: `${Math.random() * 60 + 20}%`,
-              animation: 'fadeInOut 5s ease-in-out forwards',
-            }}
-          >
-            <div className="bg-black/80 text-white px-2 py-1 rounded-lg text-sm flex items-center gap-1 shadow-lg">
-              <span className="text-lg">{reaction.emoji}</span>
-              <span className="text-xs">{reaction.username}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Emoji Picker Button */}
-      <div className="relative">
-        <Button
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          variant="outline"
-          size="sm"
-          className="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 border-2 border-yellow-400 text-white"
-        >
-          <Smile className="h-4 w-4" />
-        </Button>
-
-        {/* Emoji Picker */}
-        {showEmojiPicker && (
-          <Card className="absolute bottom-full mb-2 right-0 bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl z-50">
-            <CardContent className="p-2">
-              <div className="grid grid-cols-5 gap-1">
-                {AVAILABLE_EMOJIS.map((emoji) => (
-                  <Button
-                    key={emoji}
-                    onClick={() => sendReaction(emoji)}
-                    variant="ghost"
-                    size="sm"
-                    className="text-lg hover:bg-purple-800/50 w-8 h-8 p-0"
-                  >
-                    {emoji}
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-
-      <style jsx>{`
+    <>
+      <style>{`
         @keyframes fadeInOut {
           0% { opacity: 0; transform: translateY(20px) scale(0.8); }
           20% { opacity: 1; transform: translateY(-10px) scale(1.1); }
           80% { opacity: 1; transform: translateY(-20px) scale(1); }
           100% { opacity: 0; transform: translateY(-40px) scale(0.8); }
         }
+        .reaction-animation {
+          animation: fadeInOut 5s ease-in-out forwards;
+        }
       `}</style>
-    </div>
+      
+      <div className="relative">
+        {/* Floating Reactions */}
+        <div className="fixed inset-0 pointer-events-none z-40">
+          {reactions.map((reaction) => (
+            <div
+              key={reaction.id}
+              className="absolute reaction-animation"
+              style={{
+                left: `${Math.random() * 80 + 10}%`,
+                top: `${Math.random() * 60 + 20}%`,
+              }}
+            >
+              <div className="bg-black/80 text-white px-2 py-1 rounded-lg text-sm flex items-center gap-1 shadow-lg">
+                <span className="text-lg">{reaction.emoji}</span>
+                <span className="text-xs">{reaction.username}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Emoji Picker Button */}
+        <div className="relative">
+          <Button
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            variant="outline"
+            size="sm"
+            className="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 border-2 border-yellow-400 text-white"
+          >
+            <Smile className="h-4 w-4" />
+          </Button>
+
+          {/* Emoji Picker */}
+          {showEmojiPicker && (
+            <Card className="absolute bottom-full mb-2 right-0 bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl z-50">
+              <CardContent className="p-2">
+                <div className="grid grid-cols-5 gap-1">
+                  {AVAILABLE_EMOJIS.map((emoji) => (
+                    <Button
+                      key={emoji}
+                      onClick={() => sendReaction(emoji)}
+                      variant="ghost"
+                      size="sm"
+                      className="text-lg hover:bg-purple-800/50 w-8 h-8 p-0"
+                    >
+                      {emoji}
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+    </>
   );
 };
