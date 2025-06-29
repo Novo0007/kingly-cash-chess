@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Smile } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface GameReaction {
   id: string;
@@ -29,14 +30,23 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
   const channelRef = useRef<any>(null);
   const timeoutRefs = useRef<Set<NodeJS.Timeout>>(new Set());
 
+  // Cleanup function
+  const cleanup = useCallback(() => {
+    if (channelRef.current) {
+      console.log('Cleaning up GameReactions channel');
+      supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+    }
+    timeoutRefs.current.forEach(timeout => clearTimeout(timeout));
+    timeoutRefs.current.clear();
+    setIsConnected(false);
+  }, []);
+
   useEffect(() => {
     return () => {
-      timeoutRefs.current.forEach(timeout => clearTimeout(timeout));
-      if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
-      }
+      cleanup();
     };
-  }, []);
+  }, [cleanup]);
 
   useEffect(() => {
     getCurrentUser();
@@ -45,17 +55,7 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
     return () => {
       cleanup();
     };
-  }, [gameId]);
-
-  const cleanup = useCallback(() => {
-    if (channelRef.current) {
-      supabase.removeChannel(channelRef.current);
-      channelRef.current = null;
-    }
-    timeoutRefs.current.forEach(timeout => clearTimeout(timeout));
-    timeoutRefs.current.clear();
-    setIsConnected(false);
-  }, []);
+  }, [gameId, cleanup]);
 
   const getCurrentUser = useCallback(async () => {
     try {
@@ -77,12 +77,16 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
   }, []);
 
   const setupRealtimeChannel = useCallback(() => {
+    // Always cleanup existing channel first
     if (channelRef.current) {
       cleanup();
     }
 
+    const channelName = `desktop-reactions-${gameId}`;
+    console.log('Setting up GameReactions channel:', channelName);
+
     const channel = supabase
-      .channel(`game-reactions-${gameId}`, {
+      .channel(channelName, {
         config: {
           broadcast: { self: true },
           presence: { key: currentUser || 'anonymous' }
@@ -90,7 +94,7 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
       })
       .on('broadcast', { event: 'new_reaction' }, (payload) => {
         try {
-          console.log('Received reaction:', payload);
+          console.log('GameReactions received reaction:', payload);
           const newReaction = payload.payload as GameReaction;
           
           if (!newReaction || !newReaction.id) return;
@@ -112,7 +116,7 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
         }
       })
       .subscribe(async (status) => {
-        console.log('Game reactions channel status:', status);
+        console.log('GameReactions channel status:', status);
         setIsConnected(status === 'SUBSCRIBED');
         
         if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
@@ -142,7 +146,7 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
     };
 
     try {
-      console.log('Sending reaction:', reaction);
+      console.log('GameReactions sending reaction:', reaction);
 
       const result = await channelRef.current.send({
         type: 'broadcast',
@@ -150,7 +154,7 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
         payload: reaction
       });
 
-      console.log('Reaction broadcast result:', result);
+      console.log('GameReactions send result:', result);
 
       if (result === 'ok') {
         setShowEmojiPicker(false);
@@ -176,6 +180,13 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
           }
           .reaction-animation {
             animation: fadeInOut 5s ease-in-out forwards;
+          }
+          @keyframes scaleIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+          }
+          .animate-scale-in {
+            animation: scaleIn 0.2s ease-out forwards;
           }
         `}
       </style>
@@ -207,11 +218,12 @@ export const GameReactions: React.FC<GameReactionsProps> = ({ gameId }) => {
             variant="outline"
             size="sm"
             disabled={!isConnected || !currentUser}
-            className={`transition-all duration-200 ${
+            className={cn(
+              "transition-all duration-200",
               isConnected && currentUser
                 ? "bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 border-2 border-yellow-400 text-white shadow-lg hover:shadow-xl"
                 : "bg-gray-600 border-gray-500 text-gray-300 opacity-50 cursor-not-allowed"
-            }`}
+            )}
             title={isConnected && currentUser ? "Send Emoji Reaction" : "Login required"}
           >
             <Smile className="h-4 w-4" />
