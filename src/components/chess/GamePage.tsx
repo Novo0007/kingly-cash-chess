@@ -52,16 +52,17 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const [gameEndMessage, setGameEndMessage] = useState("");
   const [gameEndType, setGameEndType] = useState<"win" | "draw" | "disconnect">("win");
   const [showMobileChat, setShowMobileChat] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const { isMobile } = useDeviceType();
 
   useEffect(() => {
     getCurrentUser();
     fetchGame();
 
-    // Optimized refresh intervals for mobile
-    const refreshInterval = isMobile ? 10000 : 6000; // Less frequent on mobile
+    // Faster refresh intervals for better responsiveness
+    const refreshInterval = isMobile ? 3000 : 2000; // Much faster refresh
     const autoRefreshInterval = setInterval(() => {
-      if (!loading) {
+      if (!loading && !isUpdating) {
         fetchGame();
       }
     }, refreshInterval);
@@ -79,12 +80,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         (payload) => {
           console.log("Real-time game update received:", payload);
           if (payload.new) {
-            // Debounce rapid updates on mobile
-            if (isMobile) {
-              setTimeout(() => fetchGame(), 500);
-            } else {
-              fetchGame();
-            }
+            // Immediate update for real-time changes
+            fetchGame();
           }
         },
       )
@@ -94,7 +91,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       clearInterval(autoRefreshInterval);
       supabase.removeChannel(gameSubscription);
     };
-  }, [gameId, loading, isMobile]);
+  }, [gameId, loading, isUpdating, isMobile]);
 
   const getCurrentUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -345,6 +342,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   };
 
   const fetchGame = async () => {
+    if (isUpdating) return; // Prevent concurrent updates
+    
     try {
       console.log("Fetching game data for:", gameId);
       const { data: gameData, error } = await supabase
@@ -361,23 +360,40 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
       const gameWithPlayers: ChessGame = { ...gameData };
 
+      // Fetch player data in parallel for faster loading
+      const playerPromises = [];
+      
       if (gameData.white_player_id) {
-        const { data: whitePlayer } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", gameData.white_player_id)
-          .single();
-        gameWithPlayers.white_player = whitePlayer;
+        playerPromises.push(
+          supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", gameData.white_player_id)
+            .single()
+            .then(({ data }) => ({ type: 'white', data }))
+        );
       }
 
       if (gameData.black_player_id) {
-        const { data: blackPlayer } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", gameData.black_player_id)
-          .single();
-        gameWithPlayers.black_player = blackPlayer;
+        playerPromises.push(
+          supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", gameData.black_player_id)
+            .single()
+            .then(({ data }) => ({ type: 'black', data }))
+        );
       }
+
+      const playerResults = await Promise.all(playerPromises);
+      
+      playerResults.forEach(result => {
+        if (result.type === 'white') {
+          gameWithPlayers.white_player = result.data;
+        } else {
+          gameWithPlayers.black_player = result.data;
+        }
+      });
 
       setGame(gameWithPlayers);
 
@@ -444,16 +460,19 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   };
 
   const handleMove = async (from: string, to: string, promotion?: string) => {
-    if (!game || !currentUser) {
-      console.log("No game or user found");
+    if (!game || !currentUser || isUpdating) {
+      console.log("No game, user found, or update in progress");
       return;
     }
+
+    setIsUpdating(true); // Prevent concurrent updates
 
     const isWhitePlayer = currentUser === game.white_player_id;
     const isBlackPlayer = currentUser === game.black_player_id;
 
     if (!isWhitePlayer && !isBlackPlayer) {
       toast.error("You are not a player in this game");
+      setIsUpdating(false);
       return;
     }
 
@@ -463,6 +482,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
     if (!isPlayerTurn) {
       toast.error("Not your turn");
+      setIsUpdating(false);
       return;
     }
 
@@ -472,6 +492,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       } else {
         toast.error("Game is not active");
       }
+      setIsUpdating(false);
       return;
     }
 
@@ -488,6 +509,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
       if (!validMove) {
         toast.error("Invalid move");
+        setIsUpdating(false);
         return;
       }
 
@@ -499,6 +521,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       const move = chess.move(moveOptions);
       if (!move) {
         toast.error("Move failed");
+        setIsUpdating(false);
         return;
       }
 
@@ -507,8 +530,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       const nextTurn = game.current_turn === "white" ? "black" : "white";
       const newBoardState = chess.fen();
 
-      // Update time remaining for current player - mobile optimized
-      const timeUsed = isMobile ? 3 : 5; // Less time penalty on mobile
+      // Reduced time penalty for faster gameplay
+      const timeUsed = isMobile ? 1 : 2; // Much less time penalty
       const newWhiteTime = game.current_turn === "white" 
         ? Math.max(0, (game.white_time_remaining || 600) - timeUsed)
         : game.white_time_remaining || 600;
@@ -539,6 +562,22 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         toast.info(`${nextTurn === "white" ? "White" : "Black"} is in check!`);
       }
 
+      // Optimistic update - update local state immediately
+      setGame(prevGame => {
+        if (!prevGame) return prevGame;
+        return {
+          ...prevGame,
+          move_history: newMoveHistory,
+          current_turn: nextTurn as any,
+          board_state: newBoardState,
+          white_time_remaining: newWhiteTime,
+          black_time_remaining: newBlackTime,
+          game_status: gameStatus as any,
+          winner_id: winnerId,
+          game_result: gameResult as any,
+        };
+      });
+
       const { error } = await supabase
         .from("chess_games")
         .update({
@@ -557,12 +596,18 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       if (error) {
         toast.error("Failed to make move");
         console.error("Move error:", error);
+        // Revert optimistic update on error
+        fetchGame();
       } else {
         console.log("Move successfully saved to database");
       }
     } catch (error) {
       console.error("Error making move:", error);
       toast.error("Failed to make move");
+      // Revert optimistic update on error
+      fetchGame();
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -757,11 +802,11 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             fen={game.board_state}
             onMove={handleMove}
             playerColor={currentUser === game.white_player_id ? "white" : "black"}
-            disabled={game.game_status !== "active" || isSpectator()}
+            disabled={game.game_status !== "active" || isSpectator() || isUpdating}
             isPlayerTurn={
               ((game.current_turn === "white" && currentUser === game.white_player_id) ||
                (game.current_turn === "black" && currentUser === game.black_player_id)) &&
-              game.game_status === "active" && !isSpectator()
+              game.game_status === "active" && !isSpectator() && !isUpdating
             }
           />
         </div>
