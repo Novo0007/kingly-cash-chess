@@ -80,14 +80,15 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
     }
 
     const channel = supabase
-      .channel(`mobile-reactions-${gameId}`, {
+      .channel(`game-reactions-${gameId}`, {
         config: {
-          broadcast: { self: false },
+          broadcast: { self: true },
           presence: { key: currentUser || 'anonymous' }
         }
       })
-      .on('broadcast', { event: 'reaction' }, (payload) => {
+      .on('broadcast', { event: 'new_reaction' }, (payload) => {
         try {
+          console.log('Received reaction:', payload);
           const newReaction = payload.payload as GameReaction;
           
           if (!newReaction || !newReaction.id) return;
@@ -98,11 +99,11 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
             return updated.slice(-5); // Keep only last 5 reactions for performance
           });
           
-          // Auto-remove after 2.5 seconds for mobile performance
+          // Auto-remove after 3 seconds for mobile performance
           const timeout = setTimeout(() => {
             setReactions(prev => prev.filter(r => r.id !== newReaction.id));
             timeoutRefs.current.delete(timeout);
-          }, 2500);
+          }, 3000);
           
           timeoutRefs.current.add(timeout);
         } catch (error) {
@@ -141,27 +142,19 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
     };
 
     try {
+      console.log('Sending reaction:', reaction);
+      
       const result = await channelRef.current.send({
         type: 'broadcast',
-        event: 'reaction',
+        event: 'new_reaction',
         payload: reaction
       });
 
+      console.log('Reaction send result:', result);
+
       if (result === 'ok') {
-        // Add locally for immediate feedback
-        setReactions(prev => {
-          if (prev.some(r => r.id === reaction.id)) return prev;
-          return [...prev.slice(-4), reaction];
-        });
-        
         setShowEmojiPicker(false);
-        
-        const timeout = setTimeout(() => {
-          setReactions(prev => prev.filter(r => r.id !== reaction.id));
-          timeoutRefs.current.delete(timeout);
-        }, 2500);
-        
-        timeoutRefs.current.add(timeout);
+        toast.success(`${emoji} sent!`);
       } else {
         throw new Error('Failed to send reaction');
       }
@@ -182,7 +175,7 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
             style={{
               left: `${Math.random() * 50 + 25}%`,
               top: `${Math.random() * 30 + 35}%`,
-              animationDuration: '2.5s',
+              animationDuration: '3s',
               animationFillMode: 'forwards',
               animationDelay: `${index * 0.1}s`
             }}
@@ -201,19 +194,19 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
           variant="outline"
           size="sm"
-          disabled={!isConnected}
+          disabled={!isConnected || !currentUser}
           className={cn(
             "border-2 text-white shadow-lg w-10 h-10 p-0 transition-all duration-200",
-            isConnected 
+            isConnected && currentUser
               ? "bg-purple-600 hover:bg-purple-700 border-yellow-400 hover:shadow-xl" 
               : "bg-gray-600 border-gray-500 opacity-50 cursor-not-allowed"
           )}
-          title={isConnected ? "React" : "Connecting..."}
+          title={isConnected && currentUser ? "React" : "Connecting..."}
         >
           <Smile className="h-4 w-4" />
         </Button>
 
-        {showEmojiPicker && isConnected && (
+        {showEmojiPicker && isConnected && currentUser && (
           <Card className="absolute bottom-full mb-2 right-0 bg-black/95 backdrop-blur-sm border-yellow-400 shadow-xl z-50 animate-scale-in">
             <CardContent className="p-1">
               <div className="grid grid-cols-4 gap-1">
@@ -234,7 +227,7 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
         )}
       </div>
 
-      {/* Connection indicator for debugging */}
+      {/* Connection indicator */}
       {!isConnected && (
         <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
       )}

@@ -20,6 +20,7 @@ import { ChallengePopup } from "./ChallengePopup";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import type { Tables } from "@/integrations/supabase/types";
+import { UserProfileDialog } from './UserProfileDialog';
 
 type Profile = Tables<"profiles">;
 type Friendship = Tables<"friendships">;
@@ -51,6 +52,13 @@ export const FriendsSystem = () => {
   });
   const [sentChallenges, setSentChallenges] = useState<any[]>([]);
   const [receivedChallenges, setReceivedChallenges] = useState<any[]>([]);
+  const [profileDialog, setProfileDialog] = useState<{
+    open: boolean;
+    profile: Profile | null;
+  }>({
+    open: false,
+    profile: null,
+  });
 
   useEffect(() => {
     getCurrentUser();
@@ -584,6 +592,13 @@ export const FriendsSystem = () => {
     });
   };
 
+  const openProfileDialog = (profile: Profile) => {
+    setProfileDialog({
+      open: true,
+      profile,
+    });
+  };
+
   const filteredUsers = allUsers.filter((user) =>
     user.username.toLowerCase().includes(searchTerm.toLowerCase()),
   );
@@ -612,6 +627,14 @@ export const FriendsSystem = () => {
               amount,
               challengePopup.gameType,
             )
+          }
+        />
+
+        <UserProfileDialog
+          profile={profileDialog.profile}
+          open={profileDialog.open}
+          onOpenChange={(open) =>
+            setProfileDialog((prev) => ({ ...prev, open }))
           }
         />
 
@@ -744,7 +767,10 @@ export const FriendsSystem = () => {
                   className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-indigo-300/30 hover:bg-white/15 transition-colors space-y-3 sm:space-y-0"
                 >
                   <div className="flex-1">
-                    <p className="text-white font-bold text-lg flex items-center gap-2">
+                    <p 
+                      className="text-white font-bold text-lg flex items-center gap-2 cursor-pointer hover:text-purple-300 transition-colors"
+                      onClick={() => openProfileDialog(user)}
+                    >
                       <Crown className="h-5 w-5 text-yellow-400" />
                       👤 {user.username}
                     </p>
@@ -832,7 +858,10 @@ export const FriendsSystem = () => {
                     className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-teal-300/30 hover:bg-white/15 transition-colors space-y-3 sm:space-y-0"
                   >
                     <div className="flex-1">
-                      <p className="text-white font-bold text-lg flex items-center gap-2">
+                      <p 
+                        className="text-white font-bold text-lg flex items-center gap-2 cursor-pointer hover:text-teal-300 transition-colors"
+                        onClick={() => friendship.friend && openProfileDialog(friendship.friend)}
+                      >
                         <Crown className="h-5 w-5 text-yellow-400" />
                         👤 {friendship.friend?.username}
                       </p>
