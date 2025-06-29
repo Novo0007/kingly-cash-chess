@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { LudoBoard } from "./LudoBoard";
@@ -67,6 +68,7 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
   const [showAbandonmentWarning, setShowAbandonmentWarning] = useState(false);
   const [abandonmentCountdown, setAbandonmentCountdown] = useState(10);
   const [presenceTracked, setPresenceTracked] = useState(false);
+  const [autoStartAttempted, setAutoStartAttempted] = useState(false);
   const { isMobile } = useDeviceType();
 
   useEffect(() => {
@@ -306,40 +308,55 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
         setShowGameEndDialog(true);
       }
 
-      // Improved auto-start logic - start game when we have 2+ players and game is still waiting
+      // Fixed auto-start logic - only attempt once per game load
       if (
         gameWithPlayers.game_status === "waiting" &&
-        gameWithPlayers.current_players >= 2
+        gameWithPlayers.current_players >= 2 &&
+        !autoStartAttempted
       ) {
         console.log(
-          "Auto-starting Ludo game with",
+          "🚀 Auto-starting Ludo game with",
           gameWithPlayers.current_players,
           "players"
         );
         
-        // Initialize game state properly
-        const initialGameState = initializeGameState(gameWithPlayers.current_players);
+        setAutoStartAttempted(true); // Prevent multiple attempts
         
-        const { error: startError } = await supabase
-          .from("ludo_games")
-          .update({
-            game_status: "active",
-            game_state: initialGameState,
-            current_turn: "red", // Red player always starts
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", gameId);
+        try {
+          // Initialize game state properly
+          const initialGameState = initializeGameState(gameWithPlayers.current_players);
+          
+          const { error: startError } = await supabase
+            .from("ludo_games")
+            .update({
+              game_status: "active",
+              game_state: initialGameState,
+              current_turn: "red", // Red player always starts
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", gameId);
 
-        if (startError) {
-          console.error("Error starting game:", startError);
-          toast.error("Failed to start game");
-        } else {
-          console.log("Game started successfully!");
-          toast.success("Game started! Red player goes first.");
-          // Refresh to get updated game state
-          setTimeout(() => fetchGame(), 1000);
+          if (startError) {
+            console.error("❌ Error starting game:", startError);
+            toast.error("Failed to start game");
+            setAutoStartAttempted(false); // Allow retry on error
+          } else {
+            console.log("✅ Game started successfully!");
+            toast.success("🎮 Game started! Red player goes first.");
+            // Don't call fetchGame here to avoid infinite loop
+            // The real-time subscription will handle the update
+          }
+        } catch (error) {
+          console.error("❌ Exception starting game:", error);
+          setAutoStartAttempted(false); // Allow retry on exception
         }
       }
+
+      // Reset auto-start flag if game is no longer waiting
+      if (gameWithPlayers.game_status !== "waiting" && autoStartAttempted) {
+        setAutoStartAttempted(false);
+      }
+      
     } catch (error) {
       console.error("Error fetching ludo game:", error);
       toast.error("Error loading game");
@@ -349,7 +366,7 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
   };
 
   const initializeGameState = (playerCount: number) => {
-    console.log("Initializing game state for", playerCount, "players");
+    console.log("🔧 Initializing game state for", playerCount, "players");
     
     // Map player colors based on how many players joined
     const availableColors = ["red", "blue", "green", "yellow"];
@@ -380,7 +397,7 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
       lastRoll: null,
     };
 
-    console.log("Initialized game state:", gameState);
+    console.log("🎯 Initialized game state:", gameState);
     return gameState;
   };
 
