@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ChessBoard } from "./ChessBoard";
 import { ChatSystem } from "../chat/ChatSystem";
 import { MobileGameReactions } from "./MobileGameReactions";
+import { GameReactions } from "./GameReactions";
 import { TimeControl } from "./TimeControl";
 import { DisconnectionTracker } from "./DisconnectionTracker";
 import { Button } from "@/components/ui/button";
@@ -795,7 +796,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </CardContent>
       </Card>
 
-      {/* Chess Board with Mobile Reactions */}
+      {/* Chess Board with Reactions */}
       <div className="relative">
         <div className="w-full" key={`${game.board_state}-${game.current_turn}-${Date.now()}`}>
           <ChessBoard
@@ -818,6 +819,13 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
           </div>
         )}
       </div>
+
+      {/* Desktop Reactions */}
+      {!isMobile && game.game_status === "active" && !isSpectator() && (
+        <div className="flex justify-center">
+          <GameReactions gameId={gameId} />
+        </div>
+      )}
 
       {/* Desktop Chat */}
       {!isMobile && !isSpectator() && (
