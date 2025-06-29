@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, Crown, Star, Timer, Zap } from "lucide-react";
+import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, Crown, Star, Timer, Users, Home, Target } from "lucide-react";
 import {
   LudoGameState,
   LudoPiece,
@@ -43,7 +43,17 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
   const [isRolling, setIsRolling] = useState(false);
   const [validMoves, setValidMoves] = useState<number[]>([]);
   const [turnTimeLeft, setTurnTimeLeft] = useState(30);
-  const [showMoveHint, setShowMoveHint] = useState(false);
+  const [hasRolledThisTurn, setHasRolledThisTurn] = useState(false);
+
+  // Modern color palette
+  const modernColors = {
+    red: "#FF6B6B",
+    blue: "#4ECDC4", 
+    green: "#45B7D1",
+    yellow: "#FFA07A",
+    purple: "#98D8C8",
+    orange: "#F7DC6F"
+  };
 
   // Turn timer
   useEffect(() => {
@@ -52,9 +62,9 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
     const timer = setInterval(() => {
       setTurnTimeLeft(prev => {
         if (prev <= 1) {
-          toast.error("Time's up! Turn skipped.");
-          // Auto-pass turn after timeout
-          setTimeout(() => setDiceValue(null), 1000);
+          toast.error("Time's up! Turn passed.");
+          setDiceValue(null);
+          setHasRolledThisTurn(false);
           return 30;
         }
         return prev - 1;
@@ -69,6 +79,7 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
     setTurnTimeLeft(30);
     setSelectedPiece(null);
     setValidMoves([]);
+    setHasRolledThisTurn(false);
   }, [currentPlayer]);
 
   // Update dice value from game state
@@ -80,15 +91,15 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
   }, [gameState.diceValue]);
 
   const rollDice = useCallback(async () => {
-    if (!isPlayerTurn || disabled || isRolling || diceValue !== null) return;
+    if (!isPlayerTurn || disabled || isRolling || hasRolledThisTurn) return;
 
     setIsRolling(true);
-    setShowMoveHint(false);
+    setHasRolledThisTurn(true);
 
-    // Animated dice roll
+    // Simple dice roll animation
     const rollAnimation = setInterval(() => {
       setDiceValue(Math.floor(Math.random() * 6) + 1);
-    }, 100);
+    }, 80);
 
     setTimeout(() => {
       clearInterval(rollAnimation);
@@ -99,18 +110,16 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
       // Check for valid moves
       const moves = calculateValidMoves(finalValue);
       if (moves.length === 0) {
-        toast.info("No valid moves! Turn will pass automatically.");
+        toast.info("No valid moves! Turn passed.");
         setTimeout(() => {
           setDiceValue(null);
+          setHasRolledThisTurn(false);
         }, 2000);
-      } else if (moves.length === 1) {
-        setShowMoveHint(true);
-        toast.success(`You can move piece ${moves[0] + 1}!`);
       } else {
-        toast.success(`You rolled ${finalValue}! Choose a piece to move.`);
+        toast.success(`Rolled ${finalValue}! Choose a piece to move.`);
       }
-    }, 1000);
-  }, [isPlayerTurn, disabled, isRolling, diceValue]);
+    }, 800);
+  }, [isPlayerTurn, disabled, isRolling, hasRolledThisTurn]);
 
   const calculateValidMoves = useCallback((steps: number): number[] => {
     if (!gameState.pieces[playerColor]) return [];
@@ -129,17 +138,14 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
   }, [gameState.pieces, playerColor]);
 
   const canMovePiece = (piece: LudoPiece, steps: number): boolean => {
-    // Piece in home can only move out with a 6
     if (piece.position === "home") {
       return canMovePieceOut(steps);
     }
 
-    // Finished pieces can't move
     if (piece.position === "finished") {
       return false;
     }
 
-    // Active pieces can move if they don't exceed the path
     if (piece.position === "active") {
       const newPos = calculateNewPosition(playerColor, piece.pathPosition, steps);
       return newPos !== null;
@@ -167,9 +173,12 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
         return;
       }
 
-      // If not a 6, clear dice for next player
+      // If not a 6, clear dice and reset turn flags
       if (diceValue !== 6) {
         setDiceValue(null);
+        setHasRolledThisTurn(false);
+      } else {
+        setHasRolledThisTurn(false); // Allow another roll for 6
       }
       
       setSelectedPiece(null);
@@ -191,64 +200,50 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
         <div className="relative">
           <Button
             onClick={rollDice}
-            disabled={!isPlayerTurn || disabled || isRolling || diceValue !== null}
+            disabled={!isPlayerTurn || disabled || isRolling || hasRolledThisTurn}
             className={`
-              w-20 h-20 rounded-xl border-4 transition-all duration-300 shadow-2xl
-              ${isPlayerTurn && !disabled && diceValue === null
-                ? "bg-gradient-to-br from-yellow-400 to-orange-500 border-yellow-600 hover:scale-110 hover:rotate-12 shadow-yellow-400/50"
-                : "bg-gray-400 border-gray-500 cursor-not-allowed opacity-60"
+              w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-2 transition-all duration-200 shadow-lg
+              ${isPlayerTurn && !disabled && !hasRolledThisTurn
+                ? "bg-white border-blue-300 hover:border-blue-500 hover:scale-105 text-gray-700"
+                : "bg-gray-100 border-gray-300 cursor-not-allowed opacity-60 text-gray-400"
               }
-              ${isRolling ? "animate-spin scale-110" : ""}
             `}
           >
-            <DiceIcon className="w-10 h-10 text-white drop-shadow-lg" />
+            <DiceIcon className="w-8 h-8 sm:w-10 sm:h-10" />
           </Button>
           
           {diceValue && !isRolling && (
-            <div className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm animate-pulse border-2 border-white">
+            <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
               {diceValue}
-            </div>
-          )}
-          
-          {gameState.consecutiveSixes > 0 && (
-            <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-              <Zap className="w-3 h-3" />
             </div>
           )}
         </div>
 
-        {/* Turn timer */}
+        {/* Turn timer - mobile friendly */}
         {isPlayerTurn && !disabled && (
-          <div className="flex items-center gap-2 bg-blue-900/30 px-3 py-1 rounded-full border border-blue-400">
-            <Timer className="w-4 h-4 text-blue-300" />
-            <span className={`font-bold ${turnTimeLeft <= 10 ? "text-red-400 animate-pulse" : "text-blue-300"}`}>
+          <div className="flex items-center gap-2 bg-white/90 px-3 py-1 rounded-full border border-gray-200 shadow-sm">
+            <Timer className="w-3 h-3 text-blue-500" />
+            <span className={`font-medium text-sm ${turnTimeLeft <= 10 ? "text-red-500" : "text-gray-700"}`}>
               {turnTimeLeft}s
             </span>
           </div>
         )}
 
-        {/* Status message */}
+        {/* Status message - simplified */}
         <div className="text-center">
           {isRolling && (
-            <p className="text-yellow-300 font-bold animate-pulse">🎲 Rolling...</p>
+            <p className="text-blue-600 font-medium text-sm">Rolling...</p>
           )}
-          {!isRolling && isPlayerTurn && !diceValue && (
-            <p className="text-green-300 font-bold">🎯 Your Turn - Roll Dice!</p>
+          {!isRolling && isPlayerTurn && !hasRolledThisTurn && (
+            <p className="text-green-600 font-medium text-sm">Your Turn - Roll Dice!</p>
           )}
           {!isRolling && isPlayerTurn && diceValue && validMoves.length > 0 && (
-            <p className="text-blue-300 font-bold">🎮 Choose a piece to move!</p>
+            <p className="text-blue-600 font-medium text-sm">Choose a piece to move</p>
           )}
           {!isPlayerTurn && (
-            <p className="text-gray-400">⏳ Waiting for {currentPlayer}...</p>
+            <p className="text-gray-500 text-sm">Waiting for {currentPlayer}...</p>
           )}
         </div>
-
-        {/* Move hint */}
-        {showMoveHint && validMoves.length === 1 && (
-          <div className="bg-green-800/50 border border-green-400 rounded-lg p-2 text-green-200 text-sm animate-pulse">
-            💡 Click on piece #{validMoves[0] + 1} to move!
-          </div>
-        )}
       </div>
     );
   };
@@ -264,21 +259,21 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
         const isStart = isStartCell(row, col);
         const isCenter = row === 7 && col === 7;
 
-        let cellColor = "bg-orange-50";
-        let borderClass = "border border-orange-200";
+        let cellColor = "bg-gray-50";
+        let borderClass = "border border-gray-200";
         
         if (isCenter) {
-          cellColor = "bg-gradient-to-br from-yellow-400 to-orange-500";
-          borderClass = "border-2 border-yellow-600";
+          cellColor = "bg-gradient-to-br from-yellow-300 to-yellow-400";
+          borderClass = "border-2 border-yellow-500";
         } else if (isHome) {
-          cellColor = getHomeColor(row, col);
-          borderClass = "border-2 border-white/50";
+          cellColor = getModernHomeColor(row, col);
+          borderClass = "border-2 border-white";
         } else if (isSafe) {
-          cellColor = "bg-gradient-to-br from-green-200 to-emerald-300";
-          borderClass = "border-2 border-green-500";
+          cellColor = "bg-gradient-to-br from-green-100 to-green-200";
+          borderClass = "border-2 border-green-400";
         } else if (isPath) {
-          cellColor = "bg-gradient-to-br from-orange-100 to-yellow-100";
-          borderClass = "border border-orange-300";
+          cellColor = "bg-white";
+          borderClass = "border border-gray-300";
         }
 
         const pieces = getPiecesAtPosition(row, col);
@@ -286,12 +281,12 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
         cells.push(
           <div
             key={`${row}-${col}`}
-            className={`w-7 h-7 ${cellColor} ${borderClass} flex items-center justify-center relative transition-all hover:scale-105 ${
-              isSafe ? "shadow-inner" : ""
+            className={`w-6 h-6 sm:w-7 sm:h-7 ${cellColor} ${borderClass} flex items-center justify-center relative ${
+              isSafe ? "shadow-sm" : ""
             }`}
           >
-            {isCenter && <Crown className="w-4 h-4 text-yellow-800 animate-pulse" />}
-            {isSafe && !isCenter && <Star className="w-3 h-3 text-green-700 absolute top-0.5 right-0.5" />}
+            {isCenter && <Crown className="w-4 h-4 text-yellow-700" />}
+            {isSafe && !isCenter && <Star className="w-3 h-3 text-green-600 absolute top-0.5 right-0.5" />}
             {isStart && <div className="w-2 h-2 bg-white rounded-full border border-gray-400" />}
             
             {pieces.length > 0 && (
@@ -301,20 +296,18 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
                     key={`${piece.color}-${piece.id}`}
                     onClick={() => handlePieceClick(piece.id)}
                     className={`
-                      w-5 h-5 rounded-full border-2 border-white cursor-pointer transition-all duration-200
-                      ${getPieceColor(piece.color)}
-                      ${selectedPiece === piece.id ? "ring-2 ring-yellow-400 scale-125 animate-pulse" : ""}
-                      ${validMoves.includes(piece.id) ? "ring-2 ring-blue-400 hover:scale-125 animate-bounce" : ""}
-                      ${piece.color === playerColor && isPlayerTurn ? "hover:scale-110 shadow-lg" : ""}
-                      shadow-md
+                      w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-white cursor-pointer transition-all duration-200
+                      ${getModernPieceColor(piece.color)}
+                      ${selectedPiece === piece.id ? "ring-2 ring-blue-400 scale-110" : ""}
+                      ${validMoves.includes(piece.id) ? "ring-2 ring-green-400" : ""}
+                      ${piece.color === playerColor && isPlayerTurn ? "hover:scale-110 shadow-md" : ""}
+                      shadow-sm
                     `}
                     style={{
-                      transform: `translate(${index * 2}px, ${index * 2}px)`,
+                      transform: `translate(${index * 1.5}px, ${index * 1.5}px)`,
                       zIndex: index + 10,
                     }}
-                  >
-                    <div className="absolute inset-0.5 rounded-full bg-gradient-to-br from-white/30 to-transparent" />
-                  </div>
+                  />
                 ))}
               </div>
             )}
@@ -324,13 +317,13 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
     }
 
     return (
-      <div className="flex justify-center p-4">
+      <div className="flex justify-center p-2 sm:p-4">
         <div
-          className="grid gap-0 border-4 border-yellow-700 bg-gradient-to-br from-orange-100 to-yellow-50 rounded-2xl shadow-2xl"
+          className="grid gap-0 border-4 border-gray-300 bg-white rounded-xl shadow-xl"
           style={{
             gridTemplateColumns: `repeat(${BOARD_SIZE}, 1fr)`,
-            width: "420px",
-            height: "420px",
+            width: "min(90vw, 380px)",
+            height: "min(90vw, 380px)",
           }}
         >
           {cells}
@@ -357,15 +350,15 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
     return false;
   };
 
-  const getHomeColor = (row: number, col: number): string => {
+  const getModernHomeColor = (row: number, col: number): string => {
     if (row >= 0 && row <= 5 && col >= 0 && col <= 5) 
-      return "bg-gradient-to-br from-red-400 to-red-600";
+      return `bg-gradient-to-br from-red-200 to-red-300`;
     if (row >= 0 && row <= 5 && col >= 9 && col <= 14) 
-      return "bg-gradient-to-br from-blue-400 to-blue-600";
+      return `bg-gradient-to-br from-cyan-200 to-cyan-300`;
     if (row >= 9 && row <= 14 && col >= 9 && col <= 14) 
-      return "bg-gradient-to-br from-green-400 to-green-600";
+      return `bg-gradient-to-br from-blue-200 to-blue-300`;
     if (row >= 9 && row <= 14 && col >= 0 && col <= 5) 
-      return "bg-gradient-to-br from-yellow-400 to-yellow-600";
+      return `bg-gradient-to-br from-orange-200 to-orange-300`;
     return "bg-gray-200";
   };
 
@@ -389,35 +382,29 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
     return pieces;
   };
 
-  const getPieceColor = (color: string): string => {
+  const getModernPieceColor = (color: string): string => {
     const colors = {
-      red: "bg-gradient-to-br from-red-500 to-red-700",
-      blue: "bg-gradient-to-br from-blue-500 to-blue-700",
-      green: "bg-gradient-to-br from-green-500 to-green-700",
-      yellow: "bg-gradient-to-br from-yellow-500 to-yellow-700",
+      red: "bg-red-500",
+      blue: "bg-cyan-500", 
+      green: "bg-blue-500",
+      yellow: "bg-orange-500",
     };
     return colors[color as keyof typeof colors] || "bg-gray-500";
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 space-y-6">
-      {/* Game Status */}
-      <div className="text-center space-y-3">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 space-y-4 sm:space-y-6">
+      {/* Game Status - Mobile optimized */}
+      <div className="text-center space-y-2 px-4">
         <Badge
-          className={`px-6 py-3 text-lg font-bold rounded-full ${
+          className={`px-4 py-2 text-base font-semibold rounded-full ${
             isPlayerTurn 
-              ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white animate-pulse" 
-              : "bg-gradient-to-r from-gray-500 to-gray-600 text-white"
+              ? "bg-green-500 text-white" 
+              : "bg-gray-400 text-white"
           }`}
         >
           {isPlayerTurn ? "🎮 Your Turn" : `⏳ ${currentPlayer}'s Turn`}
         </Badge>
-        
-        {gameState.consecutiveSixes > 0 && (
-          <Badge className="bg-orange-500 text-white animate-pulse">
-            ⚡ Sixes: {gameState.consecutiveSixes}/3
-          </Badge>
-        )}
       </div>
 
       {/* Dice Section */}
@@ -426,29 +413,40 @@ export const LudoBoardEnhanced: React.FC<LudoBoardEnhancedProps> = ({
       {/* Game Board */}
       {renderBoard()}
 
-      {/* Player Status */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto px-4">
+      {/* Player Status - Mobile grid */}
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 max-w-lg mx-auto px-4">
         {Object.entries(gameState.pieces || {}).map(([color, pieces]) => (
           <Card
             key={color}
-            className={`border-2 ${
-              currentPlayer === color ? "ring-4 ring-yellow-400 animate-pulse" : ""
+            className={`border-2 rounded-lg ${
+              currentPlayer === color ? "ring-2 ring-blue-400" : ""
             }`}
-            style={{ borderColor: color === 'red' ? '#ef4444' : color === 'blue' ? '#3b82f6' : color === 'green' ? '#10b981' : '#eab308' }}
+            style={{ borderColor: modernColors[color as keyof typeof modernColors] }}
           >
             <CardContent className="p-3 text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <div 
-                  className="w-4 h-4 rounded-full" 
-                  style={{ backgroundColor: color === 'red' ? '#ef4444' : color === 'blue' ? '#3b82f6' : color === 'green' ? '#10b981' : '#eab308' }}
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: modernColors[color as keyof typeof modernColors] }}
                 />
-                <p className="font-bold capitalize text-white">{color}</p>
-                {currentPlayer === color && <Crown className="w-4 h-4 text-yellow-400" />}
+                <p className="font-semibold capitalize text-gray-700 text-sm">{color}</p>
+                {currentPlayer === color && <Crown className="w-3 h-3 text-yellow-500" />}
               </div>
-              <div className="text-xs text-gray-200">
-                <p>🏠 Home: {pieces.filter(p => p.position === "home").length}/4</p>
-                <p>🏃 Active: {pieces.filter(p => p.position === "active").length}/4</p>
-                <p>🏆 Finished: {pieces.filter(p => p.position === "finished").length}/4</p>
+              <div className="text-xs text-gray-600 space-y-1">
+                <div className="flex justify-between">
+                  <span className="flex items-center gap-1">
+                    <Home className="w-3 h-3" />
+                    {pieces.filter(p => p.position === "home").length}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3 h-3" />
+                    {pieces.filter(p => p.position === "active").length}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Target className="w-3 h-3" />
+                    {pieces.filter(p => p.position === "finished").length}
+                  </span>
+                </div>
               </div>
             </CardContent>
           </Card>
