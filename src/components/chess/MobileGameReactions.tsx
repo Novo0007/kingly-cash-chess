@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Smile } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface GameReaction {
   id: string;
@@ -30,24 +29,12 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
   const channelRef = useRef<any>(null);
   const timeoutRefs = useRef<Set<NodeJS.Timeout>>(new Set());
 
-  // Cleanup function
-  const cleanup = useCallback(() => {
-    if (channelRef.current) {
-      console.log('Cleaning up MobileGameReactions channel');
-      supabase.removeChannel(channelRef.current);
-      channelRef.current = null;
-    }
-    timeoutRefs.current.forEach(timeout => clearTimeout(timeout));
-    timeoutRefs.current.clear();
-    setIsConnected(false);
-  }, []);
-
   // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
-      cleanup();
+      timeoutRefs.current.forEach(timeout => clearTimeout(timeout));
     };
-  }, [cleanup]);
+  }, []);
 
   useEffect(() => {
     getCurrentUser();
@@ -56,7 +43,17 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
     return () => {
       cleanup();
     };
-  }, [gameId, cleanup]);
+  }, [gameId]);
+
+  const cleanup = useCallback(() => {
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+    }
+    timeoutRefs.current.forEach(timeout => clearTimeout(timeout));
+    timeoutRefs.current.clear();
+    setIsConnected(false);
+  }, []);
 
   const getCurrentUser = useCallback(async () => {
     try {
@@ -78,16 +75,12 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
   }, []);
 
   const setupRealtimeChannel = useCallback(() => {
-    // Always cleanup existing channel first
     if (channelRef.current) {
       cleanup();
     }
 
-    const channelName = `mobile-reactions-${gameId}`;
-    console.log('Setting up MobileGameReactions channel:', channelName);
-
     const channel = supabase
-      .channel(channelName, {
+      .channel(`game-reactions-${gameId}`, {
         config: {
           broadcast: { self: true },
           presence: { key: currentUser || 'anonymous' }
@@ -95,7 +88,7 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
       })
       .on('broadcast', { event: 'new_reaction' }, (payload) => {
         try {
-          console.log('MobileGameReactions received reaction:', payload);
+          console.log('Received reaction:', payload);
           const newReaction = payload.payload as GameReaction;
           
           if (!newReaction || !newReaction.id) return;
@@ -118,7 +111,7 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
         }
       })
       .subscribe(async (status) => {
-        console.log('MobileGameReactions channel status:', status);
+        console.log('Mobile reactions channel status:', status);
         setIsConnected(status === 'SUBSCRIBED');
         
         if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
@@ -149,7 +142,7 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
     };
 
     try {
-      console.log('MobileGameReactions sending reaction:', reaction);
+      console.log('Sending reaction:', reaction);
       
       const result = await channelRef.current.send({
         type: 'broadcast',
@@ -157,7 +150,7 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
         payload: reaction
       });
 
-      console.log('MobileGameReactions send result:', result);
+      console.log('Reaction send result:', result);
 
       if (result === 'ok') {
         setShowEmojiPicker(false);
@@ -173,18 +166,6 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
 
   return (
     <>
-      <style>
-        {`
-          @keyframes scaleIn {
-            0% { opacity: 0; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1); }
-          }
-          .animate-scale-in {
-            animation: scaleIn 0.2s ease-out forwards;
-          }
-        `}
-      </style>
-      
       {/* Floating Reactions - Optimized for mobile */}
       <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
         {reactions.map((reaction, index) => (
@@ -253,3 +234,7 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
     </>
   );
 };
+
+function cn(...classes: (string | boolean | undefined)[]): string {
+  return classes.filter(Boolean).join(' ');
+}
