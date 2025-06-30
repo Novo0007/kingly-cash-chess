@@ -159,10 +159,9 @@ export const useBackgroundMusic = (options: BackgroundMusicOptions = {}) => {
       document.removeEventListener("keydown", handleUserInteraction);
       document.removeEventListener("touchstart", handleUserInteraction);
 
-      if (audio.src) {
-        URL.revokeObjectURL(audio.src);
-      }
+      // Don't revoke external URLs
       audio.pause();
+      audio.src = "";
     };
   }, []);
 
