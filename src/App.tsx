@@ -364,6 +364,60 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
+
+        {/* Background Music Control Button */}
+        <div className="fixed top-4 right-4 z-50">
+          <button
+            onClick={toggleMusic}
+            className="bg-gradient-to-r from-purple-600/80 to-pink-600/80 backdrop-blur-xl hover:from-purple-500/90 hover:to-pink-500/90 text-white p-3 rounded-full shadow-lg border border-purple-300/30 transition-all duration-300 hover:scale-110 group"
+            title={
+              isPlaying ? "Mute Background Music" : "Play Background Music"
+            }
+          >
+            {isPlaying ? (
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.85 14,18.71V20.77C18.01,19.86 21,16.28 21,12C21,7.72 18.01,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12,4L9.91,6.09L12,8.18M4.27,3L3,4.27L7.73,9H3V15H7L12,20V13.27L16.25,17.53C15.58,18.04 14.83,18.46 14,18.7V20.77C15.38,20.45 16.63,19.82 17.68,18.96L19.73,21L21,19.73L12,10.73M19,12C19,12.94 18.8,13.82 18.46,14.64L19.97,16.15C20.62,14.91 21,13.5 21,12C21,7.72 18,4.14 14,3.23V5.29C16.89,6.15 19,8.83 19,12M16.5,12C16.5,10.23 15.5,8.71 14,7.97V10.18L16.45,12.63C16.5,12.43 16.5,12.21 16.5,12Z" />
+              </svg>
+            )}
+
+            {/* Pulsing animation when music is playing */}
+            {isPlaying && (
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/40 to-pink-500/40 rounded-full animate-pulse"></div>
+            )}
+
+            {/* Sound waves animation */}
+            {isPlaying && (
+              <div className="absolute -right-1 top-1/2 transform -translate-y-1/2">
+                <div className="flex space-x-0.5">
+                  <div
+                    className="w-0.5 h-2 bg-white/60 rounded-full animate-pulse"
+                    style={{ animationDelay: "0ms" }}
+                  ></div>
+                  <div
+                    className="w-0.5 h-3 bg-white/60 rounded-full animate-pulse"
+                    style={{ animationDelay: "150ms" }}
+                  ></div>
+                  <div
+                    className="w-0.5 h-2 bg-white/60 rounded-full animate-pulse"
+                    style={{ animationDelay: "300ms" }}
+                  ></div>
+                </div>
+              </div>
+            )}
+          </button>
+
+          {/* Tooltip for first-time users */}
+          {!userInteracted && (
+            <div className="absolute -bottom-12 right-0 bg-black/80 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap backdrop-blur-xl border border-purple-300/30 animate-pulse">
+              🎵 Music starts in 10s after interaction
+            </div>
+          )}
+        </div>
+
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
