@@ -71,28 +71,25 @@ const App = () => {
             ></div>
           </div>
 
-          {/* Animated Particle System with Vibrant Colors */}
-          <div className="absolute inset-0 opacity-30">
-            {[...Array(60)].map((_, i) => {
+          {/* Subtle Static Particle System */}
+          <div className="absolute inset-0 opacity-20">
+            {[...Array(20)].map((_, i) => {
               const colors = [
                 "bg-purple-400",
                 "bg-cyan-400",
                 "bg-pink-400",
                 "bg-green-400",
-                "bg-yellow-400",
-                "bg-orange-400",
               ];
               const randomColor =
                 colors[Math.floor(Math.random() * colors.length)];
               return (
                 <div
                   key={i}
-                  className={`absolute w-1.5 h-1.5 ${randomColor} rounded-full animate-pulse`}
+                  className={`absolute w-1 h-1 ${randomColor} rounded-full opacity-60`}
                   style={{
                     left: `${Math.random() * 100}%`,
                     top: `${Math.random() * 100}%`,
-                    animationDelay: `${Math.random() * 3}s`,
-                    boxShadow: `0 0 6px currentColor`,
+                    boxShadow: `0 0 4px currentColor`,
                   }}
                 ></div>
               );
