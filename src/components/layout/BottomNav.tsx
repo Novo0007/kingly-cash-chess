@@ -148,32 +148,32 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                   {item.label}
                 </span>
 
-                {/* Enhanced Active Indicators */}
+                {/* Smooth Active Indicators */}
                 {isActive && (
                   <>
                     {/* Floating Emoji */}
-                    <div className="absolute -top-1 -right-1 text-lg animate-bounce filter drop-shadow-lg">
+                    <div className="absolute -top-1 -right-1 text-lg animate-bounce filter drop-shadow-lg transition-all duration-500 ease-out">
                       {item.emoji}
                     </div>
 
                     {/* Bottom indicator dots */}
-                    <div className="absolute -bottom-1 flex gap-1">
+                    <div className="absolute -bottom-1 flex gap-1 transition-all duration-700 ease-out">
                       <div
-                        className={`w-1.5 h-1.5 bg-${item.color}-400 rounded-full animate-pulse shadow-lg`}
+                        className={`w-1.5 h-1.5 bg-${item.color}-400/80 rounded-full animate-pulse shadow-md transition-all duration-500`}
                       ></div>
                       <div
-                        className="w-1.5 h-1.5 bg-white rounded-full animate-pulse shadow-lg"
+                        className="w-1.5 h-1.5 bg-white/80 rounded-full animate-pulse shadow-md transition-all duration-500"
                         style={{ animationDelay: "0.3s" }}
                       ></div>
                       <div
-                        className={`w-1.5 h-1.5 bg-${item.color}-400 rounded-full animate-pulse shadow-lg`}
+                        className={`w-1.5 h-1.5 bg-${item.color}-400/80 rounded-full animate-pulse shadow-md transition-all duration-500`}
                         style={{ animationDelay: "0.6s" }}
                       ></div>
                     </div>
 
                     {/* Side glow effects */}
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-r from-white/50 to-transparent rounded-r-full"></div>
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-l from-white/50 to-transparent rounded-l-full"></div>
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-r from-white/30 to-transparent rounded-r-full transition-all duration-700 ease-out"></div>
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-l from-white/30 to-transparent rounded-l-full transition-all duration-700 ease-out"></div>
                   </>
                 )}
               </Button>
