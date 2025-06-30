@@ -108,9 +108,10 @@ export const useBackgroundMusic = (options: BackgroundMusicOptions = {}) => {
     const audio = new Audio();
     audio.loop = true;
     audio.preload = "auto";
+    audio.crossOrigin = "anonymous"; // For external URLs
 
-    // Generate music data URL
-    const musicUrl = generateMusicDataUrl();
+    // Set external music URL
+    const musicUrl = getMusicUrl();
     audio.src = musicUrl;
 
     audioRef.current = audio;
