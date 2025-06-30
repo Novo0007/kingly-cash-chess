@@ -27,14 +27,25 @@ const Index = () => {
   useEffect(() => {
     getUser();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    try {
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((event, session) => {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      });
 
-    return () => subscription.unsubscribe();
+      return () => {
+        try {
+          subscription.unsubscribe();
+        } catch (error) {
+          console.warn("Error unsubscribing from auth changes:", error);
+        }
+      };
+    } catch (error) {
+      console.warn("Error setting up auth state listener:", error);
+      setLoading(false);
+    }
   }, []);
 
   const getUser = async () => {
