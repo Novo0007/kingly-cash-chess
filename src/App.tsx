@@ -337,11 +337,38 @@ const App = () => {
             </div>
 
             {/* Status Message */}
-            <div className="relative">
+            <div className="relative space-y-3">
               <div className="electric-glass backdrop-blur-xl rounded-2xl p-4 border border-blue-300/20">
                 <p className="text-blue-100 font-body text-sm sm:text-base">
                   🌟 Welcome to the next generation gaming experience
                 </p>
+              </div>
+
+              {/* Music preparation indicator */}
+              <div className="electric-glass backdrop-blur-xl rounded-xl p-3 border border-purple-300/20">
+                <div className="flex items-center justify-center gap-2 text-purple-200">
+                  <svg
+                    className="w-4 h-4 animate-pulse"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12,3V13.55C11.41,13.21 10.73,13 10,13A3,3 0 0,0 7,16A3,3 0 0,0 10,19A3,3 0 0,0 13,16V7H19V5H12V3Z" />
+                  </svg>
+                  <span className="text-xs sm:text-sm font-medium">
+                    🎵 Preparing ambient music experience
+                  </span>
+                  <div className="flex space-x-1">
+                    <div className="w-1 h-1 bg-purple-400 rounded-full animate-pulse"></div>
+                    <div
+                      className="w-1 h-1 bg-pink-400 rounded-full animate-pulse"
+                      style={{ animationDelay: "0.2s" }}
+                    ></div>
+                    <div
+                      className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse"
+                      style={{ animationDelay: "0.4s" }}
+                    ></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
