@@ -38,11 +38,26 @@ const Index = () => {
   }, []);
 
   const getUser = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    setUser(user);
-    setLoading(false);
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error) {
+        console.warn("Auth error:", error.message);
+        // For network errors, treat as unauthenticated but don't block the app
+        setUser(null);
+      } else {
+        setUser(user);
+      }
+    } catch (networkError) {
+      console.warn("Network error connecting to auth service:", networkError);
+      // For network failures, treat as unauthenticated and let user continue
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSelectGame = (gameType: "chess" | "ludo") => {
