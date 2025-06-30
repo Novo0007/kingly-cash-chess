@@ -103,7 +103,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                   {isActive && (
                     <>
                       <div
-                        className={`absolute inset-0 bg-gradient-to-r ${item.gradient}/20 animate-pulse transition-opacity duration-1000`}
+                        className={`absolute inset-0 bg-gradient-to-r ${item.gradient}/20 transition-opacity duration-1000`}
                       ></div>
                       <div className="absolute inset-0 bg-gradient-to-t from-white/3 to-transparent transition-opacity duration-500"></div>
                     </>
