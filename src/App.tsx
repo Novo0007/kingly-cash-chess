@@ -16,6 +16,13 @@ const App = () => {
   const [appLoading, setAppLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
+  // Initialize background music with auto-play after 10 seconds
+  const { isPlaying, toggleMusic, userInteracted } = useBackgroundMusic({
+    volume: 0.2,
+    fadeInDuration: 4000,
+    autoPlayDelay: 10000,
+  });
+
   useEffect(() => {
     // Simulate loading progress
     const progressInterval = setInterval(() => {
