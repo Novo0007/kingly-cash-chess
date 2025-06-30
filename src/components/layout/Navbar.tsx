@@ -117,8 +117,17 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setMobileMenuOpen(false);
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.warn("Error signing out:", error);
+      // Clear local state even if sign out fails
+      setUser(null);
+      setProfile(null);
+      setWallet(null);
+    } finally {
+      setMobileMenuOpen(false);
+    }
   };
 
   const navItems = [
