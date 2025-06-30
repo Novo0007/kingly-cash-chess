@@ -6,27 +6,27 @@ import { cn } from "@/lib/utils";
 import { useSound } from "@/hooks/use-sound";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 touch-manipulation select-none",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-semibold ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 touch-manipulation select-none font-body relative overflow-hidden group",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/95",
+          "bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white border border-purple-500/30 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] hover:from-purple-500 hover:via-blue-500 hover:to-cyan-500",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 active:bg-destructive/95",
+          "bg-gradient-to-r from-red-500 to-pink-500 text-white border border-red-400/30 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] hover:from-red-400 hover:to-pink-400",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground active:bg-accent/90",
+          "border-2 border-purple-300 bg-white/80 backdrop-blur-sm text-purple-700 rounded-xl hover:bg-purple-50 hover:border-purple-400 hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 active:bg-secondary/85",
+          "bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] hover:from-gray-50 hover:to-gray-150",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground active:bg-accent/90",
-        link: "text-primary underline-offset-4 hover:underline",
+          "text-purple-600 rounded-xl hover:bg-purple-50 hover:text-purple-700 active:bg-purple-100 hover:scale-[1.02] active:scale-[0.98]",
+        link: "text-purple-600 underline-offset-4 hover:underline font-medium",
       },
       size: {
-        default: "h-10 px-4 py-2 min-h-[44px]",
-        sm: "h-9 rounded-md px-3 min-h-[36px]",
-        lg: "h-11 rounded-md px-8 min-h-[48px]",
-        icon: "h-10 w-10 min-h-[44px] min-w-[44px]",
+        default: "h-12 px-6 py-3 min-h-[48px] text-base rounded-xl",
+        sm: "h-10 px-4 py-2 min-h-[40px] text-sm rounded-lg",
+        lg: "h-14 px-8 py-4 min-h-[56px] text-lg rounded-xl",
+        icon: "h-12 w-12 min-h-[48px] min-w-[48px] rounded-xl",
       },
     },
     defaultVariants: {
@@ -81,7 +81,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         onClick={handleClick}
         onMouseEnter={handleMouseEnter}
         {...props}
-      />
+      >
+        {/* Shimmer effect for default variant */}
+        {variant === "default" && (
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+        )}
+        {props.children}
+      </Comp>
     );
   },
 );
