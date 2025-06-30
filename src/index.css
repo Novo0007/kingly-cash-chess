@@ -181,9 +181,10 @@
 }
 
 .electric-glass {
-  background: rgba(139, 69, 193, 0.15);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(139, 69, 193, 0.25);
+  background: rgba(139, 69, 193, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 69, 193, 0.15);
+  transition: all 0.5s ease-out;
 }
 
 .electric-shadow {
