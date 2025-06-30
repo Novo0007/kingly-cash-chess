@@ -177,23 +177,14 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
       {/* Subtle Bottom Gaming Elements */}
       <div className="absolute bottom-1 left-0 right-0 flex justify-center transition-all duration-1000 ease-out">
-        <div className="flex items-center gap-3 text-xs opacity-60">
-          <Sparkles className="h-3 w-3 text-yellow-300/70 animate-pulse filter drop-shadow-md transition-all duration-500" />
+        <div className="flex items-center gap-3 text-xs opacity-50">
+          <Sparkles className="h-3 w-3 text-yellow-300/50 filter drop-shadow-md transition-all duration-500" />
           <div className="flex gap-1">
-            <div className="w-1 h-1 bg-yellow-400/60 rounded-full animate-pulse transition-all duration-500"></div>
-            <div
-              className="w-1 h-1 bg-white/60 rounded-full animate-pulse transition-all duration-500"
-              style={{ animationDelay: "0.3s" }}
-            ></div>
-            <div
-              className="w-1 h-1 bg-cyan-400/60 rounded-full animate-pulse transition-all duration-500"
-              style={{ animationDelay: "0.6s" }}
-            ></div>
+            <div className="w-1 h-1 bg-yellow-400/40 rounded-full transition-all duration-500"></div>
+            <div className="w-1 h-1 bg-white/40 rounded-full transition-all duration-500"></div>
+            <div className="w-1 h-1 bg-cyan-400/40 rounded-full transition-all duration-500"></div>
           </div>
-          <Sparkles
-            className="h-3 w-3 text-cyan-300/70 animate-pulse filter drop-shadow-md transition-all duration-500"
-            style={{ animationDelay: "0.5s" }}
-          />
+          <Sparkles className="h-3 w-3 text-cyan-300/50 filter drop-shadow-md transition-all duration-500" />
         </div>
       </div>
 
