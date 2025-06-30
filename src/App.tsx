@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { ChessRulesPage } from "./pages/ChessRulesPage";
 import { LudoRulesPage } from "./pages/LudoRulesPage";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 
 const queryClient = new QueryClient();
 
