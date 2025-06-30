@@ -212,13 +212,17 @@ export const useBackgroundMusic = (options: BackgroundMusicOptions = {}) => {
   };
 
   const playMusic = async () => {
-    if (!audioRef.current || isPlaying) return;
+    if (!audioRef.current) return;
 
     try {
+      // Reset volume for fade in
+      audioRef.current.volume = 0;
       await audioRef.current.play();
       fadeIn(audioRef.current);
+      setIsPlaying(true);
     } catch (error) {
       console.log("Could not play background music:", error);
+      setIsPlaying(false);
     }
   };
 
