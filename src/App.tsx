@@ -202,31 +202,13 @@ const App = () => {
 
             {/* Sophisticated Loading Animation */}
             <div className="relative space-y-8">
-              {/* Multi-Ring Spinner - Ultra Vibrant */}
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto">
-                <div className="absolute inset-0 rounded-full border-4 border-purple-500/40"></div>
-                <div
-                  className="absolute inset-2 rounded-full border-4 border-transparent border-t-purple-400 animate-spin"
-                  style={{ filter: "brightness(1.2)" }}
-                ></div>
-                <div
-                  className="absolute inset-4 rounded-full border-4 border-transparent border-r-pink-400 animate-spin"
-                  style={{
-                    animationDirection: "reverse",
-                    animationDuration: "2s",
-                    filter: "brightness(1.2)",
-                  }}
-                ></div>
-                <div
-                  className="absolute inset-6 rounded-full border-4 border-transparent border-b-cyan-400 animate-spin"
-                  style={{ animationDuration: "3s", filter: "brightness(1.2)" }}
-                ></div>
+              {/* Simple Ring Spinner */}
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto">
+                <div className="absolute inset-0 rounded-full border-2 border-purple-500/30"></div>
+                <div className="absolute inset-2 rounded-full border-3 border-transparent border-t-purple-400 animate-spin"></div>
 
-                {/* Center Glow - Enhanced */}
-                <div
-                  className="absolute inset-8 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full blur-lg opacity-70 electric-pulse"
-                  style={{ filter: "brightness(1.1)" }}
-                ></div>
+                {/* Center Dot */}
+                <div className="absolute inset-8 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full opacity-50"></div>
               </div>
 
               {/* Enhanced Progress System */}
