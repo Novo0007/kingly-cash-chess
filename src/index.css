@@ -6,87 +6,100 @@
 
 @layer base {
   :root {
-    /* Electric Blue Theme Variables */
+    /* Vibrant Theme Variables - Bright and Energetic */
     --background: 0 0% 100%;
-    --foreground: 222 84% 5%;
+    --foreground: 240 10% 4%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 84% 5%;
+    --card-foreground: 240 10% 4%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 84% 5%;
+    --popover-foreground: 240 10% 4%;
 
-    --primary: 205 100% 50%;
+    --primary: 270 95% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 98%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 280 100% 95%;
+    --secondary-foreground: 240 10% 4%;
 
-    --muted: 210 40% 98%;
-    --muted-foreground: 215 15% 45%;
+    --muted: 280 100% 97%;
+    --muted-foreground: 240 5% 35%;
 
-    --accent: 205 95% 55%;
+    --accent: 195 100% 50%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 90% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 205 100% 50%;
+    --border: 280 50% 85%;
+    --input: 280 50% 90%;
+    --ring: 270 95% 60%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    /* Electric Blue specific colors */
-    --electric-50: 205 100% 98%;
-    --electric-100: 205 100% 95%;
-    --electric-200: 205 95% 88%;
-    --electric-300: 205 90% 78%;
-    --electric-400: 205 85% 65%;
-    --electric-500: 205 100% 50%;
-    --electric-600: 205 100% 45%;
-    --electric-700: 205 100% 38%;
-    --electric-800: 205 100% 30%;
-    --electric-900: 205 100% 22%;
+    /* Vibrant Color Palette */
+    --vibrant-purple: 270 95% 60%;
+    --vibrant-blue: 220 100% 55%;
+    --vibrant-cyan: 195 100% 50%;
+    --vibrant-green: 145 85% 45%;
+    --vibrant-orange: 30 100% 55%;
+    --vibrant-pink: 330 85% 65%;
+    --vibrant-yellow: 50 100% 60%;
 
-    /* Complementary colors */
-    --electric-accent: 195 100% 55%;
-    --electric-soft: 200 80% 85%;
-    --electric-muted: 210 30% 88%;
-    --electric-text: 222 84% 5%;
+    /* Electric/Neon variations */
+    --electric-50: 270 100% 98%;
+    --electric-100: 270 100% 95%;
+    --electric-200: 270 95% 88%;
+    --electric-300: 270 90% 78%;
+    --electric-400: 270 85% 68%;
+    --electric-500: 270 95% 60%;
+    --electric-600: 270 95% 52%;
+    --electric-700: 270 95% 42%;
+    --electric-800: 270 95% 32%;
+    --electric-900: 270 95% 22%;
+
+    /* Complementary vibrant colors */
+    --electric-accent: 195 100% 50%;
+    --electric-soft: 280 80% 92%;
+    --electric-muted: 280 50% 90%;
+    --electric-text: 240 10% 4%;
     --electric-light: 0 0% 100%;
-    --electric-neutral: 220 13% 91%;
+    --electric-neutral: 280 30% 88%;
   }
 
   .dark {
-    /* Dark electric blue theme */
-    --background: 222 84% 5%;
+    /* Dark vibrant theme with neon accents */
+    --background: 240 15% 6%;
     --foreground: 0 0% 98%;
 
-    --card: 222 84% 8%;
+    --card: 240 15% 8%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 222 84% 5%;
+    --popover: 240 15% 6%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 205 100% 55%;
-    --primary-foreground: 222 84% 5%;
+    --primary: 270 95% 65%;
+    --primary-foreground: 240 15% 6%;
 
-    --secondary: 217 33% 17%;
+    --secondary: 240 20% 15%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 240 20% 15%;
+    --muted-foreground: 240 5% 70%;
 
-    --accent: 205 95% 60%;
-    --accent-foreground: 222 84% 5%;
+    --accent: 195 100% 55%;
+    --accent-foreground: 240 15% 6%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 90% 65%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 205 100% 55%;
+    --border: 240 20% 18%;
+    --input: 240 20% 15%;
+    --ring: 270 95% 65%;
+
+    /* Enhanced vibrant colors for dark mode */
+    --electric-500: 270 95% 65%;
+    --electric-accent: 195 100% 55%;
   }
 }
 
@@ -143,14 +156,15 @@
   }
 }
 
-/* Electric Blue themed custom classes */
+/* Vibrant Electric themed custom classes */
 .electric-gradient {
   background: linear-gradient(
     135deg,
     hsl(var(--electric-100)) 0%,
-    hsl(var(--electric-200)) 25%,
-    hsl(var(--electric-300)) 50%,
-    hsl(var(--electric-200)) 75%,
+    hsl(var(--vibrant-purple)) 15%,
+    hsl(var(--vibrant-blue)) 35%,
+    hsl(var(--vibrant-cyan)) 65%,
+    hsl(var(--electric-200)) 85%,
     hsl(var(--electric-100)) 100%
   );
 }
@@ -159,17 +173,17 @@
   background: linear-gradient(
     135deg,
     hsl(var(--electric-800)) 0%,
-    hsl(var(--electric-700)) 25%,
-    hsl(var(--electric-600)) 50%,
-    hsl(var(--electric-700)) 75%,
+    hsl(var(--vibrant-purple)) 25%,
+    hsl(var(--vibrant-blue)) 50%,
+    hsl(var(--vibrant-cyan)) 75%,
     hsl(var(--electric-800)) 100%
   );
 }
 
 .electric-glass {
-  background: rgba(0, 150, 255, 0.1);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 150, 255, 0.2);
+  background: rgba(139, 69, 193, 0.15);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(139, 69, 193, 0.25);
 }
 
 .electric-shadow {
@@ -188,37 +202,44 @@
 .electric-text-gradient {
   background: linear-gradient(
     135deg,
-    hsl(var(--electric-600)) 0%,
-    hsl(var(--electric-accent)) 50%,
-    hsl(var(--electric-500)) 100%
+    hsl(var(--vibrant-purple)) 0%,
+    hsl(var(--vibrant-pink)) 25%,
+    hsl(var(--vibrant-cyan)) 50%,
+    hsl(var(--vibrant-blue)) 75%,
+    hsl(var(--vibrant-purple)) 100%
   );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-size: 200% 200%;
   animation: gradientShift 3s ease-in-out infinite;
+  filter: brightness(1.1);
 }
 
 .electric-button {
   background: linear-gradient(
     135deg,
-    hsl(var(--electric-500)) 0%,
-    hsl(var(--electric-600)) 100%
+    hsl(var(--vibrant-purple)) 0%,
+    hsl(var(--vibrant-pink)) 50%,
+    hsl(var(--vibrant-cyan)) 100%
   );
   color: white;
-  border: 1px solid hsl(var(--electric-400));
+  border: 1px solid hsl(var(--vibrant-purple));
   transition: all 0.3s ease;
-  font-weight: 500;
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(139, 69, 193, 0.3);
 }
 
 .electric-button:hover {
   background: linear-gradient(
     135deg,
-    hsl(var(--electric-600)) 0%,
-    hsl(var(--electric-700)) 100%
+    hsl(var(--vibrant-pink)) 0%,
+    hsl(var(--vibrant-purple)) 50%,
+    hsl(var(--vibrant-blue)) 100%
   );
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(0, 150, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(139, 69, 193, 0.4);
+  filter: brightness(1.1);
 }
 
 .electric-border {
@@ -464,19 +485,50 @@
   @apply electric-input;
 }
 
-/* Large tap targets for mobile */
+/* Enhanced mobile-friendly tap targets */
 .tap-target {
-  min-height: 44px;
-  min-width: 44px;
+  min-height: 48px;
+  min-width: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: manipulation;
+  cursor: pointer;
 }
 
-/* High contrast text for accessibility */
+/* High contrast text for mobile accessibility */
 .high-contrast {
   color: hsl(var(--electric-text));
-  font-weight: 500;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile-optimized text sizes */
+.mobile-text-lg {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.mobile-text-xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+}
+
+/* Enhanced vibrant shadows */
+.vibrant-shadow {
+  box-shadow:
+    0 4px 20px rgba(139, 69, 193, 0.15),
+    0 8px 40px rgba(59, 130, 246, 0.1),
+    0 12px 60px rgba(236, 72, 153, 0.05);
+}
+
+.vibrant-shadow-lg {
+  box-shadow:
+    0 8px 30px rgba(139, 69, 193, 0.2),
+    0 12px 50px rgba(59, 130, 246, 0.15),
+    0 16px 80px rgba(236, 72, 153, 0.1);
 }
 
 /* Clean spacing utilities */
@@ -492,15 +544,49 @@
   margin-top: 1.5rem;
 }
 
-/* Responsive design helpers */
+/* Enhanced responsive design helpers */
 @media (max-width: 768px) {
   .electric-card {
-    border-radius: 8px;
-    margin: 4px;
+    border-radius: 12px;
+    margin: 6px;
+    padding: 1.25rem;
   }
 
   .tap-target {
+    min-height: 52px;
+    min-width: 52px;
+  }
+
+  /* Better mobile text contrast */
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Improved button sizing for mobile */
+  .electric-button {
     min-height: 48px;
-    min-width: 48px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 480px) {
+  .tap-target {
+    min-height: 56px;
+    min-width: 56px;
+  }
+
+  .electric-button {
+    min-height: 52px;
+    padding: 0.875rem 2rem;
+    font-size: 1.1rem;
   }
 }
