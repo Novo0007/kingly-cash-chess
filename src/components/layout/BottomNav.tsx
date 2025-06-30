@@ -56,18 +56,15 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-inset-bottom">
-      {/* Enhanced Electric Glass Background */}
-      <div className="absolute inset-0 electric-glass border-t-2 border-white/20 rounded-t-3xl overflow-hidden">
-        {/* Multi-layer gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 via-blue-600/90 to-cyan-600/90 rounded-t-3xl"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent rounded-t-3xl"></div>
+      {/* Ultra-Transparent Glass Background */}
+      <div className="absolute inset-0 backdrop-blur-2xl border-t border-white/10 rounded-t-3xl overflow-hidden transition-all duration-500 ease-out">
+        {/* Minimal transparent gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-blue-600/15 to-cyan-600/20 rounded-t-3xl transition-opacity duration-700"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent rounded-t-3xl"></div>
 
-        {/* Animated background elements */}
-        <div className="absolute top-0 left-1/4 w-16 h-16 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 rounded-full blur-xl animate-pulse"></div>
-        <div
-          className="absolute top-0 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400/20 to-purple-400/20 rounded-full blur-lg animate-pulse"
-          style={{ animationDelay: "1s" }}
-        ></div>
+        {/* Subtle static background elements */}
+        <div className="absolute top-0 left-1/4 w-8 h-8 bg-gradient-to-r from-yellow-400/8 to-orange-400/8 rounded-full blur-2xl opacity-70"></div>
+        <div className="absolute top-0 right-1/4 w-6 h-6 bg-gradient-to-r from-pink-400/8 to-purple-400/8 rounded-full blur-xl opacity-70"></div>
       </div>
 
       {/* Enhanced Navigation Content */}
@@ -95,81 +92,81 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => onViewChange(item.id)}
-                className={`relative flex flex-col items-center gap-2 px-3 py-4 h-auto w-full min-h-[72px] rounded-2xl transition-all duration-300 transform tap-target ${
+                className={`relative flex flex-col items-center gap-2 px-3 py-4 h-auto w-full min-h-[72px] rounded-2xl transition-all duration-500 ease-out transform tap-target ${
                   isActive
-                    ? `text-white bg-gradient-to-b ${item.gradient}/20 scale-110 shadow-2xl border border-white/30 backdrop-blur-sm`
-                    : "text-white/70 hover:text-white hover:bg-white/10 active:bg-white/20 active:scale-95 hover:scale-105"
+                    ? `text-white bg-gradient-to-b ${item.gradient}/15 scale-110 shadow-xl border border-white/20 backdrop-blur-lg`
+                    : "text-white/60 hover:text-white/90 hover:bg-white/5 active:bg-white/10 active:scale-95 hover:scale-105 hover:backdrop-blur-sm"
                 }`}
               >
-                {/* Enhanced Background Effects */}
-                <div className="absolute inset-0 rounded-2xl overflow-hidden">
+                {/* Smooth Background Effects */}
+                <div className="absolute inset-0 rounded-2xl overflow-hidden transition-all duration-700 ease-out">
                   {isActive && (
                     <>
                       <div
-                        className={`absolute inset-0 bg-gradient-to-r ${item.gradient}/30 animate-pulse`}
+                        className={`absolute inset-0 bg-gradient-to-r ${item.gradient}/20 transition-opacity duration-1000`}
                       ></div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/3 to-transparent transition-opacity duration-500"></div>
                     </>
                   )}
                 </div>
 
-                {/* Enhanced Icon Container */}
-                <div className="relative">
+                {/* Smooth Icon Container */}
+                <div className="relative transition-all duration-500 ease-out">
                   {isActive && (
                     <div
-                      className={`absolute -inset-2 bg-gradient-to-r ${item.gradient} rounded-full blur-lg opacity-70`}
+                      className={`absolute -inset-2 bg-gradient-to-r ${item.gradient} rounded-full blur-lg opacity-50 transition-all duration-700 ease-out`}
                     ></div>
                   )}
                   <div
-                    className={`relative p-2 rounded-xl transition-all duration-300 ${
+                    className={`relative p-2 rounded-xl transition-all duration-500 ease-out transform ${
                       isActive
-                        ? `bg-gradient-to-r ${item.gradient} shadow-lg transform scale-110`
-                        : "bg-white/10 backdrop-blur-sm"
+                        ? `bg-gradient-to-r ${item.gradient}/80 shadow-lg scale-110 backdrop-blur-sm`
+                        : "bg-white/8 backdrop-blur-sm hover:bg-white/12"
                     }`}
                   >
                     <Icon
-                      className={`h-5 w-5 transition-all duration-300 ${
-                        isActive ? "text-white drop-shadow-lg" : "text-white/80"
+                      className={`h-5 w-5 transition-all duration-500 ease-out ${
+                        isActive
+                          ? "text-white drop-shadow-lg"
+                          : "text-white/70 hover:text-white/90"
                       }`}
                     />
                   </div>
                 </div>
 
-                {/* Enhanced Label */}
+                {/* Smooth Label */}
                 <span
-                  className={`text-xs font-bold leading-tight transition-all duration-300 font-heading ${
-                    isActive ? "text-white drop-shadow-lg" : "text-white/80"
+                  className={`text-xs font-bold leading-tight transition-all duration-500 ease-out font-heading ${
+                    isActive
+                      ? "text-white drop-shadow-lg"
+                      : "text-white/70 hover:text-white/90"
                   }`}
                 >
                   {item.label}
                 </span>
 
-                {/* Enhanced Active Indicators */}
+                {/* Smooth Active Indicators */}
                 {isActive && (
                   <>
                     {/* Floating Emoji */}
-                    <div className="absolute -top-1 -right-1 text-lg animate-bounce filter drop-shadow-lg">
+                    <div className="absolute -top-1 -right-1 text-lg animate-bounce filter drop-shadow-lg transition-all duration-500 ease-out">
                       {item.emoji}
                     </div>
 
                     {/* Bottom indicator dots */}
-                    <div className="absolute -bottom-1 flex gap-1">
+                    <div className="absolute -bottom-1 flex gap-1 transition-all duration-700 ease-out">
                       <div
-                        className={`w-1.5 h-1.5 bg-${item.color}-400 rounded-full animate-pulse shadow-lg`}
+                        className={`w-1.5 h-1.5 bg-${item.color}-400/60 rounded-full shadow-md transition-all duration-500`}
                       ></div>
+                      <div className="w-1.5 h-1.5 bg-white/60 rounded-full shadow-md transition-all duration-500"></div>
                       <div
-                        className="w-1.5 h-1.5 bg-white rounded-full animate-pulse shadow-lg"
-                        style={{ animationDelay: "0.3s" }}
-                      ></div>
-                      <div
-                        className={`w-1.5 h-1.5 bg-${item.color}-400 rounded-full animate-pulse shadow-lg`}
-                        style={{ animationDelay: "0.6s" }}
+                        className={`w-1.5 h-1.5 bg-${item.color}-400/60 rounded-full shadow-md transition-all duration-500`}
                       ></div>
                     </div>
 
                     {/* Side glow effects */}
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-r from-white/50 to-transparent rounded-r-full"></div>
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-l from-white/50 to-transparent rounded-l-full"></div>
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-r from-white/30 to-transparent rounded-r-full transition-all duration-700 ease-out"></div>
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-l from-white/30 to-transparent rounded-l-full transition-all duration-700 ease-out"></div>
                   </>
                 )}
               </Button>
@@ -178,30 +175,21 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         })}
       </div>
 
-      {/* Enhanced Bottom Gaming Elements */}
-      <div className="absolute bottom-1 left-0 right-0 flex justify-center">
-        <div className="flex items-center gap-3 text-xs">
-          <Sparkles className="h-3 w-3 text-yellow-300 animate-pulse filter drop-shadow-lg" />
+      {/* Subtle Bottom Gaming Elements */}
+      <div className="absolute bottom-1 left-0 right-0 flex justify-center transition-all duration-1000 ease-out">
+        <div className="flex items-center gap-3 text-xs opacity-50">
+          <Sparkles className="h-3 w-3 text-yellow-300/50 filter drop-shadow-md transition-all duration-500" />
           <div className="flex gap-1">
-            <div className="w-1 h-1 bg-yellow-400 rounded-full animate-pulse"></div>
-            <div
-              className="w-1 h-1 bg-white rounded-full animate-pulse"
-              style={{ animationDelay: "0.3s" }}
-            ></div>
-            <div
-              className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse"
-              style={{ animationDelay: "0.6s" }}
-            ></div>
+            <div className="w-1 h-1 bg-yellow-400/40 rounded-full transition-all duration-500"></div>
+            <div className="w-1 h-1 bg-white/40 rounded-full transition-all duration-500"></div>
+            <div className="w-1 h-1 bg-cyan-400/40 rounded-full transition-all duration-500"></div>
           </div>
-          <Sparkles
-            className="h-3 w-3 text-cyan-300 animate-pulse filter drop-shadow-lg"
-            style={{ animationDelay: "0.5s" }}
-          />
+          <Sparkles className="h-3 w-3 text-cyan-300/50 filter drop-shadow-md transition-all duration-500" />
         </div>
       </div>
 
-      {/* Top edge glow */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
+      {/* Subtle Top edge glow */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent transition-all duration-500"></div>
     </div>
   );
 };

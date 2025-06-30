@@ -71,28 +71,25 @@ const App = () => {
             ></div>
           </div>
 
-          {/* Animated Particle System with Vibrant Colors */}
-          <div className="absolute inset-0 opacity-30">
-            {[...Array(60)].map((_, i) => {
+          {/* Subtle Static Particle System */}
+          <div className="absolute inset-0 opacity-20">
+            {[...Array(20)].map((_, i) => {
               const colors = [
                 "bg-purple-400",
                 "bg-cyan-400",
                 "bg-pink-400",
                 "bg-green-400",
-                "bg-yellow-400",
-                "bg-orange-400",
               ];
               const randomColor =
                 colors[Math.floor(Math.random() * colors.length)];
               return (
                 <div
                   key={i}
-                  className={`absolute w-1.5 h-1.5 ${randomColor} rounded-full animate-pulse`}
+                  className={`absolute w-1 h-1 ${randomColor} rounded-full opacity-60`}
                   style={{
                     left: `${Math.random() * 100}%`,
                     top: `${Math.random() * 100}%`,
-                    animationDelay: `${Math.random() * 3}s`,
-                    boxShadow: `0 0 6px currentColor`,
+                    boxShadow: `0 0 4px currentColor`,
                   }}
                 ></div>
               );
@@ -123,25 +120,12 @@ const App = () => {
           </div>
         </div>
 
-        {/* Floating Interactive Elements */}
+        {/* Subtle Background Elements */}
         <div className="absolute inset-0 pointer-events-none">
-          {/* Vibrant Floating Orbs */}
-          <div
-            className="absolute top-1/4 left-1/4 w-24 h-24 bg-gradient-to-r from-purple-500/40 to-pink-500/40 rounded-full blur-xl electric-float"
-            style={{ animationDelay: "0s", filter: "brightness(1.2)" }}
-          ></div>
-          <div
-            className="absolute top-3/4 right-1/4 w-20 h-20 bg-gradient-to-r from-cyan-500/40 to-blue-500/40 rounded-full blur-xl electric-float"
-            style={{ animationDelay: "1s", filter: "brightness(1.2)" }}
-          ></div>
-          <div
-            className="absolute top-1/2 left-3/4 w-16 h-16 bg-gradient-to-r from-green-500/40 to-emerald-500/40 rounded-full blur-xl electric-float"
-            style={{ animationDelay: "2s", filter: "brightness(1.2)" }}
-          ></div>
-          <div
-            className="absolute top-1/3 right-1/3 w-14 h-14 bg-gradient-to-r from-orange-500/40 to-yellow-500/40 rounded-full blur-xl electric-float"
-            style={{ animationDelay: "1.5s", filter: "brightness(1.2)" }}
-          ></div>
+          {/* Static Floating Orbs */}
+          <div className="absolute top-1/4 left-1/4 w-16 h-16 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-xl"></div>
+          <div className="absolute top-3/4 right-1/4 w-14 h-14 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full blur-xl"></div>
+          <div className="absolute top-1/2 left-3/4 w-12 h-12 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full blur-xl"></div>
         </div>
 
         {/* Main Content Container */}
@@ -218,31 +202,13 @@ const App = () => {
 
             {/* Sophisticated Loading Animation */}
             <div className="relative space-y-8">
-              {/* Multi-Ring Spinner - Ultra Vibrant */}
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto">
-                <div className="absolute inset-0 rounded-full border-4 border-purple-500/40"></div>
-                <div
-                  className="absolute inset-2 rounded-full border-4 border-transparent border-t-purple-400 animate-spin"
-                  style={{ filter: "brightness(1.2)" }}
-                ></div>
-                <div
-                  className="absolute inset-4 rounded-full border-4 border-transparent border-r-pink-400 animate-spin"
-                  style={{
-                    animationDirection: "reverse",
-                    animationDuration: "2s",
-                    filter: "brightness(1.2)",
-                  }}
-                ></div>
-                <div
-                  className="absolute inset-6 rounded-full border-4 border-transparent border-b-cyan-400 animate-spin"
-                  style={{ animationDuration: "3s", filter: "brightness(1.2)" }}
-                ></div>
+              {/* Simple Ring Spinner */}
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto">
+                <div className="absolute inset-0 rounded-full border-2 border-purple-500/30"></div>
+                <div className="absolute inset-2 rounded-full border-3 border-transparent border-t-purple-400 animate-spin"></div>
 
-                {/* Center Glow - Enhanced */}
-                <div
-                  className="absolute inset-8 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full blur-lg opacity-70 electric-pulse"
-                  style={{ filter: "brightness(1.1)" }}
-                ></div>
+                {/* Center Dot */}
+                <div className="absolute inset-8 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full opacity-50"></div>
               </div>
 
               {/* Enhanced Progress System */}
@@ -254,15 +220,9 @@ const App = () => {
                     className="h-full bg-gradient-to-r from-purple-500 via-pink-500 via-cyan-500 to-green-500 rounded-full transition-all duration-700 ease-out relative overflow-hidden"
                     style={{
                       width: `${Math.min(loadingProgress, 100)}%`,
-                      filter: "brightness(1.1)",
                     }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent animate-pulse"></div>
-                    <div className="absolute inset-0 electric-shimmer"></div>
-                    <div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-300/30 to-transparent"
-                      style={{ animation: "shimmer 1s ease-in-out infinite" }}
-                    ></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
                   </div>
                 </div>
 
@@ -348,7 +308,7 @@ const App = () => {
               <div className="electric-glass backdrop-blur-xl rounded-xl p-3 border border-purple-300/20">
                 <div className="flex items-center justify-center gap-2 text-purple-200">
                   <svg
-                    className="w-4 h-4 animate-pulse"
+                    className="w-4 h-4"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -358,15 +318,9 @@ const App = () => {
                     🎵 Preparing ambient music experience
                   </span>
                   <div className="flex space-x-1">
-                    <div className="w-1 h-1 bg-purple-400 rounded-full animate-pulse"></div>
-                    <div
-                      className="w-1 h-1 bg-pink-400 rounded-full animate-pulse"
-                      style={{ animationDelay: "0.2s" }}
-                    ></div>
-                    <div
-                      className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse"
-                      style={{ animationDelay: "0.4s" }}
-                    ></div>
+                    <div className="w-1 h-1 bg-purple-400 rounded-full opacity-80"></div>
+                    <div className="w-1 h-1 bg-pink-400 rounded-full opacity-60"></div>
+                    <div className="w-1 h-1 bg-cyan-400 rounded-full opacity-80"></div>
                   </div>
                 </div>
               </div>
