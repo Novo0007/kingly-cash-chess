@@ -113,23 +113,25 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                   )}
                 </div>
 
-                {/* Enhanced Icon Container */}
-                <div className="relative">
+                {/* Smooth Icon Container */}
+                <div className="relative transition-all duration-500 ease-out">
                   {isActive && (
                     <div
-                      className={`absolute -inset-2 bg-gradient-to-r ${item.gradient} rounded-full blur-lg opacity-70`}
+                      className={`absolute -inset-2 bg-gradient-to-r ${item.gradient} rounded-full blur-lg opacity-50 transition-all duration-700 ease-out`}
                     ></div>
                   )}
                   <div
-                    className={`relative p-2 rounded-xl transition-all duration-300 ${
+                    className={`relative p-2 rounded-xl transition-all duration-500 ease-out transform ${
                       isActive
-                        ? `bg-gradient-to-r ${item.gradient} shadow-lg transform scale-110`
-                        : "bg-white/10 backdrop-blur-sm"
+                        ? `bg-gradient-to-r ${item.gradient}/80 shadow-lg scale-110 backdrop-blur-sm`
+                        : "bg-white/8 backdrop-blur-sm hover:bg-white/12"
                     }`}
                   >
                     <Icon
-                      className={`h-5 w-5 transition-all duration-300 ${
-                        isActive ? "text-white drop-shadow-lg" : "text-white/80"
+                      className={`h-5 w-5 transition-all duration-500 ease-out ${
+                        isActive
+                          ? "text-white drop-shadow-lg"
+                          : "text-white/70 hover:text-white/90"
                       }`}
                     />
                   </div>
