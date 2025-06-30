@@ -182,30 +182,30 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         })}
       </div>
 
-      {/* Enhanced Bottom Gaming Elements */}
-      <div className="absolute bottom-1 left-0 right-0 flex justify-center">
-        <div className="flex items-center gap-3 text-xs">
-          <Sparkles className="h-3 w-3 text-yellow-300 animate-pulse filter drop-shadow-lg" />
+      {/* Subtle Bottom Gaming Elements */}
+      <div className="absolute bottom-1 left-0 right-0 flex justify-center transition-all duration-1000 ease-out">
+        <div className="flex items-center gap-3 text-xs opacity-60">
+          <Sparkles className="h-3 w-3 text-yellow-300/70 animate-pulse filter drop-shadow-md transition-all duration-500" />
           <div className="flex gap-1">
-            <div className="w-1 h-1 bg-yellow-400 rounded-full animate-pulse"></div>
+            <div className="w-1 h-1 bg-yellow-400/60 rounded-full animate-pulse transition-all duration-500"></div>
             <div
-              className="w-1 h-1 bg-white rounded-full animate-pulse"
+              className="w-1 h-1 bg-white/60 rounded-full animate-pulse transition-all duration-500"
               style={{ animationDelay: "0.3s" }}
             ></div>
             <div
-              className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse"
+              className="w-1 h-1 bg-cyan-400/60 rounded-full animate-pulse transition-all duration-500"
               style={{ animationDelay: "0.6s" }}
             ></div>
           </div>
           <Sparkles
-            className="h-3 w-3 text-cyan-300 animate-pulse filter drop-shadow-lg"
+            className="h-3 w-3 text-cyan-300/70 animate-pulse filter drop-shadow-md transition-all duration-500"
             style={{ animationDelay: "0.5s" }}
           />
         </div>
       </div>
 
-      {/* Top edge glow */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
+      {/* Subtle Top edge glow */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent transition-all duration-500"></div>
     </div>
   );
 };
