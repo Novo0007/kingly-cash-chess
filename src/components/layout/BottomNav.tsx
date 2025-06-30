@@ -156,15 +156,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                     {/* Bottom indicator dots */}
                     <div className="absolute -bottom-1 flex gap-1 transition-all duration-700 ease-out">
                       <div
-                        className={`w-1.5 h-1.5 bg-${item.color}-400/80 rounded-full animate-pulse shadow-md transition-all duration-500`}
+                        className={`w-1.5 h-1.5 bg-${item.color}-400/60 rounded-full shadow-md transition-all duration-500`}
                       ></div>
+                      <div className="w-1.5 h-1.5 bg-white/60 rounded-full shadow-md transition-all duration-500"></div>
                       <div
-                        className="w-1.5 h-1.5 bg-white/80 rounded-full animate-pulse shadow-md transition-all duration-500"
-                        style={{ animationDelay: "0.3s" }}
-                      ></div>
-                      <div
-                        className={`w-1.5 h-1.5 bg-${item.color}-400/80 rounded-full animate-pulse shadow-md transition-all duration-500`}
-                        style={{ animationDelay: "0.6s" }}
+                        className={`w-1.5 h-1.5 bg-${item.color}-400/60 rounded-full shadow-md transition-all duration-500`}
                       ></div>
                     </div>
 
