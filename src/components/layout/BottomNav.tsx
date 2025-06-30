@@ -56,16 +56,16 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-inset-bottom">
-      {/* Enhanced Electric Glass Background */}
-      <div className="absolute inset-0 electric-glass border-t-2 border-white/20 rounded-t-3xl overflow-hidden">
-        {/* Multi-layer gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 via-blue-600/90 to-cyan-600/90 rounded-t-3xl"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent rounded-t-3xl"></div>
+      {/* Ultra-Transparent Glass Background */}
+      <div className="absolute inset-0 backdrop-blur-2xl border-t border-white/10 rounded-t-3xl overflow-hidden transition-all duration-500 ease-out">
+        {/* Minimal transparent gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-blue-600/15 to-cyan-600/20 rounded-t-3xl transition-opacity duration-700"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent rounded-t-3xl"></div>
 
-        {/* Animated background elements */}
-        <div className="absolute top-0 left-1/4 w-16 h-16 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 rounded-full blur-xl animate-pulse"></div>
+        {/* Subtle animated background elements */}
+        <div className="absolute top-0 left-1/4 w-12 h-12 bg-gradient-to-r from-yellow-400/10 to-orange-400/10 rounded-full blur-2xl animate-pulse transition-all duration-1000"></div>
         <div
-          className="absolute top-0 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400/20 to-purple-400/20 rounded-full blur-lg animate-pulse"
+          className="absolute top-0 right-1/4 w-10 h-10 bg-gradient-to-r from-pink-400/10 to-purple-400/10 rounded-full blur-xl animate-pulse transition-all duration-1000"
           style={{ animationDelay: "1s" }}
         ></div>
       </div>
