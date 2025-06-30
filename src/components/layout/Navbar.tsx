@@ -81,21 +81,39 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
   };
 
   const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
-    setProfile(data);
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error) {
+        console.warn("Error fetching profile:", error.message);
+      } else {
+        setProfile(data);
+      }
+    } catch (networkError) {
+      console.warn("Network error fetching profile:", networkError);
+    }
   };
 
   const fetchWallet = async (userId: string) => {
-    const { data } = await supabase
-      .from("wallets")
-      .select("*")
-      .eq("user_id", userId)
-      .single();
-    setWallet(data);
+    try {
+      const { data, error } = await supabase
+        .from("wallets")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+
+      if (error) {
+        console.warn("Error fetching wallet:", error.message);
+      } else {
+        setWallet(data);
+      }
+    } catch (networkError) {
+      console.warn("Network error fetching wallet:", networkError);
+    }
   };
 
   const handleSignOut = async () => {
