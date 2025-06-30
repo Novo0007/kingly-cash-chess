@@ -223,13 +223,15 @@ export const useBackgroundMusic = (options: BackgroundMusicOptions = {}) => {
   };
 
   const stopMusic = () => {
-    if (!audioRef.current || !isPlaying) return;
+    if (!audioRef.current) return;
 
     if (fadeIntervalRef.current) {
       clearInterval(fadeIntervalRef.current);
     }
 
-    fadeOut(audioRef.current);
+    // Immediate pause for better user control
+    audioRef.current.pause();
+    setIsPlaying(false);
   };
 
   const toggleMusic = () => {
