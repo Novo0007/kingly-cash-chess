@@ -34,51 +34,100 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
   useEffect(() => {
     getUser();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-        fetchWallet(session.user.id);
-      }
-    });
+    try {
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((event, session) => {
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          fetchProfile(session.user.id);
+          fetchWallet(session.user.id);
+        }
+      });
 
-    return () => subscription.unsubscribe();
+      return () => {
+        try {
+          subscription.unsubscribe();
+        } catch (error) {
+          console.warn("Error unsubscribing from auth changes:", error);
+        }
+      };
+    } catch (error) {
+      console.warn("Error setting up auth state listener in Navbar:", error);
+    }
   }, []);
 
   const getUser = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    setUser(user);
-    if (user) {
-      fetchProfile(user.id);
-      fetchWallet(user.id);
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error) {
+        console.warn("Auth error in Navbar:", error.message);
+        setUser(null);
+      } else {
+        setUser(user);
+        if (user) {
+          fetchProfile(user.id);
+          fetchWallet(user.id);
+        }
+      }
+    } catch (networkError) {
+      console.warn("Network error in Navbar auth:", networkError);
+      setUser(null);
     }
   };
 
   const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
-    setProfile(data);
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error) {
+        console.warn("Error fetching profile:", error.message);
+      } else {
+        setProfile(data);
+      }
+    } catch (networkError) {
+      console.warn("Network error fetching profile:", networkError);
+    }
   };
 
   const fetchWallet = async (userId: string) => {
-    const { data } = await supabase
-      .from("wallets")
-      .select("*")
-      .eq("user_id", userId)
-      .single();
-    setWallet(data);
+    try {
+      const { data, error } = await supabase
+        .from("wallets")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+
+      if (error) {
+        console.warn("Error fetching wallet:", error.message);
+      } else {
+        setWallet(data);
+      }
+    } catch (networkError) {
+      console.warn("Network error fetching wallet:", networkError);
+    }
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setMobileMenuOpen(false);
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.warn("Error signing out:", error);
+      // Clear local state even if sign out fails
+      setUser(null);
+      setProfile(null);
+      setWallet(null);
+    } finally {
+      setMobileMenuOpen(false);
+    }
   };
 
   const navItems = [
@@ -90,13 +139,12 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
 
   return (
     <nav className="relative">
-      {/* Background with Electric Blue Glassmorphism */}
-      <div
-        className={`absolute inset-0 ${isMobile ? "electric-card" : "electric-glass"} border-b border-blue-200/50`}
-      >
-        {!isMobile && (
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-100/10 via-electric-100/10 to-cyan-100/10"></div>
-        )}
+      {/* Enhanced Background with Electric Glassmorphism */}
+      <div className="absolute inset-0 electric-glass border-b-2 border-white/20">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 via-blue-600/90 to-cyan-600/90"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-100/5 via-electric-100/10 to-cyan-100/5"></div>
+        {/* Top highlight */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6">
@@ -143,8 +191,8 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
                     onClick={() => onViewChange(item.id)}
                     className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 tap-target font-body ${
                       isActive
-                        ? "bg-gradient-to-r from-blue-500/20 to-electric-500/20 text-white border border-blue-400/50 shadow-lg"
-                        : "text-gray-300 hover:text-white hover:bg-gray-800/50 backdrop-blur-sm"
+                        ? "bg-gradient-to-r from-white/20 to-white/10 text-white border border-white/30 shadow-lg backdrop-blur-sm"
+                        : "text-white/80 hover:text-white hover:bg-white/10 backdrop-blur-sm"
                     }`}
                   >
                     <div className="relative">
@@ -173,7 +221,7 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
                 {/* User Profile Card */}
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl blur-lg opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
-                  <div className="relative bg-gradient-to-r from-slate-800/80 to-slate-900/80 backdrop-blur-sm border border-blue-500/30 rounded-xl p-3 tap-target">
+                  <div className="relative bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm border border-white/30 rounded-xl p-3 tap-target">
                     <div className="flex items-center gap-3">
                       <div className="relative">
                         <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-electric-400 rounded-full blur-sm opacity-60"></div>
@@ -213,9 +261,9 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden relative group text-white p-3 rounded-xl hover:bg-blue-800/50 transition-all duration-300 tap-target flex items-center justify-center"
+              className="lg:hidden relative group text-white p-3 rounded-xl hover:bg-white/10 transition-all duration-300 tap-target flex items-center justify-center"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-electric-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               {mobileMenuOpen ? (
                 <X className="relative h-6 w-6 transform rotate-90 group-hover:rotate-0 transition-transform duration-300" />
               ) : (
