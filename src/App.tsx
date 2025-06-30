@@ -308,7 +308,7 @@ const App = () => {
               <div className="electric-glass backdrop-blur-xl rounded-xl p-3 border border-purple-300/20">
                 <div className="flex items-center justify-center gap-2 text-purple-200">
                   <svg
-                    className="w-4 h-4 animate-pulse"
+                    className="w-4 h-4"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -318,15 +318,9 @@ const App = () => {
                     🎵 Preparing ambient music experience
                   </span>
                   <div className="flex space-x-1">
-                    <div className="w-1 h-1 bg-purple-400 rounded-full animate-pulse"></div>
-                    <div
-                      className="w-1 h-1 bg-pink-400 rounded-full animate-pulse"
-                      style={{ animationDelay: "0.2s" }}
-                    ></div>
-                    <div
-                      className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse"
-                      style={{ animationDelay: "0.4s" }}
-                    ></div>
+                    <div className="w-1 h-1 bg-purple-400 rounded-full opacity-80"></div>
+                    <div className="w-1 h-1 bg-pink-400 rounded-full opacity-60"></div>
+                    <div className="w-1 h-1 bg-cyan-400 rounded-full opacity-80"></div>
                   </div>
                 </div>
               </div>
