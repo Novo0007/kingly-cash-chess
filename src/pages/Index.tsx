@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthPage } from "@/components/auth/AuthPage";
@@ -21,7 +20,9 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
-  const [selectedGameType, setSelectedGameType] = useState<"chess" | "ludo" | null>(null);
+  const [selectedGameType, setSelectedGameType] = useState<
+    "chess" | "ludo" | null
+  >(null);
 
   useEffect(() => {
     getUser();
@@ -166,37 +167,63 @@ const Index = () => {
   };
 
   return (
-    <MobileOptimized className="lavender-bg">
-      {/* Elegant Lavender Background */}
-      <div className="fixed inset-0 lavender-gradient">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-purple-100/10"></div>
+    <MobileOptimized className="electric-bg">
+      {/* Enhanced Electric Background */}
+      <div className="fixed inset-0 electric-gradient">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/15 via-transparent to-cyan-100/15"></div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/5 via-blue-500/5 to-cyan-500/5"></div>
       </div>
 
-      {/* Subtle Pattern Overlay */}
-      <div className="fixed inset-0 opacity-5 sm:opacity-10">
+      {/* Dynamic Pattern Overlay */}
+      <div className="fixed inset-0 opacity-10 sm:opacity-20">
         <div
           className="h-full w-full"
           style={{
-            backgroundImage: `radial-gradient(circle at 20% 20%, hsl(250, 70%, 80%) 0%, transparent 30%),
-                             radial-gradient(circle at 80% 80%, hsl(270, 80%, 85%) 0%, transparent 30%),
-                             radial-gradient(circle at 50% 50%, hsl(260, 75%, 82%) 0%, transparent 25%)`,
+            backgroundImage: `
+              radial-gradient(circle at 20% 20%, hsl(270, 95%, 70%) 0%, transparent 40%),
+              radial-gradient(circle at 80% 80%, hsl(220, 100%, 70%) 0%, transparent 40%),
+              radial-gradient(circle at 50% 50%, hsl(195, 100%, 70%) 0%, transparent 35%),
+              radial-gradient(circle at 30% 70%, hsl(145, 85%, 60%) 0%, transparent 30%),
+              conic-gradient(from 0deg at 50% 50%, transparent 0deg, hsl(270, 95%, 70%) 60deg, transparent 120deg, hsl(220, 100%, 70%) 180deg, transparent 240deg, hsl(195, 100%, 70%) 300deg, transparent 360deg)
+            `,
           }}
         ></div>
       </div>
 
-      {/* Optimized Floating Elements */}
+      {/* Enhanced Floating Elements with More Variety */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        {/* Large vibrant orbs */}
         <div
-          className="absolute top-20 left-20 w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-br from-purple-300 to-indigo-300 rounded-full lavender-float opacity-30 sm:opacity-40"
-          style={{ animationDelay: "0s", animationDuration: "6s" }}
+          className="absolute top-1/4 left-1/4 w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-400/40 to-pink-400/40 rounded-full electric-float opacity-60 blur-sm"
+          style={{ animationDelay: "0s", animationDuration: "8s" }}
         ></div>
         <div
-          className="absolute top-40 right-40 w-1 h-1 sm:w-2 sm:h-2 bg-gradient-to-br from-lavender-300 to-purple-300 rounded-full lavender-float opacity-40 sm:opacity-50"
-          style={{ animationDelay: "2s", animationDuration: "8s" }}
+          className="absolute top-3/4 right-1/4 w-6 h-6 sm:w-10 sm:h-10 bg-gradient-to-br from-cyan-400/40 to-blue-400/40 rounded-full electric-float opacity-70 blur-sm"
+          style={{ animationDelay: "2s", animationDuration: "10s" }}
         ></div>
         <div
-          className="absolute bottom-40 left-40 w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full lavender-float opacity-20 sm:opacity-30"
-          style={{ animationDelay: "4s", animationDuration: "7s" }}
+          className="absolute top-1/2 left-3/4 w-4 h-4 sm:w-8 sm:h-8 bg-gradient-to-br from-green-400/40 to-emerald-400/40 rounded-full electric-float opacity-50 blur-sm"
+          style={{ animationDelay: "4s", animationDuration: "9s" }}
+        ></div>
+
+        {/* Small particle effects */}
+        <div
+          className="absolute top-20 right-20 w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full particle-float opacity-80"
+          style={{ animationDelay: "1s", animationDuration: "7s" }}
+        ></div>
+        <div
+          className="absolute bottom-20 left-20 w-1 h-1 sm:w-2 sm:h-2 bg-gradient-to-br from-pink-400 to-purple-400 rounded-full particle-float opacity-90"
+          style={{ animationDelay: "3s", animationDuration: "6s" }}
+        ></div>
+        <div
+          className="absolute top-60 left-1/2 w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full particle-float opacity-60"
+          style={{ animationDelay: "5s", animationDuration: "8s" }}
+        ></div>
+
+        {/* Geometric shapes */}
+        <div
+          className="absolute bottom-40 right-40 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-cyan-400/30 to-blue-400/30 rotate-45 electric-float opacity-40"
+          style={{ animationDelay: "6s", animationDuration: "11s" }}
         ></div>
       </div>
 
@@ -205,15 +232,20 @@ const Index = () => {
         <Navbar currentView={currentView} onViewChange={setCurrentView} />
       </div>
 
-      {/* Main Content Area - Mobile Optimized */}
+      {/* Main Content Area - Enhanced Mobile Optimized */}
       <main className="relative z-20 max-w-7xl mx-auto px-1 sm:px-2 md:px-4 py-1 sm:py-2 md:py-8 pb-16 sm:pb-20 md:pb-8">
         <div className="relative">
-          {/* Content Background with Lavender Glass Effect */}
-          <div className="absolute inset-0 lavender-glass rounded-xl sm:rounded-2xl md:rounded-3xl lavender-shadow"></div>
+          {/* Enhanced Content Background with Electric Glass Effect */}
+          <div className="absolute inset-0 electric-glass rounded-xl sm:rounded-2xl md:rounded-3xl electric-shadow-lg">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-purple-500/5 rounded-xl sm:rounded-2xl md:rounded-3xl"></div>
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
+          </div>
 
-          {/* Content */}
+          {/* Content with enhanced styling */}
           <div className="relative z-10 p-1 sm:p-2 md:p-4">
-            {renderCurrentView()}
+            <div className="space-y-4 slide-in-bottom">
+              {renderCurrentView()}
+            </div>
           </div>
         </div>
       </main>
