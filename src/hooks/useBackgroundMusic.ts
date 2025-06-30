@@ -3,22 +3,15 @@ import { useEffect, useRef, useState } from "react";
 interface BackgroundMusicOptions {
   volume?: number;
   fadeInDuration?: number;
-  autoPlayDelay?: number;
 }
 
 export const useBackgroundMusic = (options: BackgroundMusicOptions = {}) => {
-  const {
-    volume = 0.3,
-    fadeInDuration = 3000,
-    autoPlayDelay = 10000,
-  } = options;
+  const { volume = 0.3, fadeInDuration = 3000 } = options;
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [userInteracted, setUserInteracted] = useState(false);
   const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const autoPlayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Create a simple ambient game music using Web Audio API
   const createAmbientMusic = () => {
@@ -133,52 +126,19 @@ export const useBackgroundMusic = (options: BackgroundMusicOptions = {}) => {
     audio.addEventListener("play", handlePlay);
     audio.addEventListener("pause", handlePause);
 
-    // Track user interaction
-    const handleUserInteraction = () => {
-      setUserInteracted(true);
-      document.removeEventListener("click", handleUserInteraction);
-      document.removeEventListener("keydown", handleUserInteraction);
-      document.removeEventListener("touchstart", handleUserInteraction);
-    };
-
-    document.addEventListener("click", handleUserInteraction);
-    document.addEventListener("keydown", handleUserInteraction);
-    document.addEventListener("touchstart", handleUserInteraction);
-
     return () => {
       if (fadeIntervalRef.current) {
         clearTimeout(fadeIntervalRef.current);
       }
-      if (autoPlayTimeoutRef.current) {
-        clearTimeout(autoPlayTimeoutRef.current);
-      }
       audio.removeEventListener("canplay", handleCanPlay);
       audio.removeEventListener("play", handlePlay);
       audio.removeEventListener("pause", handlePause);
-      document.removeEventListener("click", handleUserInteraction);
-      document.removeEventListener("keydown", handleUserInteraction);
-      document.removeEventListener("touchstart", handleUserInteraction);
 
       // Don't revoke external URLs
       audio.pause();
       audio.src = "";
     };
   }, []);
-
-  // Auto-play after delay when user has interacted and audio is loaded
-  useEffect(() => {
-    if (isLoaded && userInteracted && !isPlaying) {
-      autoPlayTimeoutRef.current = setTimeout(() => {
-        playMusic();
-      }, autoPlayDelay);
-    }
-
-    return () => {
-      if (autoPlayTimeoutRef.current) {
-        clearTimeout(autoPlayTimeoutRef.current);
-      }
-    };
-  }, [isLoaded, userInteracted, isPlaying]);
 
   const fadeIn = (audio: HTMLAudioElement) => {
     audio.volume = 0;
@@ -255,7 +215,6 @@ export const useBackgroundMusic = (options: BackgroundMusicOptions = {}) => {
   return {
     isPlaying,
     isLoaded,
-    userInteracted,
     playMusic,
     stopMusic,
     toggleMusic,

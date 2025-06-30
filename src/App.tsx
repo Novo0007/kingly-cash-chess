@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import { ChessRulesPage } from "./pages/ChessRulesPage";
 import { LudoRulesPage } from "./pages/LudoRulesPage";
 import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
+import { DraggableMusicControl } from "@/components/music/DraggableMusicControl";
 
 const queryClient = new QueryClient();
 
@@ -16,11 +17,10 @@ const App = () => {
   const [appLoading, setAppLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
-  // Initialize background music with auto-play after 10 seconds
-  const { isPlaying, toggleMusic, userInteracted } = useBackgroundMusic({
+  // Initialize background music
+  const { isPlaying, toggleMusic } = useBackgroundMusic({
     volume: 0.2,
     fadeInDuration: 4000,
-    autoPlayDelay: 10000,
   });
 
   useEffect(() => {
@@ -392,60 +392,8 @@ const App = () => {
         <Toaster />
         <Sonner />
 
-        {/* Background Music Control Button */}
-        <div className="fixed top-4 right-4 z-50">
-          <button
-            onClick={toggleMusic}
-            className="bg-gradient-to-r from-purple-600/80 to-pink-600/80 backdrop-blur-xl hover:from-purple-500/90 hover:to-pink-500/90 text-white p-3 rounded-full shadow-lg border border-purple-300/30 transition-all duration-300 hover:scale-110 group"
-            title={
-              isPlaying ? "Pause Background Music" : "Play Background Music"
-            }
-          >
-            {isPlaying ? (
-              // Pause icon
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-              </svg>
-            ) : (
-              // Play icon
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            )}
-
-            {/* Pulsing animation when music is playing */}
-            {isPlaying && (
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/40 to-pink-500/40 rounded-full animate-pulse"></div>
-            )}
-
-            {/* Sound waves animation */}
-            {isPlaying && (
-              <div className="absolute -right-1 top-1/2 transform -translate-y-1/2">
-                <div className="flex space-x-0.5">
-                  <div
-                    className="w-0.5 h-2 bg-white/60 rounded-full animate-pulse"
-                    style={{ animationDelay: "0ms" }}
-                  ></div>
-                  <div
-                    className="w-0.5 h-3 bg-white/60 rounded-full animate-pulse"
-                    style={{ animationDelay: "150ms" }}
-                  ></div>
-                  <div
-                    className="w-0.5 h-2 bg-white/60 rounded-full animate-pulse"
-                    style={{ animationDelay: "300ms" }}
-                  ></div>
-                </div>
-              </div>
-            )}
-          </button>
-
-          {/* Tooltip for first-time users */}
-          {!userInteracted && (
-            <div className="absolute -bottom-12 right-0 bg-black/80 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap backdrop-blur-xl border border-purple-300/30 animate-pulse">
-              🎵 Music starts in 10s after interaction
-            </div>
-          )}
-        </div>
+        {/* Draggable Background Music Control */}
+        <DraggableMusicControl isPlaying={isPlaying} onToggle={toggleMusic} />
 
         <BrowserRouter>
           <Routes>
