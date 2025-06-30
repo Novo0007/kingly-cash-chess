@@ -120,25 +120,12 @@ const App = () => {
           </div>
         </div>
 
-        {/* Floating Interactive Elements */}
+        {/* Subtle Background Elements */}
         <div className="absolute inset-0 pointer-events-none">
-          {/* Vibrant Floating Orbs */}
-          <div
-            className="absolute top-1/4 left-1/4 w-24 h-24 bg-gradient-to-r from-purple-500/40 to-pink-500/40 rounded-full blur-xl electric-float"
-            style={{ animationDelay: "0s", filter: "brightness(1.2)" }}
-          ></div>
-          <div
-            className="absolute top-3/4 right-1/4 w-20 h-20 bg-gradient-to-r from-cyan-500/40 to-blue-500/40 rounded-full blur-xl electric-float"
-            style={{ animationDelay: "1s", filter: "brightness(1.2)" }}
-          ></div>
-          <div
-            className="absolute top-1/2 left-3/4 w-16 h-16 bg-gradient-to-r from-green-500/40 to-emerald-500/40 rounded-full blur-xl electric-float"
-            style={{ animationDelay: "2s", filter: "brightness(1.2)" }}
-          ></div>
-          <div
-            className="absolute top-1/3 right-1/3 w-14 h-14 bg-gradient-to-r from-orange-500/40 to-yellow-500/40 rounded-full blur-xl electric-float"
-            style={{ animationDelay: "1.5s", filter: "brightness(1.2)" }}
-          ></div>
+          {/* Static Floating Orbs */}
+          <div className="absolute top-1/4 left-1/4 w-16 h-16 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-xl"></div>
+          <div className="absolute top-3/4 right-1/4 w-14 h-14 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full blur-xl"></div>
+          <div className="absolute top-1/2 left-3/4 w-12 h-12 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full blur-xl"></div>
         </div>
 
         {/* Main Content Container */}
