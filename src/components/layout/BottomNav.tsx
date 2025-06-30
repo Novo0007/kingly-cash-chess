@@ -101,14 +101,14 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                     : "text-white/60 hover:text-white/90 hover:bg-white/5 active:bg-white/10 active:scale-95 hover:scale-105 hover:backdrop-blur-sm"
                 }`}
               >
-                {/* Enhanced Background Effects */}
-                <div className="absolute inset-0 rounded-2xl overflow-hidden">
+                {/* Smooth Background Effects */}
+                <div className="absolute inset-0 rounded-2xl overflow-hidden transition-all duration-700 ease-out">
                   {isActive && (
                     <>
                       <div
-                        className={`absolute inset-0 bg-gradient-to-r ${item.gradient}/30 animate-pulse`}
+                        className={`absolute inset-0 bg-gradient-to-r ${item.gradient}/20 animate-pulse transition-opacity duration-1000`}
                       ></div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/3 to-transparent transition-opacity duration-500"></div>
                     </>
                   )}
                 </div>
