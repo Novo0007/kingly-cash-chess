@@ -95,10 +95,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => onViewChange(item.id)}
-                className={`relative flex flex-col items-center gap-2 px-3 py-4 h-auto w-full min-h-[72px] rounded-2xl transition-all duration-300 transform tap-target ${
+                className={`relative flex flex-col items-center gap-2 px-3 py-4 h-auto w-full min-h-[72px] rounded-2xl transition-all duration-500 ease-out transform tap-target ${
                   isActive
-                    ? `text-white bg-gradient-to-b ${item.gradient}/20 scale-110 shadow-2xl border border-white/30 backdrop-blur-sm`
-                    : "text-white/70 hover:text-white hover:bg-white/10 active:bg-white/20 active:scale-95 hover:scale-105"
+                    ? `text-white bg-gradient-to-b ${item.gradient}/15 scale-110 shadow-xl border border-white/20 backdrop-blur-lg`
+                    : "text-white/60 hover:text-white/90 hover:bg-white/5 active:bg-white/10 active:scale-95 hover:scale-105 hover:backdrop-blur-sm"
                 }`}
               >
                 {/* Enhanced Background Effects */}
