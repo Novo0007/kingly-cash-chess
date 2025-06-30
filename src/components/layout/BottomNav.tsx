@@ -62,12 +62,9 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-blue-600/15 to-cyan-600/20 rounded-t-3xl transition-opacity duration-700"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent rounded-t-3xl"></div>
 
-        {/* Subtle animated background elements */}
-        <div className="absolute top-0 left-1/4 w-12 h-12 bg-gradient-to-r from-yellow-400/10 to-orange-400/10 rounded-full blur-2xl animate-pulse transition-all duration-1000"></div>
-        <div
-          className="absolute top-0 right-1/4 w-10 h-10 bg-gradient-to-r from-pink-400/10 to-purple-400/10 rounded-full blur-xl animate-pulse transition-all duration-1000"
-          style={{ animationDelay: "1s" }}
-        ></div>
+        {/* Subtle static background elements */}
+        <div className="absolute top-0 left-1/4 w-8 h-8 bg-gradient-to-r from-yellow-400/8 to-orange-400/8 rounded-full blur-2xl opacity-70"></div>
+        <div className="absolute top-0 right-1/4 w-6 h-6 bg-gradient-to-r from-pink-400/8 to-purple-400/8 rounded-full blur-xl opacity-70"></div>
       </div>
 
       {/* Enhanced Navigation Content */}
