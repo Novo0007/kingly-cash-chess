@@ -220,15 +220,9 @@ const App = () => {
                     className="h-full bg-gradient-to-r from-purple-500 via-pink-500 via-cyan-500 to-green-500 rounded-full transition-all duration-700 ease-out relative overflow-hidden"
                     style={{
                       width: `${Math.min(loadingProgress, 100)}%`,
-                      filter: "brightness(1.1)",
                     }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent animate-pulse"></div>
-                    <div className="absolute inset-0 electric-shimmer"></div>
-                    <div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-300/30 to-transparent"
-                      style={{ animation: "shimmer 1s ease-in-out infinite" }}
-                    ></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
                   </div>
                 </div>
 
