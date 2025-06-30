@@ -34,27 +34,49 @@ export const Navbar = ({ currentView, onViewChange }: NavbarProps) => {
   useEffect(() => {
     getUser();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-        fetchWallet(session.user.id);
-      }
-    });
+    try {
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((event, session) => {
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          fetchProfile(session.user.id);
+          fetchWallet(session.user.id);
+        }
+      });
 
-    return () => subscription.unsubscribe();
+      return () => {
+        try {
+          subscription.unsubscribe();
+        } catch (error) {
+          console.warn("Error unsubscribing from auth changes:", error);
+        }
+      };
+    } catch (error) {
+      console.warn("Error setting up auth state listener in Navbar:", error);
+    }
   }, []);
 
   const getUser = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    setUser(user);
-    if (user) {
-      fetchProfile(user.id);
-      fetchWallet(user.id);
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error) {
+        console.warn("Auth error in Navbar:", error.message);
+        setUser(null);
+      } else {
+        setUser(user);
+        if (user) {
+          fetchProfile(user.id);
+          fetchWallet(user.id);
+        }
+      }
+    } catch (networkError) {
+      console.warn("Network error in Navbar auth:", networkError);
+      setUser(null);
     }
   };
 
