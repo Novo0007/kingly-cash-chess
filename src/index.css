@@ -417,15 +417,15 @@
   }
 }
 
-.electric-shimmer {
+.wood-shimmer {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(0, 150, 255, 0.4) 50%,
+    rgba(139, 69, 19, 0.3) 50%,
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: shimmer 2s infinite;
 }
 
 @keyframes shimmer {
