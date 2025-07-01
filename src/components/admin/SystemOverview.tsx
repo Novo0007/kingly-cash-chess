@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -64,14 +63,13 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
           .eq("transaction_type", "withdrawal"),
       ]);
 
-      const totalRevenue = revenueResult.data?.reduce(
-        (sum, t) => sum + Number(t.amount),
-        0
-      ) || 0;
+      const totalRevenue =
+        revenueResult.data?.reduce((sum, t) => sum + Number(t.amount), 0) || 0;
 
       setStats({
         totalUsers: usersResult.count || 0,
-        activeGames: (chessGamesResult.count || 0) + (ludoGamesResult.count || 0),
+        activeGames:
+          (chessGamesResult.count || 0) + (ludoGamesResult.count || 0),
         totalTransactions: transactionsResult.count || 0,
         totalRevenue,
         todayRevenue: 0, // We'll implement this later
@@ -86,13 +84,13 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
         {[...Array(6)].map((_, i) => (
-          <Card key={i} className="bg-slate-800 border-slate-600">
-            <CardContent className="p-6">
+          <Card key={i} className="wood-card border-amber-600">
+            <CardContent className="p-4 sm:p-6">
               <div className="animate-pulse">
-                <div className="h-4 bg-slate-600 rounded w-3/4 mb-2"></div>
-                <div className="h-8 bg-slate-600 rounded w-1/2"></div>
+                <div className="h-3 sm:h-4 bg-amber-300 rounded w-3/4 mb-2"></div>
+                <div className="h-6 sm:h-8 bg-amber-300 rounded w-1/2"></div>
               </div>
             </CardContent>
           </Card>
