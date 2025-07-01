@@ -691,6 +691,12 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
   const completeGame = async (winnerId: string | null, gameResult: string) => {
     if (!game) return;
 
+    console.log("🎯 Starting Ludo game completion process", {
+      winnerId,
+      gameResult,
+      prizeAmount: game.prize_amount
+    });
+
     try {
       // Update game status
       const { error: gameError } = await supabase
@@ -703,62 +709,105 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
         .eq("id", gameId);
 
       if (gameError) {
-        console.error("Error updating ludo game:", gameError);
+        console.error("❌ Error updating ludo game:", gameError);
         return;
       }
 
+      console.log("✅ Ludo game status updated successfully");
+
       // Process winnings similar to chess
-      if (winnerId) {
+      if (winnerId && game.prize_amount > 0) {
+        console.log("💰 Processing Ludo winner rewards for:", winnerId);
+
         // Update winner's stats and wallet
-        const { data: winnerProfile } = await supabase
+        const { data: winnerProfile, error: profileFetchError } = await supabase
           .from("profiles")
           .select("games_played, games_won, total_earnings")
           .eq("id", winnerId)
           .single();
 
-        if (winnerProfile) {
-          await supabase
+        if (profileFetchError) {
+          console.error("❌ Error fetching Ludo winner profile:", profileFetchError);
+        } else {
+          console.log("📊 Current Ludo winner stats:", winnerProfile);
+
+          const { error: profileUpdateError } = await supabase
             .from("profiles")
             .update({
               games_played: (winnerProfile.games_played || 0) + 1,
               games_won: (winnerProfile.games_won || 0) + 1,
-              total_earnings:
-                (winnerProfile.total_earnings || 0) + game.prize_amount,
+              total_earnings: (winnerProfile.total_earnings || 0) + game.prize_amount,
               updated_at: new Date().toISOString(),
             })
             .eq("id", winnerId);
+
+          if (profileUpdateError) {
+            console.error("❌ Error updating Ludo winner profile:", profileUpdateError);
+          } else {
+            console.log("✅ Ludo winner profile updated successfully");
+          }
         }
 
         // Add winnings to wallet
-        const { data: winnerWallet } = await supabase
+        const { data: winnerWallet, error: walletFetchError } = await supabase
           .from("wallets")
           .select("balance")
           .eq("user_id", winnerId)
           .single();
 
-        if (winnerWallet) {
-          await supabase
+        if (walletFetchError) {
+          console.error("❌ Error fetching Ludo winner wallet:", walletFetchError);
+          toast.error("Failed to update wallet");
+        } else {
+          console.log("💳 Current Ludo winner wallet balance:", winnerWallet.balance);
+
+          const newBalance = (winnerWallet.balance || 0) + game.prize_amount;
+          const { error: walletUpdateError } = await supabase
             .from("wallets")
             .update({
-              balance: (winnerWallet.balance || 0) + game.prize_amount,
+              balance: newBalance,
               updated_at: new Date().toISOString(),
             })
             .eq("user_id", winnerId);
+
+          if (walletUpdateError) {
+            console.error("❌ Error updating Ludo winner wallet:", walletUpdateError);
+            toast.error("Failed to add Ludo winnings to wallet");
+          } else {
+            console.log("✅ Ludo winner wallet updated successfully. New balance:", newBalance);
+            
+            if (winnerId === currentUser) {
+              toast.success(`🎉 ₹${game.prize_amount} added to your wallet from Ludo win!`);
+            }
+          }
         }
 
         // Create winning transaction
-        await supabase.from("transactions").insert({
+        const { error: transactionError } = await supabase.from("transactions").insert({
           user_id: winnerId,
           transaction_type: "game_winning",
           amount: game.prize_amount,
           status: "completed",
           description: `Won Ludo game: ${game.game_name || "Ludo Game"}`,
         });
+
+        if (transactionError) {
+          console.error("❌ Error creating Ludo winning transaction:", transactionError);
+        } else {
+          console.log("✅ Ludo winning transaction created successfully");
+        }
       }
 
-      console.log("Ludo game completion processing finished");
+      console.log("🎉 Ludo game completion processing finished successfully");
+      
+      // Show success message
+      if (winnerId === currentUser) {
+        toast.success(`🏆 Congratulations! You won ₹${game.prize_amount} in Ludo!`);
+      }
+
     } catch (error) {
-      console.error("Error processing ludo game completion:", error);
+      console.error("💥 Error processing Ludo game completion:", error);
+      toast.error("Failed to process Ludo game completion");
     }
   };
 
