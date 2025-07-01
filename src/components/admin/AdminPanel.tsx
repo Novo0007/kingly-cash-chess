@@ -107,47 +107,52 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
         </CardHeader>
       </Card>
 
-      {/* Admin Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5 bg-slate-800 border-slate-600">
+      {/* Admin Tabs - Mobile Responsive */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 bg-amber-100 border-amber-300 p-1 rounded-lg">
           <TabsTrigger
             value="overview"
-            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+            className="data-[state=active]:bg-amber-700 data-[state=active]:text-amber-50 text-xs sm:text-sm wood-button min-h-[48px] flex flex-col sm:flex-row items-center gap-1 sm:gap-2"
           >
-            <TrendingUp className="h-4 w-4 mr-2" />
-            Overview
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Overview</span>
+            <span className="sm:hidden text-xs">Stats</span>
           </TabsTrigger>
           <TabsTrigger
             value="users"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            className="data-[state=active]:bg-green-700 data-[state=active]:text-amber-50 text-xs sm:text-sm wood-button min-h-[48px] flex flex-col sm:flex-row items-center gap-1 sm:gap-2"
             disabled={!hasPermission("users")}
           >
-            <Users className="h-4 w-4 mr-2" />
-            Users
+            <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Users</span>
+            <span className="sm:hidden text-xs">Users</span>
           </TabsTrigger>
           <TabsTrigger
             value="payments"
-            className="data-[state=active]:bg-green-600 data-[state=active]:text-white"
+            className="data-[state=active]:bg-yellow-700 data-[state=active]:text-amber-50 text-xs sm:text-sm wood-button min-h-[48px] flex flex-col sm:flex-row items-center gap-1 sm:gap-2"
             disabled={!hasPermission("payments")}
           >
-            <CreditCard className="h-4 w-4 mr-2" />
-            Payments
+            <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Payments</span>
+            <span className="sm:hidden text-xs">Pay</span>
           </TabsTrigger>
           <TabsTrigger
             value="games"
-            className="data-[state=active]:bg-orange-600 data-[state=active]:text-white"
+            className="data-[state=active]:bg-orange-700 data-[state=active]:text-amber-50 text-xs sm:text-sm wood-button min-h-[48px] flex flex-col sm:flex-row items-center gap-1 sm:gap-2"
             disabled={!hasPermission("games")}
           >
-            <Gamepad2 className="h-4 w-4 mr-2" />
-            Games
+            <Gamepad2 className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Games</span>
+            <span className="sm:hidden text-xs">Games</span>
           </TabsTrigger>
           <TabsTrigger
             value="settings"
-            className="data-[state=active]:bg-slate-600 data-[state=active]:text-white"
+            className="data-[state=active]:bg-amber-800 data-[state=active]:text-amber-50 text-xs sm:text-sm wood-button min-h-[48px] flex flex-col sm:flex-row items-center gap-1 sm:gap-2 col-span-2 sm:col-span-1"
             disabled={!hasPermission("full_access")}
           >
-            <Settings className="h-4 w-4 mr-2" />
-            Settings
+            <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Settings</span>
+            <span className="sm:hidden text-xs">Settings</span>
           </TabsTrigger>
         </TabsList>
 
