@@ -211,15 +211,15 @@ const App = () => {
               </div>
             </div>
 
-            {/* Sophisticated Loading Animation */}
+            {/* Natural Loading Animation */}
             <div className="relative space-y-8">
-              {/* Simple Ring Spinner */}
+              {/* Wood Ring Spinner */}
               <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto">
-                <div className="absolute inset-0 rounded-full border-2 border-purple-500/30"></div>
-                <div className="absolute inset-2 rounded-full border-3 border-transparent border-t-purple-400 animate-spin"></div>
+                <div className="absolute inset-0 rounded-full border-2 border-amber-600/30"></div>
+                <div className="absolute inset-2 rounded-full border-3 border-transparent border-t-amber-600 animate-spin"></div>
 
                 {/* Center Dot */}
-                <div className="absolute inset-8 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full opacity-50"></div>
+                <div className="absolute inset-8 bg-gradient-to-r from-amber-600 to-orange-600 rounded-full opacity-50"></div>
               </div>
 
               {/* Enhanced Progress System */}
