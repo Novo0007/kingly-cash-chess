@@ -99,26 +99,26 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
               <CardTitle>
                 <div className="flex items-center justify-center gap-4 mb-4">
                   <div className="relative group">
-                    <div className="absolute -inset-3 bg-gradient-to-r from-yellow-400 via-pink-400 to-cyan-400 rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-all duration-500"></div>
-                    <div className="relative p-3 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-                      <Gamepad2 className="h-10 w-10 md:h-12 md:w-12 text-white drop-shadow-lg" />
+                    <div className="absolute -inset-3 bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-all duration-500"></div>
+                    <div className="relative p-3 bg-amber-100/10 backdrop-blur-sm rounded-full border border-amber-200/20">
+                      <Gamepad2 className="h-10 w-10 md:h-12 md:w-12 text-amber-100 drop-shadow-lg" />
                     </div>
                     <div className="absolute -top-2 -right-2 text-2xl animate-bounce">
-                      🎮
+                      🏡
                     </div>
                   </div>
                   <div className="text-center">
-                    <span className="block text-3xl md:text-4xl lg:text-5xl font-black text-white drop-shadow-lg font-heading">
+                    <span className="block text-3xl md:text-4xl lg:text-5xl font-black text-amber-100 drop-shadow-lg font-heading">
                       CHOOSE YOUR
                     </span>
-                    <span className="block text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-yellow-300 via-pink-300 to-cyan-300 bg-clip-text text-transparent drop-shadow-lg font-heading">
+                    <span className="block text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-amber-200 via-orange-200 to-yellow-200 bg-clip-text text-transparent drop-shadow-lg font-heading">
                       GAME
                     </span>
                   </div>
                 </div>
-                <p className="text-white/90 text-base md:text-lg font-medium max-w-2xl mx-auto drop-shadow-md font-body">
-                  🚀 Select your favorite game and start competing with players
-                  worldwide for real money prizes!
+                <p className="text-amber-100/90 text-base md:text-lg font-medium max-w-2xl mx-auto drop-shadow-md font-body">
+                  🌲 Select your favorite game and join fellow players in our
+                  cozy digital lodge for real prizes!
                 </p>
 
                 {/* Stats Bar */}
