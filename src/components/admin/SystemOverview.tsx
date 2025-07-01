@@ -151,18 +151,18 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
         {statCards.map((stat, index) => (
-          <Card key={index} className={`${stat.bgColor}`}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white flex items-center gap-2 text-sm font-medium">
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+          <Card key={index} className={`${stat.bgColor} wood-plank`}>
+            <CardHeader className="pb-2 p-3 sm:p-4">
+              <CardTitle className="text-amber-900 flex items-center gap-2 text-xs sm:text-sm font-semibold font-heading">
+                <stat.icon className={`h-3 w-3 sm:h-4 sm:w-4 ${stat.color}`} />
                 {stat.title}
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${stat.color}`}>
+            <CardContent className="p-3 sm:p-4 pt-0">
+              <div className={`text-lg sm:text-2xl font-bold ${stat.color}`}>
                 {stat.value}
               </div>
             </CardContent>
