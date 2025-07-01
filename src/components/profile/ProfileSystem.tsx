@@ -1,144 +1,60 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
+import { GameHistory } from "@/components/games/GameHistory";
+import { SettingsSection } from "./SettingsSection";
+import { AboutSection } from "./AboutSection";
+import { ContactSection } from "./ContactSection";
+import { PrivacyPolicySection } from "./PrivacyPolicySection";
+import { UserGuideSection } from "./UserGuideSection";
+import { MoreGamesSection } from "./MoreGamesSection";
 import {
   User,
+  Settings,
   Trophy,
   Target,
+  Star,
   Crown,
-  Edit2,
+  Calendar,
+  Info,
+  Phone,
+  Shield,
+  BookOpen,
+  Gamepad2,
+  Edit,
   Save,
   X,
-  RefreshCw,
-  LogOut,
-  Star,
-  Gamepad2,
-  Settings,
-  Volume2,
-  Bell,
-  Shield,
-  Moon,
-  Palette,
 } from "lucide-react";
-import { useDeviceType } from "@/hooks/use-mobile";
-import { MobileContainer } from "@/components/layout/MobileContainer";
-import { About } from "./About";
-import { PrivacyPolicy } from "./PrivacyPolicy";
-import { Contact } from "./Contact";
-import { UserGuide } from "./UserGuide";
-import { MoreAppsGames } from "./MoreAppsGames";
-import { AdminPanel } from "@/components/admin/AdminPanel";
+import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 
+type Profile = Tables<"profiles">;
+
 export const ProfileSystem = () => {
-  const [profile, setProfile] = useState<Tables<"profiles"> | null>(null);
-  const [wallet, setWallet] = useState<Tables<"wallets"> | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [userEmail, setUserEmail] = useState<string>("");
-  const [currentView, setCurrentView] = useState<"profile" | "admin">("profile");
-  const [formData, setFormData] = useState({
+  const [editForm, setEditForm] = useState({
     username: "",
     full_name: "",
+    bio: "",
   });
-  const [settings, setSettings] = useState({
-    soundEnabled: true,
-    notificationsEnabled: true,
-    gameNotifications: true,
-    darkMode: true,
-    reducedAnimations: false,
-    autoRefresh: true,
-  });
-
-  // Modal states for information sections
-  const [modals, setModals] = useState({
-    about: false,
-    privacy: false,
-    contact: false,
-    userGuide: false,
-    moreApps: false,
-  });
-
-  const { isMobile, isTablet } = useDeviceType();
 
   useEffect(() => {
     fetchProfile();
-    fetchWallet();
-    checkAdminStatus();
-
-    // Auto-refresh every 15 seconds to catch updates
-    const autoRefreshInterval = setInterval(() => {
-      fetchProfile();
-      fetchWallet();
-    }, 15000);
-
-    // Subscribe to real-time changes
-    const profileSubscription = supabase
-      .channel("profile_changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "profiles",
-        },
-        () => {
-          console.log("Profile updated, refreshing...");
-          fetchProfile();
-        },
-      )
-      .subscribe();
-
-    return () => {
-      clearInterval(autoRefreshInterval);
-      supabase.removeChannel(profileSubscription);
-    };
   }, []);
-
-  const checkAdminStatus = async () => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      
-      if (!user?.email) return;
-      
-      setUserEmail(user.email);
-      
-      const { data: adminCheck } = await supabase
-        .from("admin_users")
-        .select("*")
-        .eq("email", user.email)
-        .eq("is_active", true)
-        .single();
-      
-      setIsAdmin(!!adminCheck);
-    } catch (error) {
-      console.error("Error checking admin status:", error);
-    }
-  };
 
   const fetchProfile = async () => {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
@@ -147,765 +63,279 @@ export const ProfileSystem = () => {
         .eq("id", user.id)
         .single();
 
-      if (error) {
-        console.error("Error fetching profile:", error);
-        toast.error("Error loading profile");
-      } else {
-        setProfile(data);
-        setFormData({
-          username: data.username || "",
-          full_name: data.full_name || "",
-        });
-      }
+      if (error) throw error;
+
+      setProfile(data);
+      setEditForm({
+        username: data.username || "",
+        full_name: data.full_name || "",
+        bio: data.bio || "",
+      });
     } catch (error) {
       console.error("Error fetching profile:", error);
+      toast.error("Failed to load profile");
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchWallet = async () => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from("wallets")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
-
-      if (error) {
-        console.error("Error fetching wallet:", error);
-      } else {
-        setWallet(data);
-      }
-    } catch (error) {
-      console.error("Error fetching wallet:", error);
-    }
-  };
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await Promise.all([fetchProfile(), fetchWallet()]);
-    setRefreshing(false);
-    toast.success("Profile data refreshed!");
-  };
-
-  const handleSave = async () => {
+  const handleSaveProfile = async () => {
     if (!profile) return;
 
     try {
       const { error } = await supabase
         .from("profiles")
         .update({
-          username: formData.username,
-          full_name: formData.full_name,
+          username: editForm.username,
+          full_name: editForm.full_name,
+          bio: editForm.bio,
         })
         .eq("id", profile.id);
 
       if (error) throw error;
 
-      toast.success("Profile updated successfully!");
+      setProfile({
+        ...profile,
+        username: editForm.username,
+        full_name: editForm.full_name,
+        bio: editForm.bio,
+      });
+      
       setEditing(false);
-      fetchProfile();
+      toast.success("Profile updated successfully");
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Failed to update profile");
     }
   };
 
-  const handleCancel = () => {
-    if (profile) {
-      setFormData({
-        username: profile.username || "",
-        full_name: profile.full_name || "",
-      });
-    }
-    setEditing(false);
+  const getRatingColor = (rating: number) => {
+    if (rating >= 1800) return "text-purple-600";
+    if (rating >= 1600) return "text-blue-600";
+    if (rating >= 1400) return "text-green-600";
+    if (rating >= 1200) return "text-yellow-600";
+    return "text-gray-600";
   };
 
-  const handleSignOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-
-      toast.success("Signed out successfully!");
-      // The auth state change will be handled by the parent component
-    } catch (error) {
-      console.error("Error signing out:", error);
-      toast.error("Failed to sign out");
-    }
-  };
-
-  const getWinRate = () => {
-    if (!profile || !profile.games_played || profile.games_played === 0)
-      return 0;
-    return Math.round((profile.games_won / profile.games_played) * 100);
-  };
-
-  const getRatingBadgeColor = (rating: number) => {
-    if (rating >= 2000)
-      return "bg-purple-500/20 text-purple-400 border-purple-500/30";
-    if (rating >= 1600)
-      return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-    if (rating >= 1200)
-      return "bg-blue-500/20 text-blue-400 border-blue-500/30";
-    return "bg-gray-500/20 text-gray-400 border-gray-500/30";
-  };
-
-  const getRatingTitle = (rating: number) => {
-    if (rating >= 2000) return "Master";
-    if (rating >= 1600) return "Expert";
-    if (rating >= 1200) return "Intermediate";
-    return "Beginner";
+  const getRatingBadge = (rating: number) => {
+    if (rating >= 1800) return { label: "Master", color: "bg-purple-600" };
+    if (rating >= 1600) return { label: "Expert", color: "bg-blue-600" };
+    if (rating >= 1400) return { label: "Advanced", color: "bg-green-600" };
+    if (rating >= 1200) return { label: "Intermediate", color: "bg-yellow-600" };
+    return { label: "Beginner", color: "bg-gray-600" };
   };
 
   if (loading) {
     return (
-      <MobileContainer>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center space-y-4">
-            <div
-              className={`w-8 h-8 border-3 border-blue-400 border-t-transparent rounded-full mx-auto ${!isMobile ? "animate-spin" : ""}`}
-            ></div>
-            <div className="text-white text-lg font-semibold">
-              Loading profile...
-            </div>
-          </div>
-        </div>
-      </MobileContainer>
+      <div className="flex items-center justify-center p-8">
+        <div className="w-8 h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
     );
   }
 
   if (!profile) {
     return (
-      <MobileContainer>
-        <div className="text-center text-white space-y-4">
-          <User className="h-16 w-16 text-gray-400 mx-auto" />
-          <h2 className="text-2xl font-bold">Profile not found</h2>
-          <p className="text-gray-400">
-            Unable to load your profile information.
-          </p>
-        </div>
-      </MobileContainer>
+      <Card className="wood-card border-amber-600">
+        <CardContent className="p-6 text-center">
+          <p className="text-amber-900">Profile not found</p>
+        </CardContent>
+      </Card>
     );
   }
 
-  // Mobile-optimized styles
-  const headerGradient = isMobile
-    ? "bg-slate-800 border border-slate-600"
-    : "bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 border border-slate-600 shadow-lg";
-
-  const cardGradient = isMobile
-    ? "bg-slate-800/80 border border-slate-600"
-    : "bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-600 shadow-lg";
-
-  const animationClass = isMobile
-    ? ""
-    : "transition-all duration-300 hover:scale-105";
+  const winRate = profile.games_played > 0 
+    ? Math.round((profile.games_won / profile.games_played) * 100) 
+    : 0;
+  
+  const ratingBadge = getRatingBadge(profile.chess_rating || 1200);
 
   return (
-    <MobileContainer maxWidth="xl">
-      <div className="space-y-4 md:space-y-6">
-        {/* Profile Header with Admin Toggle */}
-        <Card className={`${headerGradient} ${animationClass}`}>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-white flex items-center justify-between text-sm md:text-base">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="relative">
-                  <Gamepad2 className="h-5 w-5 md:h-6 md:w-6 text-blue-400" />
-                  {!isMobile && (
-                    <Star className="h-2 w-2 text-yellow-400 absolute -top-1 -right-1" />
-                  )}
-                </div>
-                <span className="font-bold text-lg md:text-xl">
-                  {currentView === "admin" ? "Admin Panel" : "Player Profile"}
-                </span>
-                {isAdmin && (
-                  <Badge className="bg-purple-600 text-white text-xs">
-                    <Shield className="h-3 w-3 mr-1" />
-                    ADMIN
-                  </Badge>
-                )}
-              </div>
-              <div className="flex items-center gap-1 md:gap-2">
-                {isAdmin && (
-                  <Button
-                    onClick={() => setCurrentView(currentView === "profile" ? "admin" : "profile")}
-                    variant="ghost"
-                    size="sm"
-                    className="text-purple-400 hover:bg-slate-700/50 h-8 px-2 md:px-3"
-                  >
-                    <Shield className="h-3 w-3 md:h-4 md:w-4" />
-                    {!isMobile && <span className="ml-1">{currentView === "profile" ? "Admin" : "Profile"}</span>}
-                  </Button>
-                )}
-                <Button
-                  onClick={handleRefresh}
-                  variant="ghost"
-                  size="sm"
-                  disabled={refreshing}
-                  className="text-blue-400 hover:bg-slate-700/50 h-8 w-8 p-0"
-                >
-                  <RefreshCw
-                    className={`h-3 w-3 md:h-4 md:w-4 ${refreshing && !isMobile ? "animate-spin" : ""}`}
-                  />
-                </Button>
-                {currentView === "profile" && !editing ? (
-                  <Button
-                    onClick={() => setEditing(true)}
-                    variant="ghost"
-                    size="sm"
-                    className="text-green-400 hover:bg-slate-700/50 h-8 w-8 p-0"
-                  >
-                    <Edit2 className="h-3 w-3 md:h-4 md:w-4" />
-                  </Button>
-                ) : currentView === "profile" && editing ? (
-                  <div className="flex gap-1">
-                    <Button
-                      onClick={handleSave}
-                      variant="ghost"
-                      size="sm"
-                      className="text-green-400 hover:bg-slate-700/50 h-8 w-8 p-0"
-                    >
-                      <Save className="h-3 w-3 md:h-4 md:w-4" />
-                    </Button>
-                    <Button
-                      onClick={handleCancel}
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-400 hover:bg-slate-700/50 h-8 w-8 p-0"
-                    >
-                      <X className="h-3 w-3 md:h-4 md:w-4" />
-                    </Button>
-                  </div>
-                ) : null}
-                <Button
-                  onClick={handleSignOut}
-                  variant="ghost"
-                  size="sm"
-                  className="text-red-400 hover:bg-slate-700/50 h-8 px-2 md:px-3"
-                >
-                  <LogOut className="h-3 w-3 md:h-4 md:w-4" />
-                  {!isMobile && <span className="ml-1">Sign Out</span>}
-                </Button>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          
-          {/* Show profile info only in profile view */}
-          {currentView === "profile" && (
-            <CardContent className="space-y-3 md:space-y-4">
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Profile Header */}
+      <Card className="wood-card border-amber-600">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <Avatar className="w-24 h-24 border-4 border-amber-600">
+              <AvatarImage src={profile.avatar_url || undefined} />
+              <AvatarFallback className="bg-amber-600 text-white text-2xl font-bold">
+                {profile.username.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="flex-1 text-center md:text-left">
               {editing ? (
-                <div className="space-y-3 md:space-y-4">
+                <div className="space-y-4">
                   <div>
-                    <Label
-                      htmlFor="username"
-                      className="text-white font-semibold text-sm"
-                    >
-                      Username
-                    </Label>
+                    <Label htmlFor="username">Username</Label>
                     <Input
                       id="username"
-                      value={formData.username}
-                      onChange={(e) =>
-                        setFormData({ ...formData, username: e.target.value })
-                      }
-                      className="bg-slate-700/50 border-slate-600 text-white mt-1"
+                      value={editForm.username}
+                      onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                      className="bg-amber-50 border-amber-300"
                     />
                   </div>
                   <div>
-                    <Label
-                      htmlFor="full_name"
-                      className="text-white font-semibold text-sm"
-                    >
-                      Full Name
-                    </Label>
+                    <Label htmlFor="full_name">Full Name</Label>
                     <Input
                       id="full_name"
-                      value={formData.full_name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, full_name: e.target.value })
-                      }
-                      className="bg-slate-700/50 border-slate-600 text-white mt-1"
+                      value={editForm.full_name}
+                      onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })}
+                      className="bg-amber-50 border-amber-300"
                     />
+                  </div>
+                  <div>
+                    <Label htmlFor="bio">Bio</Label>
+                    <Textarea
+                      id="bio"
+                      value={editForm.bio}
+                      onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                      className="bg-amber-50 border-amber-300"
+                      rows={3}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={handleSaveProfile} className="bg-green-600 hover:bg-green-700">
+                      <Save className="h-4 w-4 mr-2" />
+                      Save
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setEditing(false)}
+                      className="border-amber-400 text-amber-800"
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Cancel
+                    </Button>
                   </div>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  <div>
-                    <h3 className="text-xl md:text-2xl font-bold text-white">
-                      {profile.username}
-                    </h3>
-                    {profile.full_name && (
-                      <p className="text-slate-300 font-medium text-sm md:text-base">
-                        {profile.full_name}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      className={`${getRatingBadgeColor(profile.chess_rating || 1200)} font-semibold text-xs md:text-sm px-2 py-1`}
+                <div>
+                  <div className="flex items-center gap-2 justify-center md:justify-start mb-2">
+                    <h1 className="text-2xl font-bold text-amber-900">{profile.username}</h1>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setEditing(true)}
+                      className="border-amber-400 text-amber-800 hover:bg-amber-100"
                     >
-                      <Crown className="h-3 w-3 mr-1 text-yellow-400" />
-                      {profile.chess_rating || 1200} -{" "}
-                      {getRatingTitle(profile.chess_rating || 1200)}
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  {profile.full_name && (
+                    <p className="text-amber-700 mb-2">{profile.full_name}</p>
+                  )}
+                  
+                  {profile.bio && (
+                    <p className="text-amber-600 mb-4">{profile.bio}</p>
+                  )}
+                  
+                  <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                    <Badge className={`${ratingBadge.color} text-white`}>
+                      {ratingBadge.label}
+                    </Badge>
+                    <Badge className="bg-amber-600 text-white">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      Member since {new Date(profile.created_at || '').getFullYear()}
                     </Badge>
                   </div>
                 </div>
               )}
-            </CardContent>
-          )}
-        </Card>
+            </div>
 
-        {/* Render Admin Panel or Profile Content */}
-        {currentView === "admin" ? (
-          <AdminPanel userEmail={userEmail} />
-        ) : (
-          <div className="space-y-4 md:space-y-6">
-            {/* Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-              <Card
-                className={`${cardGradient} ${animationClass} border-green-600/30`}
-              >
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-green-400 flex items-center gap-2 font-semibold text-sm md:text-base">
-                    <Trophy className="h-4 w-4 md:h-5 md:w-5" />
-                    Games Won
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl md:text-3xl font-bold text-white">
-                    {profile.games_won || 0}
-                  </div>
-                  <p className="text-xs md:text-sm text-green-300">
-                    Win Rate: {getWinRate()}%
-                  </p>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card className="bg-amber-100/50 border-amber-300">
+                <CardContent className="p-4 text-center">
+                  <Star className={`h-6 w-6 mx-auto mb-2 ${getRatingColor(profile.chess_rating || 1200)}`} />
+                  <p className="text-lg font-bold text-amber-900">{profile.chess_rating || 1200}</p>
+                  <p className="text-xs text-amber-700">Rating</p>
                 </CardContent>
               </Card>
 
-              <Card
-                className={`${cardGradient} ${animationClass} border-blue-600/30`}
-              >
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-blue-400 flex items-center gap-2 font-semibold text-sm md:text-base">
-                    <Target className="h-4 w-4 md:h-5 md:w-5" />
-                    Games Played
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl md:text-3xl font-bold text-white">
-                    {profile.games_played || 0}
-                  </div>
-                  <p className="text-xs md:text-sm text-blue-300">Total matches</p>
+              <Card className="bg-amber-100/50 border-amber-300">
+                <CardContent className="p-4 text-center">
+                  <Trophy className="h-6 w-6 mx-auto mb-2 text-yellow-600" />
+                  <p className="text-lg font-bold text-amber-900">{profile.games_won}</p>
+                  <p className="text-xs text-amber-700">Won</p>
                 </CardContent>
               </Card>
 
-              <Card
-                className={`${cardGradient} ${animationClass} border-yellow-600/30 md:col-span-1 col-span-1`}
-              >
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-yellow-400 flex items-center gap-2 font-semibold text-sm md:text-base">
-                    <Star className="h-4 w-4 md:h-5 md:w-5" />
-                    Total Earnings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl md:text-3xl font-bold text-white">
-                    ₹{(profile.total_earnings || 0).toFixed(2)}
+              <Card className="bg-amber-100/50 border-amber-300">
+                <CardContent className="p-4 text-center">
+                  <Target className="h-6 w-6 mx-auto mb-2 text-blue-600" />
+                  <p className="text-lg font-bold text-amber-900">{profile.games_played}</p>
+                  <p className="text-xs text-amber-700">Played</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-amber-100/50 border-amber-300">
+                <CardContent className="p-4 text-center">
+                  <div className="h-6 w-6 mx-auto mb-2 bg-green-600 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">{winRate}%</span>
                   </div>
-                  <p className="text-xs md:text-sm text-yellow-300">
-                    All-time winnings
-                  </p>
+                  <p className="text-lg font-bold text-amber-900">{winRate}%</p>
+                  <p className="text-xs text-amber-700">Win Rate</p>
                 </CardContent>
               </Card>
             </div>
-
-            {/* Wallet Summary */}
-            {wallet && (
-              <>
-                <Separator className="bg-slate-600/50" />
-                <Card
-                  className={`${cardGradient} ${animationClass} border-purple-600/30`}
-                >
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-purple-400 flex items-center gap-2 font-semibold text-base md:text-lg">
-                      <div className="relative">
-                        <Trophy className="h-5 w-5 md:h-6 md:w-6" />
-                        {!isMobile && (
-                          <Star className="h-2 w-2 text-yellow-400 absolute -top-1 -right-1" />
-                        )}
-                      </div>
-                      Current Wallet Balance
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl md:text-4xl font-bold text-white mb-2">
-                      ₹{wallet.balance.toFixed(2)}
-                    </div>
-                    {wallet.locked_balance > 0 && (
-                      <p className="text-sm md:text-base text-purple-300 font-medium">
-                        Locked Balance: ₹{wallet.locked_balance.toFixed(2)}
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              </>
-            )}
-
-            {/* Settings Section */}
-            <Separator className="bg-slate-600/50" />
-            <Card
-              className={`${cardGradient} ${animationClass} border-cyan-600/30`}
-            >
-              <CardHeader className="pb-3">
-                <CardTitle className="text-cyan-400 flex items-center justify-between font-semibold text-base md:text-lg">
-                  <div className="flex items-center gap-2">
-                    <Settings className="h-5 w-5 md:h-6 md:w-6" />
-                    Settings & Preferences
-                  </div>
-                  <Button
-                    onClick={() => setShowSettings(!showSettings)}
-                    variant="ghost"
-                    size="sm"
-                    className="text-cyan-400 hover:bg-slate-700/50 h-8 w-8 p-0"
-                  >
-                    <Settings
-                      className={`h-4 w-4 transition-transform duration-300 ${showSettings ? "rotate-90" : ""}`}
-                    />
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              {showSettings && (
-                <CardContent className="space-y-4">
-                  {/* Sound Settings */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Volume2 className="h-4 w-4 text-cyan-400" />
-                      <h4 className="text-white font-medium text-sm">
-                        Sound & Audio
-                      </h4>
-                    </div>
-                    <div className="space-y-3 pl-6">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="sound" className="text-slate-300 text-sm">
-                          Enable Sound Effects
-                        </Label>
-                        <Switch
-                          id="sound"
-                          checked={settings.soundEnabled}
-                          onCheckedChange={(checked) =>
-                            setSettings((prev) => ({
-                              ...prev,
-                              soundEnabled: checked,
-                            }))
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <Separator className="bg-slate-600/30" />
-
-                  {/* Notification Settings */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Bell className="h-4 w-4 text-cyan-400" />
-                      <h4 className="text-white font-medium text-sm">
-                        Notifications
-                      </h4>
-                    </div>
-                    <div className="space-y-3 pl-6">
-                      <div className="flex items-center justify-between">
-                        <Label
-                          htmlFor="notifications"
-                          className="text-slate-300 text-sm"
-                        >
-                          Push Notifications
-                        </Label>
-                        <Switch
-                          id="notifications"
-                          checked={settings.notificationsEnabled}
-                          onCheckedChange={(checked) =>
-                            setSettings((prev) => ({
-                              ...prev,
-                              notificationsEnabled: checked,
-                            }))
-                          }
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label
-                          htmlFor="gameNotifications"
-                          className="text-slate-300 text-sm"
-                        >
-                          Game Alerts
-                        </Label>
-                        <Switch
-                          id="gameNotifications"
-                          checked={settings.gameNotifications}
-                          onCheckedChange={(checked) =>
-                            setSettings((prev) => ({
-                              ...prev,
-                              gameNotifications: checked,
-                            }))
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <Separator className="bg-slate-600/30" />
-
-                  {/* Display Settings */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Palette className="h-4 w-4 text-cyan-400" />
-                      <h4 className="text-white font-medium text-sm">
-                        Display & Performance
-                      </h4>
-                    </div>
-                    <div className="space-y-3 pl-6">
-                      <div className="flex items-center justify-between">
-                        <Label
-                          htmlFor="darkMode"
-                          className="text-slate-300 text-sm"
-                        >
-                          Dark Mode
-                        </Label>
-                        <Switch
-                          id="darkMode"
-                          checked={settings.darkMode}
-                          onCheckedChange={(checked) =>
-                            setSettings((prev) => ({ ...prev, darkMode: checked }))
-                          }
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label
-                          htmlFor="reducedAnimations"
-                          className="text-slate-300 text-sm"
-                        >
-                          Reduce Animations (Mobile)
-                        </Label>
-                        <Switch
-                          id="reducedAnimations"
-                          checked={settings.reducedAnimations}
-                          onCheckedChange={(checked) =>
-                            setSettings((prev) => ({
-                              ...prev,
-                              reducedAnimations: checked,
-                            }))
-                          }
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label
-                          htmlFor="autoRefresh"
-                          className="text-slate-300 text-sm"
-                        >
-                          Auto-refresh Data
-                        </Label>
-                        <Switch
-                          id="autoRefresh"
-                          checked={settings.autoRefresh}
-                          onCheckedChange={(checked) =>
-                            setSettings((prev) => ({
-                              ...prev,
-                              autoRefresh: checked,
-                            }))
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <Separator className="bg-slate-600/30" />
-
-                  {/* Information & Support */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-cyan-400" />
-                      <h4 className="text-white font-medium text-sm">
-                        Information & Support
-                      </h4>
-                    </div>
-                    <div className="space-y-2 pl-6">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                        onClick={() => setModals({ ...modals, about: true })}
-                      >
-                        <User className="h-4 w-4 mr-2" />
-                        About NNC Games
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                        onClick={() => setModals({ ...modals, userGuide: true })}
-                      >
-                        <Gamepad2 className="h-4 w-4 mr-2" />
-                        User Guide
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                        onClick={() => setModals({ ...modals, moreApps: true })}
-                      >
-                        <Trophy className="h-4 w-4 mr-2" />
-                        Our More Apps & Games
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                        onClick={() => setModals({ ...modals, contact: true })}
-                      >
-                        <Bell className="h-4 w-4 mr-2" />
-                        Contact Support
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                        onClick={() => setModals({ ...modals, privacy: true })}
-                      >
-                        <Shield className="h-4 w-4 mr-2" />
-                        Privacy Policy
-                      </Button>
-                    </div>
-                  </div>
-
-                  <Separator className="bg-slate-600/30" />
-
-                  {/* Account Settings */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Shield className="h-4 w-4 text-cyan-400" />
-                      <h4 className="text-white font-medium text-sm">
-                        Account & Security
-                      </h4>
-                    </div>
-                    <div className="space-y-2 pl-6">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start text-slate-300 border-slate-600 hover:bg-slate-700/50"
-                      >
-                        <Shield className="h-4 w-4 mr-2" />
-                        Change Password
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-start text-red-400 border-red-600/30 hover:bg-red-500/10"
-                      >
-                        <X className="h-4 w-4 mr-2" />
-                        Delete Account
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Save Settings */}
-                  <div className="pt-4">
-                    <Button
-                      onClick={() => {
-                        toast.success("Settings saved successfully!");
-                        setShowSettings(false);
-                      }}
-                      className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
-                    >
-                      Save Settings
-                    </Button>
-                  </div>
-                </CardContent>
-              )}
-            </Card>
           </div>
-        )}
-      </div>
+        </CardContent>
+      </Card>
 
-      {/* Information Modals */}
-      <Dialog
-        open={modals.about}
-        onOpenChange={(open) => setModals({ ...modals, about: open })}
-      >
-        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
-          <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <User className="h-5 w-5 text-blue-400" />
-              About NNC Games
-            </DialogTitle>
-          </DialogHeader>
-          <About />
-        </DialogContent>
-      </Dialog>
+      {/* Profile Tabs */}
+      <Tabs defaultValue="history" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-600 p-2 rounded-xl">
+          <TabsTrigger value="history" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white">
+            <Trophy className="h-4 w-4 mr-2" />
+            History
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white">
+            <Settings className="h-4 w-4 mr-2" />
+            Settings
+          </TabsTrigger>
+          <TabsTrigger value="about" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white">
+            <Info className="h-4 w-4 mr-2" />
+            About
+          </TabsTrigger>
+          <TabsTrigger value="contact" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white">
+            <Phone className="h-4 w-4 mr-2" />
+            Contact
+          </TabsTrigger>
+          <TabsTrigger value="privacy" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white">
+            <Shield className="h-4 w-4 mr-2" />
+            Privacy
+          </TabsTrigger>
+          <TabsTrigger value="games" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white">
+            <Gamepad2 className="h-4 w-4 mr-2" />
+            Games
+          </TabsTrigger>
+        </TabsList>
 
-      <Dialog
-        open={modals.privacy}
-        onOpenChange={(open) => setModals({ ...modals, privacy: open })}
-      >
-        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
-          <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <Shield className="h-5 w-5 text-green-400" />
-              Privacy Policy
-            </DialogTitle>
-          </DialogHeader>
-          <PrivacyPolicy />
-        </DialogContent>
-      </Dialog>
+        <TabsContent value="history" className="mt-6">
+          <GameHistory userId={profile.id} isOwnHistory={true} />
+        </TabsContent>
 
-      <Dialog
-        open={modals.contact}
-        onOpenChange={(open) => setModals({ ...modals, contact: open })}
-      >
-        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
-          <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <Bell className="h-5 w-5 text-blue-400" />
-              Contact Support
-            </DialogTitle>
-          </DialogHeader>
-          <Contact />
-        </DialogContent>
-      </Dialog>
+        <TabsContent value="settings" className="mt-6">
+          <SettingsSection />
+        </TabsContent>
 
-      <Dialog
-        open={modals.userGuide}
-        onOpenChange={(open) => setModals({ ...modals, userGuide: open })}
-      >
-        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
-          <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <Gamepad2 className="h-5 w-5 text-purple-400" />
-              User Guide
-            </DialogTitle>
-          </DialogHeader>
-          <UserGuide />
-        </DialogContent>
-      </Dialog>
+        <TabsContent value="about" className="mt-6">
+          <AboutSection />
+        </TabsContent>
 
-      <Dialog
-        open={modals.moreApps}
-        onOpenChange={(open) => setModals({ ...modals, moreApps: open })}
-      >
-        <DialogContent className="max-w-4xl max-h-[90vh] bg-slate-900 border-slate-600">
-          <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-orange-400" />
-              Our More Apps & Games
-            </DialogTitle>
-          </DialogHeader>
-          <MoreAppsGames />
-        </DialogContent>
-      </Dialog>
-    </MobileContainer>
+        <TabsContent value="contact" className="mt-6">
+          <ContactSection />
+        </TabsContent>
+
+        <TabsContent value="privacy" className="mt-6">
+          <PrivacyPolicySection />
+        </TabsContent>
+
+        <TabsContent value="games" className="mt-6">
+          <MoreGamesSection />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };

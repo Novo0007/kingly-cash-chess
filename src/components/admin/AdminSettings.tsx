@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,8 +12,9 @@ import {
   UserPlus,
   Shield,
   Database,
-  Key,
   AlertTriangle,
+  Crown,
+  Users,
 } from "lucide-react";
 import {
   Dialog,
@@ -31,51 +33,7 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
   const [adminUsers, setAdminUsers] = useState<Tables<"admin_users">[]>([]);
   const [loading, setLoading] = useState(true);
   const [newAdminEmail, setNewAdminEmail] = useState("");
-
-  // Simple fallback to ensure component shows
-  if (loading) {
-    return (
-      <Card className="wood-card border-amber-600">
-        <CardContent className="p-4 sm:p-6 text-center">
-          <div className="w-6 h-6 sm:w-8 sm:h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-amber-900 text-sm sm:text-base">
-            Loading settings...
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Simplified settings view
-  return (
-    <div className="space-y-4">
-      <Card className="wood-card wood-plank border-amber-700">
-        <CardHeader className="p-3 sm:p-4">
-          <CardTitle className="text-amber-900 flex items-center gap-2 text-base sm:text-lg font-heading">
-            <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-amber-800" />
-            Admin Settings
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-3 sm:p-4 pt-0">
-          <div className="space-y-4">
-            <div className="text-amber-800">
-              <p className="text-sm">
-                Admin Level:{" "}
-                <Badge className="bg-amber-700 text-amber-50">
-                  {adminUser.role}
-                </Badge>
-              </p>
-              <p className="text-sm mt-2">Email: {adminUser.email}</p>
-              <p className="text-sm mt-2">
-                Status:{" "}
-                <Badge className="bg-green-700 text-green-50">Active</Badge>
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchAdminUsers();
@@ -122,6 +80,7 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
 
       toast.success("Admin user invited successfully");
       setNewAdminEmail("");
+      setInviteDialogOpen(false);
       fetchAdminUsers();
     } catch (error) {
       console.error("Error inviting admin:", error);
@@ -164,175 +123,209 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
       return false;
     }
     const permissions = adminUser.permissions as Record<string, any>;
-    return permissions.invite_admins === true;
+    return permissions.full_access === true || adminUser.role === "super_admin";
   };
 
   if (loading) {
     return (
-      <Card className="bg-slate-800 border-slate-600">
-        <CardContent className="p-6 text-center">
-          <div className="w-8 h-8 border-3 border-slate-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white">Loading admin settings...</p>
+      <Card className="wood-card border-amber-600">
+        <CardContent className="p-4 sm:p-6 text-center">
+          <div className="w-6 h-6 sm:w-8 sm:h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-amber-900 text-sm sm:text-base">
+            Loading settings...
+          </p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Admin Users Management */}
-      <Card className="bg-slate-800 border-slate-600">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Shield className="h-5 w-5 text-slate-400" />
-            Admin Users Management
+    <div className="space-y-4">
+      {/* Current Admin Info */}
+      <Card className="wood-card wood-plank border-amber-700">
+        <CardHeader className="p-3 sm:p-4">
+          <CardTitle className="text-amber-900 flex items-center gap-2 text-base sm:text-lg font-heading">
+            <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-amber-800" />
+            Admin Settings
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-3 sm:p-4 pt-0">
           <div className="space-y-4">
-            {/* Invite New Admin */}
+            <div className="bg-amber-100/50 p-4 rounded-lg border border-amber-300">
+              <div className="flex items-center gap-3 mb-3">
+                <Crown className="h-6 w-6 text-amber-700" />
+                <div>
+                  <h3 className="font-semibold text-amber-900">Your Admin Profile</h3>
+                  <p className="text-sm text-amber-700">Current administrative privileges</p>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <p className="text-sm">
+                  <span className="font-medium">Email:</span> {adminUser.email}
+                </p>
+                <p className="text-sm flex items-center gap-2">
+                  <span className="font-medium">Role:</span>
+                  <Badge className={getRoleColor(adminUser.role)}>
+                    {adminUser.role.replace("_", " ").toUpperCase()}
+                  </Badge>
+                </p>
+                <p className="text-sm flex items-center gap-2">
+                  <span className="font-medium">Status:</span>
+                  <Badge className="bg-green-700 text-green-50">Active</Badge>
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">Since:</span>{" "}
+                  {new Date(adminUser.created_at).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Admin Users Management */}
+      <Card className="wood-card border-amber-700">
+        <CardHeader className="p-3 sm:p-4">
+          <CardTitle className="text-amber-900 flex items-center justify-between text-base sm:text-lg">
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-amber-800" />
+              Admin Users ({adminUsers.length})
+            </div>
             {hasInvitePermission() && (
-              <Card className="bg-slate-700 border-slate-600">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1">
-                      <Label className="text-white">Invite New Admin</Label>
+              <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="bg-amber-700 hover:bg-amber-800 text-white">
+                    <UserPlus className="h-4 w-4 mr-1" />
+                    Invite
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="wood-card border-2 border-amber-600">
+                  <DialogHeader>
+                    <DialogTitle className="text-amber-900">Invite New Admin</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="email" className="text-amber-800">Email Address</Label>
                       <Input
+                        id="email"
                         type="email"
                         placeholder="Enter email address"
                         value={newAdminEmail}
                         onChange={(e) => setNewAdminEmail(e.target.value)}
-                        className="bg-slate-600 border-slate-500 text-white mt-1"
+                        className="bg-amber-50 border-amber-300 text-amber-900"
                       />
                     </div>
-                    <Button
-                      onClick={inviteAdmin}
-                      className="bg-blue-600 hover:bg-blue-700 mt-6"
-                    >
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Invite
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={inviteAdmin}
+                        className="bg-green-600 hover:bg-green-700 flex-1"
+                      >
+                        Send Invitation
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setNewAdminEmail("");
+                          setInviteDialogOpen(false);
+                        }}
+                        className="border-amber-400 text-amber-800"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-3 sm:p-4 pt-0">
+          <div className="space-y-3">
+            {adminUsers.map((admin) => (
+              <Card key={admin.id} className="bg-amber-50/30 border border-amber-300">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-amber-600 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        {admin.email.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-amber-900 text-sm">
+                          {admin.email}
+                        </h4>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge className={`${getRoleColor(admin.role)} text-xs`}>
+                            {admin.role.replace("_", " ").toUpperCase()}
+                          </Badge>
+                          <Badge
+                            className={`text-xs ${
+                              admin.is_active ? "bg-green-600" : "bg-red-600"
+                            } text-white`}
+                          >
+                            {admin.is_active ? "Active" : "Inactive"}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+
+                    {adminUser.role === "super_admin" && admin.id !== adminUser.id && (
+                      <Button
+                        size="sm"
+                        onClick={() => toggleAdminStatus(admin.id, admin.is_active)}
+                        className={`text-xs ${
+                          admin.is_active
+                            ? "bg-red-600 hover:bg-red-700"
+                            : "bg-green-600 hover:bg-green-700"
+                        }`}
+                      >
+                        {admin.is_active ? "Deactivate" : "Activate"}
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
-            )}
-
-            {/* Admin Users List */}
-            <div className="space-y-3">
-              {adminUsers.map((admin) => (
-                <Card key={admin.id} className="bg-slate-700 border-slate-600">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                          {admin.email.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <h3 className="text-white font-semibold">
-                            {admin.email}
-                          </h3>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge className={getRoleColor(admin.role)}>
-                              {admin.role.replace("_", " ").toUpperCase()}
-                            </Badge>
-                            <Badge
-                              className={
-                                admin.is_active ? "bg-green-600" : "bg-red-600"
-                              }
-                            >
-                              {admin.is_active ? "Active" : "Inactive"}
-                            </Badge>
-                          </div>
-                          <p className="text-slate-400 text-sm">
-                            Invited:{" "}
-                            {new Date(
-                              admin.invited_at || "",
-                            ).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2">
-                        {adminUser.role === "super_admin" &&
-                          admin.id !== adminUser.id && (
-                            <Button
-                              size="sm"
-                              onClick={() =>
-                                toggleAdminStatus(admin.id, admin.is_active)
-                              }
-                              className={
-                                admin.is_active
-                                  ? "bg-red-600 hover:bg-red-700"
-                                  : "bg-green-600 hover:bg-green-700"
-                              }
-                            >
-                              {admin.is_active ? "Deactivate" : "Activate"}
-                            </Button>
-                          )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* System Settings */}
-      <Card className="bg-slate-800 border-slate-600">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Database className="h-5 w-5 text-slate-400" />
-            System Settings
+      {/* System Status */}
+      <Card className="wood-card border-amber-700">
+        <CardHeader className="p-3 sm:p-4">
+          <CardTitle className="text-amber-900 flex items-center gap-2 text-base sm:text-lg">
+            <Database className="h-4 w-4 sm:h-5 sm:w-5 text-amber-800" />
+            System Status
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between py-3 border-b border-slate-600">
-              <div>
-                <h4 className="text-white font-medium">Database Status</h4>
-                <p className="text-slate-400 text-sm">
-                  Monitor database connection
-                </p>
-              </div>
-              <Badge className="bg-green-600 text-white">Connected</Badge>
+        <CardContent className="p-3 sm:p-4 pt-0">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between py-2 border-b border-amber-200">
+              <span className="text-amber-800 text-sm">Database Connection</span>
+              <Badge className="bg-green-600 text-white text-xs">Connected</Badge>
             </div>
-
-            <div className="flex items-center justify-between py-3 border-b border-slate-600">
-              <div>
-                <h4 className="text-white font-medium">Real-time Updates</h4>
-                <p className="text-slate-400 text-sm">
-                  Live game and payment updates
-                </p>
-              </div>
-              <Badge className="bg-green-600 text-white">Enabled</Badge>
+            <div className="flex items-center justify-between py-2 border-b border-amber-200">
+              <span className="text-amber-800 text-sm">Real-time Updates</span>
+              <Badge className="bg-green-600 text-white text-xs">Active</Badge>
             </div>
-
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <h4 className="text-white font-medium">Admin Session</h4>
-                <p className="text-slate-400 text-sm">
-                  Your current admin session
-                </p>
-              </div>
-              <Badge className="bg-purple-600 text-white">Active</Badge>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-amber-800 text-sm">Admin Session</span>
+              <Badge className="bg-amber-600 text-white text-xs">Valid</Badge>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Security Warning */}
-      <Card className="bg-gradient-to-br from-amber-900 to-orange-900 border-amber-600">
+      {/* Security Notice */}
+      <Card className="bg-gradient-to-br from-orange-100 to-red-100 border-2 border-orange-500">
         <CardContent className="p-4">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="h-6 w-6 text-amber-400" />
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
             <div>
-              <h4 className="text-white font-semibold">Security Notice</h4>
-              <p className="text-amber-200 text-sm">
-                Admin privileges grant access to sensitive user data and
-                financial information. Use responsibly and maintain
-                confidentiality.
+              <h4 className="font-semibold text-orange-900 mb-1">Security Notice</h4>
+              <p className="text-orange-800 text-sm">
+                Admin privileges provide access to sensitive user data and financial information. 
+                Please use these tools responsibly and maintain strict confidentiality of all user data.
               </p>
             </div>
           </div>
