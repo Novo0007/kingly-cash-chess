@@ -82,9 +82,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         onMouseEnter={handleMouseEnter}
         {...props}
       >
-        {/* Shimmer effect for default variant */}
+        {/* Wood shimmer effect for default variant */}
         {variant === "default" && (
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-200/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500 pointer-events-none rounded-lg" />
         )}
         {props.children}
       </Comp>
