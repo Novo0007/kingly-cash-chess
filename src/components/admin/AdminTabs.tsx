@@ -40,7 +40,7 @@ export const AdminTabs = ({
       onValueChange={onTabChange}
       className="w-full bg-transparent"
     >
-      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 bg-muted p-2 rounded-2xl sticky top-0 z-10 mb-4">
+      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 bg-muted/95 backdrop-blur-sm p-2 rounded-2xl sticky top-0 z-50 mb-6 shadow-sm border border-border">
         <TabsTrigger
           value="overview"
           className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 min-h-[52px] rounded-xl font-medium text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2"
@@ -92,45 +92,52 @@ export const AdminTabs = ({
 
       <TabsContent
         value="overview"
-        className="space-y-6 sm:space-y-8 mt-6 sm:mt-8 w-full"
+        className="w-full"
+        style={{ paddingTop: "80px" }}
       >
-        <div className="w-full">
+        <div className="space-y-6">
           <SystemOverview adminUser={adminUser} />
         </div>
       </TabsContent>
 
       <TabsContent
         value="users"
-        className="space-y-6 sm:space-y-8 mt-6 sm:mt-8 w-full"
+        className="w-full"
+        style={{ paddingTop: "80px" }}
       >
-        <div className="w-full">
+        <div className="space-y-6">
           <UserManagement adminUser={adminUser} />
         </div>
       </TabsContent>
 
       <TabsContent
         value="payments"
-        className="space-y-6 sm:space-y-8 mt-6 sm:mt-8 w-full"
+        className="w-full"
+        style={{ paddingTop: "80px" }}
       >
-        <div className="w-full bg-muted/20 rounded-2xl p-4">
-          <PaymentManagement adminUser={adminUser} />
+        <div className="space-y-6">
+          <div className="bg-muted/20 rounded-2xl p-4">
+            <PaymentManagement adminUser={adminUser} />
+          </div>
         </div>
       </TabsContent>
 
       <TabsContent
         value="games"
-        className="space-y-6 sm:space-y-8 mt-6 sm:mt-8 w-full"
+        className="w-full"
+        style={{ paddingTop: "80px" }}
       >
-        <div className="w-full">
+        <div className="space-y-6">
           <GameManagement adminUser={adminUser} />
         </div>
       </TabsContent>
 
       <TabsContent
         value="settings"
-        className="space-y-6 sm:space-y-8 mt-6 sm:mt-8 w-full"
+        className="w-full"
+        style={{ paddingTop: "80px" }}
       >
-        <div className="w-full">
+        <div className="space-y-6">
           <AdminSettings adminUser={adminUser} />
         </div>
       </TabsContent>
