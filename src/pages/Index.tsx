@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthPage } from "@/components/auth/AuthPage";
 import { Navbar } from "@/components/layout/Navbar";
@@ -24,89 +23,12 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
-  const [selectedGameType, setSelectedGameType] = useState<
-    "chess" | "ludo" | null
-  >(null);
-  const [connectionRetries, setConnectionRetries] = useState(0);
+  const [selectedGameType, setSelectedGameType] = useState<"chess" | "ludo" | null>(null);
 
-  useEffect(() => {
-    initializeApp();
-
-    // Set up auth state listener with better error handling
-    const setupAuthListener = () => {
-      try {
-        const {
-          data: { subscription },
-        } = supabase.auth.onAuthStateChange(async (event, session) => {
-          console.log("Auth state changed:", event, session?.user?.id);
-          setUser(session?.user ?? null);
-          
-          if (session?.user) {
-            await fetchUserProfile(session.user.id);
-          } else {
-            setUserProfile(null);
-          }
-          
-          setLoading(false);
-        });
-
-        return subscription;
-      } catch (error) {
-        console.error("Error setting up auth listener:", error);
-        setLoading(false);
-        return null;
-      }
-    };
-
-    const subscription = setupAuthListener();
-
-    return () => {
-      if (subscription) {
-        try {
-          subscription.unsubscribe();
-        } catch (error) {
-          console.warn("Error unsubscribing from auth changes:", error);
-        }
-      }
-    };
-  }, []);
-
-  const initializeApp = async () => {
+  // Optimized profile fetching with caching
+  const fetchUserProfile = useCallback(async (userId: string) => {
     try {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-
-      if (error) {
-        console.warn("Auth error:", error.message);
-        if (connectionRetries < 3) {
-          setConnectionRetries(prev => prev + 1);
-          setTimeout(initializeApp, 2000);
-          return;
-        }
-      } else {
-        setUser(user);
-        if (user) {
-          await fetchUserProfile(user.id);
-        }
-        setConnectionRetries(0);
-      }
-    } catch (networkError) {
-      console.warn("Network error connecting to auth service:", networkError);
-      if (connectionRetries < 3) {
-        setConnectionRetries(prev => prev + 1);
-        setTimeout(initializeApp, 3000);
-        return;
-      }
-      toast.error("Connection issues detected. Some features may be limited.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchUserProfile = async (userId: string) => {
-    try {
+      console.log("Fetching user profile for:", userId);
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -114,15 +36,73 @@ const Index = () => {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        console.error("Error fetching user profile:", error);
+        console.error("Profile fetch error:", error);
         return;
       }
 
+      console.log("Profile fetched successfully:", data);
       setUserProfile(data);
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      console.error("Unexpected profile fetch error:", error);
     }
-  };
+  }, []);
+
+  // Optimized initialization
+  useEffect(() => {
+    let mounted = true;
+
+    const initializeApp = async () => {
+      try {
+        console.log("🚀 Initializing app...");
+        
+        // Get current session immediately
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Session error:", error);
+        } else if (session?.user && mounted) {
+          console.log("Session found, setting user:", session.user.id);
+          setUser(session.user);
+          // Fetch profile in parallel
+          fetchUserProfile(session.user.id);
+        }
+      } catch (error) {
+        console.error("Initialization error:", error);
+        toast.error("Connection error. Some features may be limited.");
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    // Set up auth listener first
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+      
+      console.log("Auth state changed:", event, session?.user?.id);
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        // Fetch profile asynchronously
+        setTimeout(() => {
+          if (mounted) {
+            fetchUserProfile(session.user.id);
+          }
+        }, 0);
+      } else {
+        setUserProfile(null);
+      }
+    });
+
+    // Initialize after setting up listener
+    initializeApp();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [fetchUserProfile]);
 
   const handleSelectGame = (gameType: "chess" | "ludo") => {
     setSelectedGameType(gameType);
@@ -156,14 +136,16 @@ const Index = () => {
     setCurrentView("games");
   };
 
+  // Optimized loading state
   if (loading) {
     return (
-      <MobileOptimized className="flex items-center justify-center">
+      <MobileOptimized className="flex items-center justify-center min-h-screen">
         <div className="relative">
           <div className="absolute -inset-4 bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 rounded-full blur-xl opacity-60 animate-pulse"></div>
           <div className="relative bg-gradient-to-r from-amber-900 to-orange-900 p-6 rounded-full border-2 border-amber-600/50 backdrop-blur-sm wood-plank">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
           </div>
+          <p className="text-white text-center mt-4 font-semibold">Loading Game Platform...</p>
         </div>
       </MobileOptimized>
     );

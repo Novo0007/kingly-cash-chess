@@ -60,8 +60,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     getCurrentUser();
     fetchGame();
 
-    // Improved refresh intervals - less aggressive polling
-    const refreshInterval = isMobile ? 5000 : 4000; // Reduced frequency
+    // Optimized refresh intervals
+    const refreshInterval = isMobile ? 3000 : 2000;
     const autoRefreshInterval = setInterval(() => {
       if (!loading && !isUpdating) {
         fetchGame();
@@ -81,7 +81,6 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         (payload) => {
           console.log("Real-time game update received:", payload);
           if (payload.new) {
-            // Immediate update for real-time changes
             fetchGame();
           }
         },
@@ -135,7 +134,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   ) => {
     if (!game) return;
 
-    console.log("🎯 Starting game completion process", {
+    console.log("🎯 Starting optimized game completion process", {
       winnerId,
       loserId,
       gameResult,
@@ -143,6 +142,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     });
 
     try {
+      // Update game status first
       const { error: gameError } = await supabase
         .from("chess_games")
         .update({
@@ -154,192 +154,147 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         .eq("id", gameId);
 
       if (gameError) {
-        console.error("❌ Error updating game:", gameError);
+        console.error("❌ Game update error:", gameError);
         toast.error("Failed to complete game");
         return;
       }
 
       console.log("✅ Game status updated successfully");
 
-      // Process winner's rewards
+      // Process winner rewards immediately
       if (winnerId && game.prize_amount > 0) {
-        console.log("💰 Processing winner rewards for:", winnerId);
+        console.log("💰 Processing winner rewards immediately for:", winnerId);
 
-        // Update winner's profile stats
-        const { data: winnerProfile, error: profileFetchError } = await supabase
-          .from("profiles")
-          .select("games_played, games_won, total_earnings")
-          .eq("id", winnerId)
-          .single();
-
-        if (profileFetchError) {
-          console.error("❌ Error fetching winner profile:", profileFetchError);
-        } else {
-          console.log("📊 Current winner stats:", winnerProfile);
-
-          const { error: profileUpdateError } = await supabase
-            .from("profiles")
-            .update({
-              games_played: (winnerProfile.games_played || 0) + 1,
-              games_won: (winnerProfile.games_won || 0) + 1,
-              total_earnings: (winnerProfile.total_earnings || 0) + game.prize_amount,
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", winnerId);
-
-          if (profileUpdateError) {
-            console.error("❌ Error updating winner profile:", profileUpdateError);
-          } else {
-            console.log("✅ Winner profile updated successfully");
-          }
-        }
-
-        // Add prize money to winner's wallet
-        const { data: winnerWallet, error: walletFetchError } = await supabase
-          .from("wallets")
-          .select("balance")
-          .eq("user_id", winnerId)
-          .single();
-
-        if (walletFetchError) {
-          console.error("❌ Error fetching winner wallet:", walletFetchError);
-          toast.error("Failed to update wallet");
-        } else {
-          console.log("💳 Current winner wallet balance:", winnerWallet.balance);
-
-          const newBalance = (winnerWallet.balance || 0) + game.prize_amount;
-          const { error: walletUpdateError } = await supabase
-            .from("wallets")
-            .update({
-              balance: newBalance,
-              updated_at: new Date().toISOString(),
-            })
-            .eq("user_id", winnerId);
-
-          if (walletUpdateError) {
-            console.error("❌ Error updating winner wallet:", walletUpdateError);
-            toast.error("Failed to add winnings to wallet");
-          } else {
-            console.log("✅ Winner wallet updated successfully. New balance:", newBalance);
-            
-            if (winnerId === currentUser) {
-              toast.success(`🎉 ₹${game.prize_amount} added to your wallet!`);
-            }
-          }
-        }
-
-        // Create winning transaction record
-        const { error: transactionError } = await supabase
-          .from("transactions")
-          .insert({
+        // Use Promise.all for parallel processing
+        const [walletResult, transactionResult, profileResult] = await Promise.all([
+          // Update wallet balance
+          supabase.rpc("increment_decimal", {
+            table_name: "wallets",
+            row_id: winnerId,
+            column_name: "balance",
+            increment_value: game.prize_amount,
+          }),
+          
+          // Create winning transaction
+          supabase.from("transactions").insert({
             user_id: winnerId,
             transaction_type: "game_winning",
             amount: game.prize_amount,
             status: "completed",
-            description: `Won chess game: ${game.game_name || "Chess Game"}`,
-          });
+            description: `Won chess game: ${game.game_name || "Chess Game"} - Prize: ₹${game.prize_amount}`,
+          }),
+          
+          // Update winner profile
+          supabase.rpc("increment", {
+            table_name: "profiles",
+            row_id: winnerId,
+            column_name: "games_won",
+            increment_value: 1,
+          }).then(() => 
+            supabase.rpc("increment", {
+              table_name: "profiles", 
+              row_id: winnerId,
+              column_name: "games_played",
+              increment_value: 1,
+            })
+          ).then(() =>
+            supabase.rpc("increment_decimal", {
+              table_name: "profiles",
+              row_id: winnerId, 
+              column_name: "total_earnings",
+              increment_value: game.prize_amount,
+            })
+          )
+        ]);
 
-        if (transactionError) {
-          console.error("❌ Error creating winning transaction:", transactionError);
+        // Check for errors
+        if (walletResult.error) {
+          console.error("❌ Wallet update error:", walletResult.error);
+          toast.error("Failed to add winnings to wallet");
+        } else {
+          console.log("✅ Wallet updated successfully");
+        }
+
+        if (transactionResult.error) {
+          console.error("❌ Transaction creation error:", transactionResult.error);
         } else {
           console.log("✅ Winning transaction created successfully");
         }
+
+        if (profileResult.error) {
+          console.error("❌ Profile update error:", profileResult.error);
+        } else {
+          console.log("✅ Winner profile updated successfully");
+        }
+
+        // Show success message to winner
+        if (winnerId === currentUser) {
+          toast.success(`🏆 Congratulations! You won ₹${game.prize_amount}!`, {
+            duration: 5000,
+          });
+        }
       }
 
-      // Update loser's stats (games played only)
+      // Update loser's stats
       if (loserId) {
         console.log("📈 Updating loser stats for:", loserId);
-
-        const { data: loserProfile, error: loserProfileError } = await supabase
-          .from("profiles")
-          .select("games_played")
-          .eq("id", loserId)
-          .single();
-
-        if (loserProfileError) {
-          console.error("❌ Error fetching loser profile:", loserProfileError);
-        } else {
-          const { error: loserUpdateError } = await supabase
-            .from("profiles")
-            .update({
-              games_played: (loserProfile.games_played || 0) + 1,
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", loserId);
-
-          if (loserUpdateError) {
-            console.error("❌ Error updating loser profile:", loserUpdateError);
-          } else {
-            console.log("✅ Loser profile updated successfully");
-          }
-        }
+        await supabase.rpc("increment", {
+          table_name: "profiles",
+          row_id: loserId,
+          column_name: "games_played", 
+          increment_value: 1,
+        });
       }
 
       // Handle draw - refund both players
       if (gameResult === "draw" && game.white_player_id && game.black_player_id) {
         console.log("🤝 Processing draw refunds");
-
         const players = [game.white_player_id, game.black_player_id];
         const refundAmount = game.entry_fee;
 
-        for (const playerId of players) {
-          // Update games played
-          const { data: playerProfile } = await supabase
-            .from("profiles")
-            .select("games_played")
-            .eq("id", playerId)
-            .single();
-
-          if (playerProfile) {
-            await supabase
-              .from("profiles")
-              .update({
-                games_played: (playerProfile.games_played || 0) + 1,
-                updated_at: new Date().toISOString(),
-              })
-              .eq("id", playerId);
-          }
-
-          // Refund entry fee
-          const { data: playerWallet } = await supabase
-            .from("wallets")
-            .select("balance")
-            .eq("user_id", playerId)
-            .single();
-
-          if (playerWallet) {
-            await supabase
-              .from("wallets")
-              .update({
-                balance: (playerWallet.balance || 0) + refundAmount,
-                updated_at: new Date().toISOString(),
-              })
-              .eq("user_id", playerId);
-
+        const refundPromises = players.map(async (playerId) => {
+          // Parallel processing for each player
+          return Promise.all([
+            // Update games played
+            supabase.rpc("increment", {
+              table_name: "profiles",
+              row_id: playerId,
+              column_name: "games_played",
+              increment_value: 1,
+            }),
+            
+            // Refund entry fee
+            supabase.rpc("increment_decimal", {
+              table_name: "wallets",
+              row_id: playerId,
+              column_name: "balance",
+              increment_value: refundAmount,
+            }),
+            
             // Create refund transaction
-            await supabase.from("transactions").insert({
+            supabase.from("transactions").insert({
               user_id: playerId,
               transaction_type: "refund",
               amount: refundAmount,
               status: "completed",
               description: `Draw refund: ${game.game_name || "Chess Game"}`,
-            });
-          }
-        }
+            })
+          ]);
+        });
 
+        await Promise.all(refundPromises);
         console.log("✅ Draw refunds processed successfully");
+        
+        if (currentUser && players.includes(currentUser)) {
+          toast.success(`🤝 Game ended in draw! ₹${refundAmount} refunded to your wallet.`);
+        }
       }
 
       console.log("🎉 Game completion processing finished successfully");
       
-      // Show success message
-      if (winnerId === currentUser) {
-        toast.success(`🏆 Congratulations! You won ₹${game.prize_amount}!`);
-      }
-
     } catch (error) {
-      console.error("💥 Error processing game completion:", error);
-      toast.error("Failed to process game completion");
+      console.error("💥 Critical error in game completion:", error);
+      toast.error("Failed to process game completion. Please contact support.");
     }
   };
 
@@ -463,7 +418,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
   const handleMove = async (from: string, to: string, promotion?: string) => {
     if (!game || !currentUser || isUpdating) {
-      console.log("No game, user found, or update in progress");
+      console.log("Move blocked: game/user/updating check failed");
       return;
     }
 
@@ -532,8 +487,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       const nextTurn = game.current_turn === "white" ? "black" : "white";
       const newBoardState = chess.fen();
 
-      // Minimal time deduction per move - preserve most of the time
-      const timeUsed = 3; // Only 3 seconds per move
+      // Minimal time deduction
+      const timeUsed = 2;
       const newWhiteTime = game.current_turn === "white" 
         ? Math.max(0, (game.white_time_remaining || 600) - timeUsed)
         : game.white_time_remaining || 600;
@@ -545,16 +500,16 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       let winnerId = null;
       let gameResult = null;
 
-      // Enhanced move feedback
+      // Move feedback
       if (move.captured) {
-        toast.success(`Captured ${move.captured}! Great move! 🎯`);
+        toast.success(`Captured ${move.captured}! Excellent! 🎯`);
       } else if (chess.isCheck()) {
         toast.info(`Check! ${nextTurn === "white" ? "White" : "Black"} king in danger! ⚠️`);
       } else {
-        toast.success("Nice move! 👍");
+        toast.success("Great move! 👍");
       }
 
-      // Check for time flag
+      // Check game end conditions
       if (newWhiteTime <= 0 || newBlackTime <= 0) {
         gameStatus = "completed";
         winnerId = newWhiteTime <= 0 ? game.black_player_id : game.white_player_id;
@@ -571,7 +526,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         toast.success("Game ended in a draw! 🤝");
       }
 
-      // Optimistic update - update local state immediately
+      // Optimistic update
       setGame(prevGame => {
         if (!prevGame) return prevGame;
         return {
@@ -587,6 +542,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         };
       });
 
+      // Update database
       const { error } = await supabase
         .from("chess_games")
         .update({
@@ -605,21 +561,20 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       if (error) {
         toast.error("Failed to make move");
         console.error("Move error:", error);
-        // Revert optimistic update on error
-        fetchGame();
+        fetchGame(); // Revert on error
       } else {
         console.log("Move successfully saved to database");
         
-        // If game completed, process the completion
+        // If game completed, process completion immediately
         if (gameStatus === "completed") {
-          await completeGame(winnerId, winnerId === game.white_player_id ? game.black_player_id : game.white_player_id, gameResult as any);
+          const loser = winnerId === game.white_player_id ? game.black_player_id : game.white_player_id;
+          await completeGame(winnerId, loser, gameResult as any);
         }
       }
     } catch (error) {
       console.error("Error making move:", error);
       toast.error("Failed to make move");
-      // Revert optimistic update on error
-      fetchGame();
+      fetchGame(); // Revert on error
     } finally {
       setIsUpdating(false);
     }

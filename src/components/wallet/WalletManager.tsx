@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,11 +20,10 @@ import type { Tables } from "@/integrations/supabase/types";
 
 export const WalletManager = () => {
   const [wallet, setWallet] = useState<Tables<"wallets"> | null>(null);
-  const [transactions, setTransactions] = useState<Tables<"transactions">[]>(
-    [],
-  );
+  const [transactions, setTransactions] = useState<Tables<"transactions">[]>([]);
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [withdrawalForm, setWithdrawalForm] = useState<{
     open: boolean;
@@ -36,19 +35,116 @@ export const WalletManager = () => {
 
   const { isMobile, isTablet } = useDeviceType();
 
+  // Optimized fetch functions with better error handling
+  const fetchWallet = useCallback(async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.log("No user found");
+        return;
+      }
+
+      console.log("Fetching wallet for user:", user.id);
+      const { data, error } = await supabase
+        .from("wallets")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error) {
+        console.error("Wallet fetch error:", error);
+        if (error.code === "PGRST116") {
+          // Wallet doesn't exist, create one
+          console.log("Creating new wallet...");
+          await createWallet(user.id);
+          return;
+        }
+        toast.error("Error loading wallet: " + error.message);
+      } else {
+        console.log("Wallet fetched successfully:", data);
+        setWallet(data);
+      }
+    } catch (error) {
+      console.error("Unexpected wallet fetch error:", error);
+      toast.error("Failed to load wallet");
+    }
+  }, []);
+
+  const fetchTransactions = useCallback(async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      console.log("Fetching transactions for user:", user.id);
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (error) {
+        console.error("Transaction fetch error:", error);
+        toast.error("Error loading transactions: " + error.message);
+      } else {
+        console.log("Transactions fetched:", data?.length || 0, "records");
+        setTransactions(data || []);
+      }
+    } catch (error) {
+      console.error("Unexpected transaction fetch error:", error);
+    }
+  }, []);
+
+  const createWallet = async (userId: string) => {
+    try {
+      console.log("Creating wallet for user:", userId);
+      const { data, error } = await supabase
+        .from("wallets")
+        .insert({
+          user_id: userId,
+          balance: 0.0,
+          locked_balance: 0.0,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Wallet creation error:", error);
+        toast.error("Error creating wallet: " + error.message);
+      } else {
+        console.log("Wallet created successfully:", data);
+        setWallet(data);
+        toast.success("🎉 Welcome! Your wallet has been created.");
+      }
+    } catch (error) {
+      console.error("Unexpected wallet creation error:", error);
+    }
+  };
+
+  // Initial data load
   useEffect(() => {
-    fetchWallet();
-    fetchTransactions();
+    const initializeWallet = async () => {
+      console.log("Initializing wallet data...");
+      setInitialLoading(true);
+      
+      try {
+        await Promise.all([fetchWallet(), fetchTransactions()]);
+      } catch (error) {
+        console.error("Initialization error:", error);
+      } finally {
+        setInitialLoading(false);
+      }
+    };
 
-    // Auto-refresh every 30 seconds to catch game winnings
-    const autoRefreshInterval = setInterval(() => {
-      fetchWallet();
-      fetchTransactions();
-    }, 30000);
+    initializeWallet();
+  }, [fetchWallet, fetchTransactions]);
 
-    // Subscribe to real-time changes for wallet and transactions
-    const walletSubscription = supabase
-      .channel("wallet_and_transactions_changes")
+  // Real-time subscriptions with optimized channels
+  useEffect(() => {
+    console.log("Setting up real-time subscriptions...");
+    
+    const walletChannel = supabase
+      .channel("wallet_updates")
       .on(
         "postgres_changes",
         {
@@ -57,10 +153,19 @@ export const WalletManager = () => {
           table: "wallets",
         },
         (payload) => {
-          console.log("Wallet updated, refreshing...", payload);
-          fetchWallet();
-        },
+          console.log("Real-time wallet update:", payload);
+          if (payload.new) {
+            setWallet(payload.new as Tables<"wallets">);
+            toast.success("💰 Wallet updated!");
+          }
+        }
       )
+      .subscribe((status) => {
+        console.log("Wallet channel status:", status);
+      });
+
+    const transactionChannel = supabase
+      .channel("transaction_updates")
       .on(
         "postgres_changes",
         {
@@ -69,13 +174,19 @@ export const WalletManager = () => {
           table: "transactions",
         },
         (payload) => {
-          console.log("New transaction detected:", payload);
-          // Immediately refresh both wallet and transactions
-          setTimeout(() => {
-            fetchWallet();
-            fetchTransactions();
-          }, 1000); // Small delay to ensure DB consistency
-        },
+          console.log("Real-time transaction insert:", payload);
+          if (payload.new) {
+            const newTransaction = payload.new as Tables<"transactions">;
+            setTransactions(prev => [newTransaction, ...prev]);
+            
+            // Show notification based on transaction type
+            if (newTransaction.transaction_type === "game_winning") {
+              toast.success(`🏆 You won ₹${newTransaction.amount}!`);
+            } else if (newTransaction.transaction_type === "deposit") {
+              toast.success(`💰 Deposit of ₹${newTransaction.amount} completed!`);
+            }
+          }
+        }
       )
       .on(
         "postgres_changes",
@@ -85,111 +196,33 @@ export const WalletManager = () => {
           table: "transactions",
         },
         (payload) => {
-          console.log("Transaction updated:", payload);
-          fetchTransactions();
-          fetchWallet();
-        },
+          console.log("Real-time transaction update:", payload);
+          fetchTransactions(); // Refresh transactions on update
+        }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log("Transaction channel status:", status);
+      });
 
     return () => {
-      clearInterval(autoRefreshInterval);
-      supabase.removeChannel(walletSubscription);
+      console.log("Cleaning up subscriptions...");
+      supabase.removeChannel(walletChannel);
+      supabase.removeChannel(transactionChannel);
     };
-  }, []);
-
-  const fetchWallet = async () => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from("wallets")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
-
-      if (error) {
-        console.error("Error fetching wallet:", error.message || error);
-
-        // If wallet doesn't exist, create one
-        if (error.code === "PGRST116") {
-          console.log("Creating new wallet for user...");
-          await createWallet(user.id);
-          return;
-        }
-
-        toast.error(
-          "Error loading wallet: " + (error.message || "Unknown error"),
-        );
-      } else {
-        console.log("Wallet data fetched:", data);
-        setWallet(data);
-      }
-    } catch (error) {
-      console.error("Unexpected error fetching wallet:", error);
-    }
-  };
-
-  const createWallet = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("wallets")
-      .insert({
-        user_id: userId,
-        balance: 0.0,
-        locked_balance: 0.0,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Error creating wallet:", error.message || error);
-      toast.error(
-        "Error creating wallet: " + (error.message || "Unknown error"),
-      );
-    } else {
-      console.log("Wallet created successfully");
-      setWallet(data);
-      toast.success("🎉 Welcome! Your wallet has been created.");
-    }
-  };
-
-  const fetchTransactions = async () => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from("transactions")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(50); // Increased limit to show more transactions including game winnings
-
-      if (error) {
-        console.error("Error fetching transactions:", error.message || error);
-        toast.error(
-          "Error loading transactions: " + (error.message || "Unknown error"),
-        );
-      } else {
-        console.log("Transactions fetched:", data);
-        setTransactions(data || []);
-      }
-    } catch (error) {
-      console.error("Unexpected error fetching transactions:", error);
-    }
-  };
+  }, [fetchTransactions]);
 
   const handleRefresh = async () => {
-    setRefreshing(true);
     console.log("Manual refresh triggered");
-    await Promise.all([fetchWallet(), fetchTransactions()]);
-    setRefreshing(false);
-    toast.success("Wallet data refreshed!");
+    setRefreshing(true);
+    try {
+      await Promise.all([fetchWallet(), fetchTransactions()]);
+      toast.success("✨ Data refreshed!");
+    } catch (error) {
+      console.error("Refresh error:", error);
+      toast.error("Failed to refresh data");
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleDeposit = async () => {
@@ -205,25 +238,27 @@ export const WalletManager = () => {
     }
 
     setLoading(true);
+    console.log("Initiating deposit of ₹", depositAmount);
 
     try {
       // Initialize Razorpay
       const options = {
-        key: "rzp_live_uEV76dlTQYpxEl", // Live Razorpay key
-        amount: depositAmount * 100, // Amount in paise
+        key: "rzp_live_uEV76dlTQYpxEl",
+        amount: depositAmount * 100,
         currency: "INR",
         name: "Chess Game Wallet",
         description: `Deposit ₹${depositAmount} to your gaming wallet`,
-        image: "/favicon.ico", // Your logo
+        image: "/favicon.ico",
         handler: async function (response: any) {
           try {
-            console.log("Razorpay payment successful:", response);
-            const {
-              data: { user },
-            } = await supabase.auth.getUser();
-            if (!user) return;
+            console.log("Payment successful:", response.razorpay_payment_id);
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+              toast.error("User not found");
+              return;
+            }
 
-            // Create transaction record
+            // Create transaction record immediately
             const { error: transactionError } = await supabase.from("transactions").insert({
               user_id: user.id,
               transaction_type: "deposit",
@@ -234,30 +269,35 @@ export const WalletManager = () => {
             });
 
             if (transactionError) {
-              console.error("Transaction insert error:", transactionError);
-              throw transactionError;
+              console.error("Transaction creation error:", transactionError);
+              toast.error("Failed to record transaction");
+              return;
             }
 
-            // Update wallet balance using the correct increment function
-            const { error: walletError } = await supabase.rpc(
-              "increment_decimal",
-              {
-                table_name: "wallets",
-                row_id: user.id,
-                column_name: "balance",
-                increment_value: depositAmount,
-              },
-            );
+            // Update wallet balance using RPC function
+            const { error: walletError } = await supabase.rpc("increment_decimal", {
+              table_name: "wallets",
+              row_id: user.id,
+              column_name: "balance",
+              increment_value: depositAmount,
+            });
 
             if (walletError) {
               console.error("Wallet update error:", walletError);
-              throw walletError;
+              toast.error("Failed to update wallet balance");
+              return;
             }
 
+            console.log("Deposit completed successfully");
             toast.success(`💰 Successfully deposited ₹${depositAmount}!`);
             setAmount("");
-            await fetchWallet();
-            await fetchTransactions();
+            
+            // Force refresh data
+            setTimeout(() => {
+              fetchWallet();
+              fetchTransactions();
+            }, 1000);
+
           } catch (error) {
             console.error("Payment confirmation error:", error);
             toast.error("Payment confirmation failed. Please contact support.");
@@ -272,7 +312,7 @@ export const WalletManager = () => {
         },
         modal: {
           ondismiss: function () {
-            console.log("Razorpay payment cancelled");
+            console.log("Payment cancelled by user");
             setLoading(false);
           },
         },
@@ -327,9 +367,7 @@ export const WalletManager = () => {
 
   const handleWithdrawalSubmit = async (withdrawalData: any) => {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       const { error } = await supabase.from("transactions").insert({
@@ -342,7 +380,6 @@ export const WalletManager = () => {
 
       if (error) throw error;
 
-      // Update wallet balance
       const { error: walletError } = await supabase.rpc("increment_decimal", {
         table_name: "wallets",
         row_id: user.id,
@@ -352,9 +389,7 @@ export const WalletManager = () => {
 
       if (walletError) throw walletError;
 
-      toast.success(
-        "🏦 Withdrawal request submitted! Processing will take 1-3 business days.",
-      );
+      toast.success("🏦 Withdrawal request submitted! Processing will take 1-3 business days.");
       setAmount("");
       setWithdrawalForm({ open: false, amount: 0 });
       fetchWallet();
@@ -410,31 +445,38 @@ export const WalletManager = () => {
     }
   };
 
-  // Mobile-optimized styles
+  // Show loading state
+  if (initialLoading) {
+    return (
+      <MobileContainer maxWidth="xl">
+        <div className="flex items-center justify-center min-h-64">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-white text-lg font-semibold">Loading Wallet...</p>
+          </div>
+        </div>
+      </MobileContainer>
+    );
+  }
+
   const cardGradient = isMobile
     ? "bg-slate-800/80 border border-slate-600"
     : "bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-600 shadow-lg";
 
-  const animationClass = isMobile
-    ? ""
-    : "transition-all duration-300 hover:scale-105";
+  const animationClass = isMobile ? "" : "transition-all duration-300 hover:scale-105";
 
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
         <WithdrawalForm
           open={withdrawalForm.open}
-          onOpenChange={(open) =>
-            setWithdrawalForm((prev) => ({ ...prev, open }))
-          }
+          onOpenChange={(open) => setWithdrawalForm((prev) => ({ ...prev, open }))}
           amount={withdrawalForm.amount}
           onWithdraw={handleWithdrawalSubmit}
         />
 
-        {/* Wallet Balance */}
-        <Card
-          className={`${cardGradient} ${animationClass} border-yellow-600/30`}
-        >
+        {/* Wallet Balance Card */}
+        <Card className={`${cardGradient} ${animationClass} border-yellow-600/30`}>
           <CardHeader className="pb-3">
             <CardTitle className="text-yellow-400 flex items-center justify-between font-semibold text-base md:text-lg">
               <div className="flex items-center gap-2">
@@ -448,9 +490,7 @@ export const WalletManager = () => {
                 disabled={refreshing}
                 className="text-yellow-400 hover:bg-slate-700/50 h-8 w-8 p-0"
               >
-                <RefreshCw
-                  className={`h-3 w-3 md:h-4 md:w-4 ${refreshing ? "animate-spin" : ""}`}
-                />
+                <RefreshCw className={`h-3 w-3 md:h-4 md:w-4 ${refreshing ? "animate-spin" : ""}`} />
               </Button>
             </CardTitle>
           </CardHeader>
@@ -469,10 +509,8 @@ export const WalletManager = () => {
           </CardContent>
         </Card>
 
-        {/* Deposit/Withdraw */}
-        <Card
-          className={`${cardGradient} ${animationClass} border-green-600/30`}
-        >
+        {/* Deposit/Withdraw Card */}
+        <Card className={`${cardGradient} ${animationClass} border-green-600/30`}>
           <CardHeader className="pb-3">
             <CardTitle className="text-green-400 flex items-center gap-2 font-semibold text-base md:text-lg">
               <DollarSign className="h-5 w-5 md:h-6 md:w-6" />
@@ -515,7 +553,7 @@ export const WalletManager = () => {
                 className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg"
               >
                 <ArrowDownLeft className="h-4 w-4 mr-2" />
-                Add Money (Razorpay)
+                {loading ? "Processing..." : "Add Money (Razorpay)"}
               </Button>
               <Button
                 onClick={handleWithdrawClick}
@@ -530,17 +568,14 @@ export const WalletManager = () => {
             <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
               <p className="text-blue-300 text-xs md:text-sm">
                 ℹ️ <strong>Note:</strong> Deposits are instant via Razorpay.
-                Withdrawals have a 20% processing fee and take 1-3 business
-                days.
+                Withdrawals have a 20% processing fee and take 1-3 business days.
               </p>
             </div>
           </CardContent>
         </Card>
 
         {/* Transaction History */}
-        <Card
-          className={`${cardGradient} ${animationClass} border-purple-600/30`}
-        >
+        <Card className={`${cardGradient} ${animationClass} border-purple-600/30`}>
           <CardHeader className="pb-3">
             <CardTitle className="text-purple-400 flex items-center gap-2 font-semibold text-base md:text-lg">
               <History className="h-5 w-5 md:h-6 md:w-6" />
@@ -574,17 +609,13 @@ export const WalletManager = () => {
                           {getTransactionTypeDisplay(transaction.transaction_type)}
                         </p>
                         <p className="text-xs text-slate-400">
-                          {new Date(
-                            transaction.created_at,
-                          ).toLocaleDateString("en-IN", {
+                          {new Date(transaction.created_at).toLocaleDateString("en-IN", {
                             year: 'numeric',
                             month: 'short',
                             day: 'numeric'
                           })}{" "}
                           •{" "}
-                          {new Date(
-                            transaction.created_at,
-                          ).toLocaleTimeString("en-IN", {
+                          {new Date(transaction.created_at).toLocaleTimeString("en-IN", {
                             hour: '2-digit',
                             minute: '2-digit'
                           })}
@@ -599,8 +630,7 @@ export const WalletManager = () => {
                     <div className="text-left sm:text-right flex-shrink-0">
                       <p
                         className={`font-semibold text-base ${
-                          getTransactionSign(transaction.transaction_type) ===
-                          "+"
+                          getTransactionSign(transaction.transaction_type) === "+"
                             ? "text-green-400"
                             : "text-red-400"
                         }`}
