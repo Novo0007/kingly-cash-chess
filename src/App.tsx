@@ -222,35 +222,35 @@ const App = () => {
                 <div className="absolute inset-8 bg-gradient-to-r from-amber-600 to-orange-600 rounded-full opacity-50"></div>
               </div>
 
-              {/* Enhanced Progress System */}
+              {/* Natural Progress System */}
               <div className="w-full max-w-md mx-auto space-y-4">
-                {/* Progress Track - Vibrant */}
-                <div className="relative h-4 bg-slate-800/60 rounded-full overflow-hidden backdrop-blur-sm border border-purple-500/30">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400/25 via-pink-400/20 to-transparent electric-shimmer"></div>
+                {/* Progress Track - Wood Theme */}
+                <div className="relative h-4 bg-amber-900/60 rounded-full overflow-hidden backdrop-blur-sm border border-amber-600/30">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-600/25 via-orange-600/20 to-transparent wood-shimmer"></div>
                   <div
-                    className="h-full bg-gradient-to-r from-purple-500 via-pink-500 via-cyan-500 to-green-500 rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+                    className="h-full bg-gradient-to-r from-amber-600 via-orange-600 via-yellow-600 to-green-600 rounded-full transition-all duration-700 ease-out relative overflow-hidden"
                     style={{
                       width: `${Math.min(loadingProgress, 100)}%`,
                     }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-100/20 to-transparent"></div>
                   </div>
                 </div>
 
                 {/* Progress Info */}
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-blue-300 font-body">
+                  <span className="text-sm font-medium text-amber-200 font-body">
                     {loadingProgress < 25
-                      ? "🚀 Initializing Platform..."
+                      ? "🌱 Planting Seeds..."
                       : loadingProgress < 50
-                        ? "⚡ Loading Game Engine..."
+                        ? "🌿 Growing Forest..."
                         : loadingProgress < 75
-                          ? "🎮 Preparing Interface..."
+                          ? "🏡 Building Lodge..."
                           : loadingProgress < 95
-                            ? "🎯 Finalizing Setup..."
+                            ? "🔥 Lighting Fireplace..."
                             : "✨ Almost Ready..."}
                   </span>
-                  <span className="text-lg font-black text-white font-heading">
+                  <span className="text-lg font-black text-amber-100 font-heading">
                     {Math.round(loadingProgress)}%
                   </span>
                 </div>
