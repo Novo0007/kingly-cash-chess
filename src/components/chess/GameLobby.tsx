@@ -514,15 +514,13 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           </CardContent>
         </Card>
 
-        {/* Chess Rules Quick Access */}
-        <Card
-          className={`${cardGradient} ${animationClass} border-indigo-600/30`}
-        >
+        {/* Chess Rules Quick Access - Wood Style */}
+        <Card className="wood-card wood-plank border-green-700/50">
           <CardContent className="p-3 md:p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4 md:h-5 md:w-5 text-indigo-400" />
-                <span className="text-white font-semibold text-sm md:text-base">
+                <BookOpen className="h-4 w-4 md:h-5 md:w-5 text-green-800" />
+                <span className="text-amber-900 font-semibold text-sm md:text-base font-heading">
                   New to Chess?
                 </span>
               </div>
@@ -530,7 +528,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                 onClick={() => (window.location.href = "/chess-rules")}
                 variant="outline"
                 size="sm"
-                className="text-indigo-400 border-indigo-400 hover:bg-indigo-500/10 text-xs px-3 py-1"
+                className="text-green-800 border-green-700 hover:bg-green-100/50 text-xs px-3 py-1"
               >
                 View Rules
               </Button>
