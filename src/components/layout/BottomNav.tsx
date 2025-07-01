@@ -56,15 +56,15 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-inset-bottom">
-      {/* Ultra-Transparent Glass Background */}
-      <div className="absolute inset-0 backdrop-blur-2xl border-t border-white/10 rounded-t-3xl overflow-hidden transition-all duration-500 ease-out">
-        {/* Minimal transparent gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-blue-600/15 to-cyan-600/20 rounded-t-3xl transition-opacity duration-700"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent rounded-t-3xl"></div>
+      {/* Natural Wood Glass Background */}
+      <div className="absolute inset-0 backdrop-blur-xl border-t border-amber-300/20 rounded-t-2xl overflow-hidden transition-all duration-300 ease-out wood-glass">
+        {/* Wood transparent gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-800/25 via-orange-700/20 to-yellow-700/25 rounded-t-2xl transition-opacity duration-500"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-amber-900/15 via-transparent to-transparent rounded-t-2xl"></div>
 
-        {/* Subtle static background elements */}
-        <div className="absolute top-0 left-1/4 w-8 h-8 bg-gradient-to-r from-yellow-400/8 to-orange-400/8 rounded-full blur-2xl opacity-70"></div>
-        <div className="absolute top-0 right-1/4 w-6 h-6 bg-gradient-to-r from-pink-400/8 to-purple-400/8 rounded-full blur-xl opacity-70"></div>
+        {/* Subtle wood grain background elements */}
+        <div className="absolute top-0 left-1/4 w-8 h-8 bg-gradient-to-r from-amber-600/12 to-orange-600/12 rounded-full blur-2xl opacity-70"></div>
+        <div className="absolute top-0 right-1/4 w-6 h-6 bg-gradient-to-r from-green-700/12 to-emerald-700/12 rounded-full blur-xl opacity-70"></div>
       </div>
 
       {/* Enhanced Navigation Content */}
