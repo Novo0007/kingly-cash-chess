@@ -759,19 +759,19 @@
   font-weight: 700;
 }
 
-/* Enhanced vibrant shadows */
-.vibrant-shadow {
+/* Enhanced natural shadows */
+.wood-shadow-warm {
   box-shadow:
-    0 4px 20px rgba(139, 69, 193, 0.15),
-    0 8px 40px rgba(59, 130, 246, 0.1),
-    0 12px 60px rgba(236, 72, 153, 0.05);
+    0 4px 20px rgba(101, 67, 33, 0.15),
+    0 8px 40px rgba(62, 39, 35, 0.1),
+    0 12px 60px rgba(139, 69, 19, 0.05);
 }
 
-.vibrant-shadow-lg {
+.wood-shadow-deep {
   box-shadow:
-    0 8px 30px rgba(139, 69, 193, 0.2),
-    0 12px 50px rgba(59, 130, 246, 0.15),
-    0 16px 80px rgba(236, 72, 153, 0.1);
+    0 8px 30px rgba(101, 67, 33, 0.2),
+    0 12px 50px rgba(62, 39, 35, 0.15),
+    0 16px 80px rgba(139, 69, 19, 0.1);
 }
 
 /* Clean spacing utilities */
