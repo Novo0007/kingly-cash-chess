@@ -380,32 +380,32 @@
   }
 }
 
-.electric-float {
-  animation: electricFloat 4s ease-in-out infinite;
+.wood-float {
+  animation: woodFloat 6s ease-in-out infinite;
 }
 
-.electric-pulse {
-  animation: electricPulse 2.5s ease-in-out infinite;
+.wood-glow {
+  animation: woodGlow 3s ease-in-out infinite;
 }
 
 .particle-float {
-  animation: particleFloat 6s ease-in-out infinite;
+  animation: particleFloat 8s ease-in-out infinite;
 }
 
 .rotate-glow {
-  animation: rotateGlow 10s linear infinite;
+  animation: rotateGlow 12s linear infinite;
 }
 
 .mesh-gradient {
-  animation: meshGradient 8s ease-in-out infinite;
+  animation: meshGradient 10s ease-in-out infinite;
 }
 
-/* Professional loading animations */
-.electric-spinner {
-  border: 3px solid hsl(var(--electric-200));
-  border-top: 3px solid hsl(var(--electric-500));
+/* Natural loading animations */
+.wood-spinner {
+  border: 3px solid hsl(var(--wood-light));
+  border-top: 3px solid hsl(var(--wood-medium));
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 1.2s linear infinite;
 }
 
 @keyframes spin {
