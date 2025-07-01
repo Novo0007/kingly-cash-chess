@@ -203,47 +203,56 @@
     0 1px 3px rgba(62, 39, 35, 0.1);
 }
 
-.electric-text-gradient {
+.wood-text-gradient {
   background: linear-gradient(
     135deg,
-    hsl(var(--vibrant-purple)) 0%,
-    hsl(var(--vibrant-pink)) 25%,
-    hsl(var(--vibrant-cyan)) 50%,
-    hsl(var(--vibrant-blue)) 75%,
-    hsl(var(--vibrant-purple)) 100%
+    hsl(var(--wood-dark)) 0%,
+    hsl(var(--wood-medium)) 50%,
+    hsl(var(--wood-green)) 100%
   );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-size: 200% 200%;
-  animation: gradientShift 3s ease-in-out infinite;
-  filter: brightness(1.1);
+  animation: woodShift 4s ease-in-out infinite;
 }
 
-.electric-button {
+.wood-button {
   background: linear-gradient(
     135deg,
-    hsl(var(--vibrant-purple)) 0%,
-    hsl(var(--vibrant-pink)) 50%,
-    hsl(var(--vibrant-cyan)) 100%
+    hsl(var(--wood-medium)) 0%,
+    hsl(var(--wood-light)) 50%,
+    hsl(var(--wood-medium)) 100%
   );
-  color: white;
-  border: 1px solid hsl(var(--vibrant-purple));
-  transition: all 0.3s ease;
+  color: hsl(var(--wood-cream));
+  border: 2px solid hsl(var(--wood-dark));
+  transition: all 0.2s ease;
   font-weight: 600;
-  box-shadow: 0 4px 20px rgba(139, 69, 193, 0.3);
+  box-shadow:
+    0 4px 8px rgba(62, 39, 35, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
-.electric-button:hover {
+.wood-button:hover {
   background: linear-gradient(
     135deg,
-    hsl(var(--vibrant-pink)) 0%,
-    hsl(var(--vibrant-purple)) 50%,
-    hsl(var(--vibrant-blue)) 100%
+    hsl(var(--wood-light)) 0%,
+    hsl(var(--wood-lightest)) 50%,
+    hsl(var(--wood-light)) 100%
   );
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(139, 69, 193, 0.4);
-  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 12px rgba(62, 39, 35, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.wood-button:active {
+  transform: translateY(0);
+  box-shadow:
+    0 2px 4px rgba(62, 39, 35, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .electric-border {
