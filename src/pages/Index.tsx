@@ -220,40 +220,40 @@ const Index = () => {
         ></div>
       </div>
 
-      {/* Enhanced Floating Elements with More Variety */}
+      {/* Natural Floating Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {/* Large vibrant orbs */}
+        {/* Large wood accent orbs */}
         <div
-          className="absolute top-1/4 left-1/4 w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-400/40 to-pink-400/40 rounded-full electric-float opacity-60 blur-sm"
-          style={{ animationDelay: "0s", animationDuration: "8s" }}
+          className="absolute top-1/4 left-1/4 w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-600/40 to-orange-600/40 rounded-full wood-float opacity-60 blur-sm"
+          style={{ animationDelay: "0s", animationDuration: "10s" }}
         ></div>
         <div
-          className="absolute top-3/4 right-1/4 w-6 h-6 sm:w-10 sm:h-10 bg-gradient-to-br from-cyan-400/40 to-blue-400/40 rounded-full electric-float opacity-70 blur-sm"
-          style={{ animationDelay: "2s", animationDuration: "10s" }}
+          className="absolute top-3/4 right-1/4 w-6 h-6 sm:w-10 sm:h-10 bg-gradient-to-br from-green-700/40 to-emerald-800/40 rounded-full wood-float opacity-70 blur-sm"
+          style={{ animationDelay: "3s", animationDuration: "12s" }}
         ></div>
         <div
-          className="absolute top-1/2 left-3/4 w-4 h-4 sm:w-8 sm:h-8 bg-gradient-to-br from-green-400/40 to-emerald-400/40 rounded-full electric-float opacity-50 blur-sm"
-          style={{ animationDelay: "4s", animationDuration: "9s" }}
-        ></div>
-
-        {/* Small particle effects */}
-        <div
-          className="absolute top-20 right-20 w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full particle-float opacity-80"
-          style={{ animationDelay: "1s", animationDuration: "7s" }}
-        ></div>
-        <div
-          className="absolute bottom-20 left-20 w-1 h-1 sm:w-2 sm:h-2 bg-gradient-to-br from-pink-400 to-purple-400 rounded-full particle-float opacity-90"
-          style={{ animationDelay: "3s", animationDuration: "6s" }}
-        ></div>
-        <div
-          className="absolute top-60 left-1/2 w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full particle-float opacity-60"
-          style={{ animationDelay: "5s", animationDuration: "8s" }}
-        ></div>
-
-        {/* Geometric shapes */}
-        <div
-          className="absolute bottom-40 right-40 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-cyan-400/30 to-blue-400/30 rotate-45 electric-float opacity-40"
+          className="absolute top-1/2 left-3/4 w-4 h-4 sm:w-8 sm:h-8 bg-gradient-to-br from-yellow-600/40 to-amber-700/40 rounded-full wood-float opacity-50 blur-sm"
           style={{ animationDelay: "6s", animationDuration: "11s" }}
+        ></div>
+
+        {/* Small natural particle effects */}
+        <div
+          className="absolute top-20 right-20 w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-br from-amber-600 to-orange-700 rounded-full particle-float opacity-80"
+          style={{ animationDelay: "2s", animationDuration: "9s" }}
+        ></div>
+        <div
+          className="absolute bottom-20 left-20 w-1 h-1 sm:w-2 sm:h-2 bg-gradient-to-br from-green-700 to-emerald-800 rounded-full particle-float opacity-90"
+          style={{ animationDelay: "4s", animationDuration: "8s" }}
+        ></div>
+        <div
+          className="absolute top-60 left-1/2 w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-br from-yellow-700 to-amber-800 rounded-full particle-float opacity-60"
+          style={{ animationDelay: "7s", animationDuration: "10s" }}
+        ></div>
+
+        {/* Wood block shapes */}
+        <div
+          className="absolute bottom-40 right-40 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-amber-700/30 to-orange-700/30 rotate-45 wood-float opacity-40 rounded-sm"
+          style={{ animationDelay: "8s", animationDuration: "13s" }}
         ></div>
       </div>
 
