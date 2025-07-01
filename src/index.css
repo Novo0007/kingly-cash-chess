@@ -572,16 +572,28 @@
 
 /* Backwards compatibility */
 .lavender-float {
-  @apply electric-float;
+  @apply wood-float;
 }
 .lavender-pulse {
-  @apply electric-pulse;
+  @apply wood-glow;
 }
 .lavender-spinner {
-  @apply electric-spinner;
+  @apply wood-spinner;
 }
 .lavender-shimmer {
-  @apply electric-shimmer;
+  @apply wood-shimmer;
+}
+.electric-float {
+  @apply wood-float;
+}
+.electric-pulse {
+  @apply wood-glow;
+}
+.electric-spinner {
+  @apply wood-spinner;
+}
+.electric-shimmer {
+  @apply wood-shimmer;
 }
 
 /* Enhanced natural styling for components */
