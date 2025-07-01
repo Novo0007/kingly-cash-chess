@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Chess, Square } from "chess.js";
 import { toast } from "sonner";
@@ -281,11 +280,27 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full px-1 sm:px-2">
-      <div className="electric-card p-2 sm:p-4 md:p-6 lg:p-8 rounded-lg sm:rounded-xl electric-shadow-lg w-full h-full max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl border-2 sm:border-4 electric-border">
-        <div
-          ref={boardRef}
-          className="grid grid-cols-8 gap-0 aspect-square w-full h-full border-2 sm:border-4 border-blue-400 rounded-md sm:rounded-lg overflow-hidden electric-shadow-lg"
-        >
+      <div className="wood-card p-3 sm:p-6 md:p-8 lg:p-10 rounded-lg sm:rounded-xl wood-shadow-deep w-full h-full max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl border-4 border-amber-800 wood-plank relative overflow-hidden">
+        {/* Chess Board Frame - Handcrafted Wood Style */}
+        <div className="relative p-2 sm:p-4 md:p-6 bg-gradient-to-br from-amber-900 to-amber-800 rounded-lg wood-shadow border-2 border-amber-700">
+          {/* Inner Wood Frame */}
+          <div className="relative p-1 sm:p-2 bg-gradient-to-br from-amber-800 to-amber-700 rounded-md">
+            <div
+              ref={boardRef}
+              className="grid grid-cols-8 gap-0 aspect-square w-full h-full rounded-sm overflow-hidden wood-shadow-lg relative"
+              style={{
+                background: `
+                  repeating-linear-gradient(0deg,
+                    rgba(139, 69, 19, 0.1) 0px,
+                    rgba(160, 82, 45, 0.1) 1px,
+                    rgba(139, 69, 19, 0.1) 2px),
+                  repeating-linear-gradient(90deg,
+                    rgba(139, 69, 19, 0.1) 0px,
+                    rgba(160, 82, 45, 0.1) 1px,
+                    rgba(139, 69, 19, 0.1) 2px)
+                `
+              }}
+            >
           {Array.from({ length: 8 }, (_, rowIndex) =>
             Array.from({ length: 8 }, (_, colIndex) => {
               // Calculate the actual board position based on player perspective
