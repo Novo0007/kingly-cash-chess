@@ -325,55 +325,57 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <ScrollArea className="h-[600px] w-full">
-            <div className="space-y-4 pr-4">
+        <CardContent className="p-3 sm:p-4">
+          <ScrollArea className="h-[400px] sm:h-[600px] w-full">
+            <div className="space-y-3 sm:space-y-4 pr-2 sm:pr-4">
               {filteredTransactions.map((transaction) => (
                 <Card
                   key={transaction.id}
-                  className="bg-slate-700 border-slate-600"
+                  className="wood-card bg-gradient-to-r from-amber-50 to-orange-50 border-amber-300"
                 >
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        {getTransactionIcon(transaction.transaction_type)}
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-white font-semibold">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                      <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+                        <div className="flex-shrink-0 mt-1">
+                          {getTransactionIcon(transaction.transaction_type)}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-2">
+                            <span className="text-amber-900 font-semibold text-sm sm:text-base">
                               {transaction.profiles?.username || "Unknown User"}
                             </span>
                             <Badge
-                              className={getStatusColor(
+                              className={`${getStatusColor(
                                 transaction.status || "pending",
-                              )}
+                              )} text-xs`}
                             >
                               {transaction.status}
                             </Badge>
                             <Badge
-                              className={getTransactionTypeColor(
+                              className={`${getTransactionTypeColor(
                                 transaction.transaction_type,
-                              )}
+                              )} text-xs`}
                             >
                               {transaction.transaction_type
                                 .replace("_", " ")
                                 .toUpperCase()}
                             </Badge>
                           </div>
-                          <p className="text-slate-400 text-sm">
+                          <p className="text-amber-700 text-xs sm:text-sm">
                             {new Date(
                               transaction.created_at || "",
                             ).toLocaleDateString()}{" "}
-                            •
+                            •{" "}
                             {new Date(
                               transaction.created_at || "",
                             ).toLocaleTimeString()}
                           </p>
-                          <p className="text-slate-300 text-sm">
+                          <p className="text-amber-800 text-xs sm:text-sm mt-1">
                             {transaction.description ||
                               `${transaction.transaction_type.replace("_", " ")} transaction`}
                           </p>
                           {transaction.profiles?.full_name && (
-                            <p className="text-slate-400 text-xs">
+                            <p className="text-amber-600 text-xs mt-1">
                               Full Name: {transaction.profiles.full_name}
                             </p>
                           )}
