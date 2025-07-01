@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Home, Users, Wallet, UserCircle, Shield } from "lucide-react";
 
 interface BottomNavProps {
@@ -55,6 +56,9 @@ export const BottomNav = ({
               </Button>
             );
           })}
+          <div className="flex items-center justify-center min-h-[60px]">
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </div>
