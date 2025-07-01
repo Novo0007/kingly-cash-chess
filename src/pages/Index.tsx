@@ -107,9 +107,9 @@ const Index = () => {
     return (
       <MobileOptimized className="flex items-center justify-center">
         <div className="relative">
-          <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 rounded-full blur-xl opacity-60 animate-pulse"></div>
-          <div className="relative bg-gradient-to-r from-slate-800 to-slate-900 p-6 rounded-full border-2 border-purple-500/50 backdrop-blur-sm">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute -inset-4 bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 rounded-full blur-xl opacity-60 animate-pulse"></div>
+          <div className="relative bg-gradient-to-r from-amber-900 to-orange-900 p-6 rounded-full border-2 border-amber-600/50 backdrop-blur-sm wood-plank">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
           </div>
         </div>
       </MobileOptimized>
