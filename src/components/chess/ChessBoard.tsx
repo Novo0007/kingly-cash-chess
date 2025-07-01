@@ -319,8 +319,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     <div
                       key={`${rowIndex}-${colIndex}`}
                       className={`
-                    aspect-square flex items-center justify-center text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold cursor-pointer
-                    transition-all duration-200 active:scale-95 relative overflow-hidden border border-amber-900/10
+                    aspect-square flex items-center justify-center text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[8rem] 2xl:text-[10rem] font-bold cursor-pointer
+                    transition-all duration-300 hover:scale-110 active:scale-95 relative overflow-hidden border-2 border-amber-900/20 shadow-lg
                     ${
                       isLightSquare(rowIndex, colIndex)
                         ? "bg-gradient-to-br from-amber-100 to-amber-50 hover:from-amber-200 hover:to-amber-100"
