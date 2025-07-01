@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthPage } from "@/components/auth/AuthPage";
@@ -13,42 +14,64 @@ import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
 import { ChatSystem } from "@/components/chat/ChatSystem";
+import { AdminPanel } from "@/components/admin/AdminPanel";
+import { toast } from "sonner";
 import type { User } from "@supabase/supabase-js";
 
 const Index = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
   const [selectedGameType, setSelectedGameType] = useState<
     "chess" | "ludo" | null
   >(null);
+  const [connectionRetries, setConnectionRetries] = useState(0);
 
   useEffect(() => {
-    getUser();
+    initializeApp();
 
-    try {
-      const {
-        data: { subscription },
-      } = supabase.auth.onAuthStateChange((event, session) => {
-        setUser(session?.user ?? null);
+    // Set up auth state listener with better error handling
+    const setupAuthListener = () => {
+      try {
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange(async (event, session) => {
+          console.log("Auth state changed:", event, session?.user?.id);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            await fetchUserProfile(session.user.id);
+          } else {
+            setUserProfile(null);
+          }
+          
+          setLoading(false);
+        });
+
+        return subscription;
+      } catch (error) {
+        console.error("Error setting up auth listener:", error);
         setLoading(false);
-      });
+        return null;
+      }
+    };
 
-      return () => {
+    const subscription = setupAuthListener();
+
+    return () => {
+      if (subscription) {
         try {
           subscription.unsubscribe();
         } catch (error) {
           console.warn("Error unsubscribing from auth changes:", error);
         }
-      };
-    } catch (error) {
-      console.warn("Error setting up auth state listener:", error);
-      setLoading(false);
-    }
+      }
+    };
   }, []);
 
-  const getUser = async () => {
+  const initializeApp = async () => {
     try {
       const {
         data: { user },
@@ -57,17 +80,47 @@ const Index = () => {
 
       if (error) {
         console.warn("Auth error:", error.message);
-        // For network errors, treat as unauthenticated but don't block the app
-        setUser(null);
+        if (connectionRetries < 3) {
+          setConnectionRetries(prev => prev + 1);
+          setTimeout(initializeApp, 2000);
+          return;
+        }
       } else {
         setUser(user);
+        if (user) {
+          await fetchUserProfile(user.id);
+        }
+        setConnectionRetries(0);
       }
     } catch (networkError) {
       console.warn("Network error connecting to auth service:", networkError);
-      // For network failures, treat as unauthenticated and let user continue
-      setUser(null);
+      if (connectionRetries < 3) {
+        setConnectionRetries(prev => prev + 1);
+        setTimeout(initializeApp, 3000);
+        return;
+      }
+      toast.error("Connection issues detected. Some features may be limited.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error("Error fetching user profile:", error);
+        return;
+      }
+
+      setUserProfile(data);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
     }
   };
 
@@ -124,8 +177,20 @@ const Index = () => {
     );
   }
 
+  const isAdmin = userProfile?.is_admin || 
+    (user?.email && ['admin@example.com', 'jyotirmoysarkar2003chalsa@gmail.com', 'mynameisjyotirmoy@gmail.com'].includes(user.email));
+
   const renderCurrentView = () => {
     switch (currentView) {
+      case "admin":
+        return isAdmin ? (
+          <AdminPanel userEmail={user?.email || ''} />
+        ) : (
+          <div className="text-center p-8">
+            <h2 className="text-2xl font-bold text-amber-900 mb-4">Access Denied</h2>
+            <p className="text-amber-800">You don't have admin privileges.</p>
+          </div>
+        );
       case "games":
         return <GameSelection onSelectGame={handleSelectGame} />;
       case "lobby":
@@ -200,7 +265,6 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-to-tr from-amber-700/5 via-orange-600/5 to-yellow-600/5"></div>
       </div>
 
-      {/* Wood Grain Pattern Overlay */}
       <div className="fixed inset-0 opacity-15 sm:opacity-25">
         <div
           className="h-full w-full"
@@ -222,7 +286,6 @@ const Index = () => {
 
       {/* Natural Floating Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {/* Large wood accent orbs */}
         <div
           className="absolute top-1/4 left-1/4 w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-600/40 to-orange-600/40 rounded-full wood-float opacity-60 blur-sm"
           style={{ animationDelay: "0s", animationDuration: "10s" }}
@@ -236,7 +299,6 @@ const Index = () => {
           style={{ animationDelay: "6s", animationDuration: "11s" }}
         ></div>
 
-        {/* Small natural particle effects */}
         <div
           className="absolute top-20 right-20 w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-br from-amber-600 to-orange-700 rounded-full particle-float opacity-80"
           style={{ animationDelay: "2s", animationDuration: "9s" }}
@@ -250,28 +312,23 @@ const Index = () => {
           style={{ animationDelay: "7s", animationDuration: "10s" }}
         ></div>
 
-        {/* Wood block shapes */}
         <div
           className="absolute bottom-40 right-40 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-amber-700/30 to-orange-700/30 rotate-45 wood-float opacity-40 rounded-sm"
           style={{ animationDelay: "8s", animationDuration: "13s" }}
         ></div>
       </div>
 
-      {/* Desktop Navbar - hidden on mobile */}
       <div className="hidden md:block relative z-30">
-        <Navbar currentView={currentView} onViewChange={setCurrentView} />
+        <Navbar currentView={currentView} onViewChange={setCurrentView} isAdmin={isAdmin} />
       </div>
 
-      {/* Main Content Area - Wood Lodge Style */}
       <main className="relative z-20 max-w-7xl mx-auto px-1 sm:px-2 md:px-4 py-1 sm:py-2 md:py-8 pb-16 sm:pb-20 md:pb-8">
         <div className="relative">
-          {/* Wood Content Background with Natural Glass Effect */}
           <div className="absolute inset-0 wood-glass rounded-lg sm:rounded-xl md:rounded-2xl wood-shadow-lg wood-plank">
             <div className="absolute inset-0 bg-gradient-to-br from-amber-50/5 via-transparent to-orange-600/5 rounded-lg sm:rounded-xl md:rounded-2xl"></div>
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-200/50 to-transparent"></div>
           </div>
 
-          {/* Content with wood styling */}
           <div className="relative z-10 p-1 sm:p-2 md:p-4">
             <div className="space-y-4 slide-in-bottom">
               {renderCurrentView()}
@@ -280,9 +337,8 @@ const Index = () => {
         </div>
       </main>
 
-      {/* Mobile Bottom Navigation */}
       <div className="md:hidden relative z-30">
-        <BottomNav currentView={currentView} onViewChange={setCurrentView} />
+        <BottomNav currentView={currentView} onViewChange={setCurrentView} isAdmin={isAdmin} />
       </div>
     </MobileOptimized>
   );
