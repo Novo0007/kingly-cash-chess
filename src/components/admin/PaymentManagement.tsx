@@ -32,8 +32,12 @@ type Transaction = Tables<"transactions"> & {
 export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "pending" | "completed" | "failed">("all");
-  const [typeFilter, setTypeFilter] = useState<"all" | "deposit" | "withdrawal" | "game_entry" | "game_winning" | "refund">("all");
+  const [filter, setFilter] = useState<
+    "all" | "pending" | "completed" | "failed"
+  >("all");
+  const [typeFilter, setTypeFilter] = useState<
+    "all" | "deposit" | "withdrawal" | "game_entry" | "game_winning" | "refund"
+  >("all");
 
   useEffect(() => {
     fetchTransactions();
@@ -43,40 +47,44 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
     try {
       const { data, error } = await supabase
         .from("transactions")
-        .select(`
+        .select(
+          `
           *,
           profiles (
             username,
             full_name
           )
-        `)
+        `,
+        )
         .order("created_at", { ascending: false })
         .limit(200);
 
       if (error) throw error;
-      
-      const processedData = (data || []).map(transaction => {
+
+      const processedData = (data || []).map((transaction) => {
         const rawProfiles = transaction.profiles as any;
-        
-        if (rawProfiles && 
-            typeof rawProfiles === 'object' && 
-            !Array.isArray(rawProfiles) &&
-            typeof rawProfiles.username === 'string') {
+
+        if (
+          rawProfiles &&
+          typeof rawProfiles === "object" &&
+          !Array.isArray(rawProfiles) &&
+          typeof rawProfiles.username === "string"
+        ) {
           return {
             ...transaction,
             profiles: {
               username: rawProfiles.username,
-              full_name: rawProfiles.full_name || null
-            }
+              full_name: rawProfiles.full_name || null,
+            },
           };
         }
-        
+
         return {
           ...transaction,
-          profiles: null
+          profiles: null,
         };
       });
-      
+
       setTransactions(processedData);
     } catch (error) {
       console.error("Error fetching transactions:", error);
@@ -86,7 +94,10 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
     }
   };
 
-  const updateTransactionStatus = async (transactionId: string, status: "completed" | "failed" | "pending") => {
+  const updateTransactionStatus = async (
+    transactionId: string,
+    status: "completed" | "failed" | "pending",
+  ) => {
     try {
       const { error } = await supabase
         .from("transactions")
@@ -94,7 +105,7 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
         .eq("id", transactionId);
 
       if (error) throw error;
-      
+
       toast.success(`Transaction ${status} successfully`);
       fetchTransactions();
     } catch (error) {
@@ -150,23 +161,28 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
     }
   };
 
-  const filteredTransactions = transactions.filter(transaction => {
+  const filteredTransactions = transactions.filter((transaction) => {
     const statusMatch = filter === "all" || transaction.status === filter;
-    const typeMatch = typeFilter === "all" || transaction.transaction_type === typeFilter;
+    const typeMatch =
+      typeFilter === "all" || transaction.transaction_type === typeFilter;
     return statusMatch && typeMatch;
   });
 
-  const totalAmount = filteredTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
+  const totalAmount = filteredTransactions.reduce(
+    (sum, t) => sum + Number(t.amount),
+    0,
+  );
   const completedAmount = filteredTransactions
-    .filter(t => t.status === "completed")
+    .filter((t) => t.status === "completed")
     .reduce((sum, t) => sum + Number(t.amount), 0);
-  const withdrawalsPending = filteredTransactions
-    .filter(t => t.transaction_type === "withdrawal" && t.status === "pending").length;
+  const withdrawalsPending = filteredTransactions.filter(
+    (t) => t.transaction_type === "withdrawal" && t.status === "pending",
+  ).length;
 
   if (loading) {
     return (
-      <Card className="bg-slate-800 border-slate-600">
-        <CardContent className="p-6 text-center">
+      <Card className="wood-card border-amber-600">
+        <CardContent className="p-4 sm:p-6 text-center">
           <div className="w-8 h-8 border-3 border-green-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-white">Loading transactions...</p>
         </CardContent>
@@ -184,7 +200,9 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
               <DollarSign className="h-5 w-5 text-green-400" />
               <div>
                 <p className="text-green-300 text-sm">Total Amount</p>
-                <p className="text-white font-bold text-lg">₹{totalAmount.toFixed(2)}</p>
+                <p className="text-white font-bold text-lg">
+                  ₹{totalAmount.toFixed(2)}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -195,7 +213,9 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
               <TrendingUp className="h-5 w-5 text-blue-400" />
               <div>
                 <p className="text-blue-300 text-sm">Completed</p>
-                <p className="text-white font-bold text-lg">₹{completedAmount.toFixed(2)}</p>
+                <p className="text-white font-bold text-lg">
+                  ₹{completedAmount.toFixed(2)}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -206,7 +226,9 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
               <ArrowUpCircle className="h-5 w-5 text-red-400" />
               <div>
                 <p className="text-red-300 text-sm">Pending Withdrawals</p>
-                <p className="text-white font-bold text-lg">{withdrawalsPending}</p>
+                <p className="text-white font-bold text-lg">
+                  {withdrawalsPending}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -217,7 +239,9 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
               <Clock className="h-5 w-5 text-purple-400" />
               <div>
                 <p className="text-purple-300 text-sm">Total Transactions</p>
-                <p className="text-white font-bold text-lg">{filteredTransactions.length}</p>
+                <p className="text-white font-bold text-lg">
+                  {filteredTransactions.length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -233,29 +257,51 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
           <div className="flex flex-wrap gap-2">
             <div className="flex gap-2">
               <span className="text-slate-300 text-sm">Status:</span>
-              {(["all", "pending", "completed", "failed"] as const).map((status) => (
-                <Button
-                  key={status}
-                  size="sm"
-                  variant={filter === status ? "default" : "outline"}
-                  onClick={() => setFilter(status)}
-                  className={filter === status ? "bg-green-600" : "text-slate-300 border-slate-600"}
-                >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                </Button>
-              ))}
+              {(["all", "pending", "completed", "failed"] as const).map(
+                (status) => (
+                  <Button
+                    key={status}
+                    size="sm"
+                    variant={filter === status ? "default" : "outline"}
+                    onClick={() => setFilter(status)}
+                    className={
+                      filter === status
+                        ? "bg-green-600"
+                        : "text-slate-300 border-slate-600"
+                    }
+                  >
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </Button>
+                ),
+              )}
             </div>
             <div className="flex gap-2">
               <span className="text-slate-300 text-sm">Type:</span>
-              {(["all", "deposit", "withdrawal", "game_entry", "game_winning", "refund"] as const).map((type) => (
+              {(
+                [
+                  "all",
+                  "deposit",
+                  "withdrawal",
+                  "game_entry",
+                  "game_winning",
+                  "refund",
+                ] as const
+              ).map((type) => (
                 <Button
                   key={type}
                   size="sm"
                   variant={typeFilter === type ? "default" : "outline"}
                   onClick={() => setTypeFilter(type)}
-                  className={typeFilter === type ? "bg-blue-600" : "text-slate-300 border-slate-600"}
+                  className={
+                    typeFilter === type
+                      ? "bg-blue-600"
+                      : "text-slate-300 border-slate-600"
+                  }
                 >
-                  {type === "all" ? "All" : type.replace("_", " ").charAt(0).toUpperCase() + type.replace("_", " ").slice(1)}
+                  {type === "all"
+                    ? "All"
+                    : type.replace("_", " ").charAt(0).toUpperCase() +
+                      type.replace("_", " ").slice(1)}
                 </Button>
               ))}
             </div>
@@ -265,7 +311,10 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
           <ScrollArea className="h-[600px] w-full">
             <div className="space-y-4 pr-4">
               {filteredTransactions.map((transaction) => (
-                <Card key={transaction.id} className="bg-slate-700 border-slate-600">
+                <Card
+                  key={transaction.id}
+                  className="bg-slate-700 border-slate-600"
+                >
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
@@ -275,19 +324,35 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
                             <span className="text-white font-semibold">
                               {transaction.profiles?.username || "Unknown User"}
                             </span>
-                            <Badge className={getStatusColor(transaction.status || "pending")}>
+                            <Badge
+                              className={getStatusColor(
+                                transaction.status || "pending",
+                              )}
+                            >
                               {transaction.status}
                             </Badge>
-                            <Badge className={getTransactionTypeColor(transaction.transaction_type)}>
-                              {transaction.transaction_type.replace("_", " ").toUpperCase()}
+                            <Badge
+                              className={getTransactionTypeColor(
+                                transaction.transaction_type,
+                              )}
+                            >
+                              {transaction.transaction_type
+                                .replace("_", " ")
+                                .toUpperCase()}
                             </Badge>
                           </div>
                           <p className="text-slate-400 text-sm">
-                            {new Date(transaction.created_at || '').toLocaleDateString()} • 
-                            {new Date(transaction.created_at || '').toLocaleTimeString()}
+                            {new Date(
+                              transaction.created_at || "",
+                            ).toLocaleDateString()}{" "}
+                            •
+                            {new Date(
+                              transaction.created_at || "",
+                            ).toLocaleTimeString()}
                           </p>
                           <p className="text-slate-300 text-sm">
-                            {transaction.description || `${transaction.transaction_type.replace("_", " ")} transaction`}
+                            {transaction.description ||
+                              `${transaction.transaction_type.replace("_", " ")} transaction`}
                           </p>
                           {transaction.profiles?.full_name && (
                             <p className="text-slate-400 text-xs">
@@ -299,11 +364,19 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
 
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          <p className={`font-bold text-lg ${
-                            transaction.transaction_type === "withdrawal" ? "text-red-400" : 
-                            transaction.transaction_type === "deposit" ? "text-green-400" : "text-white"
-                          }`}>
-                            {transaction.transaction_type === "withdrawal" ? "-" : "+"}₹{Number(transaction.amount).toFixed(2)}
+                          <p
+                            className={`font-bold text-lg ${
+                              transaction.transaction_type === "withdrawal"
+                                ? "text-red-400"
+                                : transaction.transaction_type === "deposit"
+                                  ? "text-green-400"
+                                  : "text-white"
+                            }`}
+                          >
+                            {transaction.transaction_type === "withdrawal"
+                              ? "-"
+                              : "+"}
+                            ₹{Number(transaction.amount).toFixed(2)}
                           </p>
                           {transaction.razorpay_payment_id && (
                             <p className="text-slate-400 text-xs">
@@ -321,7 +394,12 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
                           <div className="flex gap-2">
                             <Button
                               size="sm"
-                              onClick={() => updateTransactionStatus(transaction.id, "completed")}
+                              onClick={() =>
+                                updateTransactionStatus(
+                                  transaction.id,
+                                  "completed",
+                                )
+                              }
                               className="bg-green-600 hover:bg-green-700"
                               title={`Complete ${transaction.transaction_type === "withdrawal" ? "withdrawal" : "transaction"}`}
                             >
@@ -329,7 +407,12 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
                             </Button>
                             <Button
                               size="sm"
-                              onClick={() => updateTransactionStatus(transaction.id, "failed")}
+                              onClick={() =>
+                                updateTransactionStatus(
+                                  transaction.id,
+                                  "failed",
+                                )
+                              }
                               className="bg-red-600 hover:bg-red-700"
                               title={`Reject ${transaction.transaction_type === "withdrawal" ? "withdrawal" : "transaction"}`}
                             >
@@ -337,12 +420,17 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
                             </Button>
                           </div>
                         )}
-                        
+
                         {transaction.status !== "pending" && (
                           <div className="flex gap-2">
                             <Button
                               size="sm"
-                              onClick={() => updateTransactionStatus(transaction.id, "pending")}
+                              onClick={() =>
+                                updateTransactionStatus(
+                                  transaction.id,
+                                  "pending",
+                                )
+                              }
                               className="bg-blue-600 hover:bg-blue-700"
                               title="Mark as pending for review"
                             >
@@ -355,10 +443,12 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
                   </CardContent>
                 </Card>
               ))}
-              
+
               {filteredTransactions.length === 0 && (
                 <div className="text-center py-8">
-                  <p className="text-slate-400">No transactions found matching the current filters.</p>
+                  <p className="text-slate-400">
+                    No transactions found matching the current filters.
+                  </p>
                 </div>
               )}
             </div>
