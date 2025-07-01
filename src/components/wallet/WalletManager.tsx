@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -41,15 +40,15 @@ export const WalletManager = () => {
     fetchWallet();
     fetchTransactions();
 
-    // Auto-refresh every 10 seconds to catch game winnings
+    // Auto-refresh every 30 seconds to catch game winnings
     const autoRefreshInterval = setInterval(() => {
       fetchWallet();
       fetchTransactions();
-    }, 10000);
+    }, 30000);
 
     // Subscribe to real-time changes for wallet and transactions
     const walletSubscription = supabase
-      .channel("wallet_changes")
+      .channel("wallet_and_transactions_changes")
       .on(
         "postgres_changes",
         {
@@ -57,8 +56,8 @@ export const WalletManager = () => {
           schema: "public",
           table: "wallets",
         },
-        () => {
-          console.log("Wallet updated, refreshing...");
+        (payload) => {
+          console.log("Wallet updated, refreshing...", payload);
           fetchWallet();
         },
       )
@@ -69,10 +68,13 @@ export const WalletManager = () => {
           schema: "public",
           table: "transactions",
         },
-        () => {
-          console.log("New transaction, refreshing...");
-          fetchTransactions();
-          fetchWallet(); // Also refresh wallet to get updated balance
+        (payload) => {
+          console.log("New transaction detected:", payload);
+          // Immediately refresh both wallet and transactions
+          setTimeout(() => {
+            fetchWallet();
+            fetchTransactions();
+          }, 1000); // Small delay to ensure DB consistency
         },
       )
       .on(
@@ -82,8 +84,8 @@ export const WalletManager = () => {
           schema: "public",
           table: "transactions",
         },
-        () => {
-          console.log("Transaction updated, refreshing...");
+        (payload) => {
+          console.log("Transaction updated:", payload);
           fetchTransactions();
           fetchWallet();
         },
@@ -97,34 +99,37 @@ export const WalletManager = () => {
   }, []);
 
   const fetchWallet = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { data, error } = await supabase
-      .from("wallets")
-      .select("*")
-      .eq("user_id", user.id)
-      .single();
+      const { data, error } = await supabase
+        .from("wallets")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
 
-    if (error) {
-      console.error("Error fetching wallet:", error.message || error);
+      if (error) {
+        console.error("Error fetching wallet:", error.message || error);
 
-      // If wallet doesn't exist, create one
-      if (error.code === "PGRST116") {
-        // No rows returned
-        console.log("Creating new wallet for user...");
-        await createWallet(user.id);
-        return;
+        // If wallet doesn't exist, create one
+        if (error.code === "PGRST116") {
+          console.log("Creating new wallet for user...");
+          await createWallet(user.id);
+          return;
+        }
+
+        toast.error(
+          "Error loading wallet: " + (error.message || "Unknown error"),
+        );
+      } else {
+        console.log("Wallet data fetched:", data);
+        setWallet(data);
       }
-
-      toast.error(
-        "Error loading wallet: " + (error.message || "Unknown error"),
-      );
-    } else {
-      console.log("Wallet data fetched:", data);
-      setWallet(data);
+    } catch (error) {
+      console.error("Unexpected error fetching wallet:", error);
     }
   };
 
@@ -152,31 +157,36 @@ export const WalletManager = () => {
   };
 
   const fetchTransactions = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { data, error } = await supabase
-      .from("transactions")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(20); // Increased limit to show more transactions
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(50); // Increased limit to show more transactions including game winnings
 
-    if (error) {
-      console.error("Error fetching transactions:", error.message || error);
-      toast.error(
-        "Error loading transactions: " + (error.message || "Unknown error"),
-      );
-    } else {
-      console.log("Transactions fetched:", data);
-      setTransactions(data || []);
+      if (error) {
+        console.error("Error fetching transactions:", error.message || error);
+        toast.error(
+          "Error loading transactions: " + (error.message || "Unknown error"),
+        );
+      } else {
+        console.log("Transactions fetched:", data);
+        setTransactions(data || []);
+      }
+    } catch (error) {
+      console.error("Unexpected error fetching transactions:", error);
     }
   };
 
   const handleRefresh = async () => {
     setRefreshing(true);
+    console.log("Manual refresh triggered");
     await Promise.all([fetchWallet(), fetchTransactions()]);
     setRefreshing(false);
     toast.success("Wallet data refreshed!");
@@ -389,6 +399,17 @@ export const WalletManager = () => {
     return ["withdrawal", "game_entry"].includes(type) ? "-" : "+";
   };
 
+  const getTransactionTypeDisplay = (type: string) => {
+    switch (type) {
+      case "game_winning":
+        return "Game Winning";
+      case "game_entry":
+        return "Game Entry";
+      default:
+        return type.charAt(0).toUpperCase() + type.slice(1);
+    }
+  };
+
   // Mobile-optimized styles
   const cardGradient = isMobile
     ? "bg-slate-800/80 border border-slate-600"
@@ -428,7 +449,7 @@ export const WalletManager = () => {
                 className="text-yellow-400 hover:bg-slate-700/50 h-8 w-8 p-0"
               >
                 <RefreshCw
-                  className={`h-3 w-3 md:h-4 md:w-4 ${refreshing && !isMobile ? "animate-spin" : ""}`}
+                  className={`h-3 w-3 md:h-4 md:w-4 ${refreshing ? "animate-spin" : ""}`}
                 />
               </Button>
             </CardTitle>
@@ -524,6 +545,9 @@ export const WalletManager = () => {
             <CardTitle className="text-purple-400 flex items-center gap-2 font-semibold text-base md:text-lg">
               <History className="h-5 w-5 md:h-6 md:w-6" />
               Recent Transactions
+              <Badge className="bg-purple-500/20 text-purple-300 text-xs">
+                {transactions.length}
+              </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -537,7 +561,7 @@ export const WalletManager = () => {
                 </p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-96 overflow-y-auto">
                 {transactions.map((transaction) => (
                   <div
                     key={transaction.id}
@@ -546,17 +570,24 @@ export const WalletManager = () => {
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       {getTransactionIcon(transaction.transaction_type)}
                       <div className="min-w-0 flex-1">
-                        <p className="text-white font-medium capitalize text-sm">
-                          {transaction.transaction_type.replace("_", " ")}
+                        <p className="text-white font-medium text-sm">
+                          {getTransactionTypeDisplay(transaction.transaction_type)}
                         </p>
                         <p className="text-xs text-slate-400">
                           {new Date(
                             transaction.created_at,
-                          ).toLocaleDateString("en-IN")}{" "}
+                          ).toLocaleDateString("en-IN", {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}{" "}
                           •{" "}
                           {new Date(
                             transaction.created_at,
-                          ).toLocaleTimeString("en-IN")}
+                          ).toLocaleTimeString("en-IN", {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
                         </p>
                         {transaction.description && (
                           <p className="text-xs text-slate-500 truncate max-w-[200px] mt-1">
