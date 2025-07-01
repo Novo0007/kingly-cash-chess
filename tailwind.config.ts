@@ -67,6 +67,16 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        wood: {
+          dark: "hsl(var(--wood-dark))",
+          medium: "hsl(var(--wood-medium))",
+          light: "hsl(var(--wood-light))",
+          lightest: "hsl(var(--wood-lightest))",
+          green: "hsl(var(--wood-green))",
+          orange: "hsl(var(--wood-orange))",
+          charcoal: "hsl(var(--wood-charcoal))",
+          cream: "hsl(var(--wood-cream))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
