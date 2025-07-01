@@ -155,32 +155,35 @@ export const UserManagement = ({ adminUser }: UserManagementProps) => {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {filteredUsers.map((user) => {
               const wallet = user.wallets?.[0];
 
               return (
-                <Card key={user.id} className="bg-slate-700 border-slate-600">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                <Card
+                  key={user.id}
+                  className="wood-card bg-gradient-to-r from-amber-50 to-orange-50 border-amber-300"
+                >
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                      <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-600 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base flex-shrink-0">
                           {user.username.charAt(0).toUpperCase()}
                         </div>
-                        <div>
-                          <h3 className="text-white font-semibold">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-amber-900 font-semibold text-sm sm:text-base truncate">
                             {user.username}
                           </h3>
                           {user.full_name && (
-                            <p className="text-slate-300 text-sm">
+                            <p className="text-amber-700 text-xs sm:text-sm truncate">
                               {user.full_name}
                             </p>
                           )}
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge className="bg-blue-600 text-white text-xs">
+                          <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1">
+                            <Badge className="bg-green-700 text-green-50 text-xs">
                               Rating: {user.chess_rating || 1200}
                             </Badge>
-                            <Badge className="bg-green-600 text-white text-xs">
+                            <Badge className="bg-amber-700 text-amber-50 text-xs">
                               <Gamepad2 className="h-3 w-3 mr-1" />
                               {user.games_won || 0}/{user.games_played || 0}
                             </Badge>
