@@ -298,24 +298,24 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     rgba(139, 69, 19, 0.1) 0px,
                     rgba(160, 82, 45, 0.1) 1px,
                     rgba(139, 69, 19, 0.1) 2px)
-                `
+                `,
               }}
             >
-          {Array.from({ length: 8 }, (_, rowIndex) =>
-            Array.from({ length: 8 }, (_, colIndex) => {
-              // Calculate the actual board position based on player perspective
-              const actualRow =
-                playerColor === "white" ? rowIndex : 7 - rowIndex;
-              const actualCol =
-                playerColor === "white" ? colIndex : 7 - colIndex;
+              {Array.from({ length: 8 }, (_, rowIndex) =>
+                Array.from({ length: 8 }, (_, colIndex) => {
+                  // Calculate the actual board position based on player perspective
+                  const actualRow =
+                    playerColor === "white" ? rowIndex : 7 - rowIndex;
+                  const actualCol =
+                    playerColor === "white" ? colIndex : 7 - colIndex;
 
-              // Get the piece from the board array
-              const piece = board[actualRow] && board[actualRow][actualCol];
+                  // Get the piece from the board array
+                  const piece = board[actualRow] && board[actualRow][actualCol];
 
-              return (
-                <div
-                  key={`${rowIndex}-${colIndex}`}
-                  className={`
+                  return (
+                    <div
+                      key={`${rowIndex}-${colIndex}`}
+                      className={`
                     aspect-square flex items-center justify-center text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold cursor-pointer
                     transition-all duration-200 active:scale-95 relative overflow-hidden border border-amber-900/10
                     ${
@@ -341,43 +341,48 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     ${disabled || !isPlayerTurn ? "cursor-default opacity-70" : "cursor-pointer"}
                     ${!isPlayerTurn ? "pointer-events-none" : ""}
                   `}
-                  onClick={() => handleSquareClick(rowIndex, colIndex)}
-                >
-                  <span
-                    className={`z-10 drop-shadow-2xl select-none ${
-                      piece && piece.color === "b" ? "text-black" : "text-white"
-                    }`}
-                    style={{
-                      textShadow: piece
-                        ? piece.color === "b"
-                          ? "2px 2px 4px rgba(255, 255, 255, 0.8)"
-                          : "2px 2px 4px rgba(0, 0, 0, 0.8)"
-                        : "none",
-                      filter:
-                        piece && piece.color === "b"
-                          ? "drop-shadow(1px 1px 2px white)"
-                          : "none",
-                    }}
-                  >
-                    {getPieceSymbol(piece)}
-                  </span>
-                </div>
-              );
-            }),
-          ).flat()}
+                      onClick={() => handleSquareClick(rowIndex, colIndex)}
+                    >
+                      <span
+                        className={`z-10 drop-shadow-2xl select-none ${
+                          piece && piece.color === "b"
+                            ? "text-black"
+                            : "text-white"
+                        }`}
+                        style={{
+                          textShadow: piece
+                            ? piece.color === "b"
+                              ? "2px 2px 4px rgba(255, 255, 255, 0.8)"
+                              : "2px 2px 4px rgba(0, 0, 0, 0.8)"
+                            : "none",
+                          filter:
+                            piece && piece.color === "b"
+                              ? "drop-shadow(1px 1px 2px white)"
+                              : "none",
+                        }}
+                      >
+                        {getPieceSymbol(piece)}
+                      </span>
+                    </div>
+                  );
+                }),
+              ).flat()}
+            </div>
+          </div>
         </div>
 
-        <div className="mt-2 sm:mt-4 md:mt-8 text-center">
-          <div className="electric-text text-sm sm:text-lg md:text-2xl font-bold electric-glass rounded-md sm:rounded-lg px-3 py-2 sm:px-6 sm:py-4 border electric-border sm:border-2 electric-shadow tap-target">
+        {/* Status Display - Wood Style */}
+        <div className="mt-3 sm:mt-6 md:mt-8 text-center">
+          <div className="wood-text text-sm sm:text-lg md:text-2xl font-bold wood-glass rounded-lg px-4 py-3 sm:px-6 sm:py-4 border-2 border-amber-700 wood-shadow tap-target bg-gradient-to-r from-amber-100 to-orange-100">
             Playing as {playerColor === "white" ? "⚪ White" : "⚫ Black"}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-blue-600 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold electric-glass rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border electric-border sm:border-2 electric-shadow tap-target">
+            <div className="text-amber-800 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold wood-glass rounded-lg px-3 py-2 sm:px-4 sm:py-3 inline-block border-2 border-amber-600 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
               Opponent's turn...
             </div>
           )}
           {disabled && (
-            <div className="text-gray-600 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold electric-glass rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border border-gray-300 sm:border-2 electric-shadow tap-target">
+            <div className="text-amber-700 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold wood-glass rounded-lg px-3 py-2 sm:px-4 sm:py-3 inline-block border-2 border-amber-500 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
               Spectating
             </div>
           )}
