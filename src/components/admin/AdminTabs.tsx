@@ -40,7 +40,7 @@ export const AdminTabs = ({
       onValueChange={onTabChange}
       className="w-full bg-transparent"
     >
-      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 bg-muted p-2 rounded-2xl">
+      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 bg-muted p-2 rounded-2xl sticky top-0 z-10 mb-4">
         <TabsTrigger
           value="overview"
           className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 min-h-[52px] rounded-xl font-medium text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2"

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,6 +31,7 @@ import {
   Edit,
   Save,
   X,
+  LogOut,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
@@ -53,7 +53,9 @@ export const ProfileSystem = () => {
 
   const fetchProfile = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
@@ -96,12 +98,23 @@ export const ProfileSystem = () => {
         username: editForm.username,
         full_name: editForm.full_name,
       });
-      
+
       setEditing(false);
       toast.success("Profile updated successfully");
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Failed to update profile");
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      toast.success("Signed out successfully");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast.error("Error signing out");
     }
   };
 
@@ -117,43 +130,45 @@ export const ProfileSystem = () => {
     if (rating >= 1800) return { label: "Master", color: "bg-purple-600" };
     if (rating >= 1600) return { label: "Expert", color: "bg-blue-600" };
     if (rating >= 1400) return { label: "Advanced", color: "bg-green-600" };
-    if (rating >= 1200) return { label: "Intermediate", color: "bg-yellow-600" };
+    if (rating >= 1200)
+      return { label: "Intermediate", color: "bg-yellow-600" };
     return { label: "Beginner", color: "bg-gray-600" };
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="w-8 h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-muted border-t-primary rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <Card className="wood-card border-amber-600">
+      <Card className="bg-card border border-border rounded-2xl">
         <CardContent className="p-6 text-center">
-          <p className="text-amber-900">Profile not found</p>
+          <p className="text-muted-foreground">Profile not found</p>
         </CardContent>
       </Card>
     );
   }
 
-  const winRate = profile.games_played > 0 
-    ? Math.round((profile.games_won / profile.games_played) * 100) 
-    : 0;
-  
+  const winRate =
+    profile.games_played > 0
+      ? Math.round((profile.games_won / profile.games_played) * 100)
+      : 0;
+
   const ratingBadge = getRatingBadge(profile.chess_rating || 1200);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Profile Header */}
-      <Card className="wood-card border-amber-600">
+      <Card className="bg-card border border-border rounded-2xl">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row items-center gap-6">
-            <Avatar className="w-24 h-24 border-4 border-amber-600">
+            <Avatar className="w-24 h-24 border-4 border-primary">
               <AvatarImage src={profile.avatar_url || undefined} />
-              <AvatarFallback className="bg-amber-600 text-white text-2xl font-bold">
+              <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">
                 {profile.username.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -166,7 +181,9 @@ export const ProfileSystem = () => {
                     <Input
                       id="username"
                       value={editForm.username}
-                      onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, username: e.target.value })
+                      }
                       className="bg-amber-50 border-amber-300"
                     />
                   </div>
@@ -175,17 +192,22 @@ export const ProfileSystem = () => {
                     <Input
                       id="full_name"
                       value={editForm.full_name}
-                      onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, full_name: e.target.value })
+                      }
                       className="bg-amber-50 border-amber-300"
                     />
                   </div>
                   <div className="flex gap-2">
-                    <Button onClick={handleSaveProfile} className="bg-green-600 hover:bg-green-700">
+                    <Button
+                      onClick={handleSaveProfile}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
                       <Save className="h-4 w-4 mr-2" />
                       Save
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={() => setEditing(false)}
                       className="border-amber-400 text-amber-800"
                     >
@@ -197,28 +219,42 @@ export const ProfileSystem = () => {
               ) : (
                 <div>
                   <div className="flex items-center gap-2 justify-center md:justify-start mb-2">
-                    <h1 className="text-2xl font-bold text-amber-900">{profile.username}</h1>
+                    <h1 className="text-2xl font-bold text-foreground">
+                      {profile.username}
+                    </h1>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => setEditing(true)}
-                      className="border-amber-400 text-amber-800 hover:bg-amber-100"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleSignOut}
+                      className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+                    >
+                      <LogOut className="h-4 w-4" />
+                    </Button>
                   </div>
-                  
+
                   {profile.full_name && (
-                    <p className="text-amber-700 mb-2">{profile.full_name}</p>
+                    <p className="text-muted-foreground mb-2">
+                      {profile.full_name}
+                    </p>
                   )}
-                  
+
                   <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                    <Badge className={`${ratingBadge.color} text-white`}>
+                    <Badge
+                      className={`${ratingBadge.color} text-white rounded-full`}
+                    >
                       {ratingBadge.label}
                     </Badge>
-                    <Badge className="bg-amber-600 text-white">
+                    <Badge className="bg-primary text-primary-foreground rounded-full">
                       <Calendar className="h-3 w-3 mr-1" />
-                      Member since {new Date(profile.created_at || '').getFullYear()}
+                      Member since{" "}
+                      {new Date(profile.created_at || "").getFullYear()}
                     </Badge>
                   </div>
                 </div>
@@ -227,37 +263,49 @@ export const ProfileSystem = () => {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card className="bg-amber-100/50 border-amber-300">
+              <Card className="bg-muted/20 border border-border rounded-xl">
                 <CardContent className="p-4 text-center">
-                  <Star className={`h-6 w-6 mx-auto mb-2 ${getRatingColor(profile.chess_rating || 1200)}`} />
-                  <p className="text-lg font-bold text-amber-900">{profile.chess_rating || 1200}</p>
-                  <p className="text-xs text-amber-700">Rating</p>
+                  <Star
+                    className={`h-6 w-6 mx-auto mb-2 ${getRatingColor(profile.chess_rating || 1200)}`}
+                  />
+                  <p className="text-lg font-bold text-foreground">
+                    {profile.chess_rating || 1200}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Rating</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-amber-100/50 border-amber-300">
+              <Card className="bg-muted/20 border border-border rounded-xl">
                 <CardContent className="p-4 text-center">
                   <Trophy className="h-6 w-6 mx-auto mb-2 text-yellow-600" />
-                  <p className="text-lg font-bold text-amber-900">{profile.games_won}</p>
-                  <p className="text-xs text-amber-700">Won</p>
+                  <p className="text-lg font-bold text-foreground">
+                    {profile.games_won}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Won</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-amber-100/50 border-amber-300">
+              <Card className="bg-muted/20 border border-border rounded-xl">
                 <CardContent className="p-4 text-center">
                   <Target className="h-6 w-6 mx-auto mb-2 text-blue-600" />
-                  <p className="text-lg font-bold text-amber-900">{profile.games_played}</p>
-                  <p className="text-xs text-amber-700">Played</p>
+                  <p className="text-lg font-bold text-foreground">
+                    {profile.games_played}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Played</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-amber-100/50 border-amber-300">
+              <Card className="bg-muted/20 border border-border rounded-xl">
                 <CardContent className="p-4 text-center">
                   <div className="h-6 w-6 mx-auto mb-2 bg-green-600 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">{winRate}%</span>
+                    <span className="text-xs font-bold text-white">
+                      {winRate}%
+                    </span>
                   </div>
-                  <p className="text-lg font-bold text-amber-900">{winRate}%</p>
-                  <p className="text-xs text-amber-700">Win Rate</p>
+                  <p className="text-lg font-bold text-foreground">
+                    {winRate}%
+                  </p>
+                  <p className="text-xs text-muted-foreground">Win Rate</p>
                 </CardContent>
               </Card>
             </div>
@@ -267,28 +315,46 @@ export const ProfileSystem = () => {
 
       {/* Profile Tabs */}
       <Tabs defaultValue="history" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-600 p-2 rounded-xl">
-          <TabsTrigger value="history" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white">
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-muted p-2 rounded-2xl">
+          <TabsTrigger
+            value="history"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl"
+          >
             <Trophy className="h-4 w-4 mr-2" />
             History
           </TabsTrigger>
-          <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white">
+          <TabsTrigger
+            value="settings"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl"
+          >
             <Settings className="h-4 w-4 mr-2" />
             Settings
           </TabsTrigger>
-          <TabsTrigger value="about" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white">
+          <TabsTrigger
+            value="about"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl"
+          >
             <Info className="h-4 w-4 mr-2" />
             About
           </TabsTrigger>
-          <TabsTrigger value="contact" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white">
+          <TabsTrigger
+            value="contact"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl"
+          >
             <Phone className="h-4 w-4 mr-2" />
             Contact
           </TabsTrigger>
-          <TabsTrigger value="privacy" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white">
+          <TabsTrigger
+            value="privacy"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl"
+          >
             <Shield className="h-4 w-4 mr-2" />
             Privacy
           </TabsTrigger>
-          <TabsTrigger value="games" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white">
+          <TabsTrigger
+            value="games"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl"
+          >
             <Gamepad2 className="h-4 w-4 mr-2" />
             Games
           </TabsTrigger>
