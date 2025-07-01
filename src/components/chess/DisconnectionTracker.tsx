@@ -34,11 +34,7 @@ export const DisconnectionTracker: React.FC<DisconnectionTrackerProps> = ({
 
   const cleanup = useCallback(() => {
     if (presenceChannelRef.current) {
-      try {
-        supabase.removeChannel(presenceChannelRef.current);
-      } catch (error) {
-        console.warn("Error removing presence channel:", error);
-      }
+      supabase.removeChannel(presenceChannelRef.current);
       presenceChannelRef.current = null;
     }
     if (heartbeatIntervalRef.current) {
@@ -94,99 +90,92 @@ export const DisconnectionTracker: React.FC<DisconnectionTrackerProps> = ({
 
     console.log('Setting up presence tracking for game:', gameId, 'user:', currentUser);
 
-    try {
-      const channel = supabase
-        .channel(`presence-${gameId}`, {
-          config: {
-            presence: {
-              key: currentUser
-            }
-          }
-        })
-        .on('presence', { event: 'sync' }, () => {
-          console.log('Presence sync - connection restored');
-          setConnectionStatus('connected');
-          setShowDisconnectionWarning(false);
-          
-          if (disconnectionTimerRef.current) {
-            clearTimeout(disconnectionTimerRef.current);
-            disconnectionTimerRef.current = null;
-          }
-          if (countdownIntervalRef.current) {
-            clearInterval(countdownIntervalRef.current);
-            countdownIntervalRef.current = null;
-          }
-        })
-        .on('presence', { event: 'join' }, ({ newPresences }) => {
-          console.log('Player joined presence:', newPresences);
-          setConnectionStatus('connected');
-        })
-        .on('presence', { event: 'leave' }, ({ leftPresences }) => {
-          try {
-            console.log('Player left presence:', leftPresences);
-            const leftUser = leftPresences[0];
-            if (leftUser && 
-                (leftUser.user_id === whitePlayerId || leftUser.user_id === blackPlayerId) &&
-                leftUser.user_id !== currentUser) {
-              console.log('Starting disconnection timer for player:', leftUser.user_id);
-              startDisconnectionTimer(leftUser.user_id);
-            }
-          } catch (error) {
-            console.error('Error handling presence leave:', error);
-          }
-        })
-        .subscribe(async (status) => {
-          console.log('Presence channel status:', status);
-          
-          if (status === 'SUBSCRIBED') {
-            console.log('Successfully subscribed to presence channel');
-            try {
-              await channel.track({
-                user_id: currentUser,
-                online_at: new Date().toISOString(),
-                game_id: gameId
-              });
-              setConnectionStatus('connected');
-            } catch (error) {
-              console.error('Error tracking presence:', error);
-            }
-          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
-            console.log('Presence channel error, attempting reconnection...');
-            setConnectionStatus('reconnecting');
-            
-            if (reconnectTimeoutRef.current) {
-              clearTimeout(reconnectTimeoutRef.current);
-            }
-            
-            reconnectTimeoutRef.current = setTimeout(() => {
-              console.log('Retrying presence connection...');
-              setupPresenceTracking();
-            }, 5000);
-          }
-        });
-
-      presenceChannelRef.current = channel;
-
-      heartbeatIntervalRef.current = setInterval(async () => {
-        if (channel && navigator.onLine) {
-          try {
-            await channel.track({
-              user_id: currentUser,
-              online_at: new Date().toISOString(),
-              game_id: gameId,
-              heartbeat: Date.now()
-            });
-            console.log('Heartbeat sent successfully');
-          } catch (error) {
-            console.error('Heartbeat error:', error);
-            setConnectionStatus('reconnecting');
+    const channel = supabase
+      .channel(`presence-${gameId}`, {
+        config: {
+          presence: {
+            key: currentUser
           }
         }
-      }, 20000);
-    } catch (error) {
-      console.error('Error setting up presence tracking:', error);
-      setConnectionStatus('disconnected');
-    }
+      })
+      .on('presence', { event: 'sync' }, () => {
+        console.log('Presence sync - connection restored');
+        setConnectionStatus('connected');
+        setShowDisconnectionWarning(false);
+        
+        if (disconnectionTimerRef.current) {
+          clearTimeout(disconnectionTimerRef.current);
+          disconnectionTimerRef.current = null;
+        }
+        if (countdownIntervalRef.current) {
+          clearInterval(countdownIntervalRef.current);
+          countdownIntervalRef.current = null;
+        }
+      })
+      .on('presence', { event: 'join' }, ({ newPresences }) => {
+        console.log('Player joined presence:', newPresences);
+        setConnectionStatus('connected');
+      })
+      .on('presence', { event: 'leave' }, ({ leftPresences }) => {
+        try {
+          console.log('Player left presence:', leftPresences);
+          const leftUser = leftPresences[0];
+          if (leftUser && 
+              (leftUser.user_id === whitePlayerId || leftUser.user_id === blackPlayerId) &&
+              leftUser.user_id !== currentUser) {
+            console.log('Starting disconnection timer for player:', leftUser.user_id);
+            startDisconnectionTimer(leftUser.user_id);
+          }
+        } catch (error) {
+          console.error('Error handling presence leave:', error);
+        }
+      })
+      .subscribe(async (status) => {
+        console.log('Presence channel status:', status);
+        
+        if (status === 'SUBSCRIBED') {
+          console.log('Successfully subscribed to presence channel');
+          await channel.track({
+            user_id: currentUser,
+            online_at: new Date().toISOString(),
+            game_id: gameId
+          });
+          setConnectionStatus('connected');
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+          console.log('Presence channel error, attempting reconnection...');
+          setConnectionStatus('reconnecting');
+          
+          // Exponential backoff retry
+          if (reconnectTimeoutRef.current) {
+            clearTimeout(reconnectTimeoutRef.current);
+          }
+          
+          reconnectTimeoutRef.current = setTimeout(() => {
+            console.log('Retrying presence connection...');
+            setupPresenceTracking();
+          }, 5000);
+        }
+      });
+
+    presenceChannelRef.current = channel;
+
+    // Heartbeat with better error handling
+    heartbeatIntervalRef.current = setInterval(async () => {
+      if (channel && navigator.onLine) {
+        try {
+          await channel.track({
+            user_id: currentUser,
+            online_at: new Date().toISOString(),
+            game_id: gameId,
+            heartbeat: Date.now()
+          });
+          console.log('Heartbeat sent successfully');
+        } catch (error) {
+          console.error('Heartbeat error:', error);
+          setConnectionStatus('reconnecting');
+        }
+      }
+    }, 20000); // Every 20 seconds
   }, [gameId, currentUser, gameStatus, whitePlayerId, blackPlayerId, startDisconnectionTimer, cleanup]);
 
   useEffect(() => {
@@ -202,9 +191,11 @@ export const DisconnectionTracker: React.FC<DisconnectionTrackerProps> = ({
       cleanup();
     };
 
+    // Network status listeners
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
+    // Initial setup
     if (navigator.onLine && currentUser && gameStatus === 'active') {
       setupPresenceTracking();
     } else if (!navigator.onLine) {
@@ -220,6 +211,7 @@ export const DisconnectionTracker: React.FC<DisconnectionTrackerProps> = ({
 
   return (
     <>
+      {/* Connection Status Indicator */}
       <div className="flex items-center gap-1 text-xs">
         {connectionStatus === 'connected' ? (
           <>
@@ -239,6 +231,7 @@ export const DisconnectionTracker: React.FC<DisconnectionTrackerProps> = ({
         )}
       </div>
 
+      {/* Disconnection Warning Dialog */}
       <Dialog open={showDisconnectionWarning} onOpenChange={() => {}}>
         <DialogContent className="text-center w-[90vw] max-w-xs mx-auto bg-gradient-to-br from-orange-900 to-red-900 border-2 border-orange-400 rounded-xl">
           <DialogHeader>

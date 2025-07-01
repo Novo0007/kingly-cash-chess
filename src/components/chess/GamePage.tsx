@@ -1,683 +1,868 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { ChessBoard } from './ChessBoard';
-import { TimeControl } from './TimeControl';
-import { ChatSystem } from '@/components/chat/ChatSystem';
-import { GameReactions } from './GameReactions';
-import { MobileGameReactions } from './MobileGameReactions';
-import { DisconnectionTracker } from './DisconnectionTracker';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  Trophy, 
-  Users, 
-  Clock, 
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { ChessBoard } from "./ChessBoard";
+import { ChatSystem } from "../chat/ChatSystem";
+import { MobileGameReactions } from "./MobileGameReactions";
+import { GameReactions } from "./GameReactions";
+import { TimeControl } from "./TimeControl";
+import { DisconnectionTracker } from "./DisconnectionTracker";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import {
   Crown,
+  Clock,
   ArrowLeft,
-  User
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { Chess } from 'chess.js';
-import { MobileContainer } from '@/components/layout/MobileContainer';
-import { useDeviceType } from '@/hooks/use-mobile';
-import type { Tables } from '@/integrations/supabase/types';
+  Users,
+  Lock,
+  Trophy,
+  Handshake,
+  Zap,
+  MessageSquare,
+} from "lucide-react";
+import { useDeviceType } from "@/hooks/use-mobile";
+import { Chess } from "chess.js";
+import type { Tables } from "@/integrations/supabase/types";
 
-interface GameData extends Tables<'chess_games'> {
-  white_player?: { 
-    username: string; 
-    chess_rating: number; 
-    avatar_url?: string;
-  };
-  black_player?: { 
-    username: string; 
-    chess_rating: number; 
-    avatar_url?: string;
-  };
-  white_time_updated_at?: string;
-  black_time_updated_at?: string;
-}
+type Profile = Tables<"profiles">;
+type ChessGame = Tables<"chess_games"> & {
+  white_player?: Profile | null;
+  black_player?: Profile | null;
+};
 
 interface GamePageProps {
-  gameId?: string;
-  onBack?: () => void;
+  gameId: string;
+  onBackToLobby: () => void;
 }
 
-export const GamePage = ({ gameId: propGameId, onBack }: GamePageProps) => {
-  const [game, setGame] = useState<GameData | null>(null);
+export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
+  const [game, setGame] = useState<ChessGame | null>(null);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [timeRemaining, setTimeRemaining] = useState<{white: number, black: number}>({white: 600, black: 600});
-  const [isPlayerTurn, setIsPlayerTurn] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [gameEnded, setGameEnded] = useState(false);
+  const [gamePassword, setGamePassword] = useState("");
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [showGameEndDialog, setShowGameEndDialog] = useState(false);
-  const [gameResult, setGameResult] = useState<string | null>(null);
-  const [winner, setWinner] = useState<string | null>(null);
-  const [endReason, setEndReason] = useState<string>('');
-  const [showMobileReactions, setShowMobileReactions] = useState(false);
-  const [gameEndProcessed, setGameEndProcessed] = useState(false);
-  
-  const { gameId: urlGameId } = useParams();
-  const navigate = useNavigate();
+  const [gameEndMessage, setGameEndMessage] = useState("");
+  const [gameEndType, setGameEndType] = useState<"win" | "draw" | "disconnect">("win");
+  const [showMobileChat, setShowMobileChat] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const { isMobile } = useDeviceType();
-  const gameSubscriptionRef = useRef<any>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Use prop gameId first, fallback to URL parameter
-  const gameId = propGameId || urlGameId;
-
-  const handleBack = useCallback(() => {
-    if (onBack) {
-      onBack();
-    } else {
-      navigate('/');
-    }
-  }, [onBack, navigate]);
 
   useEffect(() => {
-    // Check if gameId is valid before proceeding
-    if (!gameId || gameId === 'undefined') {
-      console.error('Invalid gameId:', gameId);
-      toast.error('Invalid game ID');
-      handleBack();
-      return;
-    }
-    
+    getCurrentUser();
     fetchGame();
-    fetchUser();
-  }, [gameId, handleBack]);
 
-  useEffect(() => {
-    if (game && currentUser) {
-      const playerColor = game.white_player_id === currentUser ? 'white' : 'black';
-      const isWhiteTurn = game.current_turn === 'white';
-      const isBlackTurn = game.current_turn === 'black';
-      setIsPlayerTurn(
-        (playerColor === 'white' && isWhiteTurn) ||
-        (playerColor === 'black' && isBlackTurn)
-      );
-    }
-  }, [game, currentUser]);
-
-  useEffect(() => {
-    if (game && gameStarted && !gameEnded) {
-      setupTimeTracking();
-    }
-    return () => clearInterval(intervalRef.current || null);
-  }, [game, gameStarted, gameEnded]);
-
-  useEffect(() => {
-    if (gameId && currentUser) {
-      subscribeToGameChanges();
-    }
-    return () => {
-      if (gameSubscriptionRef.current) {
-        supabase.removeChannel(gameSubscriptionRef.current);
+    // Improved refresh intervals - less aggressive polling
+    const refreshInterval = isMobile ? 5000 : 4000; // Reduced frequency
+    const autoRefreshInterval = setInterval(() => {
+      if (!loading && !isUpdating) {
+        fetchGame();
       }
-      clearInterval(intervalRef.current || null);
-    };
-  }, [gameId, currentUser]);
+    }, refreshInterval);
 
-  const fetchGame = async () => {
-    // Early return if gameId is invalid
-    if (!gameId || gameId === 'undefined') {
-      console.error('Cannot fetch game: invalid gameId');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      
-      // First, fetch the game data
-      const { data: gameData, error: gameError } = await supabase
-        .from('chess_games')
-        .select('*')
-        .eq('id', gameId)
-        .single();
-
-      if (gameError) {
-        console.error('Error fetching game data:', gameError);
-        throw gameError;
-      }
-      
-      // Then, fetch the player data separately
-      const whitePlayerPromise = gameData.white_player_id ? 
-        supabase
-          .from('profiles')
-          .select('username, chess_rating, avatar_url')
-          .eq('id', gameData.white_player_id)
-          .single() : 
-        Promise.resolve({ data: null, error: null });
-
-      const blackPlayerPromise = gameData.black_player_id ? 
-        supabase
-          .from('profiles')
-          .select('username, chess_rating, avatar_url')
-          .eq('id', gameData.black_player_id)
-          .single() : 
-        Promise.resolve({ data: null, error: null });
-
-      const [whitePlayerResult, blackPlayerResult] = await Promise.all([
-        whitePlayerPromise,
-        blackPlayerPromise
-      ]);
-
-      const completeGameData: GameData = {
-        ...gameData,
-        white_player: whitePlayerResult.data,
-        black_player: blackPlayerResult.data,
-        white_time_updated_at: gameData.updated_at,
-        black_time_updated_at: gameData.updated_at
-      };
-      
-      setGame(completeGameData);
-      
-      // Set initial time remaining based on game data
-      setTimeRemaining({
-        white: gameData.white_time_remaining || 600,
-        black: gameData.black_time_remaining || 600
+    const gameSubscription = supabase
+      .channel(`game_${gameId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "chess_games",
+          filter: `id=eq.${gameId}`,
+        },
+        (payload) => {
+          console.log("Real-time game update received:", payload);
+          if (payload.new) {
+            // Immediate update for real-time changes
+            fetchGame();
+          }
+        },
+      )
+      .subscribe((status) => {
+        console.log("Game subscription status:", status);
       });
 
-      setGameStarted(gameData.game_status !== 'waiting');
+    return () => {
+      clearInterval(autoRefreshInterval);
+      supabase.removeChannel(gameSubscription);
+    };
+  }, [gameId, loading, isUpdating, isMobile]);
+
+  const getCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setCurrentUser(user?.id || null);
+  };
+
+  const handleTimeUp = async (player: 'white' | 'black') => {
+    if (!game || game.game_status !== 'active') return;
+
+    const winnerId = player === 'white' ? game.black_player_id : game.white_player_id;
+    const loserId = player === 'white' ? game.white_player_id : game.black_player_id;
+
+    await completeGame(winnerId, loserId, player === 'white' ? 'black_wins' : 'white_wins');
+
+    setGameEndType("win");
+    setGameEndMessage(`${player === 'white' ? 'White' : 'Black'} ran out of time! ${player === 'white' ? 'Black' : 'White'} wins!`);
+    setShowGameEndDialog(true);
+    toast.success(`${player === 'white' ? 'Black' : 'White'} wins on time!`);
+  };
+
+  const handlePlayerDisconnected = async (playerId: string) => {
+    if (!game || game.game_status !== 'active') return;
+
+    const winnerId = playerId === game.white_player_id ? game.black_player_id : game.white_player_id;
+    
+    await completeGame(winnerId, playerId, 'abandoned');
+
+    setGameEndType("disconnect");
+    setGameEndMessage(playerId === currentUser ? "You forfeited the game!" : "Opponent forfeited! You win!");
+    setShowGameEndDialog(true);
+    toast.success("Game won by forfeit!");
+  };
+
+  const completeGame = async (
+    winnerId: string | null,
+    loserId: string | null,
+    gameResult: "white_wins" | "black_wins" | "draw" | "abandoned",
+  ) => {
+    if (!game) return;
+
+    try {
+      const { error: gameError } = await supabase
+        .from("chess_games")
+        .update({
+          game_status: "completed" as any,
+          winner_id: winnerId,
+          game_result: gameResult as any,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", gameId);
+
+      if (gameError) {
+        console.error("Error updating game:", gameError);
+        return;
+      }
+
+      // Update player statistics and process winnings
+      const promises = [];
+
+      // Update winner's stats and add winnings
+      if (winnerId) {
+        // Get current winner stats
+        const { data: winnerProfile } = await supabase
+          .from("profiles")
+          .select("games_played, games_won, total_earnings")
+          .eq("id", winnerId)
+          .single();
+
+        if (winnerProfile) {
+          // Update winner's profile
+          promises.push(
+            supabase
+              .from("profiles")
+              .update({
+                games_played: (winnerProfile.games_played || 0) + 1,
+                games_won: (winnerProfile.games_won || 0) + 1,
+                total_earnings:
+                  (winnerProfile.total_earnings || 0) + game.prize_amount,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("id", winnerId),
+          );
+        }
+
+        // Get current wallet balance
+        const { data: winnerWallet } = await supabase
+          .from("wallets")
+          .select("balance")
+          .eq("user_id", winnerId)
+          .single();
+
+        if (winnerWallet) {
+          // Add winnings to wallet
+          promises.push(
+            supabase
+              .from("wallets")
+              .update({
+                balance: (winnerWallet.balance || 0) + game.prize_amount,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("user_id", winnerId),
+          );
+        }
+
+        // Create winning transaction
+        promises.push(
+          supabase.from("transactions").insert({
+            user_id: winnerId,
+            transaction_type: "game_winning",
+            amount: game.prize_amount,
+            status: "completed",
+            description: `Won game: ${game.game_name || "Chess Game"}`,
+          }),
+        );
+      }
+
+      // Update loser's stats (only games played)
+      if (loserId) {
+        const { data: loserProfile } = await supabase
+          .from("profiles")
+          .select("games_played")
+          .eq("id", loserId)
+          .single();
+
+        if (loserProfile) {
+          promises.push(
+            supabase
+              .from("profiles")
+              .update({
+                games_played: (loserProfile.games_played || 0) + 1,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("id", loserId),
+          );
+        }
+      }
+
+      // If it's a draw, update both players' stats
+      if (
+        gameResult === "draw" &&
+        game.white_player_id &&
+        game.black_player_id
+      ) {
+        // Get both players' current stats
+        const { data: whiteProfile } = await supabase
+          .from("profiles")
+          .select("games_played")
+          .eq("id", game.white_player_id)
+          .single();
+
+        const { data: blackProfile } = await supabase
+          .from("profiles")
+          .select("games_played")
+          .eq("id", game.black_player_id)
+          .single();
+
+        // Update both players' games played
+        if (whiteProfile) {
+          promises.push(
+            supabase
+              .from("profiles")
+              .update({
+                games_played: (whiteProfile.games_played || 0) + 1,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("id", game.white_player_id),
+          );
+        }
+
+        if (blackProfile) {
+          promises.push(
+            supabase
+              .from("profiles")
+              .update({
+                games_played: (blackProfile.games_played || 0) + 1,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("id", game.black_player_id),
+          );
+        }
+
+        // Get both players' wallet balances
+        const { data: whiteWallet } = await supabase
+          .from("wallets")
+          .select("balance")
+          .eq("user_id", game.white_player_id)
+          .single();
+
+        const { data: blackWallet } = await supabase
+          .from("wallets")
+          .select("balance")
+          .eq("user_id", game.black_player_id)
+          .single();
+
+        // Return entry fees to both players
+        const refundAmount = game.entry_fee;
+
+        if (whiteWallet) {
+          promises.push(
+            supabase
+              .from("wallets")
+              .update({
+                balance: (whiteWallet.balance || 0) + refundAmount,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("user_id", game.white_player_id),
+          );
+        }
+
+        if (blackWallet) {
+          promises.push(
+            supabase
+              .from("wallets")
+              .update({
+                balance: (blackWallet.balance || 0) + refundAmount,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("user_id", game.black_player_id),
+          );
+        }
+
+        // Create refund transactions
+        promises.push(
+          supabase.from("transactions").insert({
+            user_id: game.white_player_id,
+            transaction_type: "refund",
+            amount: refundAmount,
+            status: "completed",
+            description: `Draw refund: ${game.game_name || "Chess Game"}`,
+          }),
+        );
+        promises.push(
+          supabase.from("transactions").insert({
+            user_id: game.black_player_id,
+            transaction_type: "refund",
+            amount: refundAmount,
+            status: "completed",
+            description: `Draw refund: ${game.game_name || "Chess Game"}`,
+          }),
+        );
+      }
+
+      await Promise.all(promises);
+      console.log("Game completion processing finished successfully");
     } catch (error) {
-      console.error('Error fetching game:', error);
-      toast.error('Failed to load game');
-      // Redirect back after a delay
-      setTimeout(() => handleBack(), 2000);
+      console.error("Error processing game completion:", error);
+    }
+  };
+
+  const fetchGame = async () => {
+    if (isUpdating) return; // Prevent concurrent updates
+    
+    try {
+      console.log("Fetching game data for:", gameId);
+      const { data: gameData, error } = await supabase
+        .from("chess_games")
+        .select("*")
+        .eq("id", gameId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching game:", error);
+        toast.error("Error loading game");
+        return;
+      }
+
+      const gameWithPlayers: ChessGame = { ...gameData };
+
+      // Fetch player data in parallel for faster loading
+      const playerPromises = [];
+      
+      if (gameData.white_player_id) {
+        playerPromises.push(
+          supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", gameData.white_player_id)
+            .single()
+            .then(({ data }) => ({ type: 'white', data }))
+        );
+      }
+
+      if (gameData.black_player_id) {
+        playerPromises.push(
+          supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", gameData.black_player_id)
+            .single()
+            .then(({ data }) => ({ type: 'black', data }))
+        );
+      }
+
+      const playerResults = await Promise.all(playerPromises);
+      
+      playerResults.forEach(result => {
+        if (result.type === 'white') {
+          gameWithPlayers.white_player = result.data;
+        } else {
+          gameWithPlayers.black_player = result.data;
+        }
+      });
+
+      setGame(gameWithPlayers);
+
+      // Check for game end conditions
+      if (gameWithPlayers.game_status === "completed" && !showGameEndDialog) {
+        let message = "";
+        let type: "win" | "draw" | "disconnect" = "win";
+
+        if (gameWithPlayers.game_result === "draw") {
+          message = "Game ended in a draw!";
+          type = "draw";
+        } else if (gameWithPlayers.game_result === "abandoned") {
+          message =
+            gameWithPlayers.winner_id === currentUser
+              ? "Opponent abandoned the game. You win!"
+              : "You abandoned the game. Opponent wins!";
+          type = "disconnect";
+        } else if (gameWithPlayers.winner_id === currentUser) {
+          message = "Congratulations! You won! 🎉";
+          type = "win";
+        } else {
+          message = "Game over. Better luck next time!";
+          type = "win";
+        }
+
+        setGameEndMessage(message);
+        setGameEndType(type);
+        setShowGameEndDialog(true);
+      }
+
+      // Auto-start game if both players are present and status is still waiting
+      if (
+        gameWithPlayers.game_status === "waiting" &&
+        gameWithPlayers.white_player_id &&
+        gameWithPlayers.black_player_id
+      ) {
+        console.log("Both players present, starting game...");
+        await supabase
+          .from("chess_games")
+          .update({
+            game_status: "active" as any,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", gameId);
+      }
+    } catch (error) {
+      console.error("Error fetching game:", error);
+      toast.error("Error loading game");
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchUser = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setCurrentUser(user.id);
-      }
-    } catch (error) {
-      console.error('Error fetching user:', error);
-    }
-  };
+  const handlePasswordSubmit = async () => {
+    if (!game) return;
 
-  const subscribeToGameChanges = () => {
-    if (!gameId) return;
-
-    gameSubscriptionRef.current = supabase
-      .channel('game_changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'chess_games', filter: `id=eq.${gameId}` },
-        (payload) => {
-          console.log('Change received!', payload);
-          if (payload.new) {
-            const updatedGame = payload.new as GameData;
-            setGame(prevGame => ({
-              ...updatedGame,
-              white_player: prevGame?.white_player,
-              black_player: prevGame?.black_player,
-              white_time_updated_at: updatedGame.updated_at,
-              black_time_updated_at: updatedGame.updated_at
-            }));
-
-            // Update time remaining if available
-            setTimeRemaining({
-              white: updatedGame.white_time_remaining || 0,
-              black: updatedGame.black_time_remaining || 0
-            });
-
-            setGameStarted(updatedGame.game_status !== 'waiting');
-          }
-        }
-      )
-      .subscribe();
-  };
-
-  const setupTimeTracking = () => {
-    if (!game || gameEnded) return;
-
-    clearInterval(intervalRef.current || null);
-
-    intervalRef.current = setInterval(() => {
-      if (!game || gameEnded) {
-        clearInterval(intervalRef.current || null);
-        return;
-      }
-
-      const now = Date.now();
-      const whiteLastUpdate = new Date(game.white_time_updated_at || game.created_at).getTime();
-      const blackLastUpdate = new Date(game.black_time_updated_at || game.created_at).getTime();
-
-      const whiteElapsedTime = game.current_turn === 'white' ? (now - whiteLastUpdate) / 1000 : 0;
-      const blackElapsedTime = game.current_turn === 'black' ? (now - blackLastUpdate) / 1000 : 0;
-
-      const newWhiteTime = Math.max(0, game.white_time_remaining! - whiteElapsedTime);
-      const newBlackTime = Math.max(0, game.black_time_remaining! - blackElapsedTime);
-
-      setTimeRemaining({
-        white: newWhiteTime,
-        black: newBlackTime
-      });
-
-      if (newWhiteTime <= 0 || newBlackTime <= 0) {
-        const winner = newWhiteTime <= 0 ? 'black' : 'white';
-        handleGameEnd(`${winner}_wins` as any, winner, 'Time out');
-        clearInterval(intervalRef.current || null);
-      }
-    }, 250);
-  };
-
-  const handleGameEnd = async (result: 'white_wins' | 'black_wins' | 'draw', winnerType: 'white' | 'black' | 'draw', reason: string = '') => {
-    if (!game || !currentUser || gameEndProcessed) return;
-    
-    console.log('Game ending with result:', result, 'winner:', winnerType, 'reason:', reason);
-    setGameEndProcessed(true);
-    
-    try {
-      const chess = new Chess();
-      if (game.board_state) {
-        chess.load(game.board_state);
-      }
-      
-      let winnerId = null;
-      let gameResult = result;
-      
-      if (winnerType === 'white') {
-        winnerId = game.white_player_id;
-        gameResult = 'white_wins';
-      } else if (winnerType === 'black') {
-        winnerId = game.black_player_id;
-        gameResult = 'black_wins';
-      } else {
-        gameResult = 'draw';
-      }
-
-      console.log('Updating game with result:', gameResult, 'winner:', winnerId);
-      
-      // Update game status
-      const { error: gameError } = await supabase
-        .from('chess_games')
-        .update({
-          game_status: 'completed',
-          game_result: gameResult,
-          winner_id: winnerId,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', game.id);
-
-      if (gameError) {
-        console.error('Error updating game:', gameError);
-        throw gameError;
-      }
-
-      // Update player statistics
-      const whitePlayerId = game.white_player_id;
-      const blackPlayerId = game.black_player_id;
-      
-      if (whitePlayerId && blackPlayerId) {
-        // Update games played for both players
-        await Promise.all([
-          supabase.rpc('increment', {
-            table_name: 'profiles',
-            row_id: whitePlayerId,
-            column_name: 'games_played',
-            increment_value: 1
-          }),
-          supabase.rpc('increment', {
-            table_name: 'profiles',
-            row_id: blackPlayerId,
-            column_name: 'games_played',
-            increment_value: 1
-          })
-        ]);
-
-        // Update winner's games won count
-        if (winnerId) {
-          await supabase.rpc('increment', {
-            table_name: 'profiles',
-            row_id: winnerId,
-            column_name: 'games_won',
-            increment_value: 1
-          });
-        }
-
-        // Handle prize money if there's an entry fee
-        if (game.entry_fee > 0 && winnerId && game.prize_amount > 0) {
-          console.log('Processing prize money:', game.prize_amount, 'for winner:', winnerId);
-          
-          // Add prize money to winner's wallet
-          const { error: walletError } = await supabase.rpc('increment_decimal', {
-            table_name: 'wallets',
-            row_id: winnerId,
-            column_name: 'balance',
-            increment_value: game.prize_amount
-          });
-
-          if (walletError) {
-            console.error('Error updating winner wallet:', walletError);
-          } else {
-            console.log('Prize money added to winner wallet successfully');
-            
-            // Create transaction record for the prize
-            const { error: txError } = await supabase
-              .from('transactions')
-              .insert({
-                user_id: winnerId,
-                transaction_type: 'game_winning',
-                amount: game.prize_amount,
-                status: 'completed',
-                description: `Prize money from chess game: ${game.game_name || 'Chess Game'}`
-              });
-
-            if (txError) {
-              console.error('Error creating prize transaction:', txError);
-            }
-
-            // Update winner's total earnings
-            const { error: earningsError } = await supabase.rpc('increment_decimal', {
-              table_name: 'profiles',
-              row_id: winnerId,
-              column_name: 'total_earnings',
-              increment_value: game.prize_amount
-            });
-
-            if (earningsError) {
-              console.error('Error updating total earnings:', earningsError);
-            }
-          }
-        }
-      }
-
-      // Set game end state
-      setGameEnded(true);
-      setGameResult(gameResult);
-      setWinner(winnerId);
-      setEndReason(reason);
-      setShowGameEndDialog(true);
-      
-      // Show success message to winner
-      if (winnerId === currentUser) {
-        if (game.entry_fee > 0) {
-          toast.success(`🎉 You won! Prize money ₹${game.prize_amount} has been added to your wallet!`);
-        } else {
-          toast.success('🎉 Congratulations! You won the game!');
-        }
-      } else if (winnerId) {
-        toast.info('Game ended. Better luck next time!');
-      } else {
-        toast.info('Game ended in a draw!');
-      }
-
-    } catch (error) {
-      console.error('Error ending game:', error);
-      toast.error('Error ending game. Please try again.');
-      setGameEndProcessed(false);
+    // For demo purposes, accept any password. In production, you'd verify against a stored hash
+    if (gamePassword.length >= 4) {
+      setShowPasswordDialog(false);
+      toast.success("Password accepted!");
+    } else {
+      toast.error("Password must be at least 4 characters");
     }
   };
 
   const handleMove = async (from: string, to: string, promotion?: string) => {
-    if (!game || !currentUser || gameEnded) return;
+    if (!game || !currentUser || isUpdating) {
+      console.log("No game, user found, or update in progress");
+      return;
+    }
+
+    setIsUpdating(true);
+
+    const isWhitePlayer = currentUser === game.white_player_id;
+    const isBlackPlayer = currentUser === game.black_player_id;
+
+    if (!isWhitePlayer && !isBlackPlayer) {
+      toast.error("You are not a player in this game");
+      setIsUpdating(false);
+      return;
+    }
+
+    const isPlayerTurn =
+      (game.current_turn === "white" && isWhitePlayer) ||
+      (game.current_turn === "black" && isBlackPlayer);
+
+    if (!isPlayerTurn) {
+      toast.error("Not your turn");
+      setIsUpdating(false);
+      return;
+    }
+
+    if (game.game_status !== "active") {
+      if (game.game_status === "waiting") {
+        toast.error("Waiting for another player to join");
+      } else {
+        toast.error("Game is not active");
+      }
+      setIsUpdating(false);
+      return;
+    }
 
     try {
-      const chess = new Chess();
-      if (game.board_state) {
-        chess.load(game.board_state);
+      const chess = new Chess(game.board_state || undefined);
+      const moves = chess.moves({ verbose: true });
+      let validMove = moves.find((m) => m.from === from && m.to === to);
+
+      if (!validMove && promotion) {
+        validMove = moves.find(
+          (m) => m.from === from && m.to === to && m.promotion === promotion,
+        );
       }
 
-      const move = promotion ? { from, to, promotion } : { from, to };
-      const result = chess.move(move);
-      if (!result) {
-        toast.error('Invalid move');
+      if (!validMove) {
+        toast.error("Invalid move");
+        setIsUpdating(false);
         return;
       }
 
-      const newFen = chess.fen();
-      const isWhiteTurn = chess.turn() === 'w';
-      const newTurn = isWhiteTurn ? 'white' : 'black';
+      const moveOptions: { from: string; to: string; promotion?: string } = { from, to };
+      if (promotion) {
+        moveOptions.promotion = promotion;
+      }
 
-      // Optimistically update the UI
-      setGame(prevGame => ({
-        ...prevGame!,
-        board_state: newFen,
-        current_turn: newTurn,
-        move_history: [...(prevGame?.move_history || []), result.san],
-        white_time_updated_at: new Date().toISOString(),
-        black_time_updated_at: new Date().toISOString()
-      }));
+      const move = chess.move(moveOptions);
+      if (!move) {
+        toast.error("Move failed");
+        setIsUpdating(false);
+        return;
+      }
 
-      // Persist the move to the database
-      const { data, error } = await supabase
-        .from('chess_games')
+      const moveNotation = promotion ? `${from}-${to}=${promotion}` : `${from}-${to}`;
+      const newMoveHistory = [...(game.move_history || []), moveNotation];
+      const nextTurn = game.current_turn === "white" ? "black" : "white";
+      const newBoardState = chess.fen();
+
+      // Minimal time deduction per move - preserve most of the time
+      const timeUsed = 3; // Only 3 seconds per move
+      const newWhiteTime = game.current_turn === "white" 
+        ? Math.max(0, (game.white_time_remaining || 600) - timeUsed)
+        : game.white_time_remaining || 600;
+      const newBlackTime = game.current_turn === "black" 
+        ? Math.max(0, (game.black_time_remaining || 600) - timeUsed)
+        : game.black_time_remaining || 600;
+
+      let gameStatus: "waiting" | "active" | "completed" | "cancelled" = game.game_status;
+      let winnerId = null;
+      let gameResult = null;
+
+      // Enhanced move feedback
+      if (move.captured) {
+        toast.success(`Captured ${move.captured}! Great move! 🎯`);
+      } else if (chess.isCheck()) {
+        toast.info(`Check! ${nextTurn === "white" ? "White" : "Black"} king in danger! ⚠️`);
+      } else {
+        toast.success("Nice move! 👍");
+      }
+
+      // Check for time flag
+      if (newWhiteTime <= 0 || newBlackTime <= 0) {
+        gameStatus = "completed";
+        winnerId = newWhiteTime <= 0 ? game.black_player_id : game.white_player_id;
+        gameResult = newWhiteTime <= 0 ? "black_wins" : "white_wins";
+        toast.success(`${newWhiteTime <= 0 ? "White" : "Black"} flagged! ${newWhiteTime <= 0 ? "Black" : "White"} wins!`);
+      } else if (chess.isCheckmate()) {
+        gameStatus = "completed";
+        winnerId = game.current_turn === "white" ? game.white_player_id : game.black_player_id;
+        gameResult = game.current_turn === "white" ? "white_wins" : "black_wins";
+        toast.success(`Checkmate! ${game.current_turn === "white" ? "White" : "Black"} wins! 🏆`);
+      } else if (chess.isDraw()) {
+        gameStatus = "completed";
+        gameResult = "draw";
+        toast.success("Game ended in a draw! 🤝");
+      }
+
+      // Optimistic update - update local state immediately
+      setGame(prevGame => {
+        if (!prevGame) return prevGame;
+        return {
+          ...prevGame,
+          move_history: newMoveHistory,
+          current_turn: nextTurn as any,
+          board_state: newBoardState,
+          white_time_remaining: newWhiteTime,
+          black_time_remaining: newBlackTime,
+          game_status: gameStatus as any,
+          winner_id: winnerId,
+          game_result: gameResult as any,
+        };
+      });
+
+      const { error } = await supabase
+        .from("chess_games")
         .update({
-          board_state: newFen,
-          current_turn: newTurn,
-          move_history: [...(game.move_history || []), result.san],
-          updated_at: new Date().toISOString()
+          move_history: newMoveHistory,
+          current_turn: nextTurn,
+          board_state: newBoardState,
+          white_time_remaining: newWhiteTime,
+          black_time_remaining: newBlackTime,
+          game_status: gameStatus as any,
+          winner_id: winnerId,
+          game_result: gameResult as any,
+          updated_at: new Date().toISOString(),
         })
-        .eq('id', game.id)
-        .select()
-        .single();
+        .eq("id", gameId);
 
       if (error) {
-        console.error('Error updating game:', error);
-        toast.error('Failed to make move. Please try again.');
-        setGame(game);
+        toast.error("Failed to make move");
+        console.error("Move error:", error);
+        // Revert optimistic update on error
+        fetchGame();
       } else {
-        console.log('Move persisted successfully:', data);
-        setIsPlayerTurn(isWhiteTurn ? game.white_player_id === currentUser : game.black_player_id === currentUser);
+        console.log("Move successfully saved to database");
       }
     } catch (error) {
-      console.error('Error making move:', error);
-      toast.error('Invalid move. Please try again.');
+      console.error("Error making move:", error);
+      toast.error("Failed to make move");
+      // Revert optimistic update on error
+      fetchGame();
+    } finally {
+      setIsUpdating(false);
     }
   };
 
-  const handleGiveUp = async () => {
-    if (!game || !currentUser || gameEnded) return;
-
-    const winnerType = game.white_player_id === currentUser ? 'black' : 'white';
-    await handleGameEnd(
-      `${winnerType}_wins` as any,
-      winnerType,
-      'Opponent gave up'
-    );
+  const isSpectator = () => {
+    if (!game || !currentUser) return true;
+    return currentUser !== game.white_player_id && currentUser !== game.black_player_id;
   };
-
-  const handleClaimDraw = async () => {
-    if (!game || !currentUser || gameEnded) return;
-
-    await handleGameEnd(
-      'draw',
-      'draw',
-      'Draw claimed'
-    );
-  };
-  
-  const handlePlayerDisconnected = useCallback(async (playerId: string) => {
-    if (!game || !currentUser || gameEnded) return;
-    
-    console.log('Player disconnected:', playerId);
-    
-    const isWhitePlayer = game.white_player_id === playerId;
-    const isBlackPlayer = game.black_player_id === playerId;
-    
-    if (isWhitePlayer || isBlackPlayer) {
-      const winnerType = isWhitePlayer ? 'black' : 'white';
-      await handleGameEnd(
-        `${winnerType}_wins` as any,
-        winnerType,
-        'Opponent disconnected'
-      );
-    }
-  }, [game, currentUser, gameEnded, handleGameEnd]);
 
   if (loading) {
     return (
-      <MobileContainer>
-        <div className="flex items-center justify-center p-8">
-          <div className="w-8 h-8 border-4 border-muted border-t-primary rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-white text-xl font-bold bg-gradient-to-r from-black to-purple-900 px-6 py-3 rounded-lg shadow-lg border-2 border-yellow-400">
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+            Loading Chess Game...
+          </div>
         </div>
-      </MobileContainer>
+      </div>
     );
   }
 
-  if (!game || !gameId) {
+  if (!game) {
     return (
-      <MobileContainer>
-        <Card className="bg-card border border-border rounded-2xl">
-          <CardContent className="p-6 text-center">
-            <p className="text-muted-foreground">Game not found</p>
-            <Button 
-              onClick={handleBack} 
-              className="mt-4"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-          </CardContent>
-        </Card>
-      </MobileContainer>
+      <div className="text-center pb-20">
+        <h2 className="text-2xl font-bold mb-4 text-white">Game Not Found</h2>
+        <Button
+          onClick={onBackToLobby}
+          className="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 font-bold text-lg px-6 py-3 rounded-lg border-2 border-yellow-400 text-white shadow-xl"
+        >
+          Back to Lobby
+        </Button>
+      </div>
     );
   }
 
-  const playerColor = game.white_player_id === currentUser ? 'white' : 'black';
-  const opponent = playerColor === 'white' ? game.black_player : game.white_player;
-  const isYourTurn = (game.current_turn === 'white' && playerColor === 'white') || (game.current_turn === 'black' && playerColor === 'black');
+  const playerCount = (game.white_player_id ? 1 : 0) + (game.black_player_id ? 1 : 0);
 
   return (
-    <MobileContainer>
+    <div className="space-y-2 sm:space-y-4 pb-20 sm:pb-24 px-1 sm:px-2">
       {/* Game End Dialog */}
-      {showGameEndDialog && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-          <Card className="bg-card border border-border rounded-2xl w-[90vw] max-w-md">
-            <CardHeader>
-              <CardTitle className="text-center text-xl font-bold">Game Over!</CardTitle>
-            </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              {gameResult === 'draw' ? (
-                <p className="text-center text-muted-foreground">The game ended in a draw.</p>
-              ) : (
-                <>
-                  {winner === currentUser ? (
-                    <div className="text-center">
-                      <Trophy className="h-10 w-10 mx-auto text-yellow-500 mb-2" />
-                      <p className="text-lg font-bold">Congratulations! You won!</p>
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <User className="h-10 w-10 mx-auto text-red-500 mb-2" />
-                      <p className="text-lg font-bold">You lost the game.</p>
-                    </div>
-                  )}
-                </>
-              )}
-              <p className="text-center text-muted-foreground">Reason: {endReason}</p>
-              <div className="flex justify-center">
-                <Button onClick={() => navigate('/')}>Back to Home</Button>
-              </div>
-            </CardContent>
-          </Card>
+      <Dialog open={showGameEndDialog} onOpenChange={setShowGameEndDialog}>
+        <DialogContent className="text-center w-[90vw] sm:w-[95vw] max-w-sm mx-auto bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl rounded-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-center gap-2 text-lg sm:text-xl text-white font-bold">
+              {gameEndType === "win" && <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />}
+              {gameEndType === "draw" && <Handshake className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />}
+              {gameEndType === "disconnect" && <Crown className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />}
+              Game Over!
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className={`text-sm sm:text-lg font-bold p-3 rounded-lg border-2 ${
+              gameEndType === "win" ? "text-yellow-300 bg-yellow-900/30 border-yellow-400" :
+              gameEndType === "draw" ? "text-purple-300 bg-purple-900/30 border-purple-400" :
+              "text-yellow-300 bg-yellow-900/30 border-yellow-400"
+            }`}>
+              {gameEndMessage}
+            </div>
+            <Button
+              onClick={() => {
+                setShowGameEndDialog(false);
+                onBackToLobby();
+              }}
+              className="w-full bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 font-bold text-sm sm:text-base py-2 rounded-lg border-2 border-yellow-400 text-white shadow-lg"
+            >
+              Return to Lobby
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Header with Connection Status - Mobile Optimized */}
+      <div className="flex items-center justify-between bg-gradient-to-r from-black to-purple-900 p-2 sm:p-3 rounded-lg shadow-lg border-2 border-yellow-400">
+        <Button
+          onClick={onBackToLobby}
+          variant="ghost"
+          className="text-white hover:bg-purple-800/50 font-bold text-xs sm:text-sm md:text-base px-2 sm:px-3 py-1 sm:py-2 rounded-lg border-2 border-yellow-400 hover:border-purple-400"
+        >
+          <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+          <span className="hidden sm:inline">Back</span>
+        </Button>
+        <div className="flex items-center gap-1 sm:gap-2">
+          <DisconnectionTracker
+            gameId={gameId}
+            currentUser={currentUser}
+            whitePlayerId={game.white_player_id}
+            blackPlayerId={game.black_player_id}
+            gameStatus={game.game_status}
+            onPlayerDisconnected={handlePlayerDisconnected}
+          />
+          <Badge className="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold px-1 sm:px-2 py-1 text-xs border-2 border-yellow-400 shadow-lg">
+            <Zap className="h-2 w-2 sm:h-3 sm:w-3 mr-1" />
+            {game.game_status}
+          </Badge>
+          <Badge className="bg-gradient-to-r from-yellow-600 to-yellow-800 text-black font-bold px-1 sm:px-2 py-1 text-xs border-2 border-white shadow-lg">
+            <Users className="h-2 w-2 sm:h-3 sm:w-3 mr-1" />
+            {playerCount}/2
+          </Badge>
+          {isMobile && (
+            <Button
+              onClick={() => setShowMobileChat(!showMobileChat)}
+              variant="ghost"
+              size="sm"
+              className="p-1 text-white border-2 border-yellow-400 hover:border-purple-400 hover:bg-purple-800/50"
+            >
+              <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Chat */}
+      {isMobile && showMobileChat && (
+        <div className="bg-gradient-to-br from-black to-purple-900 rounded-lg shadow-lg border-2 border-yellow-400 p-2">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-bold text-xs sm:text-sm text-white">Game Chat</h3>
+            <Button
+              onClick={() => setShowMobileChat(false)}
+              variant="ghost"
+              size="sm"
+              className="p-1 text-xs text-white hover:bg-purple-800/50"
+            >
+              Close
+            </Button>
+          </div>
+          <div className="h-32 sm:h-40">
+            <ChatSystem gameId={gameId} />
+          </div>
         </div>
       )}
 
-      <div className="space-y-4">
-        {/* Opponent Info */}
-        <Card className="bg-card border border-border rounded-2xl">
-          <CardContent className="p-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Avatar>
-                <AvatarImage src={opponent?.avatar_url || undefined} />
-                <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">
-                  {opponent?.username?.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="text-lg font-semibold">{opponent?.username}</p>
-                <p className="text-sm text-muted-foreground">Rating: {opponent?.chess_rating}</p>
-              </div>
+      {/* Time Controls - Show for active games with 10 minutes display */}
+      {game.game_status === 'active' && (
+        <TimeControl
+          whiteTime={game.white_time_remaining || 600}
+          blackTime={game.black_time_remaining || 600}
+          currentTurn={game.current_turn as 'white' | 'black'}
+          gameStatus={game.game_status}
+          onTimeUp={handleTimeUp}
+          isActive={!isSpectator()}
+        />
+      )}
+
+      {/* Game Info - Mobile Optimized */}
+      <Card className="bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl rounded-lg">
+        <CardHeader className="pb-1 sm:pb-2">
+          <CardTitle className="text-white flex items-center gap-2 text-sm sm:text-base md:text-lg font-bold">
+            <Crown className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-yellow-400" />
+            <span className="truncate text-xs sm:text-sm bg-gradient-to-r from-yellow-400 to-white bg-clip-text text-transparent">
+              {game.game_name || "Chess Game"}
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <div className="grid grid-cols-2 gap-1 sm:gap-2 text-white font-medium text-xs sm:text-sm">
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 sm:p-2 rounded border-2 border-white shadow-lg">
+              <p className="text-xs text-gray-400 font-medium">⚪ White</p>
+              <p className="font-bold truncate text-white text-xs sm:text-sm">
+                {game.white_player?.username || "Waiting..."}
+              </p>
             </div>
-            <DisconnectionTracker 
-              gameId={gameId}
-              currentUser={currentUser}
-              whitePlayerId={game.white_player_id}
-              blackPlayerId={game.black_player_id}
-              gameStatus={game.game_status}
-              onPlayerDisconnected={handlePlayerDisconnected}
-            />
-          </CardContent>
-        </Card>
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 sm:p-2 rounded border-2 border-white shadow-lg">
+              <p className="text-xs text-gray-400 font-medium">⚫ Black</p>
+              <p className="font-bold truncate text-white text-xs sm:text-sm">
+                {game.black_player?.username || "Waiting..."}
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-1 sm:gap-2 text-xs">
+            <div className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/30 p-1 sm:p-2 rounded border-2 border-yellow-400 text-center shadow-lg">
+              <p className="text-yellow-300 font-medium text-xs">Entry</p>
+              <p className="font-bold text-yellow-200 text-xs">₹{game.entry_fee}</p>
+            </div>
+            <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/30 p-1 sm:p-2 rounded border-2 border-purple-400 text-center shadow-lg">
+              <p className="text-purple-300 font-medium text-xs">Prize</p>
+              <p className="font-bold text-purple-200 text-xs">₹{game.prize_amount}</p>
+            </div>
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 sm:p-2 rounded border-2 border-white text-center shadow-lg">
+              <p className="text-gray-300 font-medium text-xs">Turn</p>
+              <p className="font-bold text-white text-xs">
+                {game.current_turn === "white" ? "⚪" : "⚫"}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Time Controls */}
-        <Card className="bg-card border border-border rounded-2xl">
-          <CardContent className="p-4 grid grid-cols-2 gap-4">
-            <TimeControl 
-              whiteTime={timeRemaining.white}
-              blackTime={timeRemaining.black}
-              currentTurn={game.current_turn === 'white' ? 'white' : 'black'}
-              gameStatus={game.game_status}
-              onTimeUp={(player) => {
-                const winnerType = player === 'white' ? 'black' : 'white';
-                handleGameEnd(`${winnerType}_wins` as any, winnerType, 'Time out');
-              }}
-              isActive={game.game_status === 'active' && !gameEnded}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Chess Board */}
-        <Card className="bg-card border border-border rounded-2xl">
-          <CardContent className="p-4">
-            <ChessBoard
-              fen={game.board_state || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'}
-              onMove={handleMove}
-              playerColor={playerColor}
-              disabled={!isYourTurn || gameEnded}
-              isPlayerTurn={isYourTurn && !gameEnded}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Game Actions */}
-        <Card className="bg-card border border-border rounded-2xl">
-          <CardContent className="p-4 flex items-center justify-around">
-            <Button onClick={handleGiveUp} disabled={gameEnded}>Give Up</Button>
-            <Button onClick={handleClaimDraw} disabled={gameEnded}>Claim Draw</Button>
-            {isMobile && (
-              <Button onClick={() => setShowMobileReactions(true)}>
-                Reactions
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Chat System */}
-        <Card className="bg-card border border-border rounded-2xl">
-          <CardHeader>
-            <CardTitle>Game Chat</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4">
-            <ChatSystem gameId={gameId} />
-          </CardContent>
-        </Card>
+      {/* Chess Board with Reactions */}
+      <div className="relative">
+        <div className="w-full" key={`${game.board_state}-${game.current_turn}-${Date.now()}`}>
+          <ChessBoard
+            fen={game.board_state}
+            onMove={handleMove}
+            playerColor={currentUser === game.white_player_id ? "white" : "black"}
+            disabled={game.game_status !== "active" || isSpectator() || isUpdating}
+            isPlayerTurn={
+              ((game.current_turn === "white" && currentUser === game.white_player_id) ||
+               (game.current_turn === "black" && currentUser === game.black_player_id)) &&
+              game.game_status === "active" && !isSpectator() && !isUpdating
+            }
+          />
+        </div>
+        
+        {/* Mobile-optimized Reactions */}
+        {game.game_status === "active" && !isSpectator() && (
+          <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 z-30">
+            <MobileGameReactions gameId={gameId} />
+          </div>
+        )}
       </div>
 
-      {/* Reactions (Desktop Only) */}
-      {!isMobile && gameId && (
-        <div className="fixed bottom-4 left-4 bg-card border border-border rounded-2xl p-4">
+      {/* Desktop Reactions */}
+      {!isMobile && game.game_status === "active" && !isSpectator() && (
+        <div className="flex justify-center">
           <GameReactions gameId={gameId} />
         </div>
       )}
 
-      {/* Reactions (Mobile Only) */}
-      {isMobile && gameId && (
-        <div className="fixed bottom-4 right-4">
-          <MobileGameReactions gameId={gameId} />
+      {/* Desktop Chat */}
+      {!isMobile && !isSpectator() && (
+        <div className="max-w-md mx-auto">
+          <ChatSystem gameId={gameId} />
         </div>
       )}
-    </MobileContainer>
+
+      {/* Game Status Messages - Mobile Optimized */}
+      {game.game_status === "waiting" && playerCount < 2 && (
+        <Card className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/30 border-2 border-yellow-400 shadow-lg rounded-lg">
+          <CardContent className="p-2 sm:p-3 text-center">
+            <p className="text-yellow-200 font-bold text-xs sm:text-sm">
+              Waiting for player... ({playerCount}/2)
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {game.game_status === "active" && (
+        <Card className="bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-white shadow-lg rounded-lg">
+          <CardContent className="p-2 sm:p-3 text-center">
+            <p className="text-white font-bold text-xs sm:text-sm">
+              {isSpectator() ? "Spectating" : `${game.current_turn} to move`}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 };

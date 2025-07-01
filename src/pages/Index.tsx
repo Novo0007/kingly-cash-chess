@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthPage } from "@/components/auth/AuthPage";
 import { Navbar } from "@/components/layout/Navbar";
@@ -26,28 +27,85 @@ const Index = () => {
   const [selectedGameType, setSelectedGameType] = useState<
     "chess" | "ludo" | null
   >(null);
-  const [authInitialized, setAuthInitialized] = useState(false);
+  const [connectionRetries, setConnectionRetries] = useState(0);
 
-  // Refs for cleanup
-  const authListenerRef = useRef<any>(null);
-  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    initializeApp();
 
-  const cleanup = useCallback(() => {
-    if (authListenerRef.current) {
+    // Set up auth state listener with better error handling
+    const setupAuthListener = () => {
       try {
-        authListenerRef.current.unsubscribe();
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange(async (event, session) => {
+          console.log("Auth state changed:", event, session?.user?.id);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            await fetchUserProfile(session.user.id);
+          } else {
+            setUserProfile(null);
+          }
+          
+          setLoading(false);
+        });
+
+        return subscription;
       } catch (error) {
-        console.warn("Error unsubscribing from auth listener:", error);
+        console.error("Error setting up auth listener:", error);
+        setLoading(false);
+        return null;
       }
-      authListenerRef.current = null;
-    }
-    if (retryTimeoutRef.current) {
-      clearTimeout(retryTimeoutRef.current);
-      retryTimeoutRef.current = null;
-    }
+    };
+
+    const subscription = setupAuthListener();
+
+    return () => {
+      if (subscription) {
+        try {
+          subscription.unsubscribe();
+        } catch (error) {
+          console.warn("Error unsubscribing from auth changes:", error);
+        }
+      }
+    };
   }, []);
 
-  const fetchUserProfile = useCallback(async (userId: string) => {
+  const initializeApp = async () => {
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error) {
+        console.warn("Auth error:", error.message);
+        if (connectionRetries < 3) {
+          setConnectionRetries(prev => prev + 1);
+          setTimeout(initializeApp, 2000);
+          return;
+        }
+      } else {
+        setUser(user);
+        if (user) {
+          await fetchUserProfile(user.id);
+        }
+        setConnectionRetries(0);
+      }
+    } catch (networkError) {
+      console.warn("Network error connecting to auth service:", networkError);
+      if (connectionRetries < 3) {
+        setConnectionRetries(prev => prev + 1);
+        setTimeout(initializeApp, 3000);
+        return;
+      }
+      toast.error("Connection issues detected. Some features may be limited.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUserProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from("profiles")
@@ -64,128 +122,41 @@ const Index = () => {
     } catch (error) {
       console.error("Error fetching user profile:", error);
     }
-  }, []);
+  };
 
-  const initializeAuth = useCallback(async () => {
-    try {
-      // First, try to get the current session
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.warn("Auth session error:", error.message);
-        // Don't retry immediately if there's an auth error
-        setUser(null);
-        setUserProfile(null);
-        setAuthInitialized(true);
-        setLoading(false);
-        return;
-      }
-
-      if (session?.user) {
-        setUser(session.user);
-        await fetchUserProfile(session.user.id);
-      } else {
-        setUser(null);
-        setUserProfile(null);
-      }
-
-      setAuthInitialized(true);
-    } catch (error) {
-      console.error("Error initializing auth:", error);
-      setUser(null);
-      setUserProfile(null);
-      setAuthInitialized(true);
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchUserProfile]);
-
-  const setupAuthListener = useCallback(() => {
-    if (authListenerRef.current) return;
-
-    try {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        async (event, session) => {
-          console.log("Auth state changed:", event, session?.user?.id);
-          
-          if (event === 'SIGNED_OUT' || !session) {
-            setUser(null);
-            setUserProfile(null);
-          } else if (session?.user) {
-            setUser(session.user);
-            await fetchUserProfile(session.user.id);
-          }
-          
-          if (!authInitialized) {
-            setAuthInitialized(true);
-            setLoading(false);
-          }
-        }
-      );
-
-      authListenerRef.current = subscription;
-    } catch (error) {
-      console.error("Error setting up auth listener:", error);
-      if (!authInitialized) {
-        setAuthInitialized(true);
-        setLoading(false);
-      }
-    }
-  }, [fetchUserProfile, authInitialized]);
-
-  useEffect(() => {
-    initializeAuth();
-    setupAuthListener();
-
-    return cleanup;
-  }, [initializeAuth, setupAuthListener, cleanup]);
-
-  // Prevent rendering until auth is properly initialized
-  useEffect(() => {
-    if (!authInitialized) return;
-    
-    // Small delay to ensure everything is settled
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [authInitialized]);
-
-  const handleSelectGame = useCallback((gameType: "chess" | "ludo") => {
+  const handleSelectGame = (gameType: "chess" | "ludo") => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
       setCurrentView("lobby");
     } else if (gameType === "ludo") {
       setCurrentView("ludo-lobby");
     }
-  }, []);
+  };
 
-  const handleJoinGame = useCallback((gameId: string) => {
+  const handleJoinGame = (gameId: string) => {
     setCurrentGameId(gameId);
     if (selectedGameType === "chess") {
       setCurrentView("game");
     } else if (selectedGameType === "ludo") {
       setCurrentView("ludo-game");
     }
-  }, [selectedGameType]);
+  };
 
-  const handleBackToLobby = useCallback(() => {
+  const handleBackToLobby = () => {
     setCurrentGameId(null);
     if (selectedGameType === "chess") {
       setCurrentView("lobby");
     } else if (selectedGameType === "ludo") {
       setCurrentView("ludo-lobby");
     }
-  }, [selectedGameType]);
+  };
 
-  const handleBackToGameSelection = useCallback(() => {
+  const handleBackToGameSelection = () => {
     setSelectedGameType(null);
-    setCurrentGameId(null);
     setCurrentView("games");
-  }, []);
+  };
 
-  if (loading || !authInitialized) {
+  if (loading) {
     return (
       <MobileOptimized className="flex items-center justify-center">
         <div className="relative">
@@ -237,7 +208,10 @@ const Index = () => {
         return currentGameId ? (
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
             <div className="xl:col-span-3">
-              <GamePage gameId={currentGameId} onBack={handleBackToLobby} />
+              <GamePage
+                gameId={currentGameId}
+                onBackToLobby={handleBackToLobby}
+              />
             </div>
             <div className="hidden xl:block">
               <ChatSystem gameId={currentGameId} />
@@ -310,6 +284,7 @@ const Index = () => {
         ></div>
       </div>
 
+      {/* Natural Floating Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div
           className="absolute top-1/4 left-1/4 w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-600/40 to-orange-600/40 rounded-full wood-float opacity-60 blur-sm"
