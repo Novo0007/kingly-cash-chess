@@ -309,15 +309,15 @@ const App = () => {
 
             {/* Status Message */}
             <div className="relative space-y-3">
-              <div className="electric-glass backdrop-blur-xl rounded-2xl p-4 border border-blue-300/20">
-                <p className="text-blue-100 font-body text-sm sm:text-base">
-                  🌟 Welcome to the next generation gaming experience
+              <div className="wood-glass backdrop-blur-xl rounded-2xl p-4 border border-amber-600/20">
+                <p className="text-amber-100 font-body text-sm sm:text-base">
+                  🏡 Welcome to our cozy digital lodge
                 </p>
               </div>
 
               {/* Music preparation indicator */}
-              <div className="electric-glass backdrop-blur-xl rounded-xl p-3 border border-purple-300/20">
-                <div className="flex items-center justify-center gap-2 text-purple-200">
+              <div className="wood-glass backdrop-blur-xl rounded-xl p-3 border border-orange-600/20">
+                <div className="flex items-center justify-center gap-2 text-orange-200">
                   <svg
                     className="w-4 h-4"
                     fill="currentColor"
@@ -326,12 +326,12 @@ const App = () => {
                     <path d="M12,3V13.55C11.41,13.21 10.73,13 10,13A3,3 0 0,0 7,16A3,3 0 0,0 10,19A3,3 0 0,0 13,16V7H19V5H12V3Z" />
                   </svg>
                   <span className="text-xs sm:text-sm font-medium">
-                    🎵 Preparing ambient music experience
+                    🎵 Preparing rustic ambience
                   </span>
                   <div className="flex space-x-1">
-                    <div className="w-1 h-1 bg-purple-400 rounded-full opacity-80"></div>
-                    <div className="w-1 h-1 bg-pink-400 rounded-full opacity-60"></div>
-                    <div className="w-1 h-1 bg-cyan-400 rounded-full opacity-80"></div>
+                    <div className="w-1 h-1 bg-amber-600 rounded-full opacity-80"></div>
+                    <div className="w-1 h-1 bg-orange-600 rounded-full opacity-60"></div>
+                    <div className="w-1 h-1 bg-yellow-600 rounded-full opacity-80"></div>
                   </div>
                 </div>
               </div>
