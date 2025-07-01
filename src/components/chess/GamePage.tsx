@@ -771,23 +771,21 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </div>
       </div>
 
-      {/* Mobile Chat */}
+      {/* Compact Mobile Chat */}
       {isMobile && showMobileChat && (
-        <div className="bg-gradient-to-br from-black to-purple-900 rounded-lg shadow-lg border-2 border-yellow-400 p-2">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-bold text-xs sm:text-sm text-white">
-              Game Chat
-            </h3>
+        <div className="bg-gradient-to-br from-black to-purple-900 rounded-md shadow-md border border-yellow-400 p-1">
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="font-bold text-xs text-white">Chat</h3>
             <Button
               onClick={() => setShowMobileChat(false)}
               variant="ghost"
               size="sm"
-              className="p-1 text-xs text-white hover:bg-purple-800/50"
+              className="p-0.5 text-xs text-white hover:bg-purple-800/50"
             >
-              Close
+              ×
             </Button>
           </div>
-          <div className="h-32 sm:h-40">
+          <div className="h-24">
             <ChatSystem gameId={gameId} />
           </div>
         </div>
