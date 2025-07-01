@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,20 +50,22 @@ export const UserManagement = ({ adminUser }: UserManagementProps) => {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select(`
+        .select(
+          `
           *,
           wallets (*)
-        `)
+        `,
+        )
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      
+
       // Handle the case where wallets might be null or have errors
-      const processedData = (data || []).map(user => ({
+      const processedData = (data || []).map((user) => ({
         ...user,
-        wallets: Array.isArray(user.wallets) ? user.wallets : []
+        wallets: Array.isArray(user.wallets) ? user.wallets : [],
       })) as UserWithWallet[];
-      
+
       setUsers(processedData);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -74,7 +75,10 @@ export const UserManagement = ({ adminUser }: UserManagementProps) => {
     }
   };
 
-  const updateUserProfile = async (userId: string, updates: Partial<Profile>) => {
+  const updateUserProfile = async (
+    userId: string,
+    updates: Partial<Profile>,
+  ) => {
     try {
       const { error } = await supabase
         .from("profiles")
@@ -82,7 +86,7 @@ export const UserManagement = ({ adminUser }: UserManagementProps) => {
         .eq("id", userId);
 
       if (error) throw error;
-      
+
       toast.success("User updated successfully");
       fetchUsers();
       setEditingUser(null);
@@ -100,7 +104,7 @@ export const UserManagement = ({ adminUser }: UserManagementProps) => {
         .eq("user_id", userId);
 
       if (error) throw error;
-      
+
       toast.success("Wallet updated successfully");
       fetchUsers();
     } catch (error) {
@@ -109,41 +113,44 @@ export const UserManagement = ({ adminUser }: UserManagementProps) => {
     }
   };
 
-  const filteredUsers = users.filter(user =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.id.includes(searchTerm)
+  const filteredUsers = users.filter(
+    (user) =>
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.id.includes(searchTerm),
   );
 
   if (loading) {
     return (
-      <Card className="bg-slate-800 border-slate-600">
-        <CardContent className="p-6 text-center">
-          <div className="w-8 h-8 border-3 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white">Loading users...</p>
+      <Card className="wood-card border-amber-600">
+        <CardContent className="p-4 sm:p-6 text-center">
+          <div className="w-6 h-6 sm:w-8 sm:h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-amber-900 text-sm sm:text-base">
+            Loading users...
+          </p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <Card className="bg-slate-800 border-slate-600">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Users className="h-5 w-5 text-blue-400" />
+    <div className="space-y-4 sm:space-y-6">
+      <Card className="wood-card wood-plank border-amber-700">
+        <CardHeader className="p-3 sm:p-4">
+          <CardTitle className="text-amber-900 flex items-center gap-2 text-base sm:text-lg font-heading">
+            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-green-800" />
             User Management
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4 mb-6">
+        <CardContent className="p-3 sm:p-4 pt-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-amber-600" />
               <Input
-                placeholder="Search users by username, name, or ID..."
+                placeholder="Search users..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-slate-700 border-slate-600 text-white"
+                className="pl-10 wood-input text-sm sm:text-base"
               />
             </div>
           </div>
@@ -151,7 +158,7 @@ export const UserManagement = ({ adminUser }: UserManagementProps) => {
           <div className="space-y-4">
             {filteredUsers.map((user) => {
               const wallet = user.wallets?.[0];
-              
+
               return (
                 <Card key={user.id} className="bg-slate-700 border-slate-600">
                   <CardContent className="p-4">
@@ -226,7 +233,9 @@ export const UserManagement = ({ adminUser }: UserManagementProps) => {
                                   />
                                 </div>
                                 <div>
-                                  <Label className="text-white">Full Name</Label>
+                                  <Label className="text-white">
+                                    Full Name
+                                  </Label>
                                   <Input
                                     defaultValue={user.full_name || ""}
                                     className="bg-slate-700 border-slate-600 text-white"
@@ -239,7 +248,9 @@ export const UserManagement = ({ adminUser }: UserManagementProps) => {
                                   />
                                 </div>
                                 <div>
-                                  <Label className="text-white">Chess Rating</Label>
+                                  <Label className="text-white">
+                                    Chess Rating
+                                  </Label>
                                   <Input
                                     type="number"
                                     defaultValue={user.chess_rating || 1200}
@@ -254,7 +265,9 @@ export const UserManagement = ({ adminUser }: UserManagementProps) => {
                                 </div>
                                 {wallet && (
                                   <div>
-                                    <Label className="text-white">Wallet Balance</Label>
+                                    <Label className="text-white">
+                                      Wallet Balance
+                                    </Label>
                                     <Input
                                       type="number"
                                       step="0.01"
@@ -263,7 +276,7 @@ export const UserManagement = ({ adminUser }: UserManagementProps) => {
                                       onChange={(e) =>
                                         updateUserWallet(
                                           user.id,
-                                          parseFloat(e.target.value)
+                                          parseFloat(e.target.value),
                                         )
                                       }
                                     />
