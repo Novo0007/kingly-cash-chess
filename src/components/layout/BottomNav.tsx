@@ -92,10 +92,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => onViewChange(item.id)}
-                className={`relative flex flex-col items-center gap-2 px-3 py-4 h-auto w-full min-h-[72px] rounded-2xl transition-all duration-500 ease-out transform tap-target ${
+                className={`relative flex flex-col items-center gap-2 px-3 py-4 h-auto w-full min-h-[72px] rounded-xl transition-all duration-300 ease-out transform tap-target ${
                   isActive
-                    ? `text-white bg-gradient-to-b ${item.gradient}/15 scale-110 shadow-xl border border-white/20 backdrop-blur-lg`
-                    : "text-white/60 hover:text-white/90 hover:bg-white/5 active:bg-white/10 active:scale-95 hover:scale-105 hover:backdrop-blur-sm"
+                    ? `text-amber-100 bg-gradient-to-b ${item.gradient}/20 scale-110 wood-shadow border border-amber-300/30 backdrop-blur-lg`
+                    : "text-amber-200/70 hover:text-amber-100/90 hover:bg-amber-100/5 active:bg-amber-100/10 active:scale-95 hover:scale-105 hover:backdrop-blur-sm"
                 }`}
               >
                 {/* Smooth Background Effects */}
