@@ -536,31 +536,29 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           </CardContent>
         </Card>
 
-        {/* Create Game */}
-        <Card
-          className={`${cardGradient} ${animationClass} border-green-600/30`}
-        >
+        {/* Create Game - Wood Style */}
+        <Card className="wood-card wood-plank border-green-700/50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-green-400 flex items-center gap-2 font-semibold text-base md:text-lg">
+            <CardTitle className="text-green-800 flex items-center gap-2 font-bold text-base md:text-lg font-heading">
               <Plus className="h-5 w-5 md:h-6 md:w-6" />
               Create New Game
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 md:space-y-4">
             <div>
-              <label className="text-slate-300 mb-2 block text-sm">
+              <label className="text-amber-800 mb-2 block text-sm font-semibold">
                 Game Name (Optional)
               </label>
               <Input
                 type="text"
                 value={gameName}
                 onChange={(e) => setGameName(e.target.value)}
-                className="bg-slate-700/50 border-slate-600 text-white"
+                className="wood-input"
                 placeholder="Leave empty for auto-generated unique name"
               />
             </div>
             <div>
-              <label className="text-slate-300 mb-2 block text-sm">
+              <label className="text-amber-800 mb-2 block text-sm font-semibold">
                 Entry Fee (₹)
               </label>
               <Input
@@ -569,14 +567,14 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                 step="0.01"
                 value={entryFee}
                 onChange={(e) => setEntryFee(e.target.value)}
-                className="bg-slate-700/50 border-slate-600 text-white"
+                className="wood-input"
                 placeholder="Enter amount"
               />
             </div>
             <Button
               onClick={createGame}
               disabled={loading}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3"
+              className="w-full py-3 font-bold"
             >
               {loading ? "Creating..." : "Create Game"}
             </Button>
