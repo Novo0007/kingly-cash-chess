@@ -50,22 +50,26 @@ const App = () => {
   if (appLoading) {
     return (
       <div className="fixed inset-0 overflow-hidden font-body">
-        {/* Advanced Multi-Layer Background System */}
+        {/* Natural Wood Background System */}
         <div className="absolute inset-0">
-          {/* Primary Vibrant Gradient Layer */}
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-violet-800 to-fuchsia-900"></div>
+          {/* Primary Wood Gradient Layer */}
+          <div className="absolute inset-0 wood-gradient-dark"></div>
 
-          {/* Dynamic Mesh Gradient with Vibrant Colors */}
-          <div className="absolute inset-0 opacity-50">
+          {/* Wood Texture Overlay */}
+          <div className="absolute inset-0 opacity-60">
             <div
               className="h-full w-full"
               style={{
                 backgroundImage: `
-                  radial-gradient(circle at 20% 80%, hsl(270, 95%, 60%) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 20%, hsl(195, 100%, 50%) 0%, transparent 50%),
-                  radial-gradient(circle at 40% 40%, hsl(330, 85%, 65%) 0%, transparent 40%),
-                  radial-gradient(circle at 60% 80%, hsl(145, 85%, 45%) 0%, transparent 35%),
-                  conic-gradient(from 180deg at 50% 50%, transparent 0deg, hsl(270, 95%, 60%) 90deg, hsl(195, 100%, 50%) 180deg, hsl(330, 85%, 65%) 270deg, transparent 360deg)
+                  radial-gradient(ellipse at 20% 80%, hsl(25, 45%, 35%) 0%, transparent 40%),
+                  radial-gradient(ellipse at 80% 20%, hsl(30, 40%, 65%) 0%, transparent 40%),
+                  radial-gradient(ellipse at 40% 40%, hsl(25, 35%, 25%) 0%, transparent 30%),
+                  radial-gradient(ellipse at 60% 80%, hsl(120, 30%, 40%) 0%, transparent 25%),
+                  repeating-linear-gradient(90deg,
+                    hsl(25, 35%, 20%) 0px,
+                    hsl(25, 45%, 30%) 2px,
+                    hsl(25, 35%, 20%) 4px,
+                    hsl(25, 40%, 25%) 6px)
                 `,
               }}
             ></div>
