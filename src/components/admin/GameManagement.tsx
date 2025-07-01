@@ -99,42 +99,48 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Game Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-blue-900/20 border-blue-600/30">
-          <CardContent className="p-4">
+    <div className="space-y-4 sm:space-y-6">
+      {/* Game Stats - Wood Theme */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <Card className="wood-card bg-gradient-to-r from-blue-50 to-blue-100 border-blue-700">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2">
-              <Crown className="h-5 w-5 text-blue-400" />
+              <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-blue-800" />
               <div>
-                <p className="text-blue-300 text-sm">Chess Games</p>
-                <p className="text-white font-bold text-lg">
+                <p className="text-blue-800 text-xs sm:text-sm font-semibold">
+                  Chess Games
+                </p>
+                <p className="text-blue-900 font-bold text-sm sm:text-lg">
                   {chessGames.length}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-orange-900/20 border-orange-600/30">
-          <CardContent className="p-4">
+        <Card className="wood-card bg-gradient-to-r from-orange-50 to-orange-100 border-orange-700">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2">
-              <Dice6 className="h-5 w-5 text-orange-400" />
+              <Dice6 className="h-4 w-4 sm:h-5 sm:w-5 text-orange-800" />
               <div>
-                <p className="text-orange-300 text-sm">Ludo Games</p>
-                <p className="text-white font-bold text-lg">
+                <p className="text-orange-800 text-xs sm:text-sm font-semibold">
+                  Ludo Games
+                </p>
+                <p className="text-orange-900 font-bold text-sm sm:text-lg">
                   {ludoGames.length}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-green-900/20 border-green-600/30">
-          <CardContent className="p-4">
+        <Card className="wood-card bg-gradient-to-r from-green-50 to-green-100 border-green-700">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-green-400" />
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-green-800" />
               <div>
-                <p className="text-green-300 text-sm">Active Games</p>
-                <p className="text-white font-bold text-lg">
+                <p className="text-green-800 text-xs sm:text-sm font-semibold">
+                  Active Games
+                </p>
+                <p className="text-green-900 font-bold text-sm sm:text-lg">
                   {chessGames.filter((g) => g.game_status === "active").length +
                     ludoGames.filter((g) => g.game_status === "active").length}
                 </p>
@@ -142,10 +148,10 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-purple-900/20 border-purple-600/30">
-          <CardContent className="p-4">
+        <Card className="wood-card bg-gradient-to-r from-purple-50 to-purple-100 border-purple-700">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-purple-400" />
+              <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-purple-800" />
               <div>
                 <p className="text-purple-300 text-sm">Waiting</p>
                 <p className="text-white font-bold text-lg">
