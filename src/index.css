@@ -140,48 +140,67 @@
   }
 }
 
-/* Vibrant Electric themed custom classes */
-.electric-gradient {
+/* Wood UI Theme - Natural and Organic */
+.wood-gradient {
   background: linear-gradient(
     135deg,
-    hsl(var(--electric-100)) 0%,
-    hsl(var(--vibrant-purple)) 15%,
-    hsl(var(--vibrant-blue)) 35%,
-    hsl(var(--vibrant-cyan)) 65%,
-    hsl(var(--electric-200)) 85%,
-    hsl(var(--electric-100)) 100%
+    hsl(var(--wood-dark)) 0%,
+    hsl(var(--wood-medium)) 25%,
+    hsl(var(--wood-light)) 75%,
+    hsl(var(--wood-lightest)) 100%
   );
 }
 
-.electric-gradient-dark {
+.wood-gradient-dark {
   background: linear-gradient(
     135deg,
-    hsl(var(--electric-800)) 0%,
-    hsl(var(--vibrant-purple)) 25%,
-    hsl(var(--vibrant-blue)) 50%,
-    hsl(var(--vibrant-cyan)) 75%,
-    hsl(var(--electric-800)) 100%
+    hsl(var(--wood-grain-dark)) 0%,
+    hsl(var(--wood-dark)) 40%,
+    hsl(var(--wood-medium)) 60%,
+    hsl(var(--wood-grain-dark)) 100%
   );
 }
 
-.electric-glass {
-  background: rgba(139, 69, 193, 0.08);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(139, 69, 193, 0.15);
-  transition: all 0.5s ease-out;
+.wood-texture {
+  background:
+    radial-gradient(ellipse at top, hsl(var(--wood-light)) 0%, transparent 50%),
+    radial-gradient(
+      ellipse at bottom,
+      hsl(var(--wood-medium)) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      90deg,
+      hsl(var(--wood-medium)) 0%,
+      hsl(var(--wood-light)) 25%,
+      hsl(var(--wood-medium)) 50%,
+      hsl(var(--wood-light)) 75%,
+      hsl(var(--wood-medium)) 100%
+    );
+  background-size:
+    100% 100%,
+    100% 100%,
+    4px 100%;
 }
 
-.electric-shadow {
-  box-shadow:
-    0 4px 20px rgba(0, 150, 255, 0.15),
-    0 1px 3px rgba(0, 150, 255, 0.1);
+.wood-glass {
+  background: rgba(101, 67, 33, 0.08);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(101, 67, 33, 0.2);
+  transition: all 0.3s ease-out;
 }
 
-.electric-shadow-lg {
+.wood-shadow {
   box-shadow:
-    0 10px 40px rgba(0, 150, 255, 0.2),
-    0 4px 12px rgba(0, 150, 255, 0.15),
-    0 1px 3px rgba(0, 150, 255, 0.1);
+    0 4px 20px rgba(62, 39, 35, 0.15),
+    0 1px 3px rgba(62, 39, 35, 0.1);
+}
+
+.wood-shadow-lg {
+  box-shadow:
+    0 10px 40px rgba(62, 39, 35, 0.2),
+    0 4px 12px rgba(62, 39, 35, 0.15),
+    0 1px 3px rgba(62, 39, 35, 0.1);
 }
 
 .electric-text-gradient {
