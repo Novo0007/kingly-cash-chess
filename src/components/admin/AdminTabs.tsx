@@ -1,4 +1,3 @@
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Users,
@@ -22,7 +21,11 @@ interface AdminTabsProps {
   onTabChange: (tab: string) => void;
 }
 
-export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps) => {
+export const AdminTabs = ({
+  adminUser,
+  activeTab,
+  onTabChange,
+}: AdminTabsProps) => {
   const hasPermission = (permission: string) => {
     if (!adminUser.permissions || typeof adminUser.permissions !== "object") {
       return false;
@@ -37,49 +40,49 @@ export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps)
       onValueChange={onTabChange}
       className="w-full bg-transparent"
     >
-      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-600 p-2 rounded-xl wood-shadow">
+      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 bg-muted p-2 rounded-2xl">
         <TabsTrigger
           value="overview"
-          className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2"
+          className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 min-h-[52px] rounded-xl font-medium text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2"
         >
           <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
           <span className="hidden sm:inline">Overview</span>
           <span className="sm:hidden">Stats</span>
         </TabsTrigger>
-        
+
         <TabsTrigger
           value="users"
-          className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-700 data-[state=active]:to-emerald-700 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 min-h-[52px] rounded-xl font-medium text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={!hasPermission("users")}
         >
           <Users className="h-4 w-4 sm:h-5 sm:w-5" />
           <span className="hidden sm:inline">Users</span>
           <span className="sm:hidden">Users</span>
         </TabsTrigger>
-        
+
         <TabsTrigger
           value="payments"
-          className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-700 data-[state=active]:to-amber-700 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 min-h-[52px] rounded-xl font-medium text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={!hasPermission("payments")}
         >
           <CreditCard className="h-4 w-4 sm:h-5 sm:w-5" />
           <span className="hidden sm:inline">Payments</span>
           <span className="sm:hidden">Pay</span>
         </TabsTrigger>
-        
+
         <TabsTrigger
           value="games"
-          className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-700 data-[state=active]:to-red-700 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 min-h-[52px] rounded-xl font-medium text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={!hasPermission("games")}
         >
           <Gamepad2 className="h-4 w-4 sm:h-5 sm:w-5" />
           <span className="hidden sm:inline">Games</span>
           <span className="sm:hidden">Games</span>
         </TabsTrigger>
-        
+
         <TabsTrigger
           value="settings"
-          className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-800 data-[state=active]:to-yellow-800 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 col-span-2 sm:col-span-1"
+          className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 min-h-[52px] rounded-xl font-medium text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 col-span-2 sm:col-span-1"
         >
           <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
           <span className="hidden sm:inline">Settings</span>
@@ -109,7 +112,7 @@ export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps)
         value="payments"
         className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
       >
-        <div className="min-h-[300px] w-full bg-amber-50/30 rounded-lg p-2">
+        <div className="min-h-[300px] w-full bg-muted/20 rounded-2xl p-2">
           <PaymentManagement adminUser={adminUser} />
         </div>
       </TabsContent>

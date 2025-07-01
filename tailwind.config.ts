@@ -19,9 +19,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["Merriweather", "Bitter", "serif"],
-        body: ["Inter", "system-ui", "sans-serif"],
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Inter", "Segoe UI", "Helvetica Neue", "sans-serif"],
+        body: ["Inter", "Segoe UI", "Helvetica Neue", "sans-serif"],
+        heading: ["Inter", "Segoe UI", "Helvetica Neue", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
