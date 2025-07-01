@@ -2,834 +2,133 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Wood UI Theme - Natural, Warm, and Inviting */
-
-@layer base {
-  :root {
-    /* Wood Theme Variables - Natural and Earthy */
-    --background: 30 35% 95%;
-    --foreground: 25 15% 10%;
-
-    --card: 28 40% 92%;
-    --card-foreground: 25 15% 10%;
-
-    --popover: 28 40% 92%;
-    --popover-foreground: 25 15% 10%;
-
-    --primary: 25 45% 35%;
-    --primary-foreground: 30 35% 95%;
-
-    --secondary: 30 25% 85%;
-    --secondary-foreground: 25 15% 15%;
-
-    --muted: 30 20% 88%;
-    --muted-foreground: 25 10% 45%;
-
-    --accent: 120 30% 40%;
-    --accent-foreground: 30 35% 95%;
-
-    --destructive: 10 70% 50%;
-    --destructive-foreground: 30 35% 95%;
-
-    --border: 30 25% 80%;
-    --input: 30 30% 90%;
-    --ring: 25 45% 35%;
-
-    --radius: 0.75rem;
-
-    /* Wood Color Palette */
-    --wood-dark: 25 35% 20%; /* Dark walnut/mahogany */
-    --wood-medium: 25 45% 35%; /* Medium oak */
-    --wood-light: 30 40% 65%; /* Light maple */
-    --wood-lightest: 30 35% 85%; /* Very light pine */
-
-    /* Accent Colors */
-    --wood-green: 120 30% 40%; /* Deep forest green */
-    --wood-orange: 20 60% 50%; /* Burnt orange */
-    --wood-charcoal: 210 15% 25%; /* Matte charcoal */
-    --wood-cream: 45 25% 88%; /* Cream/ivory */
-
-    /* Wood Texture Variables */
-    --wood-grain-dark: 25 35% 18%;
-    --wood-grain-medium: 25 45% 32%;
-    --wood-grain-light: 30 40% 62%;
-    --wood-shadow: 25 25% 15%;
-  }
-
-  .dark {
-    /* Dark wood theme - Rich dark woods */
-    --background: 25 25% 12%;
-    --foreground: 30 20% 88%;
-
-    --card: 25 30% 15%;
-    --card-foreground: 30 20% 88%;
-
-    --popover: 25 30% 15%;
-    --popover-foreground: 30 20% 88%;
-
-    --primary: 25 45% 45%;
-    --primary-foreground: 25 25% 12%;
-
-    --secondary: 25 20% 20%;
-    --secondary-foreground: 30 20% 88%;
-
-    --muted: 25 20% 18%;
-    --muted-foreground: 30 15% 65%;
-
-    --accent: 120 25% 45%;
-    --accent-foreground: 25 25% 12%;
-
-    --destructive: 10 60% 55%;
-    --destructive-foreground: 30 20% 88%;
-
-    --border: 25 20% 25%;
-    --input: 25 20% 18%;
-    --ring: 25 45% 45%;
-
-    /* Dark wood colors */
-    --wood-dark: 25 35% 8%;
-    --wood-medium: 25 35% 25%;
-    --wood-light: 30 30% 45%;
-    --wood-lightest: 30 25% 65%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-    font-family:
-      "Inter",
-      "Poppins",
-      system-ui,
-      -apple-system,
-      sans-serif;
-    font-feature-settings:
-      "rlig" 1,
-      "calt" 1;
-    line-height: 1.6;
-    background-color: hsl(var(--wood-lightest));
-    color: hsl(var(--wood-charcoal));
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: "Merriweather", "Bitter", "Poppins", serif;
-    font-weight: 700;
-    line-height: 1.2;
-    color: hsl(var(--wood-dark));
-  }
-
-  .font-heading {
-    font-family: "Merriweather", "Bitter", "Poppins", serif;
-  }
-
-  .font-body {
-    font-family:
-      "Inter",
-      "Poppins",
-      system-ui,
-      -apple-system,
-      sans-serif;
-  }
-}
-
-/* Wood UI Theme - Natural and Organic */
-.wood-gradient {
-  background: linear-gradient(
-    135deg,
-    hsl(var(--wood-dark)) 0%,
-    hsl(var(--wood-medium)) 25%,
-    hsl(var(--wood-light)) 75%,
-    hsl(var(--wood-lightest)) 100%
-  );
-}
-
-.wood-gradient-dark {
-  background: linear-gradient(
-    135deg,
-    hsl(var(--wood-grain-dark)) 0%,
-    hsl(var(--wood-dark)) 40%,
-    hsl(var(--wood-medium)) 60%,
-    hsl(var(--wood-grain-dark)) 100%
-  );
-}
-
-.wood-texture {
-  background:
-    radial-gradient(ellipse at top, hsl(var(--wood-light)) 0%, transparent 50%),
-    radial-gradient(
-      ellipse at bottom,
-      hsl(var(--wood-medium)) 0%,
-      transparent 50%
-    ),
-    linear-gradient(
-      90deg,
-      hsl(var(--wood-medium)) 0%,
-      hsl(var(--wood-light)) 25%,
-      hsl(var(--wood-medium)) 50%,
-      hsl(var(--wood-light)) 75%,
-      hsl(var(--wood-medium)) 100%
-    );
-  background-size:
-    100% 100%,
-    100% 100%,
-    4px 100%;
-}
-
-.wood-glass {
-  background: rgba(101, 67, 33, 0.08);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(101, 67, 33, 0.2);
-  transition: all 0.3s ease-out;
-}
-
-.wood-shadow {
-  box-shadow:
-    0 4px 20px rgba(62, 39, 35, 0.15),
-    0 1px 3px rgba(62, 39, 35, 0.1);
-}
-
-.wood-shadow-lg {
-  box-shadow:
-    0 10px 40px rgba(62, 39, 35, 0.2),
-    0 4px 12px rgba(62, 39, 35, 0.15),
-    0 1px 3px rgba(62, 39, 35, 0.1);
-}
-
-.wood-text-gradient {
-  background: linear-gradient(
-    135deg,
-    hsl(var(--wood-dark)) 0%,
-    hsl(var(--wood-medium)) 50%,
-    hsl(var(--wood-green)) 100%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-size: 200% 200%;
-  animation: woodShift 4s ease-in-out infinite;
-}
-
-.wood-button {
-  background: linear-gradient(
-    135deg,
-    hsl(var(--wood-medium)) 0%,
-    hsl(var(--wood-light)) 50%,
-    hsl(var(--wood-medium)) 100%
-  );
-  color: hsl(var(--wood-cream));
-  border: 2px solid hsl(var(--wood-dark));
-  transition: all 0.2s ease;
-  font-weight: 600;
-  box-shadow:
-    0 4px 8px rgba(62, 39, 35, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.wood-button:hover {
-  background: linear-gradient(
-    135deg,
-    hsl(var(--wood-light)) 0%,
-    hsl(var(--wood-lightest)) 50%,
-    hsl(var(--wood-light)) 100%
-  );
-  transform: translateY(-1px);
-  box-shadow:
-    0 6px 12px rgba(62, 39, 35, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.wood-button:active {
-  transform: translateY(0);
-  box-shadow:
-    0 2px 4px rgba(62, 39, 35, 0.4),
-    inset 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.wood-border {
-  border-color: hsl(var(--wood-medium));
-}
-
+/* Natural Wood Background */
 .wood-bg {
-  background-color: hsl(var(--wood-lightest));
+  background-color: #f5f5dc; /* Beige */
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='60' height='60' fill='url(%23pattern)'/%3E%3Cdefs%3E%3Cpattern id='pattern' patternContentUnits='objectBoundingBox' width='1' height='1'%3E%3Crect width='10' height='10' fill='%23DEB887'/%3E%3C/pattern%3E%3C/defs%3E%3C/svg%3E");
 }
 
-.wood-bg-soft {
-  background-color: hsl(var(--wood-cream));
+/* Wood Gradient Overlay */
+.wood-gradient {
+  background: linear-gradient(to bottom, rgba(222, 184, 135, 0.2), rgba(222, 184, 135, 0.4));
 }
 
-.wood-text {
-  color: hsl(var(--wood-charcoal));
-}
-
-/* Wood texture patterns */
-.wood-grain-pattern {
-  background-image: repeating-linear-gradient(
-    90deg,
-    hsl(var(--wood-medium)) 0px,
-    hsl(var(--wood-light)) 1px,
-    hsl(var(--wood-medium)) 2px,
-    hsl(var(--wood-grain-medium)) 3px,
-    hsl(var(--wood-medium)) 4px
-  );
-}
-
+/* Wood Plank Texture */
 .wood-plank {
-  background: linear-gradient(
-    135deg,
-    hsl(var(--wood-medium)) 0%,
-    hsl(var(--wood-light)) 100%
-  );
-  border: 2px solid hsl(var(--wood-dark));
-  border-radius: 8px;
-  position: relative;
-  overflow: hidden;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='20' viewBox='0 0 100 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100' height='20' fill='url(%23wood)'/%3E%3Cdefs%3E%3Cpattern id='wood' patternContentUnits='objectBoundingBox' width='0.1' height='1'%3E%3Crect width='1' height='1' fill='%23C0995E'/%3E%3Crect y='0.2' width='1' height='0.6' fill='%23A07744'/%3E%3C/pattern%3E%3C/defs%3E%3C/svg%3E");
 }
 
-.wood-plank::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent 0px,
-    rgba(101, 67, 33, 0.1) 1px,
-    transparent 2px,
-    rgba(101, 67, 33, 0.05) 3px,
-    transparent 4px
-  );
-  pointer-events: none;
+/* Wood Card Style */
+.wood-card {
+  background-color: rgba(222, 184, 135, 0.7); /* Semi-transparent wood color */
+  border: 1px solid rgba(160, 82, 45, 0.5); /* Subtle border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
 }
 
-/* Backwards compatibility classes */
-.electric-gradient {
-  @apply wood-gradient;
-}
-.electric-gradient-dark {
-  @apply wood-gradient-dark;
-}
-.electric-glass {
-  @apply wood-glass;
-}
-.electric-shadow {
-  @apply wood-shadow;
-}
-.electric-shadow-lg {
-  @apply wood-shadow-lg;
-}
-.electric-text-gradient {
-  @apply wood-text-gradient;
-}
-.electric-button {
-  @apply wood-button;
-}
-.electric-border {
-  @apply wood-border;
-}
-.electric-bg {
-  @apply wood-bg;
-}
-.electric-bg-soft {
-  @apply wood-bg-soft;
-}
-.electric-text {
-  @apply wood-text;
+/* Wood Glass Effect */
+.wood-glass {
+  background-color: rgba(222, 184, 135, 0.3); /* Glass-like wood color */
+  backdrop-filter: blur(5px); /* Apply blur to the background */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Even softer shadow */
 }
 
-/* Natural Wood Animations */
-@keyframes woodShift {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+/* Wood Text Color */
+.wood-text {
+  color: #543E2A; /* Dark brown text for contrast */
 }
 
-@keyframes woodFloat {
-  0%,
-  100% {
-    transform: translateY(0px) scale(1);
-  }
-  50% {
-    transform: translateY(-8px) scale(1.02);
-  }
-}
-
-@keyframes woodGlow {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.05);
-  }
-}
-
-@keyframes particleFloat {
-  0%,
-  100% {
-    transform: translateY(0px) translateX(0px);
-    opacity: 0.3;
-  }
-  25% {
-    transform: translateY(-20px) translateX(10px);
-    opacity: 0.8;
-  }
-  50% {
-    transform: translateY(-10px) translateX(-5px);
-    opacity: 1;
-  }
-  75% {
-    transform: translateY(-30px) translateX(15px);
-    opacity: 0.6;
-  }
-}
-
-@keyframes rotateGlow {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes meshGradient {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scale(1) rotate(0deg);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.1) rotate(180deg);
-  }
+/* Floating Wood Elements */
+@keyframes wood-float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
 }
 
 .wood-float {
-  animation: woodFloat 6s ease-in-out infinite;
+  animation: wood-float 8s infinite ease-in-out;
 }
 
-.wood-glow {
-  animation: woodGlow 3s ease-in-out infinite;
+/* Particle Float Animation */
+@keyframes particle-float {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 0.6; }
+  50% { transform: translate(5px, -5px) rotate(180deg); opacity: 0.9; }
+  100% { transform: translate(0, 0) rotate(360deg); opacity: 0.6; }
 }
 
 .particle-float {
-  animation: particleFloat 8s ease-in-out infinite;
+  animation: particle-float 10s infinite linear;
 }
 
-.rotate-glow {
-  animation: rotateGlow 12s linear infinite;
-}
-
-.mesh-gradient {
-  animation: meshGradient 10s ease-in-out infinite;
-}
-
-/* Natural loading animations */
-.wood-spinner {
-  border: 3px solid hsl(var(--wood-light));
-  border-top: 3px solid hsl(var(--wood-medium));
-  border-radius: 50%;
-  animation: spin 1.2s linear infinite;
-}
-
-@keyframes spin {
+/* Slide-In Bottom Animation */
+@keyframes slide-in-bottom {
   0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.wood-shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(139, 69, 19, 0.3) 50%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-@keyframes floatUp {
-  0% {
-    transform: translateY(20px) scale(0.8);
     opacity: 0;
-  }
-  50% {
-    transform: translateY(-10px) scale(1.1);
-    opacity: 1;
+    transform: translateY(50px);
   }
   100% {
-    transform: translateY(0px) scale(1);
     opacity: 1;
-  }
-}
-
-@keyframes slideInFromBottom {
-  0% {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  100% {
     transform: translateY(0);
-    opacity: 1;
   }
-}
-
-@keyframes bounceIn {
-  0% {
-    transform: scale(0.3);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.8;
-  }
-  70% {
-    transform: scale(0.9);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes glow {
-  0%,
-  100% {
-    box-shadow:
-      0 0 5px currentColor,
-      0 0 10px currentColor,
-      0 0 15px currentColor;
-  }
-  50% {
-    box-shadow:
-      0 0 10px currentColor,
-      0 0 20px currentColor,
-      0 0 30px currentColor;
-  }
-}
-
-@keyframes rainbow {
-  0% {
-    filter: hue-rotate(0deg);
-  }
-  25% {
-    filter: hue-rotate(90deg);
-  }
-  50% {
-    filter: hue-rotate(180deg);
-  }
-  75% {
-    filter: hue-rotate(270deg);
-  }
-  100% {
-    filter: hue-rotate(360deg);
-  }
-}
-
-@keyframes gradientFlow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* Backwards compatibility */
-.lavender-float {
-  @apply wood-float;
-}
-.lavender-pulse {
-  @apply wood-glow;
-}
-.lavender-spinner {
-  @apply wood-spinner;
-}
-.lavender-shimmer {
-  @apply wood-shimmer;
-}
-.electric-float {
-  @apply wood-float;
-}
-.electric-pulse {
-  @apply wood-glow;
-}
-.electric-spinner {
-  @apply wood-spinner;
-}
-.electric-shimmer {
-  @apply wood-shimmer;
-}
-
-/* Enhanced natural styling for components */
-.wood-card {
-  background: linear-gradient(
-    135deg,
-    hsl(var(--wood-lightest)) 0%,
-    hsl(var(--wood-cream)) 100%
-  );
-  border: 2px solid hsl(var(--wood-medium));
-  border-radius: 8px;
-  box-shadow:
-    0 4px 12px rgba(62, 39, 35, 0.15),
-    0 1px 3px rgba(62, 39, 35, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  font-family: "Inter", system-ui, sans-serif;
-  position: relative;
-}
-
-.wood-card:hover {
-  box-shadow:
-    0 6px 20px rgba(62, 39, 35, 0.2),
-    0 2px 6px rgba(62, 39, 35, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.wood-input {
-  background: hsl(var(--wood-cream));
-  border: 2px solid hsl(var(--wood-medium));
-  color: hsl(var(--wood-charcoal));
-  font-family: "Inter", system-ui, sans-serif;
-  font-weight: 400;
-  border-radius: 6px;
-}
-
-.wood-input:focus {
-  border-color: hsl(var(--wood-dark));
-  box-shadow: 0 0 0 3px rgba(101, 67, 33, 0.1);
-}
-
-/* Backwards compatibility */
-.lavender-card {
-  @apply wood-card;
-}
-.lavender-input {
-  @apply wood-input;
-}
-.electric-card {
-  @apply wood-card;
-}
-.electric-input {
-  @apply wood-input;
-}
-
-/* Enhanced mobile-friendly tap targets */
-.tap-target {
-  min-height: 48px;
-  min-width: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  touch-action: manipulation;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.tap-target:active {
-  transform: scale(0.95);
-}
-
-/* New vibrant animation classes */
-.float-up {
-  animation: floatUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .slide-in-bottom {
-  animation: slideInFromBottom 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: slide-in-bottom 0.5s ease-out forwards;
 }
 
-.bounce-in {
-  animation: bounceIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.glow-effect {
-  animation: glow 2s ease-in-out infinite;
-}
-
-.rainbow-effect {
-  animation: rainbow 3s linear infinite;
-}
-
-.gradient-flow {
-  background-size: 400% 400%;
-  animation: gradientFlow 3s ease infinite;
-}
-
-/* Enhanced responsive card */
-.responsive-card {
-  @apply bg-white/95 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-lg;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.responsive-card:hover {
-  @apply shadow-2xl border-gray-300;
-  transform: translateY(-4px) scale(1.02);
-}
-
-/* Mobile-optimized text */
-.mobile-title {
-  @apply text-2xl font-black text-gray-800 leading-tight;
-}
-
-.mobile-subtitle {
-  @apply text-base font-semibold text-gray-600 leading-relaxed;
-}
-
-.mobile-body {
-  @apply text-sm font-medium text-gray-700 leading-relaxed;
-}
-
-/* Button press feedback */
-.press-feedback:active {
-  transform: scale(0.95);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Loading skeleton */
-.skeleton {
-  @apply bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200;
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-/* Interactive hover states */
-.interactive-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.interactive-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-/* High contrast text for mobile accessibility */
-.high-contrast {
-  color: hsl(var(--electric-text));
-  font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-/* Mobile-optimized text sizes */
-.mobile-text-lg {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  font-weight: 600;
-}
-
-.mobile-text-xl {
-  font-size: 1.5rem;
-  line-height: 2rem;
-  font-weight: 700;
-}
-
-/* Enhanced natural shadows */
-.wood-shadow-warm {
-  box-shadow:
-    0 4px 20px rgba(101, 67, 33, 0.15),
-    0 8px 40px rgba(62, 39, 35, 0.1),
-    0 12px 60px rgba(139, 69, 19, 0.05);
-}
-
+/* Deeper Shadow for Emphasis */
 .wood-shadow-deep {
-  box-shadow:
-    0 8px 30px rgba(101, 67, 33, 0.2),
-    0 12px 50px rgba(62, 39, 35, 0.15),
-    0 16px 80px rgba(139, 69, 19, 0.1);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Clean spacing utilities */
-.clean-spacing > * + * {
-  margin-top: 1rem;
+/* Extra Large Shadow for Key Elements */
+.wood-shadow-xl {
+  box-shadow: 0 12px 18px rgba(0, 0, 0, 0.25);
 }
 
-.clean-spacing-sm > * + * {
-  margin-top: 0.5rem;
+/* Subtle Inner Shadow for Depth */
+.wood-shadow-inner {
+  box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.clean-spacing-lg > * + * {
-  margin-top: 1.5rem;
+/* Even More Pronounced Shadow */
+.wood-shadow-2xl {
+  box-shadow: 0 16px 24px rgba(0, 0, 0, 0.3);
 }
 
-/* Enhanced responsive design helpers */
+/* Tap Target Size */
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Bottom navigation stability */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Prevent bottom nav from hiding on scroll */
+body {
+  padding-bottom: 80px; /* Space for bottom nav */
+}
+
+/* Ensure bottom nav stays visible */
 @media (max-width: 768px) {
-  .electric-card {
-    border-radius: 12px;
-    margin: 6px;
-    padding: 1.25rem;
-  }
-
-  .tap-target {
-    min-height: 52px;
-    min-width: 52px;
-  }
-
-  /* Better mobile text contrast */
-  body {
-    font-size: 16px;
-    line-height: 1.6;
-  }
-
-  h1,
-  h2,
-  h3 {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  /* Improved button sizing for mobile */
-  .electric-button {
-    min-height: 48px;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 600;
+  .md\:hidden {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 50 !important;
   }
 }
 
-@media (max-width: 480px) {
-  .tap-target {
-    min-height: 56px;
-    min-width: 56px;
-  }
+/* Large chess board optimization */
+.wood-card {
+  will-change: transform;
+  backface-visibility: hidden;
+}
 
-  .electric-button {
-    min-height: 52px;
-    padding: 0.875rem 2rem;
-    font-size: 1.1rem;
-  }
+/* Smooth chess piece transitions */
+.chess-piece {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }

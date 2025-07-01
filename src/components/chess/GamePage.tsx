@@ -468,7 +468,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       return;
     }
 
-    setIsUpdating(true); // Prevent concurrent updates
+    setIsUpdating(true);
 
     const isWhitePlayer = currentUser === game.white_player_id;
     const isBlackPlayer = currentUser === game.black_player_id;
@@ -533,8 +533,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       const nextTurn = game.current_turn === "white" ? "black" : "white";
       const newBoardState = chess.fen();
 
-      // Reduced time penalty for faster gameplay
-      const timeUsed = isMobile ? 1 : 2; // Much less time penalty
+      // Minimal time deduction per move - preserve most of the time
+      const timeUsed = 3; // Only 3 seconds per move
       const newWhiteTime = game.current_turn === "white" 
         ? Math.max(0, (game.white_time_remaining || 600) - timeUsed)
         : game.white_time_remaining || 600;
@@ -656,7 +656,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const playerCount = (game.white_player_id ? 1 : 0) + (game.black_player_id ? 1 : 0);
 
   return (
-    <div className="space-y-2 sm:space-y-4 pb-16 sm:pb-20 px-1 sm:px-2">
+    <div className="space-y-2 sm:space-y-4 pb-20 sm:pb-24 px-1 sm:px-2">
       {/* Game End Dialog */}
       <Dialog open={showGameEndDialog} onOpenChange={setShowGameEndDialog}>
         <DialogContent className="text-center w-[90vw] sm:w-[95vw] max-w-sm mx-auto bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl rounded-xl">
@@ -749,7 +749,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </div>
       )}
 
-      {/* Time Controls */}
+      {/* Time Controls - Show for active games with 10 minutes display */}
       {game.game_status === 'active' && (
         <TimeControl
           whiteTime={game.white_time_remaining || 600}
@@ -766,7 +766,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         <CardHeader className="pb-1 sm:pb-2">
           <CardTitle className="text-white flex items-center gap-2 text-sm sm:text-base md:text-lg font-bold">
             <Crown className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-yellow-400" />
-            <span className="truncate text-xs sm:text-sm md:text-base bg-gradient-to-r from-yellow-400 to-white bg-clip-text text-transparent">
+            <span className="truncate text-xs sm:text-sm bg-gradient-to-r from-yellow-400 to-white bg-clip-text text-transparent">
               {game.game_name || "Chess Game"}
             </span>
           </CardTitle>

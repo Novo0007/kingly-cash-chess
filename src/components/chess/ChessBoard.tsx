@@ -280,12 +280,12 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full px-0 sm:px-1">
-      <div className="wood-card p-4 sm:p-8 md:p-12 lg:p-16 xl:p-20 rounded-xl sm:rounded-2xl wood-shadow-deep w-full h-full max-w-none sm:max-w-6xl md:max-w-7xl lg:max-w-8xl xl:max-w-[100rem] border-6 border-amber-800 wood-plank relative overflow-hidden transform scale-105 sm:scale-110 md:scale-115 lg:scale-120">
-        {/* Chess Board Frame - Premium Handcrafted Wood Style */}
-        <div className="relative p-3 sm:p-6 md:p-8 lg:p-12 bg-gradient-to-br from-amber-900 via-amber-800 to-amber-900 rounded-xl wood-shadow-xl border-4 border-amber-700 shadow-2xl">
+      <div className="wood-card p-6 sm:p-10 md:p-16 lg:p-20 xl:p-24 rounded-xl sm:rounded-2xl wood-shadow-deep w-full h-full max-w-none sm:max-w-7xl md:max-w-8xl lg:max-w-[90rem] xl:max-w-[120rem] border-6 border-amber-800 wood-plank relative overflow-hidden transform scale-110 sm:scale-125 md:scale-135 lg:scale-150">
+        {/* Chess Board Frame - Larger Premium Style */}
+        <div className="relative p-4 sm:p-8 md:p-12 lg:p-16 bg-gradient-to-br from-amber-900 via-amber-800 to-amber-900 rounded-xl wood-shadow-xl border-4 border-amber-700 shadow-2xl">
           {/* Ornate Inner Wood Frame */}
-          <div className="relative p-2 sm:p-4 md:p-6 bg-gradient-to-br from-amber-800 via-amber-700 to-amber-800 rounded-lg border-2 border-amber-600">
-            {/* Premium Chess Board Surface */}
+          <div className="relative p-3 sm:p-6 md:p-9 bg-gradient-to-br from-amber-800 via-amber-700 to-amber-800 rounded-lg border-2 border-amber-600">
+            {/* Premium Chess Board Surface - Larger */}
             <div
               ref={boardRef}
               className="grid grid-cols-8 gap-0 aspect-square w-full h-full rounded-lg overflow-hidden wood-shadow-2xl relative border-4 border-amber-900 shadow-inner"
@@ -319,7 +319,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     <div
                       key={`${rowIndex}-${colIndex}`}
                       className={`
-                    aspect-square flex items-center justify-center text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[8rem] 2xl:text-[10rem] font-bold cursor-pointer
+                    aspect-square flex items-center justify-center text-6xl xs:text-7xl sm:text-8xl md:text-9xl lg:text-[8rem] xl:text-[10rem] 2xl:text-[12rem] font-bold cursor-pointer
                     transition-all duration-300 hover:scale-110 active:scale-95 relative overflow-hidden border-2 border-amber-900/20 shadow-lg
                     ${
                       isLightSquare(rowIndex, colIndex)
@@ -355,12 +355,12 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                         style={{
                           textShadow: piece
                             ? piece.color === "b"
-                              ? "2px 2px 4px rgba(255, 255, 255, 0.8)"
-                              : "2px 2px 4px rgba(0, 0, 0, 0.8)"
+                              ? "3px 3px 6px rgba(255, 255, 255, 0.9)"
+                              : "3px 3px 6px rgba(0, 0, 0, 0.9)"
                             : "none",
                           filter:
                             piece && piece.color === "b"
-                              ? "drop-shadow(1px 1px 2px white)"
+                              ? "drop-shadow(2px 2px 4px white)"
                               : "none",
                         }}
                       >
@@ -375,17 +375,17 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
         </div>
 
         {/* Status Display - Wood Style */}
-        <div className="mt-3 sm:mt-6 md:mt-8 text-center">
-          <div className="wood-text text-sm sm:text-lg md:text-2xl font-bold wood-glass rounded-lg px-4 py-3 sm:px-6 sm:py-4 border-2 border-amber-700 wood-shadow tap-target bg-gradient-to-r from-amber-100 to-orange-100">
+        <div className="mt-4 sm:mt-8 md:mt-12 text-center">
+          <div className="wood-text text-base sm:text-xl md:text-3xl font-bold wood-glass rounded-lg px-6 py-4 sm:px-8 sm:py-6 border-2 border-amber-700 wood-shadow tap-target bg-gradient-to-r from-amber-100 to-orange-100">
             Playing as {playerColor === "white" ? "⚪ White" : "⚫ Black"}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-amber-800 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold wood-glass rounded-lg px-3 py-2 sm:px-4 sm:py-3 inline-block border-2 border-amber-600 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
+            <div className="text-amber-800 mt-3 sm:mt-4 text-base sm:text-lg md:text-xl font-bold wood-glass rounded-lg px-4 py-3 sm:px-6 sm:py-4 inline-block border-2 border-amber-600 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
               Opponent's turn...
             </div>
           )}
           {disabled && (
-            <div className="text-amber-700 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold wood-glass rounded-lg px-3 py-2 sm:px-4 sm:py-3 inline-block border-2 border-amber-500 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
+            <div className="text-amber-700 mt-3 sm:mt-4 text-base sm:text-lg md:text-xl font-bold wood-glass rounded-lg px-4 py-3 sm:px-6 sm:py-4 inline-block border-2 border-amber-500 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
               Spectating
             </div>
           )}

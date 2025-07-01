@@ -31,7 +31,7 @@ export const TimeControl: React.FC<TimeControlProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }, []);
 
-  const isLowTime = useCallback((time: number) => time <= 30, []);
+  const isLowTime = useCallback((time: number) => time <= 60, []);
 
   // Memoized values to prevent unnecessary re-renders
   const whiteTimeFormatted = useMemo(() => formatTime(displayWhiteTime), [displayWhiteTime, formatTime]);
@@ -39,9 +39,14 @@ export const TimeControl: React.FC<TimeControlProps> = ({
   const whiteIsLow = useMemo(() => isLowTime(displayWhiteTime), [displayWhiteTime, isLowTime]);
   const blackIsLow = useMemo(() => isLowTime(displayBlackTime), [displayBlackTime, isLowTime]);
 
+  // Only update display times when props change, don't reset
   useEffect(() => {
-    setDisplayWhiteTime(whiteTime);
-    setDisplayBlackTime(blackTime);
+    if (whiteTime !== displayWhiteTime) {
+      setDisplayWhiteTime(whiteTime);
+    }
+    if (blackTime !== displayBlackTime) {
+      setDisplayBlackTime(blackTime);
+    }
     setLastUpdate(Date.now());
   }, [whiteTime, blackTime]);
 
@@ -73,57 +78,64 @@ export const TimeControl: React.FC<TimeControlProps> = ({
           });
         }
       }
-    }, 100); // Check more frequently but only update when needed
+    }, 100);
 
     return () => clearInterval(interval);
   }, [currentTurn, gameStatus, isActive, onTimeUp, lastUpdate]);
 
   return (
-    <div className="flex justify-between items-center gap-1 sm:gap-2 mb-2 sm:mb-4 px-1">
+    <div className="flex justify-between items-center gap-2 sm:gap-4 mb-3 sm:mb-6 px-2">
       {/* White Player Time */}
       <Card className={cn(
         "flex-1 transition-all duration-200 border-2",
         currentTurn === 'white' && isActive 
-          ? 'border-yellow-400 bg-yellow-900/20 shadow-lg' 
+          ? 'border-yellow-400 bg-yellow-900/20 shadow-lg scale-105' 
           : 'border-gray-600 bg-gray-900/50'
       )}>
-        <CardContent className="p-1 sm:p-2 text-center">
+        <CardContent className="p-2 sm:p-3 text-center">
           <div className="flex items-center justify-center gap-1 text-white mb-1">
-            <Clock className="h-2 w-2 sm:h-3 sm:w-3" />
-            <span className="text-xs font-medium">⚪</span>
+            <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="text-sm font-medium">⚪</span>
           </div>
           <div className={cn(
-            "text-sm sm:text-lg font-mono font-bold transition-colors duration-200",
+            "text-lg sm:text-xl md:text-2xl font-mono font-bold transition-colors duration-200",
             whiteIsLow 
               ? 'text-red-400 animate-pulse' 
               : 'text-white'
           )}>
             {whiteTimeFormatted}
-            {whiteIsLow && <AlertTriangle className="inline h-2 w-2 sm:h-3 sm:w-3 ml-1" />}
+            {whiteIsLow && <AlertTriangle className="inline h-3 w-3 sm:h-4 sm:w-4 ml-1" />}
           </div>
         </CardContent>
       </Card>
+
+      {/* Game Timer Info */}
+      <div className="text-center px-2">
+        <div className="text-xs sm:text-sm text-white bg-amber-900/50 px-2 py-1 rounded border border-amber-600">
+          10+0
+        </div>
+      </div>
 
       {/* Black Player Time */}
       <Card className={cn(
         "flex-1 transition-all duration-200 border-2",
         currentTurn === 'black' && isActive 
-          ? 'border-yellow-400 bg-yellow-900/20 shadow-lg' 
+          ? 'border-yellow-400 bg-yellow-900/20 shadow-lg scale-105' 
           : 'border-gray-600 bg-gray-900/50'
       )}>
-        <CardContent className="p-1 sm:p-2 text-center">
+        <CardContent className="p-2 sm:p-3 text-center">
           <div className="flex items-center justify-center gap-1 text-white mb-1">
-            <Clock className="h-2 w-2 sm:h-3 sm:w-3" />
-            <span className="text-xs font-medium">⚫</span>
+            <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="text-sm font-medium">⚫</span>
           </div>
           <div className={cn(
-            "text-sm sm:text-lg font-mono font-bold transition-colors duration-200",
+            "text-lg sm:text-xl md:text-2xl font-mono font-bold transition-colors duration-200",
             blackIsLow 
               ? 'text-red-400 animate-pulse' 
               : 'text-white'
           )}>
             {blackTimeFormatted}
-            {blackIsLow && <AlertTriangle className="inline h-2 w-2 sm:h-3 sm:w-3 ml-1" />}
+            {blackIsLow && <AlertTriangle className="inline h-3 w-3 sm:h-4 sm:w-4 ml-1" />}
           </div>
         </CardContent>
       </Card>
