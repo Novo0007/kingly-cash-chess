@@ -193,11 +193,11 @@ const Index = () => {
   };
 
   return (
-    <MobileOptimized className="electric-bg">
-      {/* Enhanced Electric Background */}
-      <div className="fixed inset-0 electric-gradient">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/15 via-transparent to-cyan-100/15"></div>
-        <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/5 via-blue-500/5 to-cyan-500/5"></div>
+    <MobileOptimized className="wood-bg">
+      {/* Natural Wood Background */}
+      <div className="fixed inset-0 wood-gradient">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50/15 via-transparent to-orange-100/15"></div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-amber-700/5 via-orange-600/5 to-yellow-600/5"></div>
       </div>
 
       {/* Dynamic Pattern Overlay */}
