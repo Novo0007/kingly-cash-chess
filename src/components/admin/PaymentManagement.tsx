@@ -444,7 +444,7 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
                         )}
 
                         {transaction.status !== "pending" && (
-                          <div className="flex gap-2">
+                          <div className="flex gap-1 sm:gap-2">
                             <Button
                               size="sm"
                               onClick={() =>
@@ -453,10 +453,11 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
                                   "pending",
                                 )
                               }
-                              className="bg-blue-600 hover:bg-blue-700"
+                              variant="outline"
+                              className="text-amber-800 border-amber-600 bg-amber-100 hover:bg-amber-200 min-h-[44px] text-xs"
                               title="Mark as pending for review"
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
                           </div>
                         )}
@@ -467,8 +468,8 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
               ))}
 
               {filteredTransactions.length === 0 && (
-                <div className="text-center py-8">
-                  <p className="text-slate-400">
+                <div className="text-center py-6 sm:py-8">
+                  <p className="text-amber-700 text-sm sm:text-base">
                     No transactions found matching the current filters.
                   </p>
                 </div>
