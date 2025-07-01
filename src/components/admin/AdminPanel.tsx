@@ -71,11 +71,13 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
 
   if (!adminUser) {
     return (
-      <Card className="bg-gradient-to-br from-red-900 to-red-800 border-red-600">
-        <CardContent className="p-6 text-center">
-          <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-white mb-2">Access Denied</h3>
-          <p className="text-red-300">
+      <Card className="wood-card bg-gradient-to-br from-red-100 to-red-50 border-red-600 m-2 sm:m-4">
+        <CardContent className="p-4 sm:p-6 text-center">
+          <AlertTriangle className="h-10 w-10 sm:h-12 sm:w-12 text-red-700 mx-auto mb-4" />
+          <h3 className="text-lg sm:text-xl font-bold text-red-900 mb-2 font-heading">
+            Access Denied
+          </h3>
+          <p className="text-red-800 text-sm sm:text-base">
             You don't have admin privileges or your account is not active.
           </p>
         </CardContent>
