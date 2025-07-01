@@ -158,24 +158,49 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
-          <SystemOverview adminUser={adminUser} />
+        <TabsContent
+          value="overview"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+        >
+          <div className="min-h-[200px]">
+            <SystemOverview adminUser={adminUser} />
+          </div>
         </TabsContent>
 
-        <TabsContent value="users" className="space-y-6">
-          <UserManagement adminUser={adminUser} />
+        <TabsContent
+          value="users"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+        >
+          <div className="min-h-[200px]">
+            <UserManagement adminUser={adminUser} />
+          </div>
         </TabsContent>
 
-        <TabsContent value="payments" className="space-y-6">
-          <PaymentManagement adminUser={adminUser} />
+        <TabsContent
+          value="payments"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+        >
+          <div className="min-h-[200px]">
+            <PaymentManagement adminUser={adminUser} />
+          </div>
         </TabsContent>
 
-        <TabsContent value="games" className="space-y-6">
-          <GameManagement adminUser={adminUser} />
+        <TabsContent
+          value="games"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+        >
+          <div className="min-h-[200px]">
+            <GameManagement adminUser={adminUser} />
+          </div>
         </TabsContent>
 
-        <TabsContent value="settings" className="space-y-6">
-          <AdminSettings adminUser={adminUser} />
+        <TabsContent
+          value="settings"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+        >
+          <div className="min-h-[200px]">
+            <AdminSettings adminUser={adminUser} />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
