@@ -178,30 +178,30 @@ const App = () => {
 
             {/* Advanced Typography System */}
             <div className="space-y-6">
-              {/* Main Title - Ultra Vibrant */}
+              {/* Main Title - Wood Theme */}
               <div className="relative">
                 <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-heading leading-none">
                   <span
-                    className="block bg-gradient-to-r from-purple-200 via-pink-100 via-white to-cyan-200 bg-clip-text text-transparent drop-shadow-2xl"
+                    className="block bg-gradient-to-r from-amber-100 via-orange-100 via-amber-50 to-yellow-100 bg-clip-text text-transparent drop-shadow-2xl"
                     style={{ filter: "brightness(1.2)" }}
                   >
                     GAME
                   </span>
                   <span
-                    className="block bg-gradient-to-r from-cyan-300 via-purple-300 via-pink-300 to-green-300 bg-clip-text text-transparent electric-text-gradient"
+                    className="block bg-gradient-to-r from-yellow-200 via-amber-200 via-orange-200 to-green-200 bg-clip-text text-transparent wood-text-gradient"
                     style={{ filter: "brightness(1.1)" }}
                   >
                     HUB
                   </span>
                 </h1>
 
-                {/* Subtitle with Enhanced Styling */}
+                {/* Subtitle with Wood Styling */}
                 <div className="mt-4 relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/25 via-pink-500/20 to-transparent blur-xl"></div>
-                  <p className="relative text-xl sm:text-2xl md:text-3xl font-medium text-purple-200 font-body tracking-widest">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-600/25 via-orange-600/20 to-transparent blur-xl"></div>
+                  <p className="relative text-xl sm:text-2xl md:text-3xl font-medium text-amber-200 font-body tracking-widest">
                     BY
                     <span
-                      className="mx-3 font-black bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent"
+                      className="mx-3 font-black bg-gradient-to-r from-amber-50 via-orange-100 to-yellow-100 bg-clip-text text-transparent"
                       style={{ filter: "brightness(1.15)" }}
                     >
                       NNC GAMES
