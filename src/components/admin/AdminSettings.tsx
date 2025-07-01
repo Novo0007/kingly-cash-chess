@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -155,29 +154,33 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
               <div className="flex items-center gap-3 mb-3">
                 <Crown className="h-6 w-6 text-amber-700" />
                 <div>
-                  <h3 className="font-semibold text-amber-900">Your Admin Profile</h3>
-                  <p className="text-sm text-amber-700">Current administrative privileges</p>
+                  <h3 className="font-semibold text-amber-900">
+                    Your Admin Profile
+                  </h3>
+                  <p className="text-sm text-amber-700">
+                    Current administrative privileges
+                  </p>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
-                <p className="text-sm">
+                <div className="text-sm">
                   <span className="font-medium">Email:</span> {adminUser.email}
-                </p>
-                <p className="text-sm flex items-center gap-2">
+                </div>
+                <div className="text-sm flex items-center gap-2">
                   <span className="font-medium">Role:</span>
                   <Badge className={getRoleColor(adminUser.role)}>
                     {adminUser.role.replace("_", " ").toUpperCase()}
                   </Badge>
-                </p>
-                <p className="text-sm flex items-center gap-2">
+                </div>
+                <div className="text-sm flex items-center gap-2">
                   <span className="font-medium">Status:</span>
                   <Badge className="bg-green-700 text-green-50">Active</Badge>
-                </p>
-                <p className="text-sm">
+                </div>
+                <div className="text-sm">
                   <span className="font-medium">Since:</span>{" "}
                   {new Date(adminUser.created_at).toLocaleDateString()}
-                </p>
+                </div>
               </div>
             </div>
           </div>
@@ -193,20 +196,30 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
               Admin Users ({adminUsers.length})
             </div>
             {hasInvitePermission() && (
-              <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+              <Dialog
+                open={inviteDialogOpen}
+                onOpenChange={setInviteDialogOpen}
+              >
                 <DialogTrigger asChild>
-                  <Button size="sm" className="bg-amber-700 hover:bg-amber-800 text-white">
+                  <Button
+                    size="sm"
+                    className="bg-amber-700 hover:bg-amber-800 text-white"
+                  >
                     <UserPlus className="h-4 w-4 mr-1" />
                     Invite
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="wood-card border-2 border-amber-600">
                   <DialogHeader>
-                    <DialogTitle className="text-amber-900">Invite New Admin</DialogTitle>
+                    <DialogTitle className="text-amber-900">
+                      Invite New Admin
+                    </DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="email" className="text-amber-800">Email Address</Label>
+                      <Label htmlFor="email" className="text-amber-800">
+                        Email Address
+                      </Label>
                       <Input
                         id="email"
                         type="email"
@@ -243,7 +256,10 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
         <CardContent className="p-3 sm:p-4 pt-0">
           <div className="space-y-3">
             {adminUsers.map((admin) => (
-              <Card key={admin.id} className="bg-amber-50/30 border border-amber-300">
+              <Card
+                key={admin.id}
+                className="bg-amber-50/30 border border-amber-300"
+              >
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -255,7 +271,9 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
                           {admin.email}
                         </h4>
                         <div className="flex items-center gap-2 mt-1">
-                          <Badge className={`${getRoleColor(admin.role)} text-xs`}>
+                          <Badge
+                            className={`${getRoleColor(admin.role)} text-xs`}
+                          >
                             {admin.role.replace("_", " ").toUpperCase()}
                           </Badge>
                           <Badge
@@ -269,19 +287,22 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
                       </div>
                     </div>
 
-                    {adminUser.role === "super_admin" && admin.id !== adminUser.id && (
-                      <Button
-                        size="sm"
-                        onClick={() => toggleAdminStatus(admin.id, admin.is_active)}
-                        className={`text-xs ${
-                          admin.is_active
-                            ? "bg-red-600 hover:bg-red-700"
-                            : "bg-green-600 hover:bg-green-700"
-                        }`}
-                      >
-                        {admin.is_active ? "Deactivate" : "Activate"}
-                      </Button>
-                    )}
+                    {adminUser.role === "super_admin" &&
+                      admin.id !== adminUser.id && (
+                        <Button
+                          size="sm"
+                          onClick={() =>
+                            toggleAdminStatus(admin.id, admin.is_active)
+                          }
+                          className={`text-xs ${
+                            admin.is_active
+                              ? "bg-red-600 hover:bg-red-700"
+                              : "bg-green-600 hover:bg-green-700"
+                          }`}
+                        >
+                          {admin.is_active ? "Deactivate" : "Activate"}
+                        </Button>
+                      )}
                   </div>
                 </CardContent>
               </Card>
@@ -301,8 +322,12 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
         <CardContent className="p-3 sm:p-4 pt-0">
           <div className="space-y-3">
             <div className="flex items-center justify-between py-2 border-b border-amber-200">
-              <span className="text-amber-800 text-sm">Database Connection</span>
-              <Badge className="bg-green-600 text-white text-xs">Connected</Badge>
+              <span className="text-amber-800 text-sm">
+                Database Connection
+              </span>
+              <Badge className="bg-green-600 text-white text-xs">
+                Connected
+              </Badge>
             </div>
             <div className="flex items-center justify-between py-2 border-b border-amber-200">
               <span className="text-amber-800 text-sm">Real-time Updates</span>
@@ -322,10 +347,13 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
           <div className="flex items-start gap-3">
             <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
             <div>
-              <h4 className="font-semibold text-orange-900 mb-1">Security Notice</h4>
+              <h4 className="font-semibold text-orange-900 mb-1">
+                Security Notice
+              </h4>
               <p className="text-orange-800 text-sm">
-                Admin privileges provide access to sensitive user data and financial information. 
-                Please use these tools responsibly and maintain strict confidentiality of all user data.
+                Admin privileges provide access to sensitive user data and
+                financial information. Please use these tools responsibly and
+                maintain strict confidentiality of all user data.
               </p>
             </div>
           </div>
