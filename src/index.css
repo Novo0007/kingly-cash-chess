@@ -57,38 +57,40 @@
   }
 
   .dark {
-    /* Dark vibrant theme with neon accents */
-    --background: 240 15% 6%;
-    --foreground: 0 0% 98%;
+    /* Dark wood theme - Rich dark woods */
+    --background: 25 25% 12%;
+    --foreground: 30 20% 88%;
 
-    --card: 240 15% 8%;
-    --card-foreground: 0 0% 98%;
+    --card: 25 30% 15%;
+    --card-foreground: 30 20% 88%;
 
-    --popover: 240 15% 6%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 25 30% 15%;
+    --popover-foreground: 30 20% 88%;
 
-    --primary: 270 95% 65%;
-    --primary-foreground: 240 15% 6%;
+    --primary: 25 45% 45%;
+    --primary-foreground: 25 25% 12%;
 
-    --secondary: 240 20% 15%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 25 20% 20%;
+    --secondary-foreground: 30 20% 88%;
 
-    --muted: 240 20% 15%;
-    --muted-foreground: 240 5% 70%;
+    --muted: 25 20% 18%;
+    --muted-foreground: 30 15% 65%;
 
-    --accent: 195 100% 55%;
-    --accent-foreground: 240 15% 6%;
+    --accent: 120 25% 45%;
+    --accent-foreground: 25 25% 12%;
 
-    --destructive: 0 90% 65%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 10 60% 55%;
+    --destructive-foreground: 30 20% 88%;
 
-    --border: 240 20% 18%;
-    --input: 240 20% 15%;
-    --ring: 270 95% 65%;
+    --border: 25 20% 25%;
+    --input: 25 20% 18%;
+    --ring: 25 45% 45%;
 
-    /* Enhanced vibrant colors for dark mode */
-    --electric-500: 270 95% 65%;
-    --electric-accent: 195 100% 55%;
+    /* Dark wood colors */
+    --wood-dark: 25 35% 8%;
+    --wood-medium: 25 35% 25%;
+    --wood-light: 30 30% 45%;
+    --wood-lightest: 30 25% 65%;
   }
 }
 
