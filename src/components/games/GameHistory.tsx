@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GameViewer } from "./GameViewer";
 import { 
   Trophy, 
   Clock, 
@@ -36,8 +36,8 @@ interface GameWithPlayers {
   prize_amount: number;
   created_at: string;
   updated_at: string | null;
-  white_player: { username: string; chess_rating: number } | null;
-  black_player: { username: string; chess_rating: number } | null;
+  white_player: { username: string; chess_rating: number; avatar_url?: string } | null;
+  black_player: { username: string; chess_rating: number; avatar_url?: string } | null;
   move_history: string[] | null;
   board_state: string | null;
 }
@@ -48,6 +48,7 @@ export const GameHistory = ({ userId, isOwnHistory = true }: GameHistoryProps) =
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedGame, setSelectedGame] = useState<GameWithPlayers | null>(null);
+  const [showGameViewer, setShowGameViewer] = useState(false);
   const gamesPerPage = 10;
 
   useEffect(() => {
@@ -101,7 +102,7 @@ export const GameHistory = ({ userId, isOwnHistory = true }: GameHistoryProps) =
       // Fetch player profiles
       const { data: playersData, error: playersError } = await supabase
         .from("profiles")
-        .select("id, username, chess_rating")
+        .select("id, username, chess_rating, avatar_url")
         .in("id", Array.from(playerIds));
 
       if (playersError) throw playersError;
@@ -127,6 +128,11 @@ export const GameHistory = ({ userId, isOwnHistory = true }: GameHistoryProps) =
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewGame = (game: GameWithPlayers) => {
+    setSelectedGame(game);
+    setShowGameViewer(true);
   };
 
   const getGameResult = (game: GameWithPlayers) => {
@@ -180,6 +186,12 @@ export const GameHistory = ({ userId, isOwnHistory = true }: GameHistoryProps) =
 
   return (
     <div className="space-y-4">
+      <GameViewer
+        game={selectedGame}
+        open={showGameViewer}
+        onOpenChange={setShowGameViewer}
+      />
+      
       <Card className="wood-card border-amber-600">
         <CardHeader>
           <CardTitle className="text-amber-900 flex items-center gap-2">
@@ -243,7 +255,7 @@ export const GameHistory = ({ userId, isOwnHistory = true }: GameHistoryProps) =
                             size="sm"
                             variant="outline"
                             className="mt-2 border-amber-400 text-amber-800 hover:bg-amber-100"
-                            onClick={() => setSelectedGame(game)}
+                            onClick={() => handleViewGame(game)}
                           >
                             <Eye className="h-3 w-3 mr-1" />
                             View
