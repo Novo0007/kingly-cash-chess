@@ -347,7 +347,7 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                       onClick={() => handleSquareClick(rowIndex, colIndex)}
                     >
                       <span
-                        className={`z-10 drop-shadow-2xl select-none ${
+                        className={`z-20 drop-shadow-2xl select-none transition-all duration-300 hover:scale-110 ${
                           piece && piece.color === "b"
                             ? "text-black"
                             : "text-white"
@@ -355,13 +355,20 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                         style={{
                           textShadow: piece
                             ? piece.color === "b"
-                              ? "2px 2px 4px rgba(255, 255, 255, 0.8)"
-                              : "2px 2px 4px rgba(0, 0, 0, 0.8)"
+                              ? "3px 3px 8px rgba(255, 255, 255, 0.9), 1px 1px 4px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5)"
+                              : "3px 3px 8px rgba(0, 0, 0, 0.9), 1px 1px 4px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 0, 0, 0.5)"
                             : "none",
-                          filter:
-                            piece && piece.color === "b"
-                              ? "drop-shadow(1px 1px 2px white)"
-                              : "none",
+                          filter: piece
+                            ? piece.color === "b"
+                              ? "drop-shadow(2px 2px 6px white) drop-shadow(0 0 10px rgba(255, 255, 255, 0.8))"
+                              : "drop-shadow(2px 2px 6px black) drop-shadow(0 0 10px rgba(0, 0, 0, 0.8))"
+                            : "none",
+                          fontWeight: "900",
+                          WebkitTextStroke: piece
+                            ? piece.color === "b"
+                              ? "2px white"
+                              : "2px black"
+                            : "none",
                         }}
                       >
                         {getPieceSymbol(piece)}
