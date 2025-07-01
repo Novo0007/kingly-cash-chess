@@ -1,157 +1,62 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Enhanced Natural Wood Background */
-.wood-bg {
-  background: linear-gradient(135deg, 
-    #f5f5dc 0%, 
-    #deb887 25%, 
-    #cd853f 50%, 
-    #deb887 75%, 
-    #f5f5dc 100%
-  );
-  background-size: 200% 200%;
-  animation: wood-grain 20s ease-in-out infinite;
-}
-
-@keyframes wood-grain {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-/* Enhanced Wood Gradient Overlay */
-.wood-gradient {
-  background: linear-gradient(135deg, 
-    rgba(222, 184, 135, 0.3) 0%, 
-    rgba(205, 133, 63, 0.4) 25%,
-    rgba(160, 82, 45, 0.5) 50%,
-    rgba(205, 133, 63, 0.4) 75%,
-    rgba(222, 184, 135, 0.3) 100%
-  );
-}
-
-/* Realistic Wood Plank Texture */
-.wood-plank {
-  background: linear-gradient(90deg, 
-    #8B4513 0%, 
-    #A0522D 10%, 
-    #CD853F 20%, 
-    #DEB887 30%, 
-    #F5DEB3 40%, 
-    #DEB887 60%, 
-    #CD853F 80%, 
-    #A0522D 90%, 
-    #8B4513 100%
-  );
-  background-size: 40px 100%;
-}
-
-/* Enhanced Wood Card Style */
-.wood-card {
-  background: linear-gradient(135deg, 
-    rgba(245, 245, 220, 0.9) 0%, 
-    rgba(222, 184, 135, 0.8) 25%,
-    rgba(205, 133, 63, 0.7) 50%,
-    rgba(222, 184, 135, 0.8) 75%,
-    rgba(245, 245, 220, 0.9) 100%
-  );
-  border: 2px solid rgba(139, 69, 19, 0.6);
-  box-shadow: 
-    0 8px 16px rgba(0, 0, 0, 0.2),
-    inset 0 2px 4px rgba(255, 255, 255, 0.3),
-    inset 0 -2px 4px rgba(139, 69, 19, 0.2);
-}
-
-/* Premium Wood Glass Effect */
-.wood-glass {
-  background: linear-gradient(135deg, 
-    rgba(245, 245, 220, 0.4) 0%, 
-    rgba(222, 184, 135, 0.3) 50%,
-    rgba(205, 133, 63, 0.2) 100%
-  );
-  backdrop-filter: blur(10px);
-  box-shadow: 
-    0 4px 8px rgba(0, 0, 0, 0.1),
-    inset 0 1px 2px rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(139, 69, 19, 0.3);
-}
-
-/* Rich Wood Text Color */
-.wood-text {
-  color: #3E2723;
-  text-shadow: 1px 1px 2px rgba(245, 245, 220, 0.3);
-}
-
-/* Enhanced Floating Wood Elements */
-@keyframes wood-float {
-  0% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-8px) rotate(1deg); }
-  50% { transform: translateY(-15px) rotate(0deg); }
-  75% { transform: translateY(-8px) rotate(-1deg); }
-  100% { transform: translateY(0) rotate(0deg); }
-}
-
-.wood-float {
-  animation: wood-float 12s infinite ease-in-out;
-}
-
-/* Enhanced Particle Float Animation */
-@keyframes particle-float {
-  0% { transform: translate(0, 0) rotate(0deg); opacity: 0.4; }
-  25% { transform: translate(3px, -3px) rotate(90deg); opacity: 0.7; }
-  50% { transform: translate(7px, -7px) rotate(180deg); opacity: 1; }
-  75% { transform: translate(3px, -3px) rotate(270deg); opacity: 0.7; }
-  100% { transform: translate(0, 0) rotate(360deg); opacity: 0.4; }
-}
-
-.particle-float {
-  animation: particle-float 15s infinite linear;
-}
-
-/* Smooth Slide-In Bottom Animation */
-@keyframes slide-in-bottom {
-  0% {
-    opacity: 0;
-    transform: translateY(60px) scale(0.95);
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 0.75rem;
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
   }
 }
 
-.slide-in-bottom {
-  animation: slide-in-bottom 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-/* Premium Wood Shadows */
-.wood-shadow-deep {
-  box-shadow: 
-    0 12px 20px rgba(0, 0, 0, 0.3),
-    0 6px 12px rgba(139, 69, 19, 0.2),
-    inset 0 2px 4px rgba(255, 255, 255, 0.1);
-}
-
-.wood-shadow-xl {
-  box-shadow: 
-    0 16px 28px rgba(0, 0, 0, 0.35),
-    0 8px 16px rgba(139, 69, 19, 0.25),
-    inset 0 3px 6px rgba(255, 255, 255, 0.15);
-}
-
-.wood-shadow-inner {
-  box-shadow: 
-    inset 0 6px 12px rgba(0, 0, 0, 0.15),
-    inset 0 -3px 6px rgba(139, 69, 19, 0.1);
-}
-
-.wood-shadow-2xl {
-  box-shadow: 
-    0 20px 36px rgba(0, 0, 0, 0.4),
-    0 10px 20px rgba(139, 69, 19, 0.3),
-    inset 0 4px 8px rgba(255, 255, 255, 0.2);
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    padding-bottom: 90px;
+  }
 }
 
 /* Enhanced Tap Target Size */
@@ -160,73 +65,47 @@
   min-width: 48px;
 }
 
-/* Bottom navigation stability - Fixed positioning */
+/* Bottom navigation stability */
 .safe-area-inset-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
-/* Prevent bottom nav from hiding on scroll */
-body {
-  padding-bottom: 90px;
-  background: linear-gradient(135deg, 
-    #f5f5dc 0%, 
-    #deb887 25%, 
-    #cd853f 50%, 
-    #deb887 75%, 
-    #f5f5dc 100%
-  );
-  background-attachment: fixed;
-}
-
-/* Ensure bottom nav stays visible with enhanced positioning */
+/* Mobile bottom navigation */
 @media (max-width: 768px) {
-  .md\:hidden {
+  .md\\:hidden {
     position: fixed !important;
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
     z-index: 50 !important;
-    background: linear-gradient(135deg, 
-      rgba(245, 245, 220, 0.95) 0%, 
-      rgba(222, 184, 135, 0.9) 50%,
-      rgba(205, 133, 63, 0.95) 100%
-    );
+    background: hsl(var(--background) / 0.95);
     backdrop-filter: blur(10px);
-    border-top: 2px solid rgba(139, 69, 19, 0.3);
-    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
+    border-top: 1px solid hsl(var(--border));
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
   }
 }
 
-/* Optimized chess board performance */
-.wood-card {
-  will-change: transform;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-/* Smooth chess piece transitions with wood theme */
+/* Smooth transitions */
 .chess-piece {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  filter: drop-shadow(2px 2px 4px rgba(139, 69, 19, 0.3));
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Enhanced chess board squares */
+/* Chess board squares */
 .chess-square-light {
-  background: linear-gradient(135deg, 
-    #fef3c7 0%, 
-    #fcd34d 25%, 
-    #f59e0b 50%, 
-    #fcd34d 75%, 
-    #fef3c7 100%
-  );
+  background: hsl(var(--muted));
 }
 
 .chess-square-dark {
-  background: linear-gradient(135deg, 
-    #451a03 0%, 
-    #7c2d12 25%, 
-    #a16207 50%, 
-    #7c2d12 75%, 
-    #451a03 100%
-  );
+  background: hsl(var(--accent));
+}
+
+/* Loading animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
