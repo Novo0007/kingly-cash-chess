@@ -170,23 +170,35 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
         ))}
       </div>
 
-      <Card className="bg-slate-800 border-slate-600">
-        <CardHeader>
-          <CardTitle className="text-white">Recent Activity</CardTitle>
+      <Card className="wood-card wood-plank border-amber-700">
+        <CardHeader className="p-3 sm:p-4">
+          <CardTitle className="text-amber-900 text-base sm:text-lg font-heading">
+            System Status
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between py-2 border-b border-slate-600">
-              <span className="text-slate-300">System Status</span>
-              <Badge className="bg-green-600 text-white">Operational</Badge>
+        <CardContent className="p-3 sm:p-4 pt-0">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between py-2 border-b border-amber-300">
+              <span className="text-amber-800 text-sm sm:text-base">
+                System Status
+              </span>
+              <Badge className="bg-green-700 text-green-50 text-xs sm:text-sm">
+                Operational
+              </Badge>
             </div>
-            <div className="flex items-center justify-between py-2 border-b border-slate-600">
-              <span className="text-slate-300">Database Connection</span>
-              <Badge className="bg-green-600 text-white">Connected</Badge>
+            <div className="flex items-center justify-between py-2 border-b border-amber-300">
+              <span className="text-amber-800 text-sm sm:text-base">
+                Database Connection
+              </span>
+              <Badge className="bg-green-700 text-green-50 text-xs sm:text-sm">
+                Connected
+              </Badge>
             </div>
             <div className="flex items-center justify-between py-2">
-              <span className="text-slate-300">Admin Level</span>
-              <Badge className="bg-purple-600 text-white">
+              <span className="text-amber-800 text-sm sm:text-base">
+                Admin Level
+              </span>
+              <Badge className="bg-amber-800 text-amber-50 text-xs sm:text-sm">
                 {adminUser.role.replace("_", " ").toUpperCase()}
               </Badge>
             </div>
