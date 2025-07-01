@@ -279,113 +279,188 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center w-full px-0 sm:px-1">
-      <div className="wood-card p-6 sm:p-10 md:p-16 lg:p-20 xl:p-24 rounded-xl sm:rounded-2xl wood-shadow-deep w-full h-full max-w-none sm:max-w-7xl md:max-w-8xl lg:max-w-[90rem] xl:max-w-[120rem] border-6 border-amber-800 wood-plank relative overflow-hidden transform scale-110 sm:scale-125 md:scale-135 lg:scale-150">
-        {/* Chess Board Frame - Larger Premium Style */}
-        <div className="relative p-4 sm:p-8 md:p-12 lg:p-16 bg-gradient-to-br from-amber-900 via-amber-800 to-amber-900 rounded-xl wood-shadow-xl border-4 border-amber-700 shadow-2xl">
-          {/* Ornate Inner Wood Frame */}
-          <div className="relative p-3 sm:p-6 md:p-9 bg-gradient-to-br from-amber-800 via-amber-700 to-amber-800 rounded-lg border-2 border-amber-600">
-            {/* Premium Chess Board Surface - Larger */}
-            <div
-              ref={boardRef}
-              className="grid grid-cols-8 gap-0 aspect-square w-full h-full rounded-lg overflow-hidden wood-shadow-2xl relative border-4 border-amber-900 shadow-inner"
-              style={{
-                background: `
-                  radial-gradient(circle at center, rgba(139, 69, 19, 0.15) 0%, rgba(160, 82, 45, 0.1) 100%),
-                  repeating-linear-gradient(0deg,
-                    rgba(139, 69, 19, 0.15) 0px,
-                    rgba(160, 82, 45, 0.1) 1px,
-                    rgba(139, 69, 19, 0.15) 2px),
-                  repeating-linear-gradient(90deg,
-                    rgba(139, 69, 19, 0.15) 0px,
-                    rgba(160, 82, 45, 0.1) 1px,
-                    rgba(139, 69, 19, 0.15) 2px)
-                `,
-                boxShadow: "inset 0 0 50px rgba(139, 69, 19, 0.3)",
-              }}
-            >
-              {Array.from({ length: 8 }, (_, rowIndex) =>
-                Array.from({ length: 8 }, (_, colIndex) => {
-                  // Calculate the actual board position based on player perspective
-                  const actualRow =
-                    playerColor === "white" ? rowIndex : 7 - rowIndex;
-                  const actualCol =
-                    playerColor === "white" ? colIndex : 7 - colIndex;
+    <div className="flex flex-col items-center w-full h-full">
+      {/* Full Width Chess Board - Enhanced Wood Theme */}
+      <div className="w-full h-full flex flex-col">
+        {/* Premium Chess Board Container */}
+        <div 
+          ref={boardRef}
+          className="grid grid-cols-8 gap-0 aspect-square w-full h-full rounded-lg overflow-hidden shadow-2xl relative"
+          style={{
+            background: `
+              linear-gradient(45deg, 
+                rgba(101, 67, 33, 0.1) 0%, 
+                rgba(139, 69, 19, 0.15) 25%, 
+                rgba(160, 82, 45, 0.1) 50%, 
+                rgba(139, 69, 19, 0.15) 75%, 
+                rgba(101, 67, 33, 0.1) 100%
+              )
+            `,
+            boxShadow: `
+              inset 0 0 100px rgba(101, 67, 33, 0.3),
+              0 20px 40px rgba(0, 0, 0, 0.3)
+            `,
+          }}
+        >
+          {Array.from({ length: 8 }, (_, rowIndex) =>
+            Array.from({ length: 8 }, (_, colIndex) => {
+              // Calculate the actual board position based on player perspective
+              const actualRow =
+                playerColor === "white" ? rowIndex : 7 - rowIndex;
+              const actualCol =
+                playerColor === "white" ? colIndex : 7 - colIndex;
 
-                  // Get the piece from the board array
-                  const piece = board[actualRow] && board[actualRow][actualCol];
+              // Get the piece from the board array
+              const piece = board[actualRow] && board[actualRow][actualCol];
 
-                  return (
-                    <div
-                      key={`${rowIndex}-${colIndex}`}
-                      className={`
+              return (
+                <div
+                  key={`${rowIndex}-${colIndex}`}
+                  className={`
                     aspect-square flex items-center justify-center text-6xl xs:text-7xl sm:text-8xl md:text-9xl lg:text-[8rem] xl:text-[10rem] 2xl:text-[12rem] font-bold cursor-pointer
-                    transition-all duration-300 hover:scale-110 active:scale-95 relative overflow-hidden border-2 border-amber-900/20 shadow-lg
+                    transition-all duration-300 hover:scale-105 active:scale-95 relative overflow-hidden shadow-inner
                     ${
                       isLightSquare(rowIndex, colIndex)
-                        ? "bg-gradient-to-br from-amber-100 to-amber-50 hover:from-amber-200 hover:to-amber-100"
-                        : "bg-gradient-to-br from-amber-800 to-amber-700 hover:from-amber-700 hover:to-amber-600"
+                        ? "bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 hover:from-amber-100 hover:via-orange-100 hover:to-yellow-100"
+                        : "bg-gradient-to-br from-amber-900 via-orange-900 to-yellow-900 hover:from-amber-800 hover:via-orange-800 hover:to-yellow-800"
                     }
                     ${
                       isSquareHighlighted(rowIndex, colIndex)
-                        ? "ring-4 ring-amber-500 bg-gradient-to-br from-amber-300 to-amber-200"
+                        ? "ring-4 ring-yellow-500 bg-gradient-to-br from-yellow-200 to-amber-300 shadow-lg"
                         : ""
                     }
                     ${
                       isPossibleMove(rowIndex, colIndex)
-                        ? "after:absolute after:inset-1/3 after:bg-amber-600 after:rounded-full after:opacity-80 after:border after:border-amber-800"
+                        ? "after:absolute after:inset-1/3 after:bg-gradient-to-br after:from-green-500 after:to-emerald-600 after:rounded-full after:opacity-80 after:shadow-lg after:border-2 after:border-green-700"
                         : ""
                     }
                     ${
                       isLastMove(rowIndex, colIndex)
-                        ? "bg-gradient-to-br from-yellow-300 to-amber-300 ring-2 ring-amber-600"
+                        ? "bg-gradient-to-br from-blue-200 to-cyan-300 ring-2 ring-blue-500 shadow-lg"
                         : ""
                     }
                     ${disabled || !isPlayerTurn ? "cursor-default opacity-70" : "cursor-pointer"}
                     ${!isPlayerTurn ? "pointer-events-none" : ""}
                   `}
-                      onClick={() => handleSquareClick(rowIndex, colIndex)}
-                    >
-                      <span
-                        className={`z-10 drop-shadow-2xl select-none ${
-                          piece && piece.color === "b"
-                            ? "text-black"
-                            : "text-white"
-                        }`}
-                        style={{
-                          textShadow: piece
-                            ? piece.color === "b"
-                              ? "3px 3px 6px rgba(255, 255, 255, 0.9)"
-                              : "3px 3px 6px rgba(0, 0, 0, 0.9)"
-                            : "none",
-                          filter:
-                            piece && piece.color === "b"
-                              ? "drop-shadow(2px 2px 4px white)"
-                              : "none",
-                        }}
-                      >
-                        {getPieceSymbol(piece)}
-                      </span>
-                    </div>
-                  );
-                }),
-              ).flat()}
-            </div>
-          </div>
+                  style={{
+                    background: isLightSquare(rowIndex, colIndex)
+                      ? `
+                        linear-gradient(135deg, 
+                          #fef3c7 0%, 
+                          #fcd34d 25%, 
+                          #f59e0b 50%, 
+                          #fcd34d 75%, 
+                          #fef3c7 100%
+                        ),
+                        repeating-linear-gradient(0deg,
+                          rgba(245, 158, 11, 0.1) 0px,
+                          rgba(251, 191, 36, 0.05) 2px,
+                          rgba(245, 158, 11, 0.1) 4px)
+                      `
+                      : `
+                        linear-gradient(135deg, 
+                          #451a03 0%, 
+                          #7c2d12 25%, 
+                          #a16207 50%, 
+                          #7c2d12 75%, 
+                          #451a03 100%
+                        ),
+                        repeating-linear-gradient(45deg,
+                          rgba(124, 45, 18, 0.2) 0px,
+                          rgba(161, 98, 7, 0.1) 2px,
+                          rgba(124, 45, 18, 0.2) 4px)
+                      `,
+                    boxShadow: isLightSquare(rowIndex, colIndex)
+                      ? "inset 0 2px 4px rgba(245, 158, 11, 0.2), inset 0 -2px 4px rgba(251, 191, 36, 0.1)"
+                      : "inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -2px 4px rgba(124, 45, 18, 0.3)",
+                  }}
+                  onClick={() => handleSquareClick(rowIndex, colIndex)}
+                >
+                  <span
+                    className={`z-10 drop-shadow-2xl select-none ${
+                      piece && piece.color === "b"
+                        ? "text-gray-900"
+                        : "text-gray-100"
+                    }`}
+                    style={{
+                      textShadow: piece
+                        ? piece.color === "b"
+                          ? "2px 2px 4px rgba(255, 255, 255, 0.8), -1px -1px 2px rgba(0, 0, 0, 0.3)"
+                          : "2px 2px 4px rgba(0, 0, 0, 0.8), -1px -1px 2px rgba(255, 255, 255, 0.2)"
+                        : "none",
+                      filter: piece
+                        ? piece.color === "b"
+                          ? "drop-shadow(1px 1px 2px rgba(255, 255, 255, 0.5))"
+                          : "drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5))"
+                        : "none",
+                    }}
+                  >
+                    {getPieceSymbol(piece)}
+                  </span>
+                </div>
+              );
+            }),
+          ).flat()}
         </div>
 
-        {/* Status Display - Wood Style */}
-        <div className="mt-4 sm:mt-8 md:mt-12 text-center">
-          <div className="wood-text text-base sm:text-xl md:text-3xl font-bold wood-glass rounded-lg px-6 py-4 sm:px-8 sm:py-6 border-2 border-amber-700 wood-shadow tap-target bg-gradient-to-r from-amber-100 to-orange-100">
+        {/* Status Display - Enhanced Wood Theme */}
+        <div className="mt-4 sm:mt-6 text-center">
+          <div 
+            className="text-base sm:text-xl md:text-2xl font-bold rounded-lg px-6 py-4 sm:px-8 sm:py-6 shadow-lg"
+            style={{
+              background: `
+                linear-gradient(135deg, 
+                  #fef3c7 0%, 
+                  #fcd34d 50%, 
+                  #f59e0b 100%
+                ),
+                repeating-linear-gradient(45deg,
+                  rgba(245, 158, 11, 0.1) 0px,
+                  rgba(251, 191, 36, 0.05) 2px,
+                  rgba(245, 158, 11, 0.1) 4px)
+              `,
+              color: "#451a03",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2), inset 0 2px 4px rgba(255, 255, 255, 0.3)",
+              border: "2px solid #a16207",
+            }}
+          >
             Playing as {playerColor === "white" ? "⚪ White" : "⚫ Black"}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-amber-800 mt-3 sm:mt-4 text-base sm:text-lg md:text-xl font-bold wood-glass rounded-lg px-4 py-3 sm:px-6 sm:py-4 inline-block border-2 border-amber-600 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
+            <div 
+              className="mt-3 sm:mt-4 text-base sm:text-lg md:text-xl font-bold rounded-lg px-4 py-3 sm:px-6 sm:py-4 inline-block shadow-lg"
+              style={{
+                background: `
+                  linear-gradient(135deg, 
+                    #fed7aa 0%, 
+                    #fdba74 50%, 
+                    #fb923c 100%
+                  )
+                `,
+                color: "#7c2d12",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.2)",
+                border: "2px solid #ea580c",
+              }}
+            >
               Opponent's turn...
             </div>
           )}
           {disabled && (
-            <div className="text-amber-700 mt-3 sm:mt-4 text-base sm:text-lg md:text-xl font-bold wood-glass rounded-lg px-4 py-3 sm:px-6 sm:py-4 inline-block border-2 border-amber-500 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
+            <div 
+              className="mt-3 sm:mt-4 text-base sm:text-lg md:text-xl font-bold rounded-lg px-4 py-3 sm:px-6 sm:py-4 inline-block shadow-lg"
+              style={{
+                background: `
+                  linear-gradient(135deg, 
+                    #fef3c7 0%, 
+                    #fde68a 50%, 
+                    #fbbf24 100%
+                  )
+                `,
+                color: "#92400e",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.2)",
+                border: "2px solid #d97706",
+              }}
+            >
               Spectating
             </div>
           )}
