@@ -198,7 +198,7 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
               <span className="text-foreground text-sm sm:text-base">
                 Admin Level
               </span>
-              <Badge className="bg-amber-800 text-amber-50 text-xs sm:text-sm">
+              <Badge className="bg-primary text-primary-foreground text-xs sm:text-sm rounded-full">
                 {adminUser.role.replace("_", " ").toUpperCase()}
               </Badge>
             </div>
