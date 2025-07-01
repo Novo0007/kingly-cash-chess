@@ -110,11 +110,11 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
       </Card>
 
       {/* Admin Tabs - Mobile Responsive */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        {/* Debug info */}
-        <div className="text-xs text-amber-700 mb-2">
-          Active Tab: {activeTab}
-        </div>
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full bg-transparent"
+      >
         <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-600 p-2 rounded-xl wood-shadow">
           <TabsTrigger
             value="overview"
