@@ -92,45 +92,45 @@ export const AdminTabs = ({
 
       <TabsContent
         value="overview"
-        className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
+        className="space-y-6 sm:space-y-8 mt-6 sm:mt-8 w-full"
       >
-        <div className="min-h-[300px] w-full">
+        <div className="w-full">
           <SystemOverview adminUser={adminUser} />
         </div>
       </TabsContent>
 
       <TabsContent
         value="users"
-        className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
+        className="space-y-6 sm:space-y-8 mt-6 sm:mt-8 w-full"
       >
-        <div className="min-h-[300px] w-full">
+        <div className="w-full">
           <UserManagement adminUser={adminUser} />
         </div>
       </TabsContent>
 
       <TabsContent
         value="payments"
-        className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
+        className="space-y-6 sm:space-y-8 mt-6 sm:mt-8 w-full"
       >
-        <div className="min-h-[300px] w-full bg-muted/20 rounded-2xl p-2">
+        <div className="w-full bg-muted/20 rounded-2xl p-4">
           <PaymentManagement adminUser={adminUser} />
         </div>
       </TabsContent>
 
       <TabsContent
         value="games"
-        className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
+        className="space-y-6 sm:space-y-8 mt-6 sm:mt-8 w-full"
       >
-        <div className="min-h-[300px] w-full">
+        <div className="w-full">
           <GameManagement adminUser={adminUser} />
         </div>
       </TabsContent>
 
       <TabsContent
         value="settings"
-        className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
+        className="space-y-6 sm:space-y-8 mt-6 sm:mt-8 w-full"
       >
-        <div className="min-h-[300px] w-full">
+        <div className="w-full">
           <AdminSettings adminUser={adminUser} />
         </div>
       </TabsContent>

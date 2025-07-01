@@ -151,18 +151,18 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
   ];
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+    <div className="pt-6 pb-8 space-y-6 sm:space-y-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {statCards.map((stat, index) => (
           <Card key={index} className={`${stat.bgColor} rounded-2xl`}>
-            <CardHeader className="pb-2 p-3 sm:p-4">
-              <CardTitle className="text-foreground flex items-center gap-2 text-xs sm:text-sm font-medium">
-                <stat.icon className={`h-3 w-3 sm:h-4 sm:w-4 ${stat.color}`} />
+            <CardHeader className="pb-2 p-4 sm:p-6">
+              <CardTitle className="text-foreground flex items-center gap-2 text-sm sm:text-base font-medium">
+                <stat.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${stat.color}`} />
                 {stat.title}
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-3 sm:p-4 pt-0">
-              <div className={`text-lg sm:text-2xl font-bold ${stat.color}`}>
+            <CardContent className="p-4 sm:p-6 pt-0">
+              <div className={`text-xl sm:text-3xl font-bold ${stat.color}`}>
                 {stat.value}
               </div>
             </CardContent>
@@ -170,13 +170,13 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
         ))}
       </div>
 
-      <Card className="bg-card border border-border rounded-2xl">
-        <CardHeader className="p-3 sm:p-4">
-          <CardTitle className="text-foreground text-base sm:text-lg">
+      <Card className="bg-card border border-border rounded-2xl mt-6">
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="text-foreground text-lg sm:text-xl">
             System Status
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-3 sm:p-4 pt-0">
+        <CardContent className="p-4 sm:p-6 pt-0">
           <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between py-2 border-b border-border">
               <span className="text-foreground text-sm sm:text-base">
