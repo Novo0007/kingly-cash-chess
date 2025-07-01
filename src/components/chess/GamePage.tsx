@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -36,6 +37,8 @@ interface GameData extends Tables<'chess_games'> {
     chess_rating: number; 
     avatar_url?: string;
   };
+  white_time_updated_at?: string;
+  black_time_updated_at?: string;
 }
 
 export const GamePage = () => {
@@ -67,9 +70,11 @@ export const GamePage = () => {
   useEffect(() => {
     if (game && currentUser) {
       const playerColor = game.white_player_id === currentUser ? 'white' : 'black';
+      const isWhiteTurn = game.current_turn === 'white';
+      const isBlackTurn = game.current_turn === 'black';
       setIsPlayerTurn(
-        (playerColor === 'white' && game.game_status === 'white_turn') ||
-        (playerColor === 'black' && game.game_status === 'black_turn')
+        (playerColor === 'white' && isWhiteTurn) ||
+        (playerColor === 'black' && isBlackTurn)
       );
     }
   }, [game, currentUser]);
@@ -107,7 +112,16 @@ export const GamePage = () => {
         .single();
 
       if (error) throw error;
-      setGame(data);
+      
+      const gameData: GameData = {
+        ...data,
+        white_player: Array.isArray(data.white_player) ? data.white_player[0] : data.white_player,
+        black_player: Array.isArray(data.black_player) ? data.black_player[0] : data.black_player,
+        white_time_updated_at: data.updated_at,
+        black_time_updated_at: data.updated_at
+      };
+      
+      setGame(gameData);
       
       // Set initial time remaining based on game data
       setTimeRemaining({
@@ -147,7 +161,13 @@ export const GamePage = () => {
           console.log('Change received!', payload);
           if (payload.new) {
             const updatedGame = payload.new as GameData;
-            setGame(updatedGame);
+            setGame(prevGame => ({
+              ...updatedGame,
+              white_player: prevGame?.white_player,
+              black_player: prevGame?.black_player,
+              white_time_updated_at: updatedGame.updated_at,
+              black_time_updated_at: updatedGame.updated_at
+            }));
 
             // Update time remaining if available
             setTimeRemaining({
@@ -177,8 +197,8 @@ export const GamePage = () => {
       const whiteLastUpdate = new Date(game.white_time_updated_at || game.created_at).getTime();
       const blackLastUpdate = new Date(game.black_time_updated_at || game.created_at).getTime();
 
-      const whiteElapsedTime = game.game_status === 'white_turn' ? (now - whiteLastUpdate) / 1000 : 0;
-      const blackElapsedTime = game.game_status === 'black_turn' ? (now - blackLastUpdate) / 1000 : 0;
+      const whiteElapsedTime = game.current_turn === 'white' ? (now - whiteLastUpdate) / 1000 : 0;
+      const blackElapsedTime = game.current_turn === 'black' ? (now - blackLastUpdate) / 1000 : 0;
 
       const newWhiteTime = Math.max(0, game.white_time_remaining! - whiteElapsedTime);
       const newBlackTime = Math.max(0, game.black_time_remaining! - blackElapsedTime);
@@ -190,13 +210,13 @@ export const GamePage = () => {
 
       if (newWhiteTime <= 0 || newBlackTime <= 0) {
         const winner = newWhiteTime <= 0 ? 'black' : 'white';
-        handleGameEnd(`${winner}_wins`, winner, 'Time out');
+        handleGameEnd(`${winner}_wins` as any, winner, 'Time out');
         clearInterval(intervalRef.current || null);
       }
     }, 250);
   };
 
-  const handleGameEnd = async (result: string, winnerType: 'white' | 'black' | 'draw', reason: string = '') => {
+  const handleGameEnd = async (result: 'white_wins' | 'black_wins' | 'draw', winnerType: 'white' | 'black' | 'draw', reason: string = '') => {
     if (!game || !currentUser || gameEndProcessed) return;
     
     console.log('Game ending with result:', result, 'winner:', winnerType, 'reason:', reason);
@@ -356,12 +376,13 @@ export const GamePage = () => {
       chess.move(move);
       const newFen = chess.fen();
       const isWhiteTurn = chess.turn() === 'w';
+      const newTurn = isWhiteTurn ? 'white' : 'black';
 
       // Optimistically update the UI
       setGame(prevGame => ({
         ...prevGame!,
         board_state: newFen,
-        game_status: isWhiteTurn ? 'white_turn' : 'black_turn',
+        current_turn: newTurn,
         move_history: [...(prevGame?.move_history || []), move],
         white_time_updated_at: new Date().toISOString(),
         black_time_updated_at: new Date().toISOString()
@@ -378,10 +399,9 @@ export const GamePage = () => {
         .from('chess_games')
         .update({
           board_state: newFen,
-          game_status: isWhiteTurn ? 'white_turn' : 'black_turn',
+          current_turn: newTurn,
           move_history: [...(game.move_history || []), move],
-          white_time_updated_at: new Date().toISOString(),
-          black_time_updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString()
         })
         .eq('id', game.id)
         .select()
@@ -407,7 +427,7 @@ export const GamePage = () => {
 
     const winnerType = game.white_player_id === currentUser ? 'black' : 'white';
     await handleGameEnd(
-      `${winnerType}_wins`,
+      `${winnerType}_wins` as any,
       winnerType,
       'Opponent gave up'
     );
@@ -434,7 +454,7 @@ export const GamePage = () => {
     if (isWhitePlayer || isBlackPlayer) {
       const winnerType = isWhitePlayer ? 'black' : 'white';
       await handleGameEnd(
-        `${winnerType}_wins`,
+        `${winnerType}_wins` as any,
         winnerType,
         'Opponent disconnected'
       );
@@ -472,7 +492,7 @@ export const GamePage = () => {
 
   const playerColor = game.white_player_id === currentUser ? 'white' : 'black';
   const opponent = playerColor === 'white' ? game.black_player : game.white_player;
-  const isYourTurn = (game.game_status === 'white_turn' && playerColor === 'white') || (game.game_status === 'black_turn' && playerColor === 'black');
+  const isYourTurn = (game.current_turn === 'white' && playerColor === 'white') || (game.current_turn === 'black' && playerColor === 'black');
 
   return (
     <MobileContainer>
@@ -541,14 +561,15 @@ export const GamePage = () => {
         <Card className="bg-card border border-border rounded-2xl">
           <CardContent className="p-4 grid grid-cols-2 gap-4">
             <TimeControl 
-              playerName={game.white_player?.username || 'White'}
-              time={timeRemaining.white}
-              isTurn={game.game_status === 'white_turn'}
-            />
-            <TimeControl
-              playerName={game.black_player?.username || 'Black'}
-              time={timeRemaining.black}
-              isTurn={game.game_status === 'black_turn'}
+              whiteTime={timeRemaining.white}
+              blackTime={timeRemaining.black}
+              currentTurn={game.current_turn === 'white' ? 'white' : 'black'}
+              gameStatus={game.game_status}
+              onTimeUp={(player) => {
+                const winnerType = player === 'white' ? 'black' : 'white';
+                handleGameEnd(`${winnerType}_wins` as any, winnerType, 'Time out');
+              }}
+              isActive={game.game_status === 'active' && !gameEnded}
             />
           </CardContent>
         </Card>
@@ -557,7 +578,6 @@ export const GamePage = () => {
         <Card className="bg-card border border-border rounded-2xl">
           <CardContent className="p-4">
             <ChessBoard
-              gameId={gameId}
               boardState={game.board_state || 'start'}
               onMove={handleMove}
               canMove={isYourTurn}
@@ -574,7 +594,7 @@ export const GamePage = () => {
             <Button onClick={handleClaimDraw} disabled={gameEnded}>Claim Draw</Button>
             {isMobile && (
               <Button onClick={() => setShowMobileReactions(true)}>
-                <GameReactions />
+                Reactions
               </Button>
             )}
           </CardContent>
@@ -586,7 +606,7 @@ export const GamePage = () => {
             <CardTitle>Game Chat</CardTitle>
           </CardHeader>
           <CardContent className="p-4">
-            <ChatSystem gameId={gameId} userId={currentUser} />
+            <ChatSystem gameId={gameId} />
           </CardContent>
         </Card>
       </div>
@@ -601,8 +621,8 @@ export const GamePage = () => {
       {/* Reactions (Mobile Only) */}
       {isMobile && (
         <MobileGameReactions 
-          isOpen={showMobileReactions}
-          onClose={() => setShowMobileReactions(false)}
+          open={showMobileReactions}
+          onOpenChange={setShowMobileReactions}
         />
       )}
     </MobileContainer>

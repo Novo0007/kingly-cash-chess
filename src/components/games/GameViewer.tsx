@@ -242,7 +242,6 @@ export const GameViewer: React.FC<GameViewerProps> = ({ game, open, onOpenChange
           <div className="flex justify-center">
             <div className="w-full max-w-2xl">
               <ChessBoard
-                gameId={game.id}
                 boardState={boardPosition}
                 onMove={() => {}}
                 canMove={false}

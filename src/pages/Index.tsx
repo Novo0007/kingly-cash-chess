@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthPage } from "@/components/auth/AuthPage";
@@ -237,10 +236,7 @@ const Index = () => {
         return currentGameId ? (
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
             <div className="xl:col-span-3">
-              <GamePage
-                gameId={currentGameId}
-                onBackToLobby={handleBackToLobby}
-              />
+              <GamePage />
             </div>
             <div className="hidden xl:block">
               <ChatSystem gameId={currentGameId} />
