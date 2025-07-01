@@ -892,25 +892,25 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </div>
       )}
 
-      {/* Game Status Messages - Mobile Optimized */}
+      {/* Minimal Status Messages */}
       {game.game_status === "waiting" && playerCount < 2 && (
-        <Card className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/30 border-2 border-yellow-400 shadow-lg rounded-lg">
-          <CardContent className="p-2 sm:p-3 text-center">
-            <p className="text-yellow-200 font-bold text-xs sm:text-sm">
+        <div className="mx-4 text-center">
+          <div className="bg-yellow-900/20 border border-yellow-400/30 rounded-md p-1">
+            <p className="text-yellow-200 font-medium text-xs">
               Waiting for player... ({playerCount}/2)
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {game.game_status === "active" && (
-        <Card className="bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-white shadow-lg rounded-lg">
-          <CardContent className="p-2 sm:p-3 text-center">
-            <p className="text-white font-bold text-xs sm:text-sm">
+        <div className="mx-4 text-center">
+          <div className="bg-gray-900/20 border border-white/30 rounded-md p-1">
+            <p className="text-white font-medium text-xs">
               {isSpectator() ? "Spectating" : `${game.current_turn} to move`}
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   );
