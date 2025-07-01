@@ -200,17 +200,21 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-to-tr from-amber-700/5 via-orange-600/5 to-yellow-600/5"></div>
       </div>
 
-      {/* Dynamic Pattern Overlay */}
-      <div className="fixed inset-0 opacity-10 sm:opacity-20">
+      {/* Wood Grain Pattern Overlay */}
+      <div className="fixed inset-0 opacity-15 sm:opacity-25">
         <div
           className="h-full w-full"
           style={{
             backgroundImage: `
-              radial-gradient(circle at 20% 20%, hsl(270, 95%, 70%) 0%, transparent 40%),
-              radial-gradient(circle at 80% 80%, hsl(220, 100%, 70%) 0%, transparent 40%),
-              radial-gradient(circle at 50% 50%, hsl(195, 100%, 70%) 0%, transparent 35%),
-              radial-gradient(circle at 30% 70%, hsl(145, 85%, 60%) 0%, transparent 30%),
-              conic-gradient(from 0deg at 50% 50%, transparent 0deg, hsl(270, 95%, 70%) 60deg, transparent 120deg, hsl(220, 100%, 70%) 180deg, transparent 240deg, hsl(195, 100%, 70%) 300deg, transparent 360deg)
+              radial-gradient(ellipse at 20% 20%, hsl(25, 45%, 35%) 0%, transparent 40%),
+              radial-gradient(ellipse at 80% 80%, hsl(30, 40%, 65%) 0%, transparent 40%),
+              radial-gradient(ellipse at 50% 50%, hsl(120, 30%, 40%) 0%, transparent 35%),
+              radial-gradient(ellipse at 30% 70%, hsl(20, 60%, 50%) 0%, transparent 30%),
+              repeating-linear-gradient(90deg,
+                hsl(25, 35%, 25%) 0px,
+                hsl(25, 45%, 35%) 2px,
+                hsl(25, 35%, 25%) 4px,
+                hsl(30, 40%, 30%) 6px)
             `,
           }}
         ></div>
