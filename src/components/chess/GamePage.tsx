@@ -839,10 +839,10 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </CardContent>
       </Card>
 
-      {/* Chess Board with Reactions */}
-      <div className="relative">
+      {/* MAIN CHESS BOARD - Maximum Focus */}
+      <div className="relative -mx-2 sm:-mx-4 md:-mx-8 lg:-mx-12">
         <div
-          className="w-full"
+          className="w-full min-h-[80vh] flex items-center justify-center"
           key={`${game.board_state}-${game.current_turn}-${Date.now()}`}
         >
           <ChessBoard
@@ -866,9 +866,9 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
           />
         </div>
 
-        {/* Mobile-optimized Reactions */}
+        {/* Floating Mobile Reactions */}
         {game.game_status === "active" && !isSpectator() && (
-          <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 z-30">
+          <div className="absolute bottom-4 right-4 z-40">
             <MobileGameReactions gameId={gameId} />
           </div>
         )}
