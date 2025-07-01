@@ -81,20 +81,20 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
-        {/* Enhanced Header with Vibrant Background */}
+        {/* Natural Wood Header Background */}
         <div className="relative overflow-hidden">
-          {/* Background Effects */}
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600 rounded-3xl opacity-90"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-transparent to-cyan-500/20 rounded-3xl"></div>
+          {/* Wood Background Effects */}
+          <div className="absolute inset-0 wood-gradient-dark rounded-2xl opacity-90"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-700/20 via-transparent to-orange-600/20 rounded-2xl"></div>
 
-          {/* Floating Elements */}
-          <div className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-r from-yellow-400/30 to-orange-400/30 rounded-full blur-xl animate-pulse"></div>
+          {/* Natural Floating Elements */}
+          <div className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-r from-amber-600/30 to-orange-600/30 rounded-full blur-xl wood-glow"></div>
           <div
-            className="absolute bottom-4 left-4 w-12 h-12 bg-gradient-to-r from-pink-400/30 to-purple-400/30 rounded-full blur-lg animate-pulse"
+            className="absolute bottom-4 left-4 w-12 h-12 bg-gradient-to-r from-green-700/30 to-emerald-700/30 rounded-full blur-lg wood-glow"
             style={{ animationDelay: "1s" }}
           ></div>
 
-          <Card className="relative bg-transparent border-white/20 backdrop-blur-sm shadow-2xl">
+          <Card className="relative bg-transparent border-amber-300/20 backdrop-blur-sm wood-shadow-deep">
             <CardHeader className="text-center pb-6 pt-8">
               <CardTitle>
                 <div className="flex items-center justify-center gap-4 mb-4">
