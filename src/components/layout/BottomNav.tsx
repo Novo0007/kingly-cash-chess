@@ -24,47 +24,47 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       id: "games",
       label: "Games",
       icon: Gamepad2,
-      emoji: "🎮",
-      color: "purple",
-      gradient: "from-purple-500 to-purple-600",
+      emoji: "🏡",
+      color: "amber",
+      gradient: "from-amber-700 to-orange-700",
     },
     {
       id: "friends",
       label: "Friends",
       icon: Users,
-      emoji: "👥",
-      color: "blue",
-      gradient: "from-blue-500 to-cyan-500",
+      emoji: "🤝",
+      color: "green",
+      gradient: "from-green-700 to-emerald-700",
     },
     {
       id: "wallet",
       label: "Wallet",
       icon: DollarSign,
       emoji: "💰",
-      color: "green",
-      gradient: "from-green-500 to-emerald-500",
+      color: "yellow",
+      gradient: "from-yellow-700 to-amber-700",
     },
     {
       id: "profile",
       label: "Profile",
       icon: User,
-      emoji: "👤",
+      emoji: "🌲",
       color: "orange",
-      gradient: "from-orange-500 to-yellow-500",
+      gradient: "from-orange-700 to-red-700",
     },
   ];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 safe-area-inset-bottom">
-      {/* Ultra-Transparent Glass Background */}
-      <div className="absolute inset-0 backdrop-blur-2xl border-t border-white/10 rounded-t-3xl overflow-hidden transition-all duration-500 ease-out">
-        {/* Minimal transparent gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-blue-600/15 to-cyan-600/20 rounded-t-3xl transition-opacity duration-700"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent rounded-t-3xl"></div>
+      {/* Natural Wood Glass Background */}
+      <div className="absolute inset-0 backdrop-blur-xl border-t border-amber-300/20 rounded-t-2xl overflow-hidden transition-all duration-300 ease-out wood-glass">
+        {/* Wood transparent gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-800/25 via-orange-700/20 to-yellow-700/25 rounded-t-2xl transition-opacity duration-500"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-amber-900/15 via-transparent to-transparent rounded-t-2xl"></div>
 
-        {/* Subtle static background elements */}
-        <div className="absolute top-0 left-1/4 w-8 h-8 bg-gradient-to-r from-yellow-400/8 to-orange-400/8 rounded-full blur-2xl opacity-70"></div>
-        <div className="absolute top-0 right-1/4 w-6 h-6 bg-gradient-to-r from-pink-400/8 to-purple-400/8 rounded-full blur-xl opacity-70"></div>
+        {/* Subtle wood grain background elements */}
+        <div className="absolute top-0 left-1/4 w-8 h-8 bg-gradient-to-r from-amber-600/12 to-orange-600/12 rounded-full blur-2xl opacity-70"></div>
+        <div className="absolute top-0 right-1/4 w-6 h-6 bg-gradient-to-r from-green-700/12 to-emerald-700/12 rounded-full blur-xl opacity-70"></div>
       </div>
 
       {/* Enhanced Navigation Content */}
@@ -92,10 +92,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => onViewChange(item.id)}
-                className={`relative flex flex-col items-center gap-2 px-3 py-4 h-auto w-full min-h-[72px] rounded-2xl transition-all duration-500 ease-out transform tap-target ${
+                className={`relative flex flex-col items-center gap-2 px-3 py-4 h-auto w-full min-h-[72px] rounded-xl transition-all duration-300 ease-out transform tap-target ${
                   isActive
-                    ? `text-white bg-gradient-to-b ${item.gradient}/15 scale-110 shadow-xl border border-white/20 backdrop-blur-lg`
-                    : "text-white/60 hover:text-white/90 hover:bg-white/5 active:bg-white/10 active:scale-95 hover:scale-105 hover:backdrop-blur-sm"
+                    ? `text-amber-100 bg-gradient-to-b ${item.gradient}/20 scale-110 wood-shadow border border-amber-300/30 backdrop-blur-lg`
+                    : "text-amber-200/70 hover:text-amber-100/90 hover:bg-amber-100/5 active:bg-amber-100/10 active:scale-95 hover:scale-105 hover:backdrop-blur-sm"
                 }`}
               >
                 {/* Smooth Background Effects */}
@@ -118,10 +118,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                     ></div>
                   )}
                   <div
-                    className={`relative p-2 rounded-xl transition-all duration-500 ease-out transform ${
+                    className={`relative p-2 rounded-lg transition-all duration-300 ease-out transform ${
                       isActive
-                        ? `bg-gradient-to-r ${item.gradient}/80 shadow-lg scale-110 backdrop-blur-sm`
-                        : "bg-white/8 backdrop-blur-sm hover:bg-white/12"
+                        ? `bg-gradient-to-r ${item.gradient}/80 wood-shadow scale-110 backdrop-blur-sm border border-amber-300/20`
+                        : "bg-amber-100/8 backdrop-blur-sm hover:bg-amber-100/12"
                     }`}
                   >
                     <Icon
@@ -136,10 +136,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
                 {/* Smooth Label */}
                 <span
-                  className={`text-xs font-bold leading-tight transition-all duration-500 ease-out font-heading ${
+                  className={`text-xs font-bold leading-tight transition-all duration-300 ease-out font-heading ${
                     isActive
-                      ? "text-white drop-shadow-lg"
-                      : "text-white/70 hover:text-white/90"
+                      ? "text-amber-100 drop-shadow-lg"
+                      : "text-amber-200/70 hover:text-amber-100/90"
                   }`}
                 >
                   {item.label}
@@ -175,21 +175,21 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         })}
       </div>
 
-      {/* Subtle Bottom Gaming Elements */}
-      <div className="absolute bottom-1 left-0 right-0 flex justify-center transition-all duration-1000 ease-out">
+      {/* Subtle Bottom Wood Elements */}
+      <div className="absolute bottom-1 left-0 right-0 flex justify-center transition-all duration-700 ease-out">
         <div className="flex items-center gap-3 text-xs opacity-50">
-          <Sparkles className="h-3 w-3 text-yellow-300/50 filter drop-shadow-md transition-all duration-500" />
+          <Star className="h-3 w-3 text-amber-400/50 filter drop-shadow-md transition-all duration-300" />
           <div className="flex gap-1">
-            <div className="w-1 h-1 bg-yellow-400/40 rounded-full transition-all duration-500"></div>
-            <div className="w-1 h-1 bg-white/40 rounded-full transition-all duration-500"></div>
-            <div className="w-1 h-1 bg-cyan-400/40 rounded-full transition-all duration-500"></div>
+            <div className="w-1 h-1 bg-amber-600/40 rounded-full transition-all duration-300"></div>
+            <div className="w-1 h-1 bg-orange-600/40 rounded-full transition-all duration-300"></div>
+            <div className="w-1 h-1 bg-yellow-600/40 rounded-full transition-all duration-300"></div>
           </div>
-          <Sparkles className="h-3 w-3 text-cyan-300/50 filter drop-shadow-md transition-all duration-500" />
+          <Star className="h-3 w-3 text-orange-400/50 filter drop-shadow-md transition-all duration-300" />
         </div>
       </div>
 
       {/* Subtle Top edge glow */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent transition-all duration-500"></div>
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-300/30 to-transparent transition-all duration-300"></div>
     </div>
   );
 };

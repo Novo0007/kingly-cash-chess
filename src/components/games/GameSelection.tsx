@@ -39,9 +39,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         "Classic strategy game with timed matches and real money prizes",
       icon: Crown,
       emoji: "♛",
-      color: "purple",
-      gradient: "from-purple-500 via-purple-600 to-purple-700",
-      lightGradient: "from-purple-100 via-purple-200 to-purple-300",
+      color: "amber",
+      gradient: "from-amber-700 via-orange-700 to-yellow-700",
+      lightGradient: "from-amber-100 via-orange-100 to-yellow-100",
       features: [
         "🏆 Tournaments",
         "⚡ Quick Matches",
@@ -57,9 +57,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       description: "Classic board game with 2-4 players and real money prizes",
       icon: Dice1,
       emoji: "🎲",
-      color: "blue",
-      gradient: "from-blue-500 via-cyan-500 to-blue-600",
-      lightGradient: "from-blue-100 via-cyan-100 to-blue-200",
+      color: "green",
+      gradient: "from-green-700 via-emerald-700 to-green-800",
+      lightGradient: "from-green-100 via-emerald-100 to-green-200",
       features: [
         "👥 2-4 Players",
         "🎯 Strategy",
@@ -81,67 +81,73 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
-        {/* Enhanced Header with Vibrant Background */}
+        {/* Natural Wood Header Background */}
         <div className="relative overflow-hidden">
-          {/* Background Effects */}
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600 rounded-3xl opacity-90"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-transparent to-cyan-500/20 rounded-3xl"></div>
+          {/* Wood Background Effects */}
+          <div className="absolute inset-0 wood-gradient-dark rounded-2xl opacity-90"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-700/20 via-transparent to-orange-600/20 rounded-2xl"></div>
 
-          {/* Floating Elements */}
-          <div className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-r from-yellow-400/30 to-orange-400/30 rounded-full blur-xl animate-pulse"></div>
+          {/* Natural Floating Elements */}
+          <div className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-r from-amber-600/30 to-orange-600/30 rounded-full blur-xl wood-glow"></div>
           <div
-            className="absolute bottom-4 left-4 w-12 h-12 bg-gradient-to-r from-pink-400/30 to-purple-400/30 rounded-full blur-lg animate-pulse"
+            className="absolute bottom-4 left-4 w-12 h-12 bg-gradient-to-r from-green-700/30 to-emerald-700/30 rounded-full blur-lg wood-glow"
             style={{ animationDelay: "1s" }}
           ></div>
 
-          <Card className="relative bg-transparent border-white/20 backdrop-blur-sm shadow-2xl">
+          <Card className="relative bg-transparent border-amber-300/20 backdrop-blur-sm wood-shadow-deep">
             <CardHeader className="text-center pb-6 pt-8">
               <CardTitle>
                 <div className="flex items-center justify-center gap-4 mb-4">
                   <div className="relative group">
-                    <div className="absolute -inset-3 bg-gradient-to-r from-yellow-400 via-pink-400 to-cyan-400 rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-all duration-500"></div>
-                    <div className="relative p-3 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-                      <Gamepad2 className="h-10 w-10 md:h-12 md:w-12 text-white drop-shadow-lg" />
+                    <div className="absolute -inset-3 bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-all duration-500"></div>
+                    <div className="relative p-3 bg-amber-100/10 backdrop-blur-sm rounded-full border border-amber-200/20">
+                      <Gamepad2 className="h-10 w-10 md:h-12 md:w-12 text-amber-100 drop-shadow-lg" />
                     </div>
                     <div className="absolute -top-2 -right-2 text-2xl animate-bounce">
-                      🎮
+                      🏡
                     </div>
                   </div>
                   <div className="text-center">
-                    <span className="block text-3xl md:text-4xl lg:text-5xl font-black text-white drop-shadow-lg font-heading">
+                    <span className="block text-3xl md:text-4xl lg:text-5xl font-black text-amber-100 drop-shadow-lg font-heading">
                       CHOOSE YOUR
                     </span>
-                    <span className="block text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-yellow-300 via-pink-300 to-cyan-300 bg-clip-text text-transparent drop-shadow-lg font-heading">
+                    <span className="block text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-amber-200 via-orange-200 to-yellow-200 bg-clip-text text-transparent drop-shadow-lg font-heading">
                       GAME
                     </span>
                   </div>
                 </div>
-                <p className="text-white/90 text-base md:text-lg font-medium max-w-2xl mx-auto drop-shadow-md font-body">
-                  🚀 Select your favorite game and start competing with players
-                  worldwide for real money prizes!
+                <p className="text-amber-100/90 text-base md:text-lg font-medium max-w-2xl mx-auto drop-shadow-md font-body">
+                  🌲 Select your favorite game and join fellow players in our
+                  cozy digital lodge for real prizes!
                 </p>
 
                 {/* Stats Bar */}
-                <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-white/20">
+                <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-amber-200/20">
                   <div className="text-center">
-                    <div className="text-white font-bold text-lg md:text-xl">
+                    <div className="text-amber-100 font-bold text-lg md:text-xl">
                       4.2K+
                     </div>
-                    <div className="text-white/80 text-xs">Online Players</div>
+                    <div className="text-amber-200/80 text-xs">
+                      Lodge Members
+                    </div>
                   </div>
-                  <div className="w-px h-8 bg-white/20"></div>
+                  <div className="w-px h-8 bg-amber-200/20"></div>
                   <div className="text-center">
-                    <div className="text-white font-bold text-lg md:text-xl">
+                    <div className="text-amber-100 font-bold text-lg md:text-xl">
                       ₹50L+
                     </div>
-                    <div className="text-white/80 text-xs">Daily Prizes</div>
+                    <div className="text-amber-200/80 text-xs">
+                      Daily Prizes
+                    </div>
                   </div>
-                  <div className="w-px h-8 bg-white/20"></div>
+                  <div className="w-px h-8 bg-amber-200/20"></div>
                   <div className="text-center">
-                    <div className="text-white font-bold text-lg md:text-xl">
+                    <div className="text-amber-100 font-bold text-lg md:text-xl">
                       24/7
                     </div>
-                    <div className="text-white/80 text-xs">Live Games</div>
+                    <div className="text-amber-200/80 text-xs">
+                      Active Lodge
+                    </div>
                   </div>
                 </div>
               </CardTitle>
@@ -158,7 +164,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 className={`absolute -inset-1 bg-gradient-to-r ${game.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-500`}
               ></div>
 
-              <Card className="relative bg-white/95 backdrop-blur-sm border-2 border-gray-100 rounded-3xl shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl overflow-hidden">
+              <Card className="relative bg-amber-50/95 backdrop-blur-sm border-2 border-amber-200 rounded-2xl wood-shadow-deep transition-all duration-300 hover:scale-[1.02] hover:wood-shadow-warm overflow-hidden wood-plank">
                 {/* Background Pattern */}
                 <div
                   className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${game.lightGradient} rounded-bl-[100px] opacity-20`}

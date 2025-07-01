@@ -11,22 +11,22 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white border border-purple-500/30 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] hover:from-purple-500 hover:via-blue-500 hover:to-cyan-500",
+          "bg-gradient-to-r from-amber-700 via-orange-700 to-yellow-700 text-amber-50 border-2 border-amber-800 rounded-lg shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] hover:from-amber-600 hover:via-orange-600 hover:to-yellow-600 wood-button relative overflow-hidden",
         destructive:
-          "bg-gradient-to-r from-red-500 to-pink-500 text-white border border-red-400/30 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] hover:from-red-400 hover:to-pink-400",
+          "bg-gradient-to-r from-red-700 to-red-800 text-red-50 border-2 border-red-900 rounded-lg shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] hover:from-red-600 hover:to-red-700",
         outline:
-          "border-2 border-purple-300 bg-white/80 backdrop-blur-sm text-purple-700 rounded-xl hover:bg-purple-50 hover:border-purple-400 hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md",
+          "border-2 border-amber-700 bg-amber-50/90 backdrop-blur-sm text-amber-900 rounded-lg hover:bg-amber-100 hover:border-amber-800 hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md",
         secondary:
-          "bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] hover:from-gray-50 hover:to-gray-150",
+          "bg-gradient-to-r from-amber-200 to-orange-200 text-amber-900 border-2 border-amber-400 rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] hover:from-amber-100 hover:to-orange-100",
         ghost:
-          "text-purple-600 rounded-xl hover:bg-purple-50 hover:text-purple-700 active:bg-purple-100 hover:scale-[1.02] active:scale-[0.98]",
-        link: "text-purple-600 underline-offset-4 hover:underline font-medium",
+          "text-amber-800 rounded-lg hover:bg-amber-100 hover:text-amber-900 active:bg-amber-200 hover:scale-[1.02] active:scale-[0.98]",
+        link: "text-amber-800 underline-offset-4 hover:underline font-medium",
       },
       size: {
-        default: "h-12 px-6 py-3 min-h-[48px] text-base rounded-xl",
-        sm: "h-10 px-4 py-2 min-h-[40px] text-sm rounded-lg",
-        lg: "h-14 px-8 py-4 min-h-[56px] text-lg rounded-xl",
-        icon: "h-12 w-12 min-h-[48px] min-w-[48px] rounded-xl",
+        default: "h-12 px-6 py-3 min-h-[48px] text-base rounded-lg",
+        sm: "h-10 px-4 py-2 min-h-[40px] text-sm rounded-md",
+        lg: "h-14 px-8 py-4 min-h-[56px] text-lg rounded-lg",
+        icon: "h-12 w-12 min-h-[48px] min-w-[48px] rounded-lg",
       },
     },
     defaultVariants: {
@@ -82,9 +82,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         onMouseEnter={handleMouseEnter}
         {...props}
       >
-        {/* Shimmer effect for default variant */}
+        {/* Wood shimmer effect for default variant */}
         {variant === "default" && (
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-200/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500 pointer-events-none rounded-lg" />
         )}
         {props.children}
       </Comp>

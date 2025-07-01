@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -61,10 +60,10 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
+      <div className="flex items-center justify-center p-4 sm:p-8">
         <div className="text-center space-y-4">
-          <div className="w-8 h-8 border-3 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-white">Loading admin panel...</p>
+          <div className="w-8 h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-amber-900 font-body">Loading admin lodge...</p>
         </div>
       </div>
     );
@@ -72,11 +71,13 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
 
   if (!adminUser) {
     return (
-      <Card className="bg-gradient-to-br from-red-900 to-red-800 border-red-600">
-        <CardContent className="p-6 text-center">
-          <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-white mb-2">Access Denied</h3>
-          <p className="text-red-300">
+      <Card className="wood-card bg-gradient-to-br from-red-100 to-red-50 border-red-600 m-2 sm:m-4">
+        <CardContent className="p-4 sm:p-6 text-center">
+          <AlertTriangle className="h-10 w-10 sm:h-12 sm:w-12 text-red-700 mx-auto mb-4" />
+          <h3 className="text-lg sm:text-xl font-bold text-red-900 mb-2 font-heading">
+            Access Denied
+          </h3>
+          <p className="text-red-800 text-sm sm:text-base">
             You don't have admin privileges or your account is not active.
           </p>
         </CardContent>
@@ -89,85 +90,121 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Admin Header */}
-      <Card className="bg-gradient-to-r from-purple-900 to-indigo-900 border-purple-600">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-3">
-            <Shield className="h-6 w-6 text-purple-400" />
-            <span>Admin Control Panel</span>
-            <Badge className="bg-purple-600 text-white">
+    <div className="space-y-4 sm:space-y-6 p-2 sm:p-4">
+      {/* Admin Header - Mobile Friendly */}
+      <Card className="wood-card wood-plank border-amber-700">
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="text-amber-900 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 font-heading">
+            <div className="flex items-center gap-2">
+              <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-amber-700" />
+              <span className="text-base sm:text-lg">Admin Lodge</span>
+            </div>
+            <Badge className="bg-amber-700 text-amber-50 text-xs sm:text-sm">
               {adminUser.role.replace("_", " ").toUpperCase()}
             </Badge>
           </CardTitle>
-          <p className="text-purple-300">
-            Welcome back, Administrator. Manage your gaming platform from here.
+          <p className="text-amber-800 text-sm sm:text-base">
+            Welcome back, Administrator. Manage your gaming lodge from here.
           </p>
         </CardHeader>
       </Card>
 
-      {/* Admin Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5 bg-slate-800 border-slate-600">
+      {/* Admin Tabs - Mobile Responsive */}
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full bg-transparent"
+      >
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-600 p-2 rounded-xl wood-shadow">
           <TabsTrigger
             value="overview"
-            className="data-[state=active]:bg-purple-600 data-[state=active]:text-white"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2"
           >
-            <TrendingUp className="h-4 w-4 mr-2" />
-            Overview
+            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">Overview</span>
+            <span className="sm:hidden">Stats</span>
           </TabsTrigger>
           <TabsTrigger
             value="users"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-700 data-[state=active]:to-emerald-700 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!hasPermission("users")}
           >
-            <Users className="h-4 w-4 mr-2" />
-            Users
+            <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">Users</span>
+            <span className="sm:hidden">Users</span>
           </TabsTrigger>
           <TabsTrigger
             value="payments"
-            className="data-[state=active]:bg-green-600 data-[state=active]:text-white"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-700 data-[state=active]:to-amber-700 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!hasPermission("payments")}
           >
-            <CreditCard className="h-4 w-4 mr-2" />
-            Payments
+            <CreditCard className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">Payments</span>
+            <span className="sm:hidden">Pay</span>
           </TabsTrigger>
           <TabsTrigger
             value="games"
-            className="data-[state=active]:bg-orange-600 data-[state=active]:text-white"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-700 data-[state=active]:to-red-700 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!hasPermission("games")}
           >
-            <Gamepad2 className="h-4 w-4 mr-2" />
-            Games
+            <Gamepad2 className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">Games</span>
+            <span className="sm:hidden">Games</span>
           </TabsTrigger>
           <TabsTrigger
             value="settings"
-            className="data-[state=active]:bg-slate-600 data-[state=active]:text-white"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-800 data-[state=active]:to-yellow-800 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed col-span-2 sm:col-span-1"
             disabled={!hasPermission("full_access")}
           >
-            <Settings className="h-4 w-4 mr-2" />
-            Settings
+            <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">Settings</span>
+            <span className="sm:hidden">Settings</span>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
-          <SystemOverview adminUser={adminUser} />
+        <TabsContent
+          value="overview"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
+        >
+          <div className="min-h-[300px] w-full">
+            <SystemOverview adminUser={adminUser} />
+          </div>
         </TabsContent>
 
-        <TabsContent value="users" className="space-y-6">
-          <UserManagement adminUser={adminUser} />
+        <TabsContent
+          value="users"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
+        >
+          <div className="min-h-[300px] w-full">
+            <UserManagement adminUser={adminUser} />
+          </div>
         </TabsContent>
 
-        <TabsContent value="payments" className="space-y-6">
-          <PaymentManagement adminUser={adminUser} />
+        <TabsContent
+          value="payments"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
+        >
+          <div className="min-h-[300px] w-full bg-amber-50/30 rounded-lg p-2">
+            <PaymentManagement adminUser={adminUser} />
+          </div>
         </TabsContent>
 
-        <TabsContent value="games" className="space-y-6">
-          <GameManagement adminUser={adminUser} />
+        <TabsContent
+          value="games"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
+        >
+          <div className="min-h-[300px] w-full">
+            <GameManagement adminUser={adminUser} />
+          </div>
         </TabsContent>
 
-        <TabsContent value="settings" className="space-y-6">
-          <AdminSettings adminUser={adminUser} />
+        <TabsContent
+          value="settings"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
+        >
+          <div className="min-h-[300px] w-full">
+            <AdminSettings adminUser={adminUser} />
+          </div>
         </TabsContent>
       </Tabs>
     </div>

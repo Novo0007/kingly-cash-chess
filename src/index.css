@@ -2,104 +2,95 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Vibrant Electric Blue Theme - Modern and Dynamic */
+/* Wood UI Theme - Natural, Warm, and Inviting */
 
 @layer base {
   :root {
-    /* Vibrant Theme Variables - Bright and Energetic */
-    --background: 0 0% 100%;
-    --foreground: 240 10% 4%;
+    /* Wood Theme Variables - Natural and Earthy */
+    --background: 30 35% 95%;
+    --foreground: 25 15% 10%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 4%;
+    --card: 28 40% 92%;
+    --card-foreground: 25 15% 10%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 4%;
+    --popover: 28 40% 92%;
+    --popover-foreground: 25 15% 10%;
 
-    --primary: 270 95% 60%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 25 45% 35%;
+    --primary-foreground: 30 35% 95%;
 
-    --secondary: 280 100% 95%;
-    --secondary-foreground: 240 10% 4%;
+    --secondary: 30 25% 85%;
+    --secondary-foreground: 25 15% 15%;
 
-    --muted: 280 100% 97%;
-    --muted-foreground: 240 5% 35%;
+    --muted: 30 20% 88%;
+    --muted-foreground: 25 10% 45%;
 
-    --accent: 195 100% 50%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 120 30% 40%;
+    --accent-foreground: 30 35% 95%;
 
-    --destructive: 0 90% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 10 70% 50%;
+    --destructive-foreground: 30 35% 95%;
 
-    --border: 280 50% 85%;
-    --input: 280 50% 90%;
-    --ring: 270 95% 60%;
+    --border: 30 25% 80%;
+    --input: 30 30% 90%;
+    --ring: 25 45% 35%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
-    /* Vibrant Color Palette */
-    --vibrant-purple: 270 95% 60%;
-    --vibrant-blue: 220 100% 55%;
-    --vibrant-cyan: 195 100% 50%;
-    --vibrant-green: 145 85% 45%;
-    --vibrant-orange: 30 100% 55%;
-    --vibrant-pink: 330 85% 65%;
-    --vibrant-yellow: 50 100% 60%;
+    /* Wood Color Palette */
+    --wood-dark: 25 35% 20%; /* Dark walnut/mahogany */
+    --wood-medium: 25 45% 35%; /* Medium oak */
+    --wood-light: 30 40% 65%; /* Light maple */
+    --wood-lightest: 30 35% 85%; /* Very light pine */
 
-    /* Electric/Neon variations */
-    --electric-50: 270 100% 98%;
-    --electric-100: 270 100% 95%;
-    --electric-200: 270 95% 88%;
-    --electric-300: 270 90% 78%;
-    --electric-400: 270 85% 68%;
-    --electric-500: 270 95% 60%;
-    --electric-600: 270 95% 52%;
-    --electric-700: 270 95% 42%;
-    --electric-800: 270 95% 32%;
-    --electric-900: 270 95% 22%;
+    /* Accent Colors */
+    --wood-green: 120 30% 40%; /* Deep forest green */
+    --wood-orange: 20 60% 50%; /* Burnt orange */
+    --wood-charcoal: 210 15% 25%; /* Matte charcoal */
+    --wood-cream: 45 25% 88%; /* Cream/ivory */
 
-    /* Complementary vibrant colors */
-    --electric-accent: 195 100% 50%;
-    --electric-soft: 280 80% 92%;
-    --electric-muted: 280 50% 90%;
-    --electric-text: 240 10% 4%;
-    --electric-light: 0 0% 100%;
-    --electric-neutral: 280 30% 88%;
+    /* Wood Texture Variables */
+    --wood-grain-dark: 25 35% 18%;
+    --wood-grain-medium: 25 45% 32%;
+    --wood-grain-light: 30 40% 62%;
+    --wood-shadow: 25 25% 15%;
   }
 
   .dark {
-    /* Dark vibrant theme with neon accents */
-    --background: 240 15% 6%;
-    --foreground: 0 0% 98%;
+    /* Dark wood theme - Rich dark woods */
+    --background: 25 25% 12%;
+    --foreground: 30 20% 88%;
 
-    --card: 240 15% 8%;
-    --card-foreground: 0 0% 98%;
+    --card: 25 30% 15%;
+    --card-foreground: 30 20% 88%;
 
-    --popover: 240 15% 6%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 25 30% 15%;
+    --popover-foreground: 30 20% 88%;
 
-    --primary: 270 95% 65%;
-    --primary-foreground: 240 15% 6%;
+    --primary: 25 45% 45%;
+    --primary-foreground: 25 25% 12%;
 
-    --secondary: 240 20% 15%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 25 20% 20%;
+    --secondary-foreground: 30 20% 88%;
 
-    --muted: 240 20% 15%;
-    --muted-foreground: 240 5% 70%;
+    --muted: 25 20% 18%;
+    --muted-foreground: 30 15% 65%;
 
-    --accent: 195 100% 55%;
-    --accent-foreground: 240 15% 6%;
+    --accent: 120 25% 45%;
+    --accent-foreground: 25 25% 12%;
 
-    --destructive: 0 90% 65%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 10 60% 55%;
+    --destructive-foreground: 30 20% 88%;
 
-    --border: 240 20% 18%;
-    --input: 240 20% 15%;
-    --ring: 270 95% 65%;
+    --border: 25 20% 25%;
+    --input: 25 20% 18%;
+    --ring: 25 45% 45%;
 
-    /* Enhanced vibrant colors for dark mode */
-    --electric-500: 270 95% 65%;
-    --electric-accent: 195 100% 55%;
+    /* Dark wood colors */
+    --wood-dark: 25 35% 8%;
+    --wood-medium: 25 35% 25%;
+    --wood-light: 30 30% 45%;
+    --wood-lightest: 30 25% 65%;
   }
 }
 
@@ -110,7 +101,7 @@
   body {
     @apply bg-background text-foreground;
     font-family:
-      "Rubik",
+      "Inter",
       "Poppins",
       system-ui,
       -apple-system,
@@ -119,6 +110,8 @@
       "rlig" 1,
       "calt" 1;
     line-height: 1.6;
+    background-color: hsl(var(--wood-lightest));
+    color: hsl(var(--wood-charcoal));
   }
 
   h1,
@@ -127,28 +120,19 @@
   h4,
   h5,
   h6 {
-    font-family:
-      "Poppins",
-      "Rubik",
-      system-ui,
-      -apple-system,
-      sans-serif;
-    font-weight: 600;
+    font-family: "Merriweather", "Bitter", "Poppins", serif;
+    font-weight: 700;
     line-height: 1.2;
+    color: hsl(var(--wood-dark));
   }
 
   .font-heading {
-    font-family:
-      "Poppins",
-      "Rubik",
-      system-ui,
-      -apple-system,
-      sans-serif;
+    font-family: "Merriweather", "Bitter", "Poppins", serif;
   }
 
   .font-body {
     font-family:
-      "Rubik",
+      "Inter",
       "Poppins",
       system-ui,
       -apple-system,
@@ -156,146 +140,216 @@
   }
 }
 
-/* Vibrant Electric themed custom classes */
-.electric-gradient {
+/* Wood UI Theme - Natural and Organic */
+.wood-gradient {
   background: linear-gradient(
     135deg,
-    hsl(var(--electric-100)) 0%,
-    hsl(var(--vibrant-purple)) 15%,
-    hsl(var(--vibrant-blue)) 35%,
-    hsl(var(--vibrant-cyan)) 65%,
-    hsl(var(--electric-200)) 85%,
-    hsl(var(--electric-100)) 100%
+    hsl(var(--wood-dark)) 0%,
+    hsl(var(--wood-medium)) 25%,
+    hsl(var(--wood-light)) 75%,
+    hsl(var(--wood-lightest)) 100%
   );
 }
 
-.electric-gradient-dark {
+.wood-gradient-dark {
   background: linear-gradient(
     135deg,
-    hsl(var(--electric-800)) 0%,
-    hsl(var(--vibrant-purple)) 25%,
-    hsl(var(--vibrant-blue)) 50%,
-    hsl(var(--vibrant-cyan)) 75%,
-    hsl(var(--electric-800)) 100%
+    hsl(var(--wood-grain-dark)) 0%,
+    hsl(var(--wood-dark)) 40%,
+    hsl(var(--wood-medium)) 60%,
+    hsl(var(--wood-grain-dark)) 100%
   );
 }
 
-.electric-glass {
-  background: rgba(139, 69, 193, 0.08);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(139, 69, 193, 0.15);
-  transition: all 0.5s ease-out;
+.wood-texture {
+  background:
+    radial-gradient(ellipse at top, hsl(var(--wood-light)) 0%, transparent 50%),
+    radial-gradient(
+      ellipse at bottom,
+      hsl(var(--wood-medium)) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      90deg,
+      hsl(var(--wood-medium)) 0%,
+      hsl(var(--wood-light)) 25%,
+      hsl(var(--wood-medium)) 50%,
+      hsl(var(--wood-light)) 75%,
+      hsl(var(--wood-medium)) 100%
+    );
+  background-size:
+    100% 100%,
+    100% 100%,
+    4px 100%;
 }
 
-.electric-shadow {
+.wood-glass {
+  background: rgba(101, 67, 33, 0.08);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(101, 67, 33, 0.2);
+  transition: all 0.3s ease-out;
+}
+
+.wood-shadow {
   box-shadow:
-    0 4px 20px rgba(0, 150, 255, 0.15),
-    0 1px 3px rgba(0, 150, 255, 0.1);
+    0 4px 20px rgba(62, 39, 35, 0.15),
+    0 1px 3px rgba(62, 39, 35, 0.1);
 }
 
-.electric-shadow-lg {
+.wood-shadow-lg {
   box-shadow:
-    0 10px 40px rgba(0, 150, 255, 0.2),
-    0 4px 12px rgba(0, 150, 255, 0.15),
-    0 1px 3px rgba(0, 150, 255, 0.1);
+    0 10px 40px rgba(62, 39, 35, 0.2),
+    0 4px 12px rgba(62, 39, 35, 0.15),
+    0 1px 3px rgba(62, 39, 35, 0.1);
 }
 
-.electric-text-gradient {
+.wood-text-gradient {
   background: linear-gradient(
     135deg,
-    hsl(var(--vibrant-purple)) 0%,
-    hsl(var(--vibrant-pink)) 25%,
-    hsl(var(--vibrant-cyan)) 50%,
-    hsl(var(--vibrant-blue)) 75%,
-    hsl(var(--vibrant-purple)) 100%
+    hsl(var(--wood-dark)) 0%,
+    hsl(var(--wood-medium)) 50%,
+    hsl(var(--wood-green)) 100%
   );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-size: 200% 200%;
-  animation: gradientShift 3s ease-in-out infinite;
-  filter: brightness(1.1);
+  animation: woodShift 4s ease-in-out infinite;
 }
 
-.electric-button {
+.wood-button {
   background: linear-gradient(
     135deg,
-    hsl(var(--vibrant-purple)) 0%,
-    hsl(var(--vibrant-pink)) 50%,
-    hsl(var(--vibrant-cyan)) 100%
+    hsl(var(--wood-medium)) 0%,
+    hsl(var(--wood-light)) 50%,
+    hsl(var(--wood-medium)) 100%
   );
-  color: white;
-  border: 1px solid hsl(var(--vibrant-purple));
-  transition: all 0.3s ease;
+  color: hsl(var(--wood-cream));
+  border: 2px solid hsl(var(--wood-dark));
+  transition: all 0.2s ease;
   font-weight: 600;
-  box-shadow: 0 4px 20px rgba(139, 69, 193, 0.3);
+  box-shadow:
+    0 4px 8px rgba(62, 39, 35, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
-.electric-button:hover {
+.wood-button:hover {
   background: linear-gradient(
     135deg,
-    hsl(var(--vibrant-pink)) 0%,
-    hsl(var(--vibrant-purple)) 50%,
-    hsl(var(--vibrant-blue)) 100%
+    hsl(var(--wood-light)) 0%,
+    hsl(var(--wood-lightest)) 50%,
+    hsl(var(--wood-light)) 100%
   );
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(139, 69, 193, 0.4);
-  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 12px rgba(62, 39, 35, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.electric-border {
-  border-color: hsl(var(--electric-300));
+.wood-button:active {
+  transform: translateY(0);
+  box-shadow:
+    0 2px 4px rgba(62, 39, 35, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.electric-bg {
-  background-color: hsl(var(--electric-50));
+.wood-border {
+  border-color: hsl(var(--wood-medium));
 }
 
-.electric-bg-soft {
-  background-color: hsl(var(--electric-100));
+.wood-bg {
+  background-color: hsl(var(--wood-lightest));
 }
 
-.electric-text {
-  color: hsl(var(--electric-text));
+.wood-bg-soft {
+  background-color: hsl(var(--wood-cream));
+}
+
+.wood-text {
+  color: hsl(var(--wood-charcoal));
+}
+
+/* Wood texture patterns */
+.wood-grain-pattern {
+  background-image: repeating-linear-gradient(
+    90deg,
+    hsl(var(--wood-medium)) 0px,
+    hsl(var(--wood-light)) 1px,
+    hsl(var(--wood-medium)) 2px,
+    hsl(var(--wood-grain-medium)) 3px,
+    hsl(var(--wood-medium)) 4px
+  );
+}
+
+.wood-plank {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--wood-medium)) 0%,
+    hsl(var(--wood-light)) 100%
+  );
+  border: 2px solid hsl(var(--wood-dark));
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.wood-plank::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    rgba(101, 67, 33, 0.1) 1px,
+    transparent 2px,
+    rgba(101, 67, 33, 0.05) 3px,
+    transparent 4px
+  );
+  pointer-events: none;
 }
 
 /* Backwards compatibility classes */
-.lavender-gradient {
-  @apply electric-gradient;
+.electric-gradient {
+  @apply wood-gradient;
 }
-.lavender-gradient-dark {
-  @apply electric-gradient-dark;
+.electric-gradient-dark {
+  @apply wood-gradient-dark;
 }
-.lavender-glass {
-  @apply electric-glass;
+.electric-glass {
+  @apply wood-glass;
 }
-.lavender-shadow {
-  @apply electric-shadow;
+.electric-shadow {
+  @apply wood-shadow;
 }
-.lavender-shadow-lg {
-  @apply electric-shadow-lg;
+.electric-shadow-lg {
+  @apply wood-shadow-lg;
 }
-.lavender-text-gradient {
-  @apply electric-text-gradient;
+.electric-text-gradient {
+  @apply wood-text-gradient;
 }
-.lavender-button {
-  @apply electric-button;
+.electric-button {
+  @apply wood-button;
 }
-.lavender-border {
-  @apply electric-border;
+.electric-border {
+  @apply wood-border;
 }
-.lavender-bg {
-  @apply electric-bg;
+.electric-bg {
+  @apply wood-bg;
 }
-.lavender-bg-soft {
-  @apply electric-bg-soft;
+.electric-bg-soft {
+  @apply wood-bg-soft;
 }
-.lavender-text {
-  @apply electric-text;
+.electric-text {
+  @apply wood-text;
 }
 
-/* Professional animations */
-@keyframes gradientShift {
+/* Natural Wood Animations */
+@keyframes woodShift {
   0%,
   100% {
     background-position: 0% 50%;
@@ -305,28 +359,25 @@
   }
 }
 
-@keyframes electricFloat {
+@keyframes woodFloat {
   0%,
   100% {
     transform: translateY(0px) scale(1);
   }
-  33% {
-    transform: translateY(-15px) scale(1.05);
-  }
-  66% {
-    transform: translateY(-5px) scale(0.95);
+  50% {
+    transform: translateY(-8px) scale(1.02);
   }
 }
 
-@keyframes electricPulse {
+@keyframes woodGlow {
   0%,
   100% {
-    opacity: 0.6;
+    opacity: 0.3;
     transform: scale(1);
   }
   50% {
-    opacity: 1;
-    transform: scale(1.1);
+    opacity: 0.6;
+    transform: scale(1.05);
   }
 }
 
@@ -371,32 +422,32 @@
   }
 }
 
-.electric-float {
-  animation: electricFloat 4s ease-in-out infinite;
+.wood-float {
+  animation: woodFloat 6s ease-in-out infinite;
 }
 
-.electric-pulse {
-  animation: electricPulse 2.5s ease-in-out infinite;
+.wood-glow {
+  animation: woodGlow 3s ease-in-out infinite;
 }
 
 .particle-float {
-  animation: particleFloat 6s ease-in-out infinite;
+  animation: particleFloat 8s ease-in-out infinite;
 }
 
 .rotate-glow {
-  animation: rotateGlow 10s linear infinite;
+  animation: rotateGlow 12s linear infinite;
 }
 
 .mesh-gradient {
-  animation: meshGradient 8s ease-in-out infinite;
+  animation: meshGradient 10s ease-in-out infinite;
 }
 
-/* Professional loading animations */
-.electric-spinner {
-  border: 3px solid hsl(var(--electric-200));
-  border-top: 3px solid hsl(var(--electric-500));
+/* Natural loading animations */
+.wood-spinner {
+  border: 3px solid hsl(var(--wood-light));
+  border-top: 3px solid hsl(var(--wood-medium));
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 1.2s linear infinite;
 }
 
 @keyframes spin {
@@ -408,15 +459,15 @@
   }
 }
 
-.electric-shimmer {
+.wood-shimmer {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(0, 150, 255, 0.4) 50%,
+    rgba(139, 69, 19, 0.3) 50%,
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: shimmer 2s infinite;
 }
 
 @keyframes shimmer {
@@ -521,60 +572,82 @@
 
 /* Backwards compatibility */
 .lavender-float {
-  @apply electric-float;
+  @apply wood-float;
 }
 .lavender-pulse {
-  @apply electric-pulse;
+  @apply wood-glow;
 }
 .lavender-spinner {
-  @apply electric-spinner;
+  @apply wood-spinner;
 }
 .lavender-shimmer {
-  @apply electric-shimmer;
+  @apply wood-shimmer;
+}
+.electric-float {
+  @apply wood-float;
+}
+.electric-pulse {
+  @apply wood-glow;
+}
+.electric-spinner {
+  @apply wood-spinner;
+}
+.electric-shimmer {
+  @apply wood-shimmer;
 }
 
-/* Enhanced professional styling for components */
-.electric-card {
+/* Enhanced natural styling for components */
+.wood-card {
   background: linear-gradient(
     135deg,
-    hsl(var(--electric-50)) 0%,
-    hsl(var(--electric-100)) 100%
+    hsl(var(--wood-lightest)) 0%,
+    hsl(var(--wood-cream)) 100%
   );
-  border: 1px solid hsl(var(--electric-200));
-  border-radius: 12px;
+  border: 2px solid hsl(var(--wood-medium));
+  border-radius: 8px;
   box-shadow:
-    0 4px 20px rgba(0, 150, 255, 0.08),
-    0 1px 3px rgba(0, 150, 255, 0.06);
-  font-family: "Rubik", system-ui, sans-serif;
+    0 4px 12px rgba(62, 39, 35, 0.15),
+    0 1px 3px rgba(62, 39, 35, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  font-family: "Inter", system-ui, sans-serif;
+  position: relative;
 }
 
-.electric-card:hover {
+.wood-card:hover {
   box-shadow:
-    0 8px 30px rgba(0, 150, 255, 0.12),
-    0 4px 12px rgba(0, 150, 255, 0.08);
-  transform: translateY(-2px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    0 6px 20px rgba(62, 39, 35, 0.2),
+    0 2px 6px rgba(62, 39, 35, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.electric-input {
-  background: hsl(var(--electric-50));
-  border: 2px solid hsl(var(--electric-200));
-  color: hsl(var(--electric-text));
-  font-family: "Rubik", system-ui, sans-serif;
+.wood-input {
+  background: hsl(var(--wood-cream));
+  border: 2px solid hsl(var(--wood-medium));
+  color: hsl(var(--wood-charcoal));
+  font-family: "Inter", system-ui, sans-serif;
   font-weight: 400;
+  border-radius: 6px;
 }
 
-.electric-input:focus {
-  border-color: hsl(var(--electric-500));
-  box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.1);
+.wood-input:focus {
+  border-color: hsl(var(--wood-dark));
+  box-shadow: 0 0 0 3px rgba(101, 67, 33, 0.1);
 }
 
 /* Backwards compatibility */
 .lavender-card {
-  @apply electric-card;
+  @apply wood-card;
 }
 .lavender-input {
-  @apply electric-input;
+  @apply wood-input;
+}
+.electric-card {
+  @apply wood-card;
+}
+.electric-input {
+  @apply wood-input;
 }
 
 /* Enhanced mobile-friendly tap targets */
@@ -686,19 +759,19 @@
   font-weight: 700;
 }
 
-/* Enhanced vibrant shadows */
-.vibrant-shadow {
+/* Enhanced natural shadows */
+.wood-shadow-warm {
   box-shadow:
-    0 4px 20px rgba(139, 69, 193, 0.15),
-    0 8px 40px rgba(59, 130, 246, 0.1),
-    0 12px 60px rgba(236, 72, 153, 0.05);
+    0 4px 20px rgba(101, 67, 33, 0.15),
+    0 8px 40px rgba(62, 39, 35, 0.1),
+    0 12px 60px rgba(139, 69, 19, 0.05);
 }
 
-.vibrant-shadow-lg {
+.wood-shadow-deep {
   box-shadow:
-    0 8px 30px rgba(139, 69, 193, 0.2),
-    0 12px 50px rgba(59, 130, 246, 0.15),
-    0 16px 80px rgba(236, 72, 153, 0.1);
+    0 8px 30px rgba(101, 67, 33, 0.2),
+    0 12px 50px rgba(62, 39, 35, 0.15),
+    0 16px 80px rgba(139, 69, 19, 0.1);
 }
 
 /* Clean spacing utilities */

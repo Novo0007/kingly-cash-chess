@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -64,14 +63,13 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
           .eq("transaction_type", "withdrawal"),
       ]);
 
-      const totalRevenue = revenueResult.data?.reduce(
-        (sum, t) => sum + Number(t.amount),
-        0
-      ) || 0;
+      const totalRevenue =
+        revenueResult.data?.reduce((sum, t) => sum + Number(t.amount), 0) || 0;
 
       setStats({
         totalUsers: usersResult.count || 0,
-        activeGames: (chessGamesResult.count || 0) + (ludoGamesResult.count || 0),
+        activeGames:
+          (chessGamesResult.count || 0) + (ludoGamesResult.count || 0),
         totalTransactions: transactionsResult.count || 0,
         totalRevenue,
         todayRevenue: 0, // We'll implement this later
@@ -86,13 +84,13 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
         {[...Array(6)].map((_, i) => (
-          <Card key={i} className="bg-slate-800 border-slate-600">
-            <CardContent className="p-6">
+          <Card key={i} className="wood-card border-amber-600">
+            <CardContent className="p-4 sm:p-6">
               <div className="animate-pulse">
-                <div className="h-4 bg-slate-600 rounded w-3/4 mb-2"></div>
-                <div className="h-8 bg-slate-600 rounded w-1/2"></div>
+                <div className="h-3 sm:h-4 bg-amber-300 rounded w-3/4 mb-2"></div>
+                <div className="h-6 sm:h-8 bg-amber-300 rounded w-1/2"></div>
               </div>
             </CardContent>
           </Card>
@@ -106,59 +104,65 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
       title: "Total Users",
       value: stats.totalUsers.toLocaleString(),
       icon: Users,
-      color: "text-blue-400",
-      bgColor: "bg-blue-900/20 border-blue-600/30",
+      color: "text-green-800",
+      bgColor:
+        "wood-card bg-gradient-to-br from-green-50 to-green-100 border-green-700",
     },
     {
       title: "Active Games",
       value: stats.activeGames.toLocaleString(),
       icon: Gamepad2,
-      color: "text-green-400",
-      bgColor: "bg-green-900/20 border-green-600/30",
+      color: "text-amber-800",
+      bgColor:
+        "wood-card bg-gradient-to-br from-amber-50 to-amber-100 border-amber-700",
     },
     {
       title: "Total Transactions",
       value: stats.totalTransactions.toLocaleString(),
       icon: CreditCard,
-      color: "text-purple-400",
-      bgColor: "bg-purple-900/20 border-purple-600/30",
+      color: "text-orange-800",
+      bgColor:
+        "wood-card bg-gradient-to-br from-orange-50 to-orange-100 border-orange-700",
     },
     {
       title: "Total Revenue",
       value: `₹${stats.totalRevenue.toLocaleString()}`,
       icon: DollarSign,
-      color: "text-yellow-400",
-      bgColor: "bg-yellow-900/20 border-yellow-600/30",
+      color: "text-yellow-800",
+      bgColor:
+        "wood-card bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-700",
     },
     {
       title: "Today's Revenue",
       value: `₹${stats.todayRevenue.toLocaleString()}`,
       icon: TrendingUp,
-      color: "text-orange-400",
-      bgColor: "bg-orange-900/20 border-orange-600/30",
+      color: "text-emerald-800",
+      bgColor:
+        "wood-card bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-700",
     },
     {
       title: "Pending Withdrawals",
       value: stats.pendingWithdrawals.toLocaleString(),
       icon: Activity,
-      color: "text-red-400",
-      bgColor: "bg-red-900/20 border-red-600/30",
+      color: "text-red-800",
+      bgColor:
+        "wood-card bg-gradient-to-br from-red-50 to-red-100 border-red-700",
     },
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
         {statCards.map((stat, index) => (
-          <Card key={index} className={`${stat.bgColor}`}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white flex items-center gap-2 text-sm font-medium">
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+          <Card key={index} className={`${stat.bgColor} wood-plank`}>
+            <CardHeader className="pb-2 p-3 sm:p-4">
+              <CardTitle className="text-amber-900 flex items-center gap-2 text-xs sm:text-sm font-semibold font-heading">
+                <stat.icon className={`h-3 w-3 sm:h-4 sm:w-4 ${stat.color}`} />
                 {stat.title}
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className={`text-2xl font-bold ${stat.color}`}>
+            <CardContent className="p-3 sm:p-4 pt-0">
+              <div className={`text-lg sm:text-2xl font-bold ${stat.color}`}>
                 {stat.value}
               </div>
             </CardContent>
@@ -166,23 +170,35 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
         ))}
       </div>
 
-      <Card className="bg-slate-800 border-slate-600">
-        <CardHeader>
-          <CardTitle className="text-white">Recent Activity</CardTitle>
+      <Card className="wood-card wood-plank border-amber-700">
+        <CardHeader className="p-3 sm:p-4">
+          <CardTitle className="text-amber-900 text-base sm:text-lg font-heading">
+            System Status
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between py-2 border-b border-slate-600">
-              <span className="text-slate-300">System Status</span>
-              <Badge className="bg-green-600 text-white">Operational</Badge>
+        <CardContent className="p-3 sm:p-4 pt-0">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between py-2 border-b border-amber-300">
+              <span className="text-amber-800 text-sm sm:text-base">
+                System Status
+              </span>
+              <Badge className="bg-green-700 text-green-50 text-xs sm:text-sm">
+                Operational
+              </Badge>
             </div>
-            <div className="flex items-center justify-between py-2 border-b border-slate-600">
-              <span className="text-slate-300">Database Connection</span>
-              <Badge className="bg-green-600 text-white">Connected</Badge>
+            <div className="flex items-center justify-between py-2 border-b border-amber-300">
+              <span className="text-amber-800 text-sm sm:text-base">
+                Database Connection
+              </span>
+              <Badge className="bg-green-700 text-green-50 text-xs sm:text-sm">
+                Connected
+              </Badge>
             </div>
             <div className="flex items-center justify-between py-2">
-              <span className="text-slate-300">Admin Level</span>
-              <Badge className="bg-purple-600 text-white">
+              <span className="text-amber-800 text-sm sm:text-base">
+                Admin Level
+              </span>
+              <Badge className="bg-amber-800 text-amber-50 text-xs sm:text-sm">
                 {adminUser.role.replace("_", " ").toUpperCase()}
               </Badge>
             </div>

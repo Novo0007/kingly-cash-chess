@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,6 +32,51 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
   const [loading, setLoading] = useState(true);
   const [newAdminEmail, setNewAdminEmail] = useState("");
 
+  // Simple fallback to ensure component shows
+  if (loading) {
+    return (
+      <Card className="wood-card border-amber-600">
+        <CardContent className="p-4 sm:p-6 text-center">
+          <div className="w-6 h-6 sm:w-8 sm:h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-amber-900 text-sm sm:text-base">
+            Loading settings...
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Simplified settings view
+  return (
+    <div className="space-y-4">
+      <Card className="wood-card wood-plank border-amber-700">
+        <CardHeader className="p-3 sm:p-4">
+          <CardTitle className="text-amber-900 flex items-center gap-2 text-base sm:text-lg font-heading">
+            <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-amber-800" />
+            Admin Settings
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-3 sm:p-4 pt-0">
+          <div className="space-y-4">
+            <div className="text-amber-800">
+              <p className="text-sm">
+                Admin Level:{" "}
+                <Badge className="bg-amber-700 text-amber-50">
+                  {adminUser.role}
+                </Badge>
+              </p>
+              <p className="text-sm mt-2">Email: {adminUser.email}</p>
+              <p className="text-sm mt-2">
+                Status:{" "}
+                <Badge className="bg-green-700 text-green-50">Active</Badge>
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
   useEffect(() => {
     fetchAdminUsers();
   }, []);
@@ -61,23 +105,21 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
     }
 
     try {
-      const { error } = await supabase
-        .from("admin_users")
-        .insert({
-          email: newAdminEmail.trim(),
-          role: "admin",
-          invited_by: adminUser.user_id,
-          permissions: {
-            payments: true,
-            withdrawals: true,
-            users: true,
-            games: true,
-            full_access: false,
-          },
-        });
+      const { error } = await supabase.from("admin_users").insert({
+        email: newAdminEmail.trim(),
+        role: "admin",
+        invited_by: adminUser.user_id,
+        permissions: {
+          payments: true,
+          withdrawals: true,
+          users: true,
+          games: true,
+          full_access: false,
+        },
+      });
 
       if (error) throw error;
-      
+
       toast.success("Admin user invited successfully");
       setNewAdminEmail("");
       fetchAdminUsers();
@@ -95,8 +137,10 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
         .eq("id", adminId);
 
       if (error) throw error;
-      
-      toast.success(`Admin ${!isActive ? "activated" : "deactivated"} successfully`);
+
+      toast.success(
+        `Admin ${!isActive ? "activated" : "deactivated"} successfully`,
+      );
       fetchAdminUsers();
     } catch (error) {
       console.error("Error updating admin status:", error);
@@ -116,7 +160,7 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
   };
 
   const hasInvitePermission = () => {
-    if (!adminUser.permissions || typeof adminUser.permissions !== 'object') {
+    if (!adminUser.permissions || typeof adminUser.permissions !== "object") {
       return false;
     }
     const permissions = adminUser.permissions as Record<string, any>;
@@ -191,30 +235,40 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
                             <Badge className={getRoleColor(admin.role)}>
                               {admin.role.replace("_", " ").toUpperCase()}
                             </Badge>
-                            <Badge className={admin.is_active ? "bg-green-600" : "bg-red-600"}>
+                            <Badge
+                              className={
+                                admin.is_active ? "bg-green-600" : "bg-red-600"
+                              }
+                            >
                               {admin.is_active ? "Active" : "Inactive"}
                             </Badge>
                           </div>
                           <p className="text-slate-400 text-sm">
-                            Invited: {new Date(admin.invited_at || '').toLocaleDateString()}
+                            Invited:{" "}
+                            {new Date(
+                              admin.invited_at || "",
+                            ).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
 
                       <div className="flex gap-2">
-                        {adminUser.role === "super_admin" && admin.id !== adminUser.id && (
-                          <Button
-                            size="sm"
-                            onClick={() => toggleAdminStatus(admin.id, admin.is_active)}
-                            className={
-                              admin.is_active 
-                                ? "bg-red-600 hover:bg-red-700" 
-                                : "bg-green-600 hover:bg-green-700"
-                            }
-                          >
-                            {admin.is_active ? "Deactivate" : "Activate"}
-                          </Button>
-                        )}
+                        {adminUser.role === "super_admin" &&
+                          admin.id !== adminUser.id && (
+                            <Button
+                              size="sm"
+                              onClick={() =>
+                                toggleAdminStatus(admin.id, admin.is_active)
+                              }
+                              className={
+                                admin.is_active
+                                  ? "bg-red-600 hover:bg-red-700"
+                                  : "bg-green-600 hover:bg-green-700"
+                              }
+                            >
+                              {admin.is_active ? "Deactivate" : "Activate"}
+                            </Button>
+                          )}
                       </div>
                     </div>
                   </CardContent>
@@ -238,23 +292,29 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
             <div className="flex items-center justify-between py-3 border-b border-slate-600">
               <div>
                 <h4 className="text-white font-medium">Database Status</h4>
-                <p className="text-slate-400 text-sm">Monitor database connection</p>
+                <p className="text-slate-400 text-sm">
+                  Monitor database connection
+                </p>
               </div>
               <Badge className="bg-green-600 text-white">Connected</Badge>
             </div>
-            
+
             <div className="flex items-center justify-between py-3 border-b border-slate-600">
               <div>
                 <h4 className="text-white font-medium">Real-time Updates</h4>
-                <p className="text-slate-400 text-sm">Live game and payment updates</p>
+                <p className="text-slate-400 text-sm">
+                  Live game and payment updates
+                </p>
               </div>
               <Badge className="bg-green-600 text-white">Enabled</Badge>
             </div>
-            
+
             <div className="flex items-center justify-between py-3">
               <div>
                 <h4 className="text-white font-medium">Admin Session</h4>
-                <p className="text-slate-400 text-sm">Your current admin session</p>
+                <p className="text-slate-400 text-sm">
+                  Your current admin session
+                </p>
               </div>
               <Badge className="bg-purple-600 text-white">Active</Badge>
             </div>
@@ -270,8 +330,9 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
             <div>
               <h4 className="text-white font-semibold">Security Notice</h4>
               <p className="text-amber-200 text-sm">
-                Admin privileges grant access to sensitive user data and financial information. 
-                Use responsibly and maintain confidentiality.
+                Admin privileges grant access to sensitive user data and
+                financial information. Use responsibly and maintain
+                confidentiality.
               </p>
             </div>
           </div>

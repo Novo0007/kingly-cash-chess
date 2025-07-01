@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Chess, Square } from "chess.js";
 import { toast } from "sonner";
@@ -281,88 +280,109 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full px-1 sm:px-2">
-      <div className="electric-card p-2 sm:p-4 md:p-6 lg:p-8 rounded-lg sm:rounded-xl electric-shadow-lg w-full h-full max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl border-2 sm:border-4 electric-border">
-        <div
-          ref={boardRef}
-          className="grid grid-cols-8 gap-0 aspect-square w-full h-full border-2 sm:border-4 border-blue-400 rounded-md sm:rounded-lg overflow-hidden electric-shadow-lg"
-        >
-          {Array.from({ length: 8 }, (_, rowIndex) =>
-            Array.from({ length: 8 }, (_, colIndex) => {
-              // Calculate the actual board position based on player perspective
-              const actualRow =
-                playerColor === "white" ? rowIndex : 7 - rowIndex;
-              const actualCol =
-                playerColor === "white" ? colIndex : 7 - colIndex;
+      <div className="wood-card p-3 sm:p-6 md:p-8 lg:p-10 rounded-lg sm:rounded-xl wood-shadow-deep w-full h-full max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl border-4 border-amber-800 wood-plank relative overflow-hidden">
+        {/* Chess Board Frame - Handcrafted Wood Style */}
+        <div className="relative p-2 sm:p-4 md:p-6 bg-gradient-to-br from-amber-900 to-amber-800 rounded-lg wood-shadow border-2 border-amber-700">
+          {/* Inner Wood Frame */}
+          <div className="relative p-1 sm:p-2 bg-gradient-to-br from-amber-800 to-amber-700 rounded-md">
+            <div
+              ref={boardRef}
+              className="grid grid-cols-8 gap-0 aspect-square w-full h-full rounded-sm overflow-hidden wood-shadow-lg relative"
+              style={{
+                background: `
+                  repeating-linear-gradient(0deg,
+                    rgba(139, 69, 19, 0.1) 0px,
+                    rgba(160, 82, 45, 0.1) 1px,
+                    rgba(139, 69, 19, 0.1) 2px),
+                  repeating-linear-gradient(90deg,
+                    rgba(139, 69, 19, 0.1) 0px,
+                    rgba(160, 82, 45, 0.1) 1px,
+                    rgba(139, 69, 19, 0.1) 2px)
+                `,
+              }}
+            >
+              {Array.from({ length: 8 }, (_, rowIndex) =>
+                Array.from({ length: 8 }, (_, colIndex) => {
+                  // Calculate the actual board position based on player perspective
+                  const actualRow =
+                    playerColor === "white" ? rowIndex : 7 - rowIndex;
+                  const actualCol =
+                    playerColor === "white" ? colIndex : 7 - colIndex;
 
-              // Get the piece from the board array
-              const piece = board[actualRow] && board[actualRow][actualCol];
+                  // Get the piece from the board array
+                  const piece = board[actualRow] && board[actualRow][actualCol];
 
-              return (
-                <div
-                  key={`${rowIndex}-${colIndex}`}
-                  className={`
+                  return (
+                    <div
+                      key={`${rowIndex}-${colIndex}`}
+                      className={`
                     aspect-square flex items-center justify-center text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold cursor-pointer
-                    transition-colors duration-200 active:scale-95 relative overflow-hidden
+                    transition-all duration-200 active:scale-95 relative overflow-hidden border border-amber-900/10
                     ${
                       isLightSquare(rowIndex, colIndex)
-                        ? "bg-electric-50 hover:bg-electric-100"
-                        : "bg-blue-300 hover:bg-blue-400"
+                        ? "bg-gradient-to-br from-amber-100 to-amber-50 hover:from-amber-200 hover:to-amber-100"
+                        : "bg-gradient-to-br from-amber-800 to-amber-700 hover:from-amber-700 hover:to-amber-600"
                     }
                     ${
                       isSquareHighlighted(rowIndex, colIndex)
-                        ? "ring-4 ring-blue-400 bg-blue-200"
+                        ? "ring-4 ring-amber-500 bg-gradient-to-br from-amber-300 to-amber-200"
                         : ""
                     }
                     ${
                       isPossibleMove(rowIndex, colIndex)
-                        ? "after:absolute after:inset-1/3 after:bg-blue-500 after:rounded-full after:opacity-70"
+                        ? "after:absolute after:inset-1/3 after:bg-amber-600 after:rounded-full after:opacity-80 after:border after:border-amber-800"
                         : ""
                     }
                     ${
                       isLastMove(rowIndex, colIndex)
-                        ? "bg-electric-300 ring-2 ring-blue-500"
+                        ? "bg-gradient-to-br from-yellow-300 to-amber-300 ring-2 ring-amber-600"
                         : ""
                     }
                     ${disabled || !isPlayerTurn ? "cursor-default opacity-70" : "cursor-pointer"}
                     ${!isPlayerTurn ? "pointer-events-none" : ""}
                   `}
-                  onClick={() => handleSquareClick(rowIndex, colIndex)}
-                >
-                  <span
-                    className={`z-10 drop-shadow-2xl select-none ${
-                      piece && piece.color === "b" ? "text-black" : "text-white"
-                    }`}
-                    style={{
-                      textShadow: piece
-                        ? piece.color === "b"
-                          ? "2px 2px 4px rgba(255, 255, 255, 0.8)"
-                          : "2px 2px 4px rgba(0, 0, 0, 0.8)"
-                        : "none",
-                      filter:
-                        piece && piece.color === "b"
-                          ? "drop-shadow(1px 1px 2px white)"
-                          : "none",
-                    }}
-                  >
-                    {getPieceSymbol(piece)}
-                  </span>
-                </div>
-              );
-            }),
-          ).flat()}
+                      onClick={() => handleSquareClick(rowIndex, colIndex)}
+                    >
+                      <span
+                        className={`z-10 drop-shadow-2xl select-none ${
+                          piece && piece.color === "b"
+                            ? "text-black"
+                            : "text-white"
+                        }`}
+                        style={{
+                          textShadow: piece
+                            ? piece.color === "b"
+                              ? "2px 2px 4px rgba(255, 255, 255, 0.8)"
+                              : "2px 2px 4px rgba(0, 0, 0, 0.8)"
+                            : "none",
+                          filter:
+                            piece && piece.color === "b"
+                              ? "drop-shadow(1px 1px 2px white)"
+                              : "none",
+                        }}
+                      >
+                        {getPieceSymbol(piece)}
+                      </span>
+                    </div>
+                  );
+                }),
+              ).flat()}
+            </div>
+          </div>
         </div>
 
-        <div className="mt-2 sm:mt-4 md:mt-8 text-center">
-          <div className="electric-text text-sm sm:text-lg md:text-2xl font-bold electric-glass rounded-md sm:rounded-lg px-3 py-2 sm:px-6 sm:py-4 border electric-border sm:border-2 electric-shadow tap-target">
+        {/* Status Display - Wood Style */}
+        <div className="mt-3 sm:mt-6 md:mt-8 text-center">
+          <div className="wood-text text-sm sm:text-lg md:text-2xl font-bold wood-glass rounded-lg px-4 py-3 sm:px-6 sm:py-4 border-2 border-amber-700 wood-shadow tap-target bg-gradient-to-r from-amber-100 to-orange-100">
             Playing as {playerColor === "white" ? "⚪ White" : "⚫ Black"}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-blue-600 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold electric-glass rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border electric-border sm:border-2 electric-shadow tap-target">
+            <div className="text-amber-800 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold wood-glass rounded-lg px-3 py-2 sm:px-4 sm:py-3 inline-block border-2 border-amber-600 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
               Opponent's turn...
             </div>
           )}
           {disabled && (
-            <div className="text-gray-600 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold electric-glass rounded-md px-3 py-2 sm:px-4 sm:py-3 inline-block border border-gray-300 sm:border-2 electric-shadow tap-target">
+            <div className="text-amber-700 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold wood-glass rounded-lg px-3 py-2 sm:px-4 sm:py-3 inline-block border-2 border-amber-500 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
               Spectating
             </div>
           )}

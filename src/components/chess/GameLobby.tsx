@@ -484,20 +484,18 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
-        {/* Header with Wallet Balance */}
-        <Card
-          className={`${cardGradient} ${animationClass} border-blue-600/30`}
-        >
+        {/* Header with Wallet Balance - Wood Style */}
+        <Card className="wood-card wood-plank border-amber-700/50">
           <CardContent className="p-3 md:p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-blue-400" />
-                <span className="text-white font-semibold text-sm md:text-base">
+                <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-amber-700" />
+                <span className="text-amber-900 font-semibold text-sm md:text-base font-heading">
                   Wallet Balance
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="text-lg md:text-xl font-bold text-blue-400">
+                <div className="text-lg md:text-xl font-bold text-amber-800">
                   ₹{wallet?.balance?.toFixed(2) || "0.00"}
                 </div>
                 <Button
@@ -505,7 +503,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                   variant="ghost"
                   size="sm"
                   disabled={refreshing}
-                  className="text-blue-400 hover:bg-slate-700/50 h-8 w-8 p-0"
+                  className="text-amber-700 hover:bg-amber-100/50 h-8 w-8 p-0"
                 >
                   <RefreshCw
                     className={`h-3 w-3 md:h-4 md:w-4 ${refreshing && !isMobile ? "animate-spin" : ""}`}
@@ -516,15 +514,13 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           </CardContent>
         </Card>
 
-        {/* Chess Rules Quick Access */}
-        <Card
-          className={`${cardGradient} ${animationClass} border-indigo-600/30`}
-        >
+        {/* Chess Rules Quick Access - Wood Style */}
+        <Card className="wood-card wood-plank border-green-700/50">
           <CardContent className="p-3 md:p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4 md:h-5 md:w-5 text-indigo-400" />
-                <span className="text-white font-semibold text-sm md:text-base">
+                <BookOpen className="h-4 w-4 md:h-5 md:w-5 text-green-800" />
+                <span className="text-amber-900 font-semibold text-sm md:text-base font-heading">
                   New to Chess?
                 </span>
               </div>
@@ -532,7 +528,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                 onClick={() => (window.location.href = "/chess-rules")}
                 variant="outline"
                 size="sm"
-                className="text-indigo-400 border-indigo-400 hover:bg-indigo-500/10 text-xs px-3 py-1"
+                className="text-green-800 border-green-700 hover:bg-green-100/50 text-xs px-3 py-1"
               >
                 View Rules
               </Button>
@@ -540,31 +536,29 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           </CardContent>
         </Card>
 
-        {/* Create Game */}
-        <Card
-          className={`${cardGradient} ${animationClass} border-green-600/30`}
-        >
+        {/* Create Game - Wood Style */}
+        <Card className="wood-card wood-plank border-green-700/50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-green-400 flex items-center gap-2 font-semibold text-base md:text-lg">
+            <CardTitle className="text-green-800 flex items-center gap-2 font-bold text-base md:text-lg font-heading">
               <Plus className="h-5 w-5 md:h-6 md:w-6" />
               Create New Game
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 md:space-y-4">
             <div>
-              <label className="text-slate-300 mb-2 block text-sm">
+              <label className="text-amber-800 mb-2 block text-sm font-semibold">
                 Game Name (Optional)
               </label>
               <Input
                 type="text"
                 value={gameName}
                 onChange={(e) => setGameName(e.target.value)}
-                className="bg-slate-700/50 border-slate-600 text-white"
+                className="wood-input"
                 placeholder="Leave empty for auto-generated unique name"
               />
             </div>
             <div>
-              <label className="text-slate-300 mb-2 block text-sm">
+              <label className="text-amber-800 mb-2 block text-sm font-semibold">
                 Entry Fee (₹)
               </label>
               <Input
@@ -573,14 +567,14 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
                 step="0.01"
                 value={entryFee}
                 onChange={(e) => setEntryFee(e.target.value)}
-                className="bg-slate-700/50 border-slate-600 text-white"
+                className="wood-input"
                 placeholder="Enter amount"
               />
             </div>
             <Button
               onClick={createGame}
               disabled={loading}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3"
+              className="w-full py-3 font-bold"
             >
               {loading ? "Creating..." : "Create Game"}
             </Button>
