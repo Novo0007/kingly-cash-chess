@@ -306,8 +306,8 @@
   @apply electric-text;
 }
 
-/* Professional animations */
-@keyframes gradientShift {
+/* Natural Wood Animations */
+@keyframes woodShift {
   0%,
   100% {
     background-position: 0% 50%;
@@ -317,28 +317,25 @@
   }
 }
 
-@keyframes electricFloat {
+@keyframes woodFloat {
   0%,
   100% {
     transform: translateY(0px) scale(1);
   }
-  33% {
-    transform: translateY(-15px) scale(1.05);
-  }
-  66% {
-    transform: translateY(-5px) scale(0.95);
+  50% {
+    transform: translateY(-8px) scale(1.02);
   }
 }
 
-@keyframes electricPulse {
+@keyframes woodGlow {
   0%,
   100% {
-    opacity: 0.6;
+    opacity: 0.3;
     transform: scale(1);
   }
   50% {
-    opacity: 1;
-    transform: scale(1.1);
+    opacity: 0.6;
+    transform: scale(1.05);
   }
 }
 
