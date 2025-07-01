@@ -255,20 +255,20 @@
     inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.electric-border {
-  border-color: hsl(var(--electric-300));
+.wood-border {
+  border-color: hsl(var(--wood-medium));
 }
 
-.electric-bg {
-  background-color: hsl(var(--electric-50));
+.wood-bg {
+  background-color: hsl(var(--wood-lightest));
 }
 
-.electric-bg-soft {
-  background-color: hsl(var(--electric-100));
+.wood-bg-soft {
+  background-color: hsl(var(--wood-cream));
 }
 
-.electric-text {
-  color: hsl(var(--electric-text));
+.wood-text {
+  color: hsl(var(--wood-charcoal));
 }
 
 /* Backwards compatibility classes */
