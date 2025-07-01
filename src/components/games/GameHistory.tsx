@@ -26,7 +26,7 @@ interface GameHistoryProps {
 
 interface GameWithPlayers {
   id: string;
-  game_name: string;
+  game_name: string | null;
   game_status: string;
   game_result: string | null;
   winner_id: string | null;
@@ -35,11 +35,11 @@ interface GameWithPlayers {
   entry_fee: number;
   prize_amount: number;
   created_at: string;
-  updated_at: string;
+  updated_at: string | null;
   white_player: { username: string; chess_rating: number } | null;
   black_player: { username: string; chess_rating: number } | null;
-  move_history: string[];
-  board_state: string;
+  move_history: string[] | null;
+  board_state: string | null;
 }
 
 export const GameHistory = ({ userId, isOwnHistory = true }: GameHistoryProps) => {
@@ -60,7 +60,8 @@ export const GameHistory = ({ userId, isOwnHistory = true }: GameHistoryProps) =
       
       const offset = (currentPage - 1) * gamesPerPage;
       
-      let query = supabase
+      // First get the games
+      const { data: gamesData, error: gamesError, count } = await supabase
         .from("chess_games")
         .select(`
           id,
@@ -75,20 +76,50 @@ export const GameHistory = ({ userId, isOwnHistory = true }: GameHistoryProps) =
           created_at,
           updated_at,
           move_history,
-          board_state,
-          white_player:profiles!chess_games_white_player_id_fkey(username, chess_rating),
-          black_player:profiles!chess_games_black_player_id_fkey(username, chess_rating)
-        `)
+          board_state
+        `, { count: 'exact' })
         .or(`white_player_id.eq.${userId},black_player_id.eq.${userId}`)
         .eq("game_status", "completed")
         .order("updated_at", { ascending: false })
         .range(offset, offset + gamesPerPage - 1);
 
-      const { data, error, count } = await query;
+      if (gamesError) throw gamesError;
 
-      if (error) throw error;
+      if (!gamesData || gamesData.length === 0) {
+        setGames([]);
+        setTotalPages(1);
+        return;
+      }
 
-      setGames(data || []);
+      // Get unique player IDs
+      const playerIds = new Set<string>();
+      gamesData.forEach(game => {
+        if (game.white_player_id) playerIds.add(game.white_player_id);
+        if (game.black_player_id) playerIds.add(game.black_player_id);
+      });
+
+      // Fetch player profiles
+      const { data: playersData, error: playersError } = await supabase
+        .from("profiles")
+        .select("id, username, chess_rating")
+        .in("id", Array.from(playerIds));
+
+      if (playersError) throw playersError;
+
+      // Create a map of player data
+      const playersMap = new Map();
+      playersData?.forEach(player => {
+        playersMap.set(player.id, player);
+      });
+
+      // Combine games with player data
+      const gamesWithPlayers: GameWithPlayers[] = gamesData.map(game => ({
+        ...game,
+        white_player: game.white_player_id ? playersMap.get(game.white_player_id) || null : null,
+        black_player: game.black_player_id ? playersMap.get(game.black_player_id) || null : null,
+      }));
+
+      setGames(gamesWithPlayers);
       setTotalPages(Math.ceil((count || 0) / gamesPerPage));
     } catch (error) {
       console.error("Error fetching game history:", error);
@@ -193,7 +224,7 @@ export const GameHistory = ({ userId, isOwnHistory = true }: GameHistoryProps) =
                         <div className="text-right">
                           <div className="flex items-center gap-2 text-sm text-amber-700 mb-1">
                             <Calendar className="h-3 w-3" />
-                            {new Date(game.updated_at).toLocaleDateString()}
+                            {new Date(game.updated_at || game.created_at).toLocaleDateString()}
                           </div>
                           
                           {game.entry_fee > 0 && (

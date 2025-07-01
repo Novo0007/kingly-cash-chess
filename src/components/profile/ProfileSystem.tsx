@@ -45,7 +45,6 @@ export const ProfileSystem = () => {
   const [editForm, setEditForm] = useState({
     username: "",
     full_name: "",
-    bio: "",
   });
 
   useEffect(() => {
@@ -69,7 +68,6 @@ export const ProfileSystem = () => {
       setEditForm({
         username: data.username || "",
         full_name: data.full_name || "",
-        bio: data.bio || "",
       });
     } catch (error) {
       console.error("Error fetching profile:", error);
@@ -88,7 +86,6 @@ export const ProfileSystem = () => {
         .update({
           username: editForm.username,
           full_name: editForm.full_name,
-          bio: editForm.bio,
         })
         .eq("id", profile.id);
 
@@ -98,7 +95,6 @@ export const ProfileSystem = () => {
         ...profile,
         username: editForm.username,
         full_name: editForm.full_name,
-        bio: editForm.bio,
       });
       
       setEditing(false);
@@ -183,16 +179,6 @@ export const ProfileSystem = () => {
                       className="bg-amber-50 border-amber-300"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="bio">Bio</Label>
-                    <Textarea
-                      id="bio"
-                      value={editForm.bio}
-                      onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                      className="bg-amber-50 border-amber-300"
-                      rows={3}
-                    />
-                  </div>
                   <div className="flex gap-2">
                     <Button onClick={handleSaveProfile} className="bg-green-600 hover:bg-green-700">
                       <Save className="h-4 w-4 mr-2" />
@@ -224,10 +210,6 @@ export const ProfileSystem = () => {
                   
                   {profile.full_name && (
                     <p className="text-amber-700 mb-2">{profile.full_name}</p>
-                  )}
-                  
-                  {profile.bio && (
-                    <p className="text-amber-600 mb-4">{profile.bio}</p>
                   )}
                   
                   <div className="flex flex-wrap gap-2 justify-center md:justify-start">
@@ -317,23 +299,23 @@ export const ProfileSystem = () => {
         </TabsContent>
 
         <TabsContent value="settings" className="mt-6">
-          <SettingsSection />
+          <SettingsSection onBack={() => {}} />
         </TabsContent>
 
         <TabsContent value="about" className="mt-6">
-          <AboutSection />
+          <AboutSection onBack={() => {}} />
         </TabsContent>
 
         <TabsContent value="contact" className="mt-6">
-          <ContactSection />
+          <ContactSection onBack={() => {}} />
         </TabsContent>
 
         <TabsContent value="privacy" className="mt-6">
-          <PrivacyPolicySection />
+          <PrivacyPolicySection onBack={() => {}} />
         </TabsContent>
 
         <TabsContent value="games" className="mt-6">
-          <MoreGamesSection />
+          <MoreGamesSection onBack={() => {}} />
         </TabsContent>
       </Tabs>
     </div>
