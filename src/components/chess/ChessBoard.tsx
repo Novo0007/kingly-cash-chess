@@ -279,26 +279,29 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center w-full px-1 sm:px-2">
-      <div className="wood-card p-3 sm:p-6 md:p-8 lg:p-10 rounded-lg sm:rounded-xl wood-shadow-deep w-full h-full max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl border-4 border-amber-800 wood-plank relative overflow-hidden">
-        {/* Chess Board Frame - Handcrafted Wood Style */}
-        <div className="relative p-2 sm:p-4 md:p-6 bg-gradient-to-br from-amber-900 to-amber-800 rounded-lg wood-shadow border-2 border-amber-700">
-          {/* Inner Wood Frame */}
-          <div className="relative p-1 sm:p-2 bg-gradient-to-br from-amber-800 to-amber-700 rounded-md">
+    <div className="flex flex-col items-center w-full px-0 sm:px-1">
+      <div className="wood-card p-4 sm:p-8 md:p-12 lg:p-16 xl:p-20 rounded-xl sm:rounded-2xl wood-shadow-deep w-full h-full max-w-none sm:max-w-6xl md:max-w-7xl lg:max-w-8xl xl:max-w-[100rem] border-6 border-amber-800 wood-plank relative overflow-hidden transform scale-105 sm:scale-110 md:scale-115 lg:scale-120">
+        {/* Chess Board Frame - Premium Handcrafted Wood Style */}
+        <div className="relative p-3 sm:p-6 md:p-8 lg:p-12 bg-gradient-to-br from-amber-900 via-amber-800 to-amber-900 rounded-xl wood-shadow-xl border-4 border-amber-700 shadow-2xl">
+          {/* Ornate Inner Wood Frame */}
+          <div className="relative p-2 sm:p-4 md:p-6 bg-gradient-to-br from-amber-800 via-amber-700 to-amber-800 rounded-lg border-2 border-amber-600">
+            {/* Premium Chess Board Surface */}
             <div
               ref={boardRef}
-              className="grid grid-cols-8 gap-0 aspect-square w-full h-full rounded-sm overflow-hidden wood-shadow-lg relative"
+              className="grid grid-cols-8 gap-0 aspect-square w-full h-full rounded-lg overflow-hidden wood-shadow-2xl relative border-4 border-amber-900 shadow-inner"
               style={{
                 background: `
+                  radial-gradient(circle at center, rgba(139, 69, 19, 0.15) 0%, rgba(160, 82, 45, 0.1) 100%),
                   repeating-linear-gradient(0deg,
-                    rgba(139, 69, 19, 0.1) 0px,
+                    rgba(139, 69, 19, 0.15) 0px,
                     rgba(160, 82, 45, 0.1) 1px,
-                    rgba(139, 69, 19, 0.1) 2px),
+                    rgba(139, 69, 19, 0.15) 2px),
                   repeating-linear-gradient(90deg,
-                    rgba(139, 69, 19, 0.1) 0px,
+                    rgba(139, 69, 19, 0.15) 0px,
                     rgba(160, 82, 45, 0.1) 1px,
-                    rgba(139, 69, 19, 0.1) 2px)
+                    rgba(139, 69, 19, 0.15) 2px)
                 `,
+                boxShadow: "inset 0 0 50px rgba(139, 69, 19, 0.3)",
               }}
             >
               {Array.from({ length: 8 }, (_, rowIndex) =>
