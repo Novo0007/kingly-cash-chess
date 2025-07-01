@@ -1,13 +1,6 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Home,
-  Users,
-  Wallet,
-  UserCircle,
-  Shield,
-} from "lucide-react";
+import { Home, Users, Wallet, UserCircle, Shield } from "lucide-react";
 
 interface BottomNavProps {
   currentView: string;
@@ -15,7 +8,11 @@ interface BottomNavProps {
   isAdmin?: boolean;
 }
 
-export const BottomNav = ({ currentView, onViewChange, isAdmin }: BottomNavProps) => {
+export const BottomNav = ({
+  currentView,
+  onViewChange,
+  isAdmin,
+}: BottomNavProps) => {
   const navigationItems = [
     { id: "games", label: "Games", icon: Home },
     { id: "friends", label: "Friends", icon: Users },
@@ -28,7 +25,7 @@ export const BottomNav = ({ currentView, onViewChange, isAdmin }: BottomNavProps
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-amber-100 to-orange-100 border-t-2 border-amber-600 shadow-2xl wood-plank backdrop-blur-sm">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 border-t border-border shadow-lg backdrop-blur-sm">
       <div className="safe-area-inset-bottom">
         <div className="flex justify-around items-center py-2 px-1">
           {navigationItems.map((item) => {
@@ -40,20 +37,18 @@ export const BottomNav = ({ currentView, onViewChange, isAdmin }: BottomNavProps
                 onClick={() => onViewChange(item.id)}
                 variant="ghost"
                 className={`
-                  flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-h-[60px] border-2 relative
+                  flex flex-col items-center justify-center p-2 rounded-2xl transition-all duration-200 min-h-[60px] relative
                   ${
                     isActive
-                      ? "bg-gradient-to-r from-amber-700 to-orange-700 text-white border-yellow-400 shadow-lg scale-105"
-                      : "text-amber-900 hover:bg-amber-200 border-transparent hover:border-amber-400"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
                   }
                 `}
               >
-                <Icon className={`h-5 w-5 mb-1 ${isActive ? "text-white" : "text-amber-900"}`} />
-                <span className={`text-xs font-medium ${isActive ? "text-white" : "text-amber-900"}`}>
-                  {item.label}
-                </span>
+                <Icon className="h-5 w-5 mb-1" />
+                <span className="text-xs font-medium">{item.label}</span>
                 {item.id === "admin" && (
-                  <Badge className="absolute -top-1 -right-1 bg-red-600 text-white text-xs scale-75">
+                  <Badge className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs scale-75 rounded-full">
                     Admin
                   </Badge>
                 )}
