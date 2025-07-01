@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,7 +30,7 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
         .eq("is_active", true)
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.code !== "PGRST116") {
         console.error("Error fetching admin user:", error);
         return;
       }
@@ -48,8 +47,8 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
     return (
       <div className="flex items-center justify-center p-4 sm:p-8">
         <div className="text-center space-y-4">
-          <div className="w-8 h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-amber-900 font-body">Loading admin lodge...</p>
+          <div className="w-8 h-8 border-4 border-muted border-t-primary rounded-full animate-spin mx-auto"></div>
+          <p className="text-muted-foreground">Loading admin panel...</p>
         </div>
       </div>
     );
@@ -57,13 +56,13 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
 
   if (!adminUser) {
     return (
-      <Card className="wood-card bg-gradient-to-br from-red-100 to-red-50 border-red-600 m-2 sm:m-4">
+      <Card className="bg-destructive/10 border-destructive/20 m-2 sm:m-4 rounded-2xl">
         <CardContent className="p-4 sm:p-6 text-center">
-          <AlertTriangle className="h-10 w-10 sm:h-12 sm:w-12 text-red-700 mx-auto mb-4" />
-          <h3 className="text-lg sm:text-xl font-bold text-red-900 mb-2 font-heading">
+          <AlertTriangle className="h-10 w-10 sm:h-12 sm:w-12 text-destructive mx-auto mb-4" />
+          <h3 className="text-lg sm:text-xl font-bold text-destructive mb-2">
             Access Denied
           </h3>
-          <p className="text-red-800 text-sm sm:text-base">
+          <p className="text-destructive/80 text-sm sm:text-base">
             You don't have admin privileges or your account is not active.
           </p>
         </CardContent>
@@ -74,10 +73,10 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
   return (
     <div className="space-y-4 sm:space-y-6 p-2 sm:p-4">
       <AdminHeader adminUser={adminUser} />
-      <AdminTabs 
-        adminUser={adminUser} 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab} 
+      <AdminTabs
+        adminUser={adminUser}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
       />
     </div>
   );

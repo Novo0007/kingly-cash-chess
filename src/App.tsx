@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { ChessRulesPage } from "./pages/ChessRulesPage";
@@ -46,331 +47,136 @@ const App = () => {
     };
   }, []);
 
-  // Ultra-Modern Professional Gaming Loading Experience
   if (appLoading) {
     return (
-      <div className="fixed inset-0 overflow-hidden font-body">
-        {/* Natural Wood Background System */}
-        <div className="absolute inset-0">
-          {/* Primary Wood Gradient Layer */}
-          <div className="absolute inset-0 wood-gradient-dark"></div>
-
-          {/* Wood Texture Overlay */}
-          <div className="absolute inset-0 opacity-60">
-            <div
-              className="h-full w-full"
-              style={{
-                backgroundImage: `
-                  radial-gradient(ellipse at 20% 80%, hsl(25, 45%, 35%) 0%, transparent 40%),
-                  radial-gradient(ellipse at 80% 20%, hsl(30, 40%, 65%) 0%, transparent 40%),
-                  radial-gradient(ellipse at 40% 40%, hsl(25, 35%, 25%) 0%, transparent 30%),
-                  radial-gradient(ellipse at 60% 80%, hsl(120, 30%, 40%) 0%, transparent 25%),
-                  repeating-linear-gradient(90deg,
-                    hsl(25, 35%, 20%) 0px,
-                    hsl(25, 45%, 30%) 2px,
-                    hsl(25, 35%, 20%) 4px,
-                    hsl(25, 40%, 25%) 6px)
-                `,
-              }}
-            ></div>
-          </div>
-
-          {/* Subtle Wood Grain Accents */}
-          <div className="absolute inset-0 opacity-30">
-            {[...Array(15)].map((_, i) => {
-              const colors = [
-                "bg-amber-600",
-                "bg-orange-600",
-                "bg-yellow-700",
-                "bg-green-700",
-              ];
-              const randomColor =
-                colors[Math.floor(Math.random() * colors.length)];
-              return (
-                <div
-                  key={i}
-                  className={`absolute w-1 h-1 ${randomColor} rounded-full opacity-40`}
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    boxShadow: `0 0 2px currentColor`,
-                  }}
-                ></div>
-              );
-            })}
-          </div>
-
-          {/* Wood Plank Pattern Overlay */}
-          <div className="absolute inset-0 opacity-15">
-            <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern
-                  id="woodGrain"
-                  width="60"
-                  height="20"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <path
-                    d="M 0 10 Q 15 5 30 10 T 60 10"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="0.5"
-                    className="text-amber-800"
-                  />
-                  <path
-                    d="M 0 15 Q 20 12 40 15 T 60 15"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="0.3"
-                    className="text-amber-700"
-                  />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#woodGrain)" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Subtle Wood Elements */}
-        <div className="absolute inset-0 pointer-events-none">
-          {/* Floating Wood Accents */}
-          <div className="absolute top-1/4 left-1/4 w-16 h-16 bg-gradient-to-r from-amber-700/20 to-orange-600/20 rounded-full blur-xl"></div>
-          <div className="absolute top-3/4 right-1/4 w-14 h-14 bg-gradient-to-r from-green-700/20 to-emerald-800/20 rounded-full blur-xl"></div>
-          <div className="absolute top-1/2 left-3/4 w-12 h-12 bg-gradient-to-r from-yellow-700/20 to-amber-600/20 rounded-full blur-xl"></div>
-        </div>
-
-        {/* Main Content Container */}
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-6 sm:p-8">
-          <div className="text-center space-y-10 sm:space-y-12 max-w-lg sm:max-w-xl mx-auto w-full">
-            {/* Natural Wood Logo Design */}
-            <div className="relative group">
-              {/* Outer Wood Glow */}
-              <div className="absolute -inset-10 bg-gradient-to-r from-amber-600/30 via-orange-600/30 via-green-700/30 to-yellow-600/30 rounded-full blur-3xl group-hover:blur-4xl transition-all duration-1000"></div>
-
-              {/* Logo Container */}
-              <div className="relative">
-                <div className="wood-glass backdrop-blur-lg rounded-full p-8 sm:p-12 border-2 border-amber-700/60 wood-plank">
-                  {/* Wood Border */}
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-700 via-orange-600 via-green-700 to-yellow-700 opacity-60 blur-sm"></div>
-                  <div className="absolute inset-1 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 backdrop-blur-xl"></div>
-
-                  {/* Logo Icon - Wood Themed */}
-                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto">
-                    <div
-                      className="absolute inset-0 bg-gradient-to-br from-amber-600 via-orange-700 via-green-700 to-yellow-600 rounded-3xl wood-glow transform rotate-45"
-                      style={{ filter: "brightness(1.1)" }}
-                    ></div>
-                    <div className="absolute inset-3 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl flex items-center justify-center transform -rotate-45 border border-amber-300">
-                      <svg
-                        className="w-10 h-10 sm:w-12 sm:h-12 text-amber-800"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M12 2C13.1 2 14 2.9 14 4V10L16 12L14 14V20C14 21.1 13.1 22 12 22S10 21.1 10 20V14L8 12L10 10V4C10 2.9 10.9 2 12 2Z" />
-                        <circle cx="12" cy="8" r="2" />
-                        <circle cx="12" cy="16" r="2" />
-                      </svg>
-                    </div>
-                  </div>
+      <div className="fixed inset-0 overflow-hidden bg-gradient-to-br from-background via-muted/20 to-background">
+        <div className="flex flex-col items-center justify-center min-h-screen p-6 sm:p-8">
+          <div className="text-center space-y-8 max-w-lg mx-auto w-full">
+            {/* Clean Logo Design */}
+            <div className="relative">
+              <div className="bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-sm rounded-3xl p-8 border border-border">
+                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center">
+                  <svg
+                    className="w-10 h-10 text-primary-foreground"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2C13.1 2 14 2.9 14 4V10L16 12L14 14V20C14 21.1 13.1 22 12 22S10 21.1 10 20V14L8 12L10 10V4C10 2.9 10.9 2 12 2Z" />
+                    <circle cx="12" cy="8" r="2" />
+                    <circle cx="12" cy="16" r="2" />
+                  </svg>
                 </div>
               </div>
             </div>
 
-            {/* Advanced Typography System */}
+            {/* Clean Typography */}
+            <div className="space-y-4">
+              <h1 className="text-4xl sm:text-5xl font-bold text-foreground">
+                GAME HUB
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                BY{" "}
+                <span className="font-semibold text-foreground">NNC GAMES</span>
+              </p>
+            </div>
+
+            {/* Simple Loading Animation */}
             <div className="space-y-6">
-              {/* Main Title - Wood Theme */}
-              <div className="relative">
-                <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-heading leading-none">
-                  <span
-                    className="block bg-gradient-to-r from-amber-100 via-orange-100 via-amber-50 to-yellow-100 bg-clip-text text-transparent drop-shadow-2xl"
-                    style={{ filter: "brightness(1.2)" }}
-                  >
-                    GAME
-                  </span>
-                  <span
-                    className="block bg-gradient-to-r from-yellow-200 via-amber-200 via-orange-200 to-green-200 bg-clip-text text-transparent wood-text-gradient"
-                    style={{ filter: "brightness(1.1)" }}
-                  >
-                    HUB
-                  </span>
-                </h1>
+              <div className="w-16 h-16 mx-auto border-4 border-muted border-t-primary rounded-full"></div>
 
-                {/* Subtitle with Wood Styling */}
-                <div className="mt-4 relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-600/25 via-orange-600/20 to-transparent blur-xl"></div>
-                  <p className="relative text-xl sm:text-2xl md:text-3xl font-medium text-amber-200 font-body tracking-widest">
-                    BY
-                    <span
-                      className="mx-3 font-black bg-gradient-to-r from-amber-50 via-orange-100 to-yellow-100 bg-clip-text text-transparent"
-                      style={{ filter: "brightness(1.15)" }}
-                    >
-                      NNC GAMES
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Natural Loading Animation */}
-            <div className="relative space-y-8">
-              {/* Wood Ring Spinner */}
-              <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto">
-                <div className="absolute inset-0 rounded-full border-2 border-amber-600/30"></div>
-                <div className="absolute inset-2 rounded-full border-3 border-transparent border-t-amber-600 animate-spin"></div>
-
-                {/* Center Dot */}
-                <div className="absolute inset-8 bg-gradient-to-r from-amber-600 to-orange-600 rounded-full opacity-50"></div>
-              </div>
-
-              {/* Natural Progress System */}
-              <div className="w-full max-w-md mx-auto space-y-4">
-                {/* Progress Track - Wood Theme */}
-                <div className="relative h-4 bg-amber-900/60 rounded-full overflow-hidden backdrop-blur-sm border border-amber-600/30">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-600/25 via-orange-600/20 to-transparent wood-shimmer"></div>
+              {/* Progress Bar */}
+              <div className="w-full max-w-sm mx-auto space-y-3">
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-amber-600 via-orange-600 via-yellow-600 to-green-600 rounded-full transition-all duration-700 ease-out relative overflow-hidden"
-                    style={{
-                      width: `${Math.min(loadingProgress, 100)}%`,
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-100/20 to-transparent"></div>
-                  </div>
+                    className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(loadingProgress, 100)}%` }}
+                  />
                 </div>
 
-                {/* Progress Info */}
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-amber-200 font-body">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">
                     {loadingProgress < 25
-                      ? "🌱 Planting Seeds..."
+                      ? "Initializing..."
                       : loadingProgress < 50
-                        ? "🌿 Growing Forest..."
+                        ? "Loading Games..."
                         : loadingProgress < 75
-                          ? "🏡 Building Lodge..."
+                          ? "Setting Up..."
                           : loadingProgress < 95
-                            ? "🔥 Lighting Fireplace..."
-                            : "✨ Almost Ready..."}
+                            ? "Almost Ready..."
+                            : "Welcome!"}
                   </span>
-                  <span className="text-lg font-black text-amber-100 font-heading">
+                  <span className="font-semibold">
                     {Math.round(loadingProgress)}%
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Interactive Feature Cards - Wood Theme */}
-            <div className="grid grid-cols-3 gap-4 sm:gap-6 mt-12">
+            {/* Feature Cards */}
+            <div className="grid grid-cols-3 gap-3 mt-8">
               {[
-                {
-                  icon: "🔒",
-                  title: "Secure",
-                  desc: "Ironclad protection",
-                  gradient: "from-amber-600/25 to-orange-600/25",
-                },
-                {
-                  icon: "👥",
-                  title: "Multiplayer",
-                  desc: "Lodge gatherings",
-                  gradient: "from-green-700/25 to-emerald-700/25",
-                },
-                {
-                  icon: "⚡",
-                  title: "Swift",
-                  desc: "Smooth as oak",
-                  gradient: "from-yellow-600/25 to-amber-600/25",
-                },
+                { icon: "🔒", title: "Secure", desc: "Safe & protected" },
+                { icon: "👥", title: "Multiplayer", desc: "Play together" },
+                { icon: "⚡", title: "Fast", desc: "Lightning quick" },
               ].map((feature, index) => (
-                <div key={index} className="relative group tap-target">
-                  <div
-                    className={`absolute -inset-1 bg-gradient-to-r ${feature.gradient} rounded-xl blur opacity-0 group-hover:opacity-100 transition-all duration-500`}
-                  ></div>
-                  <div
-                    className="relative wood-glass backdrop-blur-xl p-4 sm:p-6 rounded-xl border border-amber-600/25 hover:border-amber-600/50 transition-all duration-300 wood-plank"
-                    style={{ background: "rgba(139, 69, 19, 0.1)" }}
-                  >
-                    <div className="text-2xl sm:text-3xl mb-2 filter brightness-110">
-                      {feature.icon}
-                    </div>
-                    <h3
-                      className="text-xs sm:text-sm font-bold text-amber-100 font-heading"
-                      style={{ textShadow: "0 0 8px rgba(245, 158, 11, 0.3)" }}
-                    >
-                      {feature.title}
-                    </h3>
-                    <p
-                      className="text-xs text-amber-200 font-body mt-1"
-                      style={{ textShadow: "0 0 4px rgba(245, 158, 11, 0.5)" }}
-                    >
-                      {feature.desc}
-                    </p>
-                  </div>
+                <div
+                  key={index}
+                  className="bg-card border border-border rounded-2xl p-4 text-center"
+                >
+                  <div className="text-2xl mb-2">{feature.icon}</div>
+                  <h3 className="text-sm font-semibold text-card-foreground">
+                    {feature.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {feature.desc}
+                  </p>
                 </div>
               ))}
             </div>
 
-            {/* Status Message */}
-            <div className="relative space-y-3">
-              <div className="wood-glass backdrop-blur-xl rounded-2xl p-4 border border-amber-600/20">
-                <p className="text-amber-100 font-body text-sm sm:text-base">
-                  🏡 Welcome to our cozy digital lodge
-                </p>
-              </div>
-
-              {/* Music preparation indicator */}
-              <div className="wood-glass backdrop-blur-xl rounded-xl p-3 border border-orange-600/20">
-                <div className="flex items-center justify-center gap-2 text-orange-200">
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12,3V13.55C11.41,13.21 10.73,13 10,13A3,3 0 0,0 7,16A3,3 0 0,0 10,19A3,3 0 0,0 13,16V7H19V5H12V3Z" />
-                  </svg>
-                  <span className="text-xs sm:text-sm font-medium">
-                    🎵 Preparing rustic ambience
-                  </span>
-                  <div className="flex space-x-1">
-                    <div className="w-1 h-1 bg-amber-600 rounded-full opacity-80"></div>
-                    <div className="w-1 h-1 bg-orange-600 rounded-full opacity-60"></div>
-                    <div className="w-1 h-1 bg-yellow-600 rounded-full opacity-80"></div>
-                  </div>
-                </div>
-              </div>
+            {/* Status */}
+            <div className="bg-card border border-border rounded-2xl p-4">
+              <p className="text-sm text-card-foreground">
+                🎮 Welcome to Game Hub
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Enhanced Footer */}
+        {/* Footer */}
         <div className="absolute bottom-6 left-0 right-0 text-center">
-          <div className="wood-glass backdrop-blur-xl inline-block px-6 py-2 rounded-full border border-amber-600/20">
-            <p className="text-xs sm:text-sm text-amber-200 font-medium font-body">
-              © 2024 NNC Games • Rustic Gaming Lodge
-            </p>
-          </div>
+          <p className="text-xs text-muted-foreground">© 2024 NNC Games</p>
         </div>
       </div>
     );
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
 
-        {/* Draggable Background Music Control */}
-        <DraggableMusicControl isPlaying={isPlaying} onToggle={toggleMusic} />
+          {/* Draggable Background Music Control */}
+          <DraggableMusicControl isPlaying={isPlaying} onToggle={toggleMusic} />
 
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/chess-rules" element={<ChessRulesPage />} />
-            <Route path="/ludo-rules" element={<LudoRulesPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/chess-rules" element={<ChessRulesPage />} />
+              <Route path="/ludo-rules" element={<LudoRulesPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 

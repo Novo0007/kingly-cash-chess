@@ -19,9 +19,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["Merriweather", "Bitter", "serif"],
-        body: ["Inter", "system-ui", "sans-serif"],
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Inter", "Segoe UI", "Helvetica Neue", "sans-serif"],
+        body: ["Inter", "Segoe UI", "Helvetica Neue", "sans-serif"],
+        heading: ["Inter", "Segoe UI", "Helvetica Neue", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -66,16 +66,6 @@ export default {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
-        },
-        wood: {
-          dark: "hsl(var(--wood-dark))",
-          medium: "hsl(var(--wood-medium))",
-          light: "hsl(var(--wood-light))",
-          lightest: "hsl(var(--wood-lightest))",
-          green: "hsl(var(--wood-green))",
-          orange: "hsl(var(--wood-orange))",
-          charcoal: "hsl(var(--wood-charcoal))",
-          cream: "hsl(var(--wood-cream))",
         },
       },
       borderRadius: {
