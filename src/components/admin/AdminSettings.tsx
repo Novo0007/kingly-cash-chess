@@ -190,11 +190,11 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
       </Card>
 
       {/* Admin Users Management */}
-      <Card className="wood-card border-amber-700">
+      <Card className="bg-card border border-border rounded-2xl">
         <CardHeader className="p-3 sm:p-4">
-          <CardTitle className="text-amber-900 flex items-center justify-between text-base sm:text-lg">
+          <CardTitle className="text-foreground flex items-center justify-between text-base sm:text-lg">
             <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-amber-800" />
+              <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               Admin Users ({adminUsers.length})
             </div>
             {hasInvitePermission() && (
@@ -203,23 +203,20 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
                 onOpenChange={setInviteDialogOpen}
               >
                 <DialogTrigger asChild>
-                  <Button
-                    size="sm"
-                    className="bg-amber-700 hover:bg-amber-800 text-white"
-                  >
+                  <Button size="sm">
                     <UserPlus className="h-4 w-4 mr-1" />
                     Invite
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="wood-card border-2 border-amber-600">
+                <DialogContent className="bg-card border border-border rounded-2xl">
                   <DialogHeader>
-                    <DialogTitle className="text-amber-900">
+                    <DialogTitle className="text-foreground">
                       Invite New Admin
                     </DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="email" className="text-amber-800">
+                      <Label htmlFor="email" className="text-foreground">
                         Email Address
                       </Label>
                       <Input
@@ -228,14 +225,11 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
                         placeholder="Enter email address"
                         value={newAdminEmail}
                         onChange={(e) => setNewAdminEmail(e.target.value)}
-                        className="bg-amber-50 border-amber-300 text-amber-900"
+                        className="bg-background border-border text-foreground rounded-xl"
                       />
                     </div>
                     <div className="flex gap-2">
-                      <Button
-                        onClick={inviteAdmin}
-                        className="bg-green-600 hover:bg-green-700 flex-1"
-                      >
+                      <Button onClick={inviteAdmin} className="flex-1">
                         Send Invitation
                       </Button>
                       <Button
@@ -244,7 +238,6 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
                           setNewAdminEmail("");
                           setInviteDialogOpen(false);
                         }}
-                        className="border-amber-400 text-amber-800"
                       >
                         Cancel
                       </Button>
@@ -314,45 +307,49 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
       </Card>
 
       {/* System Status */}
-      <Card className="wood-card border-amber-700">
+      <Card className="bg-card border border-border rounded-2xl">
         <CardHeader className="p-3 sm:p-4">
-          <CardTitle className="text-amber-900 flex items-center gap-2 text-base sm:text-lg">
-            <Database className="h-4 w-4 sm:h-5 sm:w-5 text-amber-800" />
+          <CardTitle className="text-foreground flex items-center gap-2 text-base sm:text-lg">
+            <Database className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             System Status
           </CardTitle>
         </CardHeader>
         <CardContent className="p-3 sm:p-4 pt-0">
           <div className="space-y-3">
-            <div className="flex items-center justify-between py-2 border-b border-amber-200">
-              <span className="text-amber-800 text-sm">
+            <div className="flex items-center justify-between py-2 border-b border-border">
+              <span className="text-foreground text-sm">
                 Database Connection
               </span>
-              <Badge className="bg-green-600 text-white text-xs">
+              <Badge className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 text-xs rounded-full">
                 Connected
               </Badge>
             </div>
-            <div className="flex items-center justify-between py-2 border-b border-amber-200">
-              <span className="text-amber-800 text-sm">Real-time Updates</span>
-              <Badge className="bg-green-600 text-white text-xs">Active</Badge>
+            <div className="flex items-center justify-between py-2 border-b border-border">
+              <span className="text-foreground text-sm">Real-time Updates</span>
+              <Badge className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 text-xs rounded-full">
+                Active
+              </Badge>
             </div>
             <div className="flex items-center justify-between py-2">
-              <span className="text-amber-800 text-sm">Admin Session</span>
-              <Badge className="bg-amber-600 text-white text-xs">Valid</Badge>
+              <span className="text-foreground text-sm">Admin Session</span>
+              <Badge className="bg-primary text-primary-foreground text-xs rounded-full">
+                Valid
+              </Badge>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Security Notice */}
-      <Card className="bg-gradient-to-br from-orange-100 to-red-100 border-2 border-orange-500">
+      <Card className="bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800 rounded-2xl">
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
+            <AlertTriangle className="h-5 w-5 text-orange-600 dark:text-orange-400 mt-0.5" />
             <div>
-              <h4 className="font-semibold text-orange-900 mb-1">
+              <h4 className="font-semibold text-orange-900 dark:text-orange-100 mb-1">
                 Security Notice
               </h4>
-              <p className="text-orange-800 text-sm">
+              <p className="text-orange-800 dark:text-orange-200 text-sm">
                 Admin privileges provide access to sensitive user data and
                 financial information. Please use these tools responsibly and
                 maintain strict confidentiality of all user data.
