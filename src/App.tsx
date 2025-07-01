@@ -152,25 +152,31 @@ const App = () => {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
 
-        {/* Draggable Background Music Control */}
-        <DraggableMusicControl isPlaying={isPlaying} onToggle={toggleMusic} />
+          {/* Draggable Background Music Control */}
+          <DraggableMusicControl isPlaying={isPlaying} onToggle={toggleMusic} />
 
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/chess-rules" element={<ChessRulesPage />} />
-            <Route path="/ludo-rules" element={<LudoRulesPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/chess-rules" element={<ChessRulesPage />} />
+              <Route path="/ludo-rules" element={<LudoRulesPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 };
 
