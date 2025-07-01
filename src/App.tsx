@@ -131,12 +131,12 @@ const App = () => {
           </div>
         </div>
 
-        {/* Subtle Background Elements */}
+        {/* Subtle Wood Elements */}
         <div className="absolute inset-0 pointer-events-none">
-          {/* Static Floating Orbs */}
-          <div className="absolute top-1/4 left-1/4 w-16 h-16 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-xl"></div>
-          <div className="absolute top-3/4 right-1/4 w-14 h-14 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full blur-xl"></div>
-          <div className="absolute top-1/2 left-3/4 w-12 h-12 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full blur-xl"></div>
+          {/* Floating Wood Accents */}
+          <div className="absolute top-1/4 left-1/4 w-16 h-16 bg-gradient-to-r from-amber-700/20 to-orange-600/20 rounded-full blur-xl"></div>
+          <div className="absolute top-3/4 right-1/4 w-14 h-14 bg-gradient-to-r from-green-700/20 to-emerald-800/20 rounded-full blur-xl"></div>
+          <div className="absolute top-1/2 left-3/4 w-12 h-12 bg-gradient-to-r from-yellow-700/20 to-amber-600/20 rounded-full blur-xl"></div>
         </div>
 
         {/* Main Content Container */}
