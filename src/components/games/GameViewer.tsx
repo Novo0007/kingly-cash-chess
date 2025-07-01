@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -242,12 +241,10 @@ export const GameViewer: React.FC<GameViewerProps> = ({ game, open, onOpenChange
           <div className="flex justify-center">
             <div className="w-full max-w-2xl">
               <ChessBoard
-                boardState={boardPosition}
+                fen={boardPosition}
                 onMove={() => {}}
-                canMove={false}
+                disabled={true}
                 playerColor={null}
-                gameStatus="completed"
-                isViewOnly={true}
               />
             </div>
           </div>

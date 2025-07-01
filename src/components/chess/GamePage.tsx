@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -364,7 +363,7 @@ export const GamePage = () => {
     }
   };
 
-  const handleMove = async (move: string) => {
+  const handleMove = async (from: string, to: string, promotion?: string) => {
     if (!game || !currentUser || gameEnded) return;
 
     try {
@@ -373,7 +372,13 @@ export const GamePage = () => {
         chess.load(game.board_state);
       }
 
-      chess.move(move);
+      const move = promotion ? { from, to, promotion } : { from, to };
+      const result = chess.move(move);
+      if (!result) {
+        toast.error('Invalid move');
+        return;
+      }
+
       const newFen = chess.fen();
       const isWhiteTurn = chess.turn() === 'w';
       const newTurn = isWhiteTurn ? 'white' : 'black';
@@ -383,15 +388,9 @@ export const GamePage = () => {
         ...prevGame!,
         board_state: newFen,
         current_turn: newTurn,
-        move_history: [...(prevGame?.move_history || []), move],
+        move_history: [...(prevGame?.move_history || []), result.san],
         white_time_updated_at: new Date().toISOString(),
         black_time_updated_at: new Date().toISOString()
-      }));
-
-      setTimeRemaining(prevTime => ({
-        ...prevTime,
-        white: prevTime.white,
-        black: prevTime.black
       }));
 
       // Persist the move to the database
@@ -400,7 +399,7 @@ export const GamePage = () => {
         .update({
           board_state: newFen,
           current_turn: newTurn,
-          move_history: [...(game.move_history || []), move],
+          move_history: [...(game.move_history || []), result.san],
           updated_at: new Date().toISOString()
         })
         .eq('id', game.id)
@@ -410,7 +409,6 @@ export const GamePage = () => {
       if (error) {
         console.error('Error updating game:', error);
         toast.error('Failed to make move. Please try again.');
-        // Revert the UI on failure (optional)
         setGame(game);
       } else {
         console.log('Move persisted successfully:', data);
@@ -578,11 +576,11 @@ export const GamePage = () => {
         <Card className="bg-card border border-border rounded-2xl">
           <CardContent className="p-4">
             <ChessBoard
-              boardState={game.board_state || 'start'}
+              fen={game.board_state || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'}
               onMove={handleMove}
-              canMove={isYourTurn}
               playerColor={playerColor}
-              gameStatus={game.game_status}
+              disabled={!isYourTurn || gameEnded}
+              isPlayerTurn={isYourTurn && !gameEnded}
             />
           </CardContent>
         </Card>
@@ -612,17 +610,18 @@ export const GamePage = () => {
       </div>
 
       {/* Reactions (Desktop Only) */}
-      {!isMobile && (
+      {!isMobile && gameId && (
         <div className="fixed bottom-4 left-4 bg-card border border-border rounded-2xl p-4">
-          <GameReactions />
+          <GameReactions gameId={gameId} />
         </div>
       )}
 
       {/* Reactions (Mobile Only) */}
-      {isMobile && (
+      {isMobile && gameId && (
         <MobileGameReactions 
           open={showMobileReactions}
           onOpenChange={setShowMobileReactions}
+          gameId={gameId}
         />
       )}
     </MobileContainer>
