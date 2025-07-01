@@ -381,18 +381,18 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           </div>
         </div>
 
-        {/* Status Display - Wood Style */}
-        <div className="mt-3 sm:mt-6 md:mt-8 text-center">
-          <div className="wood-text text-sm sm:text-lg md:text-2xl font-bold wood-glass rounded-lg px-4 py-3 sm:px-6 sm:py-4 border-2 border-amber-700 wood-shadow tap-target bg-gradient-to-r from-amber-100 to-orange-100">
+        {/* Premium Status Display - Enhanced Wood Style */}
+        <div className="mt-6 sm:mt-8 md:mt-12 text-center">
+          <div className="wood-text text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold wood-glass rounded-xl px-6 py-4 sm:px-8 sm:py-6 md:px-12 md:py-8 border-4 border-amber-700 wood-shadow-xl tap-target bg-gradient-to-r from-amber-100 via-orange-100 to-amber-100 shadow-2xl transform hover:scale-105 transition-all duration-300">
             Playing as {playerColor === "white" ? "⚪ White" : "⚫ Black"}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-amber-800 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold wood-glass rounded-lg px-3 py-2 sm:px-4 sm:py-3 inline-block border-2 border-amber-600 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
+            <div className="text-amber-800 mt-4 sm:mt-6 text-base sm:text-xl md:text-3xl lg:text-4xl font-bold wood-glass rounded-xl px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-6 inline-block border-4 border-amber-600 wood-shadow-xl tap-target bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 shadow-xl animate-pulse">
               Opponent's turn...
             </div>
           )}
           {disabled && (
-            <div className="text-amber-700 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold wood-glass rounded-lg px-3 py-2 sm:px-4 sm:py-3 inline-block border-2 border-amber-500 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
+            <div className="text-amber-700 mt-4 sm:mt-6 text-base sm:text-xl md:text-3xl lg:text-4xl font-bold wood-glass rounded-xl px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-6 inline-block border-4 border-amber-500 wood-shadow-xl tap-target bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 shadow-xl">
               Spectating
             </div>
           )}
