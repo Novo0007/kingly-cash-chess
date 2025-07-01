@@ -805,49 +805,35 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </div>
       )}
 
-      {/* Game Info - Mobile Optimized */}
-      <Card className="bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl rounded-lg">
-        <CardHeader className="pb-1 sm:pb-2">
-          <CardTitle className="text-white flex items-center gap-2 text-sm sm:text-base md:text-lg font-bold">
-            <Crown className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-yellow-400" />
-            <span className="truncate text-xs sm:text-sm md:text-base bg-gradient-to-r from-yellow-400 to-white bg-clip-text text-transparent">
-              {game.game_name || "Chess Game"}
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="grid grid-cols-2 gap-1 sm:gap-2 text-white font-medium text-xs sm:text-sm">
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 sm:p-2 rounded border-2 border-white shadow-lg">
-              <p className="text-xs text-gray-400 font-medium">⚪ White</p>
-              <p className="font-bold truncate text-white text-xs sm:text-sm">
-                {game.white_player?.username || "Waiting..."}
-              </p>
+      {/* Ultra-Compact Game Info */}
+      <Card className="bg-gradient-to-br from-black to-purple-900 border border-yellow-400 shadow-lg rounded-md mx-2">
+        <CardContent className="p-2">
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-1">
+              <Crown className="h-3 w-3 text-yellow-400" />
+              <span className="truncate font-bold text-white max-w-[100px]">
+                {game.game_name || "Chess Game"}
+              </span>
             </div>
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 sm:p-2 rounded border-2 border-white shadow-lg">
-              <p className="text-xs text-gray-400 font-medium">⚫ Black</p>
-              <p className="font-bold truncate text-white text-xs sm:text-sm">
-                {game.black_player?.username || "Waiting..."}
-              </p>
+            <div className="flex items-center gap-1 text-white">
+              <span className="text-xs">
+                ⚪ {game.white_player?.username?.substring(0, 8) || "..."}
+              </span>
+              <span className="text-gray-400">vs</span>
+              <span className="text-xs">
+                ⚫ {game.black_player?.username?.substring(0, 8) || "..."}
+              </span>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-1 sm:gap-2 text-xs">
-            <div className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/30 p-1 sm:p-2 rounded border-2 border-yellow-400 text-center shadow-lg">
-              <p className="text-yellow-300 font-medium text-xs">Entry</p>
-              <p className="font-bold text-yellow-200 text-xs">
-                ₹{game.entry_fee}
-              </p>
+          <div className="flex items-center justify-between mt-1 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="text-yellow-300">₹{game.entry_fee}</span>
+              <span className="text-purple-300">
+                Prize: ₹{game.prize_amount}
+              </span>
             </div>
-            <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/30 p-1 sm:p-2 rounded border-2 border-purple-400 text-center shadow-lg">
-              <p className="text-purple-300 font-medium text-xs">Prize</p>
-              <p className="font-bold text-purple-200 text-xs">
-                ₹{game.prize_amount}
-              </p>
-            </div>
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 sm:p-2 rounded border-2 border-white text-center shadow-lg">
-              <p className="text-gray-300 font-medium text-xs">Turn</p>
-              <p className="font-bold text-white text-xs">
-                {game.current_turn === "white" ? "⚪" : "⚫"}
-              </p>
+            <div className="text-white font-bold">
+              Turn: {game.current_turn === "white" ? "⚪" : "⚫"}
             </div>
           </div>
         </CardContent>
