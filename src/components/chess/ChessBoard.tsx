@@ -317,25 +317,25 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                   key={`${rowIndex}-${colIndex}`}
                   className={`
                     aspect-square flex items-center justify-center text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold cursor-pointer
-                    transition-colors duration-200 active:scale-95 relative overflow-hidden
+                    transition-all duration-200 active:scale-95 relative overflow-hidden border border-amber-900/10
                     ${
                       isLightSquare(rowIndex, colIndex)
-                        ? "bg-electric-50 hover:bg-electric-100"
-                        : "bg-blue-300 hover:bg-blue-400"
+                        ? "bg-gradient-to-br from-amber-100 to-amber-50 hover:from-amber-200 hover:to-amber-100"
+                        : "bg-gradient-to-br from-amber-800 to-amber-700 hover:from-amber-700 hover:to-amber-600"
                     }
                     ${
                       isSquareHighlighted(rowIndex, colIndex)
-                        ? "ring-4 ring-blue-400 bg-blue-200"
+                        ? "ring-4 ring-amber-500 bg-gradient-to-br from-amber-300 to-amber-200"
                         : ""
                     }
                     ${
                       isPossibleMove(rowIndex, colIndex)
-                        ? "after:absolute after:inset-1/3 after:bg-blue-500 after:rounded-full after:opacity-70"
+                        ? "after:absolute after:inset-1/3 after:bg-amber-600 after:rounded-full after:opacity-80 after:border after:border-amber-800"
                         : ""
                     }
                     ${
                       isLastMove(rowIndex, colIndex)
-                        ? "bg-electric-300 ring-2 ring-blue-500"
+                        ? "bg-gradient-to-br from-yellow-300 to-amber-300 ring-2 ring-amber-600"
                         : ""
                     }
                     ${disabled || !isPlayerTurn ? "cursor-default opacity-70" : "cursor-pointer"}
