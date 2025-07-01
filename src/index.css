@@ -271,39 +271,81 @@
   color: hsl(var(--wood-charcoal));
 }
 
+/* Wood texture patterns */
+.wood-grain-pattern {
+  background-image: repeating-linear-gradient(
+    90deg,
+    hsl(var(--wood-medium)) 0px,
+    hsl(var(--wood-light)) 1px,
+    hsl(var(--wood-medium)) 2px,
+    hsl(var(--wood-grain-medium)) 3px,
+    hsl(var(--wood-medium)) 4px
+  );
+}
+
+.wood-plank {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--wood-medium)) 0%,
+    hsl(var(--wood-light)) 100%
+  );
+  border: 2px solid hsl(var(--wood-dark));
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.wood-plank::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    rgba(101, 67, 33, 0.1) 1px,
+    transparent 2px,
+    rgba(101, 67, 33, 0.05) 3px,
+    transparent 4px
+  );
+  pointer-events: none;
+}
+
 /* Backwards compatibility classes */
-.lavender-gradient {
-  @apply electric-gradient;
+.electric-gradient {
+  @apply wood-gradient;
 }
-.lavender-gradient-dark {
-  @apply electric-gradient-dark;
+.electric-gradient-dark {
+  @apply wood-gradient-dark;
 }
-.lavender-glass {
-  @apply electric-glass;
+.electric-glass {
+  @apply wood-glass;
 }
-.lavender-shadow {
-  @apply electric-shadow;
+.electric-shadow {
+  @apply wood-shadow;
 }
-.lavender-shadow-lg {
-  @apply electric-shadow-lg;
+.electric-shadow-lg {
+  @apply wood-shadow-lg;
 }
-.lavender-text-gradient {
-  @apply electric-text-gradient;
+.electric-text-gradient {
+  @apply wood-text-gradient;
 }
-.lavender-button {
-  @apply electric-button;
+.electric-button {
+  @apply wood-button;
 }
-.lavender-border {
-  @apply electric-border;
+.electric-border {
+  @apply wood-border;
 }
-.lavender-bg {
-  @apply electric-bg;
+.electric-bg {
+  @apply wood-bg;
 }
-.lavender-bg-soft {
-  @apply electric-bg-soft;
+.electric-bg-soft {
+  @apply wood-bg-soft;
 }
-.lavender-text {
-  @apply electric-text;
+.electric-text {
+  @apply wood-text;
 }
 
 /* Natural Wood Animations */
