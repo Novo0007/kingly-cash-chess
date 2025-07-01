@@ -730,17 +730,18 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </DialogContent>
       </Dialog>
 
-      {/* Header with Connection Status - Mobile Optimized */}
-      <div className="flex items-center justify-between bg-gradient-to-r from-black to-purple-900 p-2 sm:p-3 rounded-lg shadow-lg border-2 border-yellow-400">
+      {/* Compact Header - Optimized for Chess Focus */}
+      <div className="flex items-center justify-between bg-gradient-to-r from-black to-purple-900 p-1 sm:p-2 rounded-md shadow-md border border-yellow-400">
         <Button
           onClick={onBackToLobby}
           variant="ghost"
-          className="text-white hover:bg-purple-800/50 font-bold text-xs sm:text-sm md:text-base px-2 sm:px-3 py-1 sm:py-2 rounded-lg border-2 border-yellow-400 hover:border-purple-400"
+          size="sm"
+          className="text-white hover:bg-purple-800/50 font-bold text-xs px-2 py-1 rounded border border-yellow-400 hover:border-purple-400"
         >
-          <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-          <span className="hidden sm:inline">Back</span>
+          <ArrowLeft className="h-3 w-3 mr-1" />
+          <span className="hidden sm:inline text-xs">Back</span>
         </Button>
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center gap-1">
           <DisconnectionTracker
             gameId={gameId}
             currentUser={currentUser}
@@ -749,12 +750,12 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             gameStatus={game.game_status}
             onPlayerDisconnected={handlePlayerDisconnected}
           />
-          <Badge className="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold px-1 sm:px-2 py-1 text-xs border-2 border-yellow-400 shadow-lg">
-            <Zap className="h-2 w-2 sm:h-3 sm:w-3 mr-1" />
+          <Badge className="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold px-1 py-0.5 text-xs border border-yellow-400">
+            <Zap className="h-2 w-2 mr-0.5" />
             {game.game_status}
           </Badge>
-          <Badge className="bg-gradient-to-r from-yellow-600 to-yellow-800 text-black font-bold px-1 sm:px-2 py-1 text-xs border-2 border-white shadow-lg">
-            <Users className="h-2 w-2 sm:h-3 sm:w-3 mr-1" />
+          <Badge className="bg-gradient-to-r from-yellow-600 to-yellow-800 text-black font-bold px-1 py-0.5 text-xs border border-white">
+            <Users className="h-2 w-2 mr-0.5" />
             {playerCount}/2
           </Badge>
           {isMobile && (
@@ -762,9 +763,9 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
               onClick={() => setShowMobileChat(!showMobileChat)}
               variant="ghost"
               size="sm"
-              className="p-1 text-white border-2 border-yellow-400 hover:border-purple-400 hover:bg-purple-800/50"
+              className="p-1 text-white border border-yellow-400 hover:border-purple-400 hover:bg-purple-800/50"
             >
-              <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
+              <MessageSquare className="h-3 w-3" />
             </Button>
           )}
         </div>
