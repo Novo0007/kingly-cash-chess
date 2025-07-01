@@ -262,16 +262,16 @@ const Index = () => {
         <Navbar currentView={currentView} onViewChange={setCurrentView} />
       </div>
 
-      {/* Main Content Area - Enhanced Mobile Optimized */}
+      {/* Main Content Area - Wood Lodge Style */}
       <main className="relative z-20 max-w-7xl mx-auto px-1 sm:px-2 md:px-4 py-1 sm:py-2 md:py-8 pb-16 sm:pb-20 md:pb-8">
         <div className="relative">
-          {/* Enhanced Content Background with Electric Glass Effect */}
-          <div className="absolute inset-0 electric-glass rounded-xl sm:rounded-2xl md:rounded-3xl electric-shadow-lg">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-purple-500/5 rounded-xl sm:rounded-2xl md:rounded-3xl"></div>
-            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
+          {/* Wood Content Background with Natural Glass Effect */}
+          <div className="absolute inset-0 wood-glass rounded-lg sm:rounded-xl md:rounded-2xl wood-shadow-lg wood-plank">
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-50/5 via-transparent to-orange-600/5 rounded-lg sm:rounded-xl md:rounded-2xl"></div>
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-200/50 to-transparent"></div>
           </div>
 
-          {/* Content with enhanced styling */}
+          {/* Content with wood styling */}
           <div className="relative z-10 p-1 sm:p-2 md:p-4">
             <div className="space-y-4 slide-in-bottom">
               {renderCurrentView()}
