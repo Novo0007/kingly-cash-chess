@@ -791,16 +791,18 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </div>
       )}
 
-      {/* Time Controls */}
+      {/* Compact Time Controls */}
       {game.game_status === "active" && (
-        <TimeControl
-          whiteTime={game.white_time_remaining || 600}
-          blackTime={game.black_time_remaining || 600}
-          currentTurn={game.current_turn as "white" | "black"}
-          gameStatus={game.game_status}
-          onTimeUp={handleTimeUp}
-          isActive={!isSpectator()}
-        />
+        <div className="px-2">
+          <TimeControl
+            whiteTime={game.white_time_remaining || 600}
+            blackTime={game.black_time_remaining || 600}
+            currentTurn={game.current_turn as "white" | "black"}
+            gameStatus={game.game_status}
+            onTimeUp={handleTimeUp}
+            isActive={!isSpectator()}
+          />
+        </div>
       )}
 
       {/* Game Info - Mobile Optimized */}
