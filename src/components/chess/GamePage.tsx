@@ -51,9 +51,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [showGameEndDialog, setShowGameEndDialog] = useState(false);
   const [gameEndMessage, setGameEndMessage] = useState("");
-  const [gameEndType, setGameEndType] = useState<"win" | "draw" | "disconnect">(
-    "win",
-  );
+  const [gameEndType, setGameEndType] = useState<"win" | "draw" | "disconnect">("win");
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const { isMobile } = useDeviceType();
@@ -97,50 +95,33 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   }, [gameId, loading, isUpdating, isMobile]);
 
   const getCurrentUser = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     setCurrentUser(user?.id || null);
   };
 
-  const handleTimeUp = async (player: "white" | "black") => {
-    if (!game || game.game_status !== "active") return;
+  const handleTimeUp = async (player: 'white' | 'black') => {
+    if (!game || game.game_status !== 'active') return;
 
-    const winnerId =
-      player === "white" ? game.black_player_id : game.white_player_id;
-    const loserId =
-      player === "white" ? game.white_player_id : game.black_player_id;
+    const winnerId = player === 'white' ? game.black_player_id : game.white_player_id;
+    const loserId = player === 'white' ? game.white_player_id : game.black_player_id;
 
-    await completeGame(
-      winnerId,
-      loserId,
-      player === "white" ? "black_wins" : "white_wins",
-    );
+    await completeGame(winnerId, loserId, player === 'white' ? 'black_wins' : 'white_wins');
 
     setGameEndType("win");
-    setGameEndMessage(
-      `${player === "white" ? "White" : "Black"} ran out of time! ${player === "white" ? "Black" : "White"} wins!`,
-    );
+    setGameEndMessage(`${player === 'white' ? 'White' : 'Black'} ran out of time! ${player === 'white' ? 'Black' : 'White'} wins!`);
     setShowGameEndDialog(true);
-    toast.success(`${player === "white" ? "Black" : "White"} wins on time!`);
+    toast.success(`${player === 'white' ? 'Black' : 'White'} wins on time!`);
   };
 
   const handlePlayerDisconnected = async (playerId: string) => {
-    if (!game || game.game_status !== "active") return;
+    if (!game || game.game_status !== 'active') return;
 
-    const winnerId =
-      playerId === game.white_player_id
-        ? game.black_player_id
-        : game.white_player_id;
-
-    await completeGame(winnerId, playerId, "abandoned");
+    const winnerId = playerId === game.white_player_id ? game.black_player_id : game.white_player_id;
+    
+    await completeGame(winnerId, playerId, 'abandoned');
 
     setGameEndType("disconnect");
-    setGameEndMessage(
-      playerId === currentUser
-        ? "You forfeited the game!"
-        : "Opponent forfeited! You win!",
-    );
+    setGameEndMessage(playerId === currentUser ? "You forfeited the game!" : "Opponent forfeited! You win!");
     setShowGameEndDialog(true);
     toast.success("Game won by forfeit!");
   };
@@ -363,7 +344,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
   const fetchGame = async () => {
     if (isUpdating) return; // Prevent concurrent updates
-
+    
     try {
       console.log("Fetching game data for:", gameId);
       const { data: gameData, error } = await supabase
@@ -382,7 +363,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
       // Fetch player data in parallel for faster loading
       const playerPromises = [];
-
+      
       if (gameData.white_player_id) {
         playerPromises.push(
           supabase
@@ -390,7 +371,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             .select("*")
             .eq("id", gameData.white_player_id)
             .single()
-            .then(({ data }) => ({ type: "white", data })),
+            .then(({ data }) => ({ type: 'white', data }))
         );
       }
 
@@ -401,14 +382,14 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             .select("*")
             .eq("id", gameData.black_player_id)
             .single()
-            .then(({ data }) => ({ type: "black", data })),
+            .then(({ data }) => ({ type: 'black', data }))
         );
       }
 
       const playerResults = await Promise.all(playerPromises);
-
-      playerResults.forEach((result) => {
-        if (result.type === "white") {
+      
+      playerResults.forEach(result => {
+        if (result.type === 'white') {
           gameWithPlayers.white_player = result.data;
         } else {
           gameWithPlayers.black_player = result.data;
@@ -533,10 +514,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         return;
       }
 
-      const moveOptions: { from: string; to: string; promotion?: string } = {
-        from,
-        to,
-      };
+      const moveOptions: { from: string; to: string; promotion?: string } = { from, to };
       if (promotion) {
         moveOptions.promotion = promotion;
       }
@@ -548,49 +526,35 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         return;
       }
 
-      const moveNotation = promotion
-        ? `${from}-${to}=${promotion}`
-        : `${from}-${to}`;
+      const moveNotation = promotion ? `${from}-${to}=${promotion}` : `${from}-${to}`;
       const newMoveHistory = [...(game.move_history || []), moveNotation];
       const nextTurn = game.current_turn === "white" ? "black" : "white";
       const newBoardState = chess.fen();
 
       // Reduced time penalty for faster gameplay
       const timeUsed = isMobile ? 1 : 2; // Much less time penalty
-      const newWhiteTime =
-        game.current_turn === "white"
-          ? Math.max(0, (game.white_time_remaining || 600) - timeUsed)
-          : game.white_time_remaining || 600;
-      const newBlackTime =
-        game.current_turn === "black"
-          ? Math.max(0, (game.black_time_remaining || 600) - timeUsed)
-          : game.black_time_remaining || 600;
+      const newWhiteTime = game.current_turn === "white" 
+        ? Math.max(0, (game.white_time_remaining || 600) - timeUsed)
+        : game.white_time_remaining || 600;
+      const newBlackTime = game.current_turn === "black" 
+        ? Math.max(0, (game.black_time_remaining || 600) - timeUsed)
+        : game.black_time_remaining || 600;
 
-      let gameStatus: "waiting" | "active" | "completed" | "cancelled" =
-        game.game_status;
+      let gameStatus: "waiting" | "active" | "completed" | "cancelled" = game.game_status;
       let winnerId = null;
       let gameResult = null;
 
       // Check for time flag
       if (newWhiteTime <= 0 || newBlackTime <= 0) {
         gameStatus = "completed";
-        winnerId =
-          newWhiteTime <= 0 ? game.black_player_id : game.white_player_id;
+        winnerId = newWhiteTime <= 0 ? game.black_player_id : game.white_player_id;
         gameResult = newWhiteTime <= 0 ? "black_wins" : "white_wins";
-        toast.success(
-          `${newWhiteTime <= 0 ? "White" : "Black"} flagged! ${newWhiteTime <= 0 ? "Black" : "White"} wins!`,
-        );
+        toast.success(`${newWhiteTime <= 0 ? "White" : "Black"} flagged! ${newWhiteTime <= 0 ? "Black" : "White"} wins!`);
       } else if (chess.isCheckmate()) {
         gameStatus = "completed";
-        winnerId =
-          game.current_turn === "white"
-            ? game.white_player_id
-            : game.black_player_id;
-        gameResult =
-          game.current_turn === "white" ? "white_wins" : "black_wins";
-        toast.success(
-          `Checkmate! ${game.current_turn === "white" ? "White" : "Black"} wins!`,
-        );
+        winnerId = game.current_turn === "white" ? game.white_player_id : game.black_player_id;
+        gameResult = game.current_turn === "white" ? "white_wins" : "black_wins";
+        toast.success(`Checkmate! ${game.current_turn === "white" ? "White" : "Black"} wins!`);
       } else if (chess.isDraw()) {
         gameStatus = "completed";
         gameResult = "draw";
@@ -600,7 +564,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       }
 
       // Optimistic update - update local state immediately
-      setGame((prevGame) => {
+      setGame(prevGame => {
         if (!prevGame) return prevGame;
         return {
           ...prevGame,
@@ -650,10 +614,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
 
   const isSpectator = () => {
     if (!game || !currentUser) return true;
-    return (
-      currentUser !== game.white_player_id &&
-      currentUser !== game.black_player_id
-    );
+    return currentUser !== game.white_player_id && currentUser !== game.black_player_id;
   };
 
   if (loading) {
@@ -683,38 +644,27 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     );
   }
 
-  const playerCount =
-    (game.white_player_id ? 1 : 0) + (game.black_player_id ? 1 : 0);
+  const playerCount = (game.white_player_id ? 1 : 0) + (game.black_player_id ? 1 : 0);
 
   return (
-    <div className="space-y-1 sm:space-y-2 pb-12 sm:pb-16 px-0 sm:px-1 max-w-full">
+    <div className="space-y-2 sm:space-y-4 pb-16 sm:pb-20 px-1 sm:px-2">
       {/* Game End Dialog */}
       <Dialog open={showGameEndDialog} onOpenChange={setShowGameEndDialog}>
         <DialogContent className="text-center w-[90vw] sm:w-[95vw] max-w-sm mx-auto bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl rounded-xl">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-center gap-2 text-lg sm:text-xl text-white font-bold">
-              {gameEndType === "win" && (
-                <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
-              )}
-              {gameEndType === "draw" && (
-                <Handshake className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
-              )}
-              {gameEndType === "disconnect" && (
-                <Crown className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
-              )}
+              {gameEndType === "win" && <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />}
+              {gameEndType === "draw" && <Handshake className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />}
+              {gameEndType === "disconnect" && <Crown className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />}
               Game Over!
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <div
-              className={`text-sm sm:text-lg font-bold p-3 rounded-lg border-2 ${
-                gameEndType === "win"
-                  ? "text-yellow-300 bg-yellow-900/30 border-yellow-400"
-                  : gameEndType === "draw"
-                    ? "text-purple-300 bg-purple-900/30 border-purple-400"
-                    : "text-yellow-300 bg-yellow-900/30 border-yellow-400"
-              }`}
-            >
+            <div className={`text-sm sm:text-lg font-bold p-3 rounded-lg border-2 ${
+              gameEndType === "win" ? "text-yellow-300 bg-yellow-900/30 border-yellow-400" :
+              gameEndType === "draw" ? "text-purple-300 bg-purple-900/30 border-purple-400" :
+              "text-yellow-300 bg-yellow-900/30 border-yellow-400"
+            }`}>
               {gameEndMessage}
             </div>
             <Button
@@ -730,18 +680,17 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         </DialogContent>
       </Dialog>
 
-      {/* Compact Header - Optimized for Chess Focus */}
-      <div className="flex items-center justify-between bg-gradient-to-r from-black to-purple-900 p-1 sm:p-2 rounded-md shadow-md border border-yellow-400">
+      {/* Header with Connection Status - Mobile Optimized */}
+      <div className="flex items-center justify-between bg-gradient-to-r from-black to-purple-900 p-2 sm:p-3 rounded-lg shadow-lg border-2 border-yellow-400">
         <Button
           onClick={onBackToLobby}
           variant="ghost"
-          size="sm"
-          className="text-white hover:bg-purple-800/50 font-bold text-xs px-2 py-1 rounded border border-yellow-400 hover:border-purple-400"
+          className="text-white hover:bg-purple-800/50 font-bold text-xs sm:text-sm md:text-base px-2 sm:px-3 py-1 sm:py-2 rounded-lg border-2 border-yellow-400 hover:border-purple-400"
         >
-          <ArrowLeft className="h-3 w-3 mr-1" />
-          <span className="hidden sm:inline text-xs">Back</span>
+          <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+          <span className="hidden sm:inline">Back</span>
         </Button>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 sm:gap-2">
           <DisconnectionTracker
             gameId={gameId}
             currentUser={currentUser}
@@ -750,12 +699,12 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             gameStatus={game.game_status}
             onPlayerDisconnected={handlePlayerDisconnected}
           />
-          <Badge className="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold px-1 py-0.5 text-xs border border-yellow-400">
-            <Zap className="h-2 w-2 mr-0.5" />
+          <Badge className="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold px-1 sm:px-2 py-1 text-xs border-2 border-yellow-400 shadow-lg">
+            <Zap className="h-2 w-2 sm:h-3 sm:w-3 mr-1" />
             {game.game_status}
           </Badge>
-          <Badge className="bg-gradient-to-r from-yellow-600 to-yellow-800 text-black font-bold px-1 py-0.5 text-xs border border-white">
-            <Users className="h-2 w-2 mr-0.5" />
+          <Badge className="bg-gradient-to-r from-yellow-600 to-yellow-800 text-black font-bold px-1 sm:px-2 py-1 text-xs border-2 border-white shadow-lg">
+            <Users className="h-2 w-2 sm:h-3 sm:w-3 mr-1" />
             {playerCount}/2
           </Badge>
           {isMobile && (
@@ -763,154 +712,147 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
               onClick={() => setShowMobileChat(!showMobileChat)}
               variant="ghost"
               size="sm"
-              className="p-1 text-white border border-yellow-400 hover:border-purple-400 hover:bg-purple-800/50"
+              className="p-1 text-white border-2 border-yellow-400 hover:border-purple-400 hover:bg-purple-800/50"
             >
-              <MessageSquare className="h-3 w-3" />
+              <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
           )}
         </div>
       </div>
 
-      {/* Compact Mobile Chat */}
+      {/* Mobile Chat */}
       {isMobile && showMobileChat && (
-        <div className="bg-gradient-to-br from-black to-purple-900 rounded-md shadow-md border border-yellow-400 p-1">
-          <div className="flex items-center justify-between mb-1">
-            <h3 className="font-bold text-xs text-white">Chat</h3>
+        <div className="bg-gradient-to-br from-black to-purple-900 rounded-lg shadow-lg border-2 border-yellow-400 p-2">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-bold text-xs sm:text-sm text-white">Game Chat</h3>
             <Button
               onClick={() => setShowMobileChat(false)}
               variant="ghost"
               size="sm"
-              className="p-0.5 text-xs text-white hover:bg-purple-800/50"
+              className="p-1 text-xs text-white hover:bg-purple-800/50"
             >
-              ×
+              Close
             </Button>
           </div>
-          <div className="h-24">
+          <div className="h-32 sm:h-40">
             <ChatSystem gameId={gameId} />
           </div>
         </div>
       )}
 
-      {/* Compact Time Controls */}
-      {game.game_status === "active" && (
-        <div className="px-2">
-          <TimeControl
-            whiteTime={game.white_time_remaining || 600}
-            blackTime={game.black_time_remaining || 600}
-            currentTurn={game.current_turn as "white" | "black"}
-            gameStatus={game.game_status}
-            onTimeUp={handleTimeUp}
-            isActive={!isSpectator()}
-          />
-        </div>
+      {/* Time Controls */}
+      {game.game_status === 'active' && (
+        <TimeControl
+          whiteTime={game.white_time_remaining || 600}
+          blackTime={game.black_time_remaining || 600}
+          currentTurn={game.current_turn as 'white' | 'black'}
+          gameStatus={game.game_status}
+          onTimeUp={handleTimeUp}
+          isActive={!isSpectator()}
+        />
       )}
 
-      {/* Ultra-Compact Game Info */}
-      <Card className="bg-gradient-to-br from-black to-purple-900 border border-yellow-400 shadow-lg rounded-md mx-2">
-        <CardContent className="p-2">
-          <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-1">
-              <Crown className="h-3 w-3 text-yellow-400" />
-              <span className="truncate font-bold text-white max-w-[100px]">
-                {game.game_name || "Chess Game"}
-              </span>
+      {/* Game Info - Mobile Optimized */}
+      <Card className="bg-gradient-to-br from-black to-purple-900 border-2 border-yellow-400 shadow-2xl rounded-lg">
+        <CardHeader className="pb-1 sm:pb-2">
+          <CardTitle className="text-white flex items-center gap-2 text-sm sm:text-base md:text-lg font-bold">
+            <Crown className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-yellow-400" />
+            <span className="truncate text-xs sm:text-sm md:text-base bg-gradient-to-r from-yellow-400 to-white bg-clip-text text-transparent">
+              {game.game_name || "Chess Game"}
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <div className="grid grid-cols-2 gap-1 sm:gap-2 text-white font-medium text-xs sm:text-sm">
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 sm:p-2 rounded border-2 border-white shadow-lg">
+              <p className="text-xs text-gray-400 font-medium">⚪ White</p>
+              <p className="font-bold truncate text-white text-xs sm:text-sm">
+                {game.white_player?.username || "Waiting..."}
+              </p>
             </div>
-            <div className="flex items-center gap-1 text-white">
-              <span className="text-xs">
-                ⚪ {game.white_player?.username?.substring(0, 8) || "..."}
-              </span>
-              <span className="text-gray-400">vs</span>
-              <span className="text-xs">
-                ⚫ {game.black_player?.username?.substring(0, 8) || "..."}
-              </span>
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 sm:p-2 rounded border-2 border-white shadow-lg">
+              <p className="text-xs text-gray-400 font-medium">⚫ Black</p>
+              <p className="font-bold truncate text-white text-xs sm:text-sm">
+                {game.black_player?.username || "Waiting..."}
+              </p>
             </div>
           </div>
-          <div className="flex items-center justify-between mt-1 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="text-yellow-300">₹{game.entry_fee}</span>
-              <span className="text-purple-300">
-                Prize: ₹{game.prize_amount}
-              </span>
+          <div className="grid grid-cols-3 gap-1 sm:gap-2 text-xs">
+            <div className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/30 p-1 sm:p-2 rounded border-2 border-yellow-400 text-center shadow-lg">
+              <p className="text-yellow-300 font-medium text-xs">Entry</p>
+              <p className="font-bold text-yellow-200 text-xs">₹{game.entry_fee}</p>
             </div>
-            <div className="text-white font-bold">
-              Turn: {game.current_turn === "white" ? "⚪" : "⚫"}
+            <div className="bg-gradient-to-br from-purple-900/30 to-purple-800/30 p-1 sm:p-2 rounded border-2 border-purple-400 text-center shadow-lg">
+              <p className="text-purple-300 font-medium text-xs">Prize</p>
+              <p className="font-bold text-purple-200 text-xs">₹{game.prize_amount}</p>
+            </div>
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-1 sm:p-2 rounded border-2 border-white text-center shadow-lg">
+              <p className="text-gray-300 font-medium text-xs">Turn</p>
+              <p className="font-bold text-white text-xs">
+                {game.current_turn === "white" ? "⚪" : "⚫"}
+              </p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* MAIN CHESS BOARD - Maximum Focus */}
-      <div className="relative -mx-2 sm:-mx-4 md:-mx-8 lg:-mx-12">
-        <div
-          className="w-full min-h-[80vh] flex items-center justify-center"
-          key={`${game.board_state}-${game.current_turn}-${Date.now()}`}
-        >
+      {/* Chess Board with Reactions */}
+      <div className="relative">
+        <div className="w-full" key={`${game.board_state}-${game.current_turn}-${Date.now()}`}>
           <ChessBoard
             fen={game.board_state}
             onMove={handleMove}
-            playerColor={
-              currentUser === game.white_player_id ? "white" : "black"
-            }
-            disabled={
-              game.game_status !== "active" || isSpectator() || isUpdating
-            }
+            playerColor={currentUser === game.white_player_id ? "white" : "black"}
+            disabled={game.game_status !== "active" || isSpectator() || isUpdating}
             isPlayerTurn={
-              ((game.current_turn === "white" &&
-                currentUser === game.white_player_id) ||
-                (game.current_turn === "black" &&
-                  currentUser === game.black_player_id)) &&
-              game.game_status === "active" &&
-              !isSpectator() &&
-              !isUpdating
+              ((game.current_turn === "white" && currentUser === game.white_player_id) ||
+               (game.current_turn === "black" && currentUser === game.black_player_id)) &&
+              game.game_status === "active" && !isSpectator() && !isUpdating
             }
           />
         </div>
-
-        {/* Floating Mobile Reactions */}
+        
+        {/* Mobile-optimized Reactions */}
         {game.game_status === "active" && !isSpectator() && (
-          <div className="absolute bottom-4 right-4 z-40">
+          <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 z-30">
             <MobileGameReactions gameId={gameId} />
           </div>
         )}
       </div>
 
-      {/* Minimal Desktop Controls */}
+      {/* Desktop Reactions */}
       {!isMobile && game.game_status === "active" && !isSpectator() && (
-        <div className="flex justify-center px-4">
-          <div className="flex items-center gap-4">
-            <GameReactions gameId={gameId} />
-          </div>
+        <div className="flex justify-center">
+          <GameReactions gameId={gameId} />
         </div>
       )}
 
-      {/* Compact Desktop Chat */}
+      {/* Desktop Chat */}
       {!isMobile && !isSpectator() && (
-        <div className="max-w-sm mx-auto px-4">
-          <div className="bg-black/50 rounded-lg p-2 border border-yellow-400/30">
-            <ChatSystem gameId={gameId} />
-          </div>
+        <div className="max-w-md mx-auto">
+          <ChatSystem gameId={gameId} />
         </div>
       )}
 
-      {/* Minimal Status Messages */}
+      {/* Game Status Messages - Mobile Optimized */}
       {game.game_status === "waiting" && playerCount < 2 && (
-        <div className="mx-4 text-center">
-          <div className="bg-yellow-900/20 border border-yellow-400/30 rounded-md p-1">
-            <p className="text-yellow-200 font-medium text-xs">
+        <Card className="bg-gradient-to-br from-yellow-900/30 to-yellow-800/30 border-2 border-yellow-400 shadow-lg rounded-lg">
+          <CardContent className="p-2 sm:p-3 text-center">
+            <p className="text-yellow-200 font-bold text-xs sm:text-sm">
               Waiting for player... ({playerCount}/2)
             </p>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
 
       {game.game_status === "active" && (
-        <div className="mx-4 text-center">
-          <div className="bg-gray-900/20 border border-white/30 rounded-md p-1">
-            <p className="text-white font-medium text-xs">
+        <Card className="bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-white shadow-lg rounded-lg">
+          <CardContent className="p-2 sm:p-3 text-center">
+            <p className="text-white font-bold text-xs sm:text-sm">
               {isSpectator() ? "Spectating" : `${game.current_turn} to move`}
             </p>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
