@@ -182,27 +182,27 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
 
         <TabsContent
           value="payments"
-          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
         >
-          <div className="min-h-[200px]">
+          <div className="min-h-[300px] w-full bg-amber-50/30 rounded-lg p-2">
             <PaymentManagement adminUser={adminUser} />
           </div>
         </TabsContent>
 
         <TabsContent
           value="games"
-          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
         >
-          <div className="min-h-[200px]">
+          <div className="min-h-[300px] w-full">
             <GameManagement adminUser={adminUser} />
           </div>
         </TabsContent>
 
         <TabsContent
           value="settings"
-          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
         >
-          <div className="min-h-[200px]">
+          <div className="min-h-[300px] w-full">
             <AdminSettings adminUser={adminUser} />
           </div>
         </TabsContent>
