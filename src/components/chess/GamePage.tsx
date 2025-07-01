@@ -62,9 +62,17 @@ export const GamePage = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    // Check if gameId is valid before proceeding
+    if (!gameId || gameId === 'undefined') {
+      console.error('Invalid gameId:', gameId);
+      toast.error('Invalid game ID');
+      navigate('/');
+      return;
+    }
+    
     fetchGame();
     fetchUser();
-  }, [gameId]);
+  }, [gameId, navigate]);
 
   useEffect(() => {
     if (game && currentUser) {
@@ -98,6 +106,13 @@ export const GamePage = () => {
   }, [gameId, currentUser]);
 
   const fetchGame = async () => {
+    // Early return if gameId is invalid
+    if (!gameId || gameId === 'undefined') {
+      console.error('Cannot fetch game: invalid gameId');
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       
@@ -108,7 +123,10 @@ export const GamePage = () => {
         .eq('id', gameId)
         .single();
 
-      if (gameError) throw gameError;
+      if (gameError) {
+        console.error('Error fetching game data:', gameError);
+        throw gameError;
+      }
       
       // Then, fetch the player data separately
       const whitePlayerPromise = gameData.white_player_id ? 
@@ -152,6 +170,8 @@ export const GamePage = () => {
     } catch (error) {
       console.error('Error fetching game:', error);
       toast.error('Failed to load game');
+      // Redirect to home if game doesn't exist
+      setTimeout(() => navigate('/'), 2000);
     } finally {
       setLoading(false);
     }
@@ -489,7 +509,7 @@ export const GamePage = () => {
     );
   }
 
-  if (!game) {
+  if (!game || !gameId) {
     return (
       <MobileContainer>
         <Card className="bg-card border border-border rounded-2xl">
