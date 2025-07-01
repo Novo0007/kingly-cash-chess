@@ -122,26 +122,32 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </p>
 
                 {/* Stats Bar */}
-                <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-white/20">
+                <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-amber-200/20">
                   <div className="text-center">
-                    <div className="text-white font-bold text-lg md:text-xl">
+                    <div className="text-amber-100 font-bold text-lg md:text-xl">
                       4.2K+
                     </div>
-                    <div className="text-white/80 text-xs">Online Players</div>
+                    <div className="text-amber-200/80 text-xs">
+                      Lodge Members
+                    </div>
                   </div>
-                  <div className="w-px h-8 bg-white/20"></div>
+                  <div className="w-px h-8 bg-amber-200/20"></div>
                   <div className="text-center">
-                    <div className="text-white font-bold text-lg md:text-xl">
+                    <div className="text-amber-100 font-bold text-lg md:text-xl">
                       ₹50L+
                     </div>
-                    <div className="text-white/80 text-xs">Daily Prizes</div>
+                    <div className="text-amber-200/80 text-xs">
+                      Daily Prizes
+                    </div>
                   </div>
-                  <div className="w-px h-8 bg-white/20"></div>
+                  <div className="w-px h-8 bg-amber-200/20"></div>
                   <div className="text-center">
-                    <div className="text-white font-bold text-lg md:text-xl">
+                    <div className="text-amber-100 font-bold text-lg md:text-xl">
                       24/7
                     </div>
-                    <div className="text-white/80 text-xs">Live Games</div>
+                    <div className="text-amber-200/80 text-xs">
+                      Active Lodge
+                    </div>
                   </div>
                 </div>
               </CardTitle>
