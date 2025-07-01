@@ -100,26 +100,33 @@ const App = () => {
             })}
           </div>
 
-          {/* Geometric Pattern Overlay */}
-          <div className="absolute inset-0 opacity-10">
+          {/* Wood Plank Pattern Overlay */}
+          <div className="absolute inset-0 opacity-15">
             <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <pattern
-                  id="grid"
-                  width="40"
-                  height="40"
+                  id="woodGrain"
+                  width="60"
+                  height="20"
                   patternUnits="userSpaceOnUse"
                 >
                   <path
-                    d="M 40 0 L 0 0 0 40"
+                    d="M 0 10 Q 15 5 30 10 T 60 10"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="1"
-                    className="text-blue-300"
+                    strokeWidth="0.5"
+                    className="text-amber-800"
+                  />
+                  <path
+                    d="M 0 15 Q 20 12 40 15 T 60 15"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="0.3"
+                    className="text-amber-700"
                   />
                 </pattern>
               </defs>
-              <rect width="100%" height="100%" fill="url(#grid)" />
+              <rect width="100%" height="100%" fill="url(#woodGrain)" />
             </svg>
           </div>
         </div>
