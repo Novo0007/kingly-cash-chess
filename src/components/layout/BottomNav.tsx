@@ -118,10 +118,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                     ></div>
                   )}
                   <div
-                    className={`relative p-2 rounded-xl transition-all duration-500 ease-out transform ${
+                    className={`relative p-2 rounded-lg transition-all duration-300 ease-out transform ${
                       isActive
-                        ? `bg-gradient-to-r ${item.gradient}/80 shadow-lg scale-110 backdrop-blur-sm`
-                        : "bg-white/8 backdrop-blur-sm hover:bg-white/12"
+                        ? `bg-gradient-to-r ${item.gradient}/80 wood-shadow scale-110 backdrop-blur-sm border border-amber-300/20`
+                        : "bg-amber-100/8 backdrop-blur-sm hover:bg-amber-100/12"
                     }`}
                   >
                     <Icon
