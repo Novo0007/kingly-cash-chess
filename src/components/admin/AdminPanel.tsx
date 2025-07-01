@@ -164,18 +164,18 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
 
         <TabsContent
           value="overview"
-          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
         >
-          <div className="min-h-[200px]">
+          <div className="min-h-[300px] w-full">
             <SystemOverview adminUser={adminUser} />
           </div>
         </TabsContent>
 
         <TabsContent
           value="users"
-          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+          className="space-y-4 sm:space-y-6 mt-4 sm:mt-6 w-full"
         >
-          <div className="min-h-[200px]">
+          <div className="min-h-[300px] w-full">
             <UserManagement adminUser={adminUser} />
           </div>
         </TabsContent>
