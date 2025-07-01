@@ -60,8 +60,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     getCurrentUser();
     fetchGame();
 
-    // Faster refresh intervals for better responsiveness
-    const refreshInterval = isMobile ? 3000 : 2000; // Much faster refresh
+    // Improved refresh intervals - less aggressive polling
+    const refreshInterval = isMobile ? 5000 : 4000; // Reduced frequency
     const autoRefreshInterval = setInterval(() => {
       if (!loading && !isUpdating) {
         fetchGame();
@@ -86,7 +86,9 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
           }
         },
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log("Game subscription status:", status);
+      });
 
     return () => {
       clearInterval(autoRefreshInterval);
@@ -544,6 +546,15 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
       let winnerId = null;
       let gameResult = null;
 
+      // Enhanced move feedback
+      if (move.captured) {
+        toast.success(`Captured ${move.captured}! Great move! 🎯`);
+      } else if (chess.isCheck()) {
+        toast.info(`Check! ${nextTurn === "white" ? "White" : "Black"} king in danger! ⚠️`);
+      } else {
+        toast.success("Nice move! 👍");
+      }
+
       // Check for time flag
       if (newWhiteTime <= 0 || newBlackTime <= 0) {
         gameStatus = "completed";
@@ -554,13 +565,11 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         gameStatus = "completed";
         winnerId = game.current_turn === "white" ? game.white_player_id : game.black_player_id;
         gameResult = game.current_turn === "white" ? "white_wins" : "black_wins";
-        toast.success(`Checkmate! ${game.current_turn === "white" ? "White" : "Black"} wins!`);
+        toast.success(`Checkmate! ${game.current_turn === "white" ? "White" : "Black"} wins! 🏆`);
       } else if (chess.isDraw()) {
         gameStatus = "completed";
         gameResult = "draw";
-        toast.success("Game ended in a draw!");
-      } else if (chess.isCheck()) {
-        toast.info(`${nextTurn === "white" ? "White" : "Black"} is in check!`);
+        toast.success("Game ended in a draw! 🤝");
       }
 
       // Optimistic update - update local state immediately
