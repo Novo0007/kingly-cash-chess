@@ -1,8 +1,8 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -12,7 +12,6 @@ import {
   Wallet,
   UserCircle,
   LogOut,
-  Settings,
   Shield,
 } from "lucide-react";
 
@@ -51,14 +50,14 @@ export const Navbar = ({ currentView, onViewChange, isAdmin }: NavbarProps) => {
   }
 
   return (
-    <Card className="bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-600 shadow-xl rounded-xl m-4 wood-plank">
+    <Card className="bg-card border border-border shadow-sm rounded-2xl m-4">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center space-x-6">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-amber-600 to-orange-600 rounded-full flex items-center justify-center">
-              <Trophy className="h-4 w-4 text-white" />
+            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+              <Trophy className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-bold text-amber-900 text-lg">Gaming Lodge</span>
+            <span className="font-bold text-foreground text-lg">Game Hub</span>
           </div>
 
           <nav className="flex space-x-2">
@@ -71,18 +70,18 @@ export const Navbar = ({ currentView, onViewChange, isAdmin }: NavbarProps) => {
                   onClick={() => onViewChange(item.id)}
                   variant={isActive ? "default" : "ghost"}
                   className={`
-                    font-medium transition-all duration-200 rounded-lg border-2 px-4 py-2
+                    font-medium transition-all duration-200 rounded-xl px-4 py-2
                     ${
                       isActive
-                        ? "bg-gradient-to-r from-amber-700 to-orange-700 hover:from-amber-800 hover:to-orange-800 text-white border-yellow-400 shadow-lg transform scale-105"
-                        : "text-amber-900 hover:bg-amber-200 hover:text-amber-900 border-amber-400 hover:border-amber-600"
+                        ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
                     }
                   `}
                 >
                   <Icon className="h-4 w-4 mr-2" />
                   {item.label}
                   {item.id === "admin" && (
-                    <Badge className="ml-2 bg-red-600 text-white text-xs">
+                    <Badge className="ml-2 bg-destructive text-destructive-foreground text-xs rounded-full">
                       Admin
                     </Badge>
                   )}
@@ -93,14 +92,15 @@ export const Navbar = ({ currentView, onViewChange, isAdmin }: NavbarProps) => {
         </div>
 
         <div className="flex items-center space-x-3">
+          <ThemeToggle />
           <Button
             onClick={handleSignOut}
             disabled={isLoggingOut}
-            variant="ghost"
-            className="text-amber-900 hover:bg-amber-200 hover:text-amber-900 font-medium border-2 border-amber-400 hover:border-amber-600 rounded-lg px-4 py-2 transition-all duration-200"
+            variant="outline"
+            className="font-medium rounded-xl px-4 py-2 transition-all duration-200"
           >
             {isLoggingOut ? (
-              <div className="w-4 h-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin mr-2" />
+              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
             ) : (
               <LogOut className="h-4 w-4 mr-2" />
             )}
