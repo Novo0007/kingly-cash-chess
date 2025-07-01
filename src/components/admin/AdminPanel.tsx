@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -89,19 +88,21 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Admin Header */}
-      <Card className="bg-gradient-to-r from-purple-900 to-indigo-900 border-purple-600">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-3">
-            <Shield className="h-6 w-6 text-purple-400" />
-            <span>Admin Control Panel</span>
-            <Badge className="bg-purple-600 text-white">
+    <div className="space-y-4 sm:space-y-6 p-2 sm:p-4">
+      {/* Admin Header - Mobile Friendly */}
+      <Card className="wood-card wood-plank border-amber-700">
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="text-amber-900 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 font-heading">
+            <div className="flex items-center gap-2">
+              <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-amber-700" />
+              <span className="text-base sm:text-lg">Admin Lodge</span>
+            </div>
+            <Badge className="bg-amber-700 text-amber-50 text-xs sm:text-sm">
               {adminUser.role.replace("_", " ").toUpperCase()}
             </Badge>
           </CardTitle>
-          <p className="text-purple-300">
-            Welcome back, Administrator. Manage your gaming platform from here.
+          <p className="text-amber-800 text-sm sm:text-base">
+            Welcome back, Administrator. Manage your gaming lodge from here.
           </p>
         </CardHeader>
       </Card>
