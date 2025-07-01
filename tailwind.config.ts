@@ -19,9 +19,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["Poppins", "Rubik", "system-ui", "sans-serif"],
-        body: ["Rubik", "Poppins", "system-ui", "sans-serif"],
-        sans: ["Rubik", "Poppins", "system-ui", "sans-serif"],
+        heading: ["Merriweather", "Bitter", "serif"],
+        body: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Inter", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
