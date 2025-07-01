@@ -874,17 +874,21 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         )}
       </div>
 
-      {/* Desktop Reactions */}
+      {/* Minimal Desktop Controls */}
       {!isMobile && game.game_status === "active" && !isSpectator() && (
-        <div className="flex justify-center">
-          <GameReactions gameId={gameId} />
+        <div className="flex justify-center px-4">
+          <div className="flex items-center gap-4">
+            <GameReactions gameId={gameId} />
+          </div>
         </div>
       )}
 
-      {/* Desktop Chat */}
+      {/* Compact Desktop Chat */}
       {!isMobile && !isSpectator() && (
-        <div className="max-w-md mx-auto">
-          <ChatSystem gameId={gameId} />
+        <div className="max-w-sm mx-auto px-4">
+          <div className="bg-black/50 rounded-lg p-2 border border-yellow-400/30">
+            <ChatSystem gameId={gameId} />
+          </div>
         </div>
       )}
 
