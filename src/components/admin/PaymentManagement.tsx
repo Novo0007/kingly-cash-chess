@@ -258,62 +258,70 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
         </Card>
       </div>
 
-      <Card className="bg-slate-800 border-slate-600">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-green-400" />
+      <Card className="wood-card wood-plank border-amber-700">
+        <CardHeader className="p-3 sm:p-4">
+          <CardTitle className="text-amber-900 flex items-center gap-2 text-base sm:text-lg font-heading">
+            <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-800" />
             Payment & Withdrawal Management
           </CardTitle>
-          <div className="flex flex-wrap gap-2">
-            <div className="flex gap-2">
-              <span className="text-slate-300 text-sm">Status:</span>
-              {(["all", "pending", "completed", "failed"] as const).map(
-                (status) => (
-                  <Button
-                    key={status}
-                    size="sm"
-                    variant={filter === status ? "default" : "outline"}
-                    onClick={() => setFilter(status)}
-                    className={
-                      filter === status
-                        ? "bg-green-600"
-                        : "text-slate-300 border-slate-600"
-                    }
-                  >
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                  </Button>
-                ),
-              )}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-3">
+            <div className="flex flex-col gap-2">
+              <span className="text-amber-800 text-xs sm:text-sm font-semibold">
+                Status:
+              </span>
+              <div className="flex flex-wrap gap-1 sm:gap-2">
+                {(["all", "pending", "completed", "failed"] as const).map(
+                  (status) => (
+                    <Button
+                      key={status}
+                      size="sm"
+                      variant={filter === status ? "default" : "outline"}
+                      onClick={() => setFilter(status)}
+                      className={`text-xs ${
+                        filter === status
+                          ? ""
+                          : "text-amber-800 border-amber-600 bg-amber-100 hover:bg-amber-200"
+                      }`}
+                    >
+                      {status.charAt(0).toUpperCase() + status.slice(1)}
+                    </Button>
+                  ),
+                )}
+              </div>
             </div>
-            <div className="flex gap-2">
-              <span className="text-slate-300 text-sm">Type:</span>
-              {(
-                [
-                  "all",
-                  "deposit",
-                  "withdrawal",
-                  "game_entry",
-                  "game_winning",
-                  "refund",
-                ] as const
-              ).map((type) => (
-                <Button
-                  key={type}
-                  size="sm"
-                  variant={typeFilter === type ? "default" : "outline"}
-                  onClick={() => setTypeFilter(type)}
-                  className={
-                    typeFilter === type
-                      ? "bg-blue-600"
-                      : "text-slate-300 border-slate-600"
-                  }
-                >
-                  {type === "all"
-                    ? "All"
-                    : type.replace("_", " ").charAt(0).toUpperCase() +
-                      type.replace("_", " ").slice(1)}
-                </Button>
-              ))}
+            <div className="flex flex-col gap-2">
+              <span className="text-amber-800 text-xs sm:text-sm font-semibold">
+                Type:
+              </span>
+              <div className="flex flex-wrap gap-1 sm:gap-2">
+                {(
+                  [
+                    "all",
+                    "deposit",
+                    "withdrawal",
+                    "game_entry",
+                    "game_winning",
+                    "refund",
+                  ] as const
+                ).map((type) => (
+                  <Button
+                    key={type}
+                    size="sm"
+                    variant={typeFilter === type ? "default" : "outline"}
+                    onClick={() => setTypeFilter(type)}
+                    className={`text-xs ${
+                      typeFilter === type
+                        ? ""
+                        : "text-amber-800 border-amber-600 bg-amber-100 hover:bg-amber-200"
+                    }`}
+                  >
+                    {type === "all"
+                      ? "All"
+                      : type.replace("_", " ").charAt(0).toUpperCase() +
+                        type.replace("_", " ").slice(1)}
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
         </CardHeader>
