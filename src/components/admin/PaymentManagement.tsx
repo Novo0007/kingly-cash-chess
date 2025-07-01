@@ -382,15 +382,15 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-4">
                         <div className="text-right">
                           <p
-                            className={`font-bold text-lg ${
+                            className={`font-bold text-sm sm:text-lg ${
                               transaction.transaction_type === "withdrawal"
-                                ? "text-red-400"
+                                ? "text-red-800"
                                 : transaction.transaction_type === "deposit"
-                                  ? "text-green-400"
-                                  : "text-white"
+                                  ? "text-green-800"
+                                  : "text-amber-900"
                             }`}
                           >
                             {transaction.transaction_type === "withdrawal"
@@ -399,19 +399,19 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
                             ₹{Number(transaction.amount).toFixed(2)}
                           </p>
                           {transaction.razorpay_payment_id && (
-                            <p className="text-slate-400 text-xs">
+                            <p className="text-amber-600 text-xs">
                               Payment ID: {transaction.razorpay_payment_id}
                             </p>
                           )}
                           {transaction.razorpay_order_id && (
-                            <p className="text-slate-400 text-xs">
+                            <p className="text-amber-600 text-xs">
                               Order ID: {transaction.razorpay_order_id}
                             </p>
                           )}
                         </div>
 
                         {transaction.status === "pending" && (
-                          <div className="flex gap-2">
+                          <div className="flex gap-1 sm:gap-2">
                             <Button
                               size="sm"
                               onClick={() =>
@@ -420,10 +420,11 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
                                   "completed",
                                 )
                               }
-                              className="bg-green-600 hover:bg-green-700"
+                              variant="default"
+                              className="bg-green-700 hover:bg-green-800 text-white min-h-[44px] text-xs"
                               title={`Complete ${transaction.transaction_type === "withdrawal" ? "withdrawal" : "transaction"}`}
                             >
-                              <CheckCircle className="h-4 w-4" />
+                              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
                             <Button
                               size="sm"
@@ -433,10 +434,11 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
                                   "failed",
                                 )
                               }
-                              className="bg-red-600 hover:bg-red-700"
+                              variant="destructive"
+                              className="min-h-[44px] text-xs"
                               title={`Reject ${transaction.transaction_type === "withdrawal" ? "withdrawal" : "transaction"}`}
                             >
-                              <X className="h-4 w-4" />
+                              <X className="h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
                           </div>
                         )}
