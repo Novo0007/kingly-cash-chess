@@ -2,69 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Vibrant Electric Blue Theme - Modern and Dynamic */
+/* Wood UI Theme - Natural, Warm, and Inviting */
 
 @layer base {
   :root {
-    /* Vibrant Theme Variables - Bright and Energetic */
-    --background: 0 0% 100%;
-    --foreground: 240 10% 4%;
+    /* Wood Theme Variables - Natural and Earthy */
+    --background: 30 35% 95%;
+    --foreground: 25 15% 10%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 4%;
+    --card: 28 40% 92%;
+    --card-foreground: 25 15% 10%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 4%;
+    --popover: 28 40% 92%;
+    --popover-foreground: 25 15% 10%;
 
-    --primary: 270 95% 60%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 25 45% 35%;
+    --primary-foreground: 30 35% 95%;
 
-    --secondary: 280 100% 95%;
-    --secondary-foreground: 240 10% 4%;
+    --secondary: 30 25% 85%;
+    --secondary-foreground: 25 15% 15%;
 
-    --muted: 280 100% 97%;
-    --muted-foreground: 240 5% 35%;
+    --muted: 30 20% 88%;
+    --muted-foreground: 25 10% 45%;
 
-    --accent: 195 100% 50%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 120 30% 40%;
+    --accent-foreground: 30 35% 95%;
 
-    --destructive: 0 90% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 10 70% 50%;
+    --destructive-foreground: 30 35% 95%;
 
-    --border: 280 50% 85%;
-    --input: 280 50% 90%;
-    --ring: 270 95% 60%;
+    --border: 30 25% 80%;
+    --input: 30 30% 90%;
+    --ring: 25 45% 35%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
-    /* Vibrant Color Palette */
-    --vibrant-purple: 270 95% 60%;
-    --vibrant-blue: 220 100% 55%;
-    --vibrant-cyan: 195 100% 50%;
-    --vibrant-green: 145 85% 45%;
-    --vibrant-orange: 30 100% 55%;
-    --vibrant-pink: 330 85% 65%;
-    --vibrant-yellow: 50 100% 60%;
+    /* Wood Color Palette */
+    --wood-dark: 25 35% 20%; /* Dark walnut/mahogany */
+    --wood-medium: 25 45% 35%; /* Medium oak */
+    --wood-light: 30 40% 65%; /* Light maple */
+    --wood-lightest: 30 35% 85%; /* Very light pine */
 
-    /* Electric/Neon variations */
-    --electric-50: 270 100% 98%;
-    --electric-100: 270 100% 95%;
-    --electric-200: 270 95% 88%;
-    --electric-300: 270 90% 78%;
-    --electric-400: 270 85% 68%;
-    --electric-500: 270 95% 60%;
-    --electric-600: 270 95% 52%;
-    --electric-700: 270 95% 42%;
-    --electric-800: 270 95% 32%;
-    --electric-900: 270 95% 22%;
+    /* Accent Colors */
+    --wood-green: 120 30% 40%; /* Deep forest green */
+    --wood-orange: 20 60% 50%; /* Burnt orange */
+    --wood-charcoal: 210 15% 25%; /* Matte charcoal */
+    --wood-cream: 45 25% 88%; /* Cream/ivory */
 
-    /* Complementary vibrant colors */
-    --electric-accent: 195 100% 50%;
-    --electric-soft: 280 80% 92%;
-    --electric-muted: 280 50% 90%;
-    --electric-text: 240 10% 4%;
-    --electric-light: 0 0% 100%;
-    --electric-neutral: 280 30% 88%;
+    /* Wood Texture Variables */
+    --wood-grain-dark: 25 35% 18%;
+    --wood-grain-medium: 25 45% 32%;
+    --wood-grain-light: 30 40% 62%;
+    --wood-shadow: 25 25% 15%;
   }
 
   .dark {
