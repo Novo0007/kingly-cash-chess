@@ -111,50 +111,50 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
 
       {/* Admin Tabs - Mobile Responsive */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-2 bg-amber-100 border-amber-300 p-1 rounded-lg">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-600 p-2 rounded-xl wood-shadow">
           <TabsTrigger
             value="overview"
-            className="data-[state=active]:bg-amber-700 data-[state=active]:text-amber-50 text-xs sm:text-sm wood-button min-h-[48px] flex flex-col sm:flex-row items-center gap-1 sm:gap-2"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-700 data-[state=active]:to-orange-700 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2"
           >
-            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
+            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="hidden sm:inline">Overview</span>
-            <span className="sm:hidden text-xs">Stats</span>
+            <span className="sm:hidden">Stats</span>
           </TabsTrigger>
           <TabsTrigger
             value="users"
-            className="data-[state=active]:bg-green-700 data-[state=active]:text-amber-50 text-xs sm:text-sm wood-button min-h-[48px] flex flex-col sm:flex-row items-center gap-1 sm:gap-2"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-700 data-[state=active]:to-emerald-700 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!hasPermission("users")}
           >
-            <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+            <Users className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="hidden sm:inline">Users</span>
-            <span className="sm:hidden text-xs">Users</span>
+            <span className="sm:hidden">Users</span>
           </TabsTrigger>
           <TabsTrigger
             value="payments"
-            className="data-[state=active]:bg-yellow-700 data-[state=active]:text-amber-50 text-xs sm:text-sm wood-button min-h-[48px] flex flex-col sm:flex-row items-center gap-1 sm:gap-2"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-700 data-[state=active]:to-amber-700 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!hasPermission("payments")}
           >
-            <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
+            <CreditCard className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="hidden sm:inline">Payments</span>
-            <span className="sm:hidden text-xs">Pay</span>
+            <span className="sm:hidden">Pay</span>
           </TabsTrigger>
           <TabsTrigger
             value="games"
-            className="data-[state=active]:bg-orange-700 data-[state=active]:text-amber-50 text-xs sm:text-sm wood-button min-h-[48px] flex flex-col sm:flex-row items-center gap-1 sm:gap-2"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-700 data-[state=active]:to-red-700 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!hasPermission("games")}
           >
-            <Gamepad2 className="h-3 w-3 sm:h-4 sm:w-4" />
+            <Gamepad2 className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="hidden sm:inline">Games</span>
-            <span className="sm:hidden text-xs">Games</span>
+            <span className="sm:hidden">Games</span>
           </TabsTrigger>
           <TabsTrigger
             value="settings"
-            className="data-[state=active]:bg-amber-800 data-[state=active]:text-amber-50 text-xs sm:text-sm wood-button min-h-[48px] flex flex-col sm:flex-row items-center gap-1 sm:gap-2 col-span-2 sm:col-span-1"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-800 data-[state=active]:to-yellow-800 data-[state=active]:text-white data-[state=active]:shadow-lg bg-amber-200 text-amber-900 hover:bg-amber-300 transition-all duration-200 min-h-[52px] rounded-lg border-2 border-amber-600 font-semibold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed col-span-2 sm:col-span-1"
             disabled={!hasPermission("full_access")}
           >
-            <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+            <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="hidden sm:inline">Settings</span>
-            <span className="sm:hidden text-xs">Settings</span>
+            <span className="sm:hidden">Settings</span>
           </TabsTrigger>
         </TabsList>
 
