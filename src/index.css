@@ -98,6 +98,45 @@
   * {
     @apply border-border;
   }
+
+  /* Enhanced Chess Board Styling */
+  .chess-board-premium {
+    box-shadow:
+      0 0 0 4px hsl(var(--wood-dark)),
+      0 0 0 8px hsl(var(--wood-medium)),
+      0 20px 60px rgba(0, 0, 0, 0.3),
+      inset 0 0 50px rgba(139, 69, 19, 0.2);
+  }
+
+  .chess-piece-premium {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  }
+
+  .chess-piece-premium:hover {
+    transform: scale(1.1) translateY(-2px);
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4))
+      drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+  }
+
+  .wood-shadow-2xl {
+    box-shadow:
+      0 25px 50px -12px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(139, 69, 19, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  @media (max-width: 640px) {
+    .chess-board-premium {
+      box-shadow:
+        0 0 0 2px hsl(var(--wood-dark)),
+        0 0 0 4px hsl(var(--wood-medium)),
+        0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+@layer base {
   body {
     @apply bg-background text-foreground;
     font-family:

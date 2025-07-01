@@ -279,26 +279,29 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center w-full px-1 sm:px-2">
-      <div className="wood-card p-3 sm:p-6 md:p-8 lg:p-10 rounded-lg sm:rounded-xl wood-shadow-deep w-full h-full max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl border-4 border-amber-800 wood-plank relative overflow-hidden">
-        {/* Chess Board Frame - Handcrafted Wood Style */}
-        <div className="relative p-2 sm:p-4 md:p-6 bg-gradient-to-br from-amber-900 to-amber-800 rounded-lg wood-shadow border-2 border-amber-700">
-          {/* Inner Wood Frame */}
-          <div className="relative p-1 sm:p-2 bg-gradient-to-br from-amber-800 to-amber-700 rounded-md">
+    <div className="flex flex-col items-center w-full px-0 sm:px-1">
+      <div className="wood-card p-4 sm:p-8 md:p-12 lg:p-16 xl:p-20 rounded-xl sm:rounded-2xl wood-shadow-deep w-full h-full max-w-none sm:max-w-6xl md:max-w-7xl lg:max-w-8xl xl:max-w-[100rem] border-6 border-amber-800 wood-plank relative overflow-hidden transform scale-105 sm:scale-110 md:scale-115 lg:scale-120">
+        {/* Chess Board Frame - Premium Handcrafted Wood Style */}
+        <div className="relative p-3 sm:p-6 md:p-8 lg:p-12 bg-gradient-to-br from-amber-900 via-amber-800 to-amber-900 rounded-xl wood-shadow-xl border-4 border-amber-700 shadow-2xl">
+          {/* Ornate Inner Wood Frame */}
+          <div className="relative p-2 sm:p-4 md:p-6 bg-gradient-to-br from-amber-800 via-amber-700 to-amber-800 rounded-lg border-2 border-amber-600">
+            {/* Premium Chess Board Surface */}
             <div
               ref={boardRef}
-              className="grid grid-cols-8 gap-0 aspect-square w-full h-full rounded-sm overflow-hidden wood-shadow-lg relative"
+              className="grid grid-cols-8 gap-0 aspect-square w-full h-full rounded-lg overflow-hidden wood-shadow-2xl relative border-4 border-amber-900 shadow-inner"
               style={{
                 background: `
+                  radial-gradient(circle at center, rgba(139, 69, 19, 0.15) 0%, rgba(160, 82, 45, 0.1) 100%),
                   repeating-linear-gradient(0deg,
-                    rgba(139, 69, 19, 0.1) 0px,
+                    rgba(139, 69, 19, 0.15) 0px,
                     rgba(160, 82, 45, 0.1) 1px,
-                    rgba(139, 69, 19, 0.1) 2px),
+                    rgba(139, 69, 19, 0.15) 2px),
                   repeating-linear-gradient(90deg,
-                    rgba(139, 69, 19, 0.1) 0px,
+                    rgba(139, 69, 19, 0.15) 0px,
                     rgba(160, 82, 45, 0.1) 1px,
-                    rgba(139, 69, 19, 0.1) 2px)
+                    rgba(139, 69, 19, 0.15) 2px)
                 `,
+                boxShadow: "inset 0 0 50px rgba(139, 69, 19, 0.3)",
               }}
             >
               {Array.from({ length: 8 }, (_, rowIndex) =>
@@ -316,8 +319,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     <div
                       key={`${rowIndex}-${colIndex}`}
                       className={`
-                    aspect-square flex items-center justify-center text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold cursor-pointer
-                    transition-all duration-200 active:scale-95 relative overflow-hidden border border-amber-900/10
+                    aspect-square flex items-center justify-center text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[8rem] 2xl:text-[10rem] font-bold cursor-pointer
+                    transition-all duration-300 hover:scale-110 active:scale-95 relative overflow-hidden border-2 border-amber-900/20 shadow-lg
                     ${
                       isLightSquare(rowIndex, colIndex)
                         ? "bg-gradient-to-br from-amber-100 to-amber-50 hover:from-amber-200 hover:to-amber-100"
@@ -344,21 +347,23 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                       onClick={() => handleSquareClick(rowIndex, colIndex)}
                     >
                       <span
-                        className={`z-10 drop-shadow-2xl select-none ${
+                        className={`z-20 select-none transition-all duration-300 hover:scale-110 font-black ${
                           piece && piece.color === "b"
-                            ? "text-black"
-                            : "text-white"
+                            ? "text-gray-900"
+                            : "text-gray-100"
                         }`}
                         style={{
                           textShadow: piece
                             ? piece.color === "b"
-                              ? "2px 2px 4px rgba(255, 255, 255, 0.8)"
-                              : "2px 2px 4px rgba(0, 0, 0, 0.8)"
+                              ? "2px 2px 4px rgba(255, 255, 255, 0.9), -1px -1px 2px rgba(255, 255, 255, 0.8)"
+                              : "2px 2px 4px rgba(0, 0, 0, 0.9), -1px -1px 2px rgba(0, 0, 0, 0.8)"
                             : "none",
-                          filter:
-                            piece && piece.color === "b"
-                              ? "drop-shadow(1px 1px 2px white)"
-                              : "none",
+                          fontWeight: "900",
+                          WebkitTextStroke: piece
+                            ? piece.color === "b"
+                              ? "1px #ffffff"
+                              : "1px #000000"
+                            : "none",
                         }}
                       >
                         {getPieceSymbol(piece)}
@@ -371,18 +376,18 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
           </div>
         </div>
 
-        {/* Status Display - Wood Style */}
-        <div className="mt-3 sm:mt-6 md:mt-8 text-center">
-          <div className="wood-text text-sm sm:text-lg md:text-2xl font-bold wood-glass rounded-lg px-4 py-3 sm:px-6 sm:py-4 border-2 border-amber-700 wood-shadow tap-target bg-gradient-to-r from-amber-100 to-orange-100">
+        {/* Premium Status Display - Enhanced Wood Style */}
+        <div className="mt-6 sm:mt-8 md:mt-12 text-center">
+          <div className="wood-text text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold wood-glass rounded-xl px-6 py-4 sm:px-8 sm:py-6 md:px-12 md:py-8 border-4 border-amber-700 wood-shadow-xl tap-target bg-gradient-to-r from-amber-100 via-orange-100 to-amber-100 shadow-2xl transform hover:scale-105 transition-all duration-300">
             Playing as {playerColor === "white" ? "⚪ White" : "⚫ Black"}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div className="text-amber-800 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold wood-glass rounded-lg px-3 py-2 sm:px-4 sm:py-3 inline-block border-2 border-amber-600 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
+            <div className="text-amber-800 mt-4 sm:mt-6 text-base sm:text-xl md:text-3xl lg:text-4xl font-bold wood-glass rounded-xl px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-6 inline-block border-4 border-amber-600 wood-shadow-xl tap-target bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 shadow-xl animate-pulse">
               Opponent's turn...
             </div>
           )}
           {disabled && (
-            <div className="text-amber-700 mt-2 sm:mt-3 text-sm sm:text-base md:text-lg font-bold wood-glass rounded-lg px-3 py-2 sm:px-4 sm:py-3 inline-block border-2 border-amber-500 wood-shadow tap-target bg-gradient-to-r from-amber-50 to-orange-50">
+            <div className="text-amber-700 mt-4 sm:mt-6 text-base sm:text-xl md:text-3xl lg:text-4xl font-bold wood-glass rounded-xl px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-6 inline-block border-4 border-amber-500 wood-shadow-xl tap-target bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 shadow-xl">
               Spectating
             </div>
           )}
