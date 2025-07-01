@@ -183,63 +183,73 @@ export const PaymentManagement = ({ adminUser }: PaymentManagementProps) => {
     return (
       <Card className="wood-card border-amber-600">
         <CardContent className="p-4 sm:p-6 text-center">
-          <div className="w-8 h-8 border-3 border-green-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white">Loading transactions...</p>
+          <div className="w-6 h-6 sm:w-8 sm:h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-amber-900 text-sm sm:text-base">
+            Loading transactions...
+          </p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Enhanced Payment Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-green-900/20 border-green-600/30">
-          <CardContent className="p-4">
+    <div className="space-y-4 sm:space-y-6">
+      {/* Payment Stats - Wood Theme */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <Card className="wood-card bg-gradient-to-r from-green-50 to-green-100 border-green-700">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-green-400" />
+              <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-green-800" />
               <div>
-                <p className="text-green-300 text-sm">Total Amount</p>
-                <p className="text-white font-bold text-lg">
+                <p className="text-green-800 text-xs sm:text-sm font-semibold">
+                  Total Amount
+                </p>
+                <p className="text-green-900 font-bold text-sm sm:text-lg">
                   ₹{totalAmount.toFixed(2)}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-blue-900/20 border-blue-600/30">
-          <CardContent className="p-4">
+        <Card className="wood-card bg-gradient-to-r from-blue-50 to-blue-100 border-blue-700">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-blue-400" />
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-blue-800" />
               <div>
-                <p className="text-blue-300 text-sm">Completed</p>
-                <p className="text-white font-bold text-lg">
+                <p className="text-blue-800 text-xs sm:text-sm font-semibold">
+                  Completed
+                </p>
+                <p className="text-blue-900 font-bold text-sm sm:text-lg">
                   ₹{completedAmount.toFixed(2)}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-red-900/20 border-red-600/30">
-          <CardContent className="p-4">
+        <Card className="wood-card bg-gradient-to-r from-red-50 to-red-100 border-red-700">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2">
-              <ArrowUpCircle className="h-5 w-5 text-red-400" />
+              <ArrowUpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-800" />
               <div>
-                <p className="text-red-300 text-sm">Pending Withdrawals</p>
-                <p className="text-white font-bold text-lg">
+                <p className="text-red-800 text-xs sm:text-sm font-semibold">
+                  Pending Withdrawals
+                </p>
+                <p className="text-red-900 font-bold text-sm sm:text-lg">
                   {withdrawalsPending}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-purple-900/20 border-purple-600/30">
-          <CardContent className="p-4">
+        <Card className="wood-card bg-gradient-to-r from-purple-50 to-purple-100 border-purple-700">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-purple-400" />
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-purple-800" />
               <div>
-                <p className="text-purple-300 text-sm">Total Transactions</p>
-                <p className="text-white font-bold text-lg">
+                <p className="text-purple-800 text-xs sm:text-sm font-semibold">
+                  Total Transactions
+                </p>
+                <p className="text-purple-900 font-bold text-sm sm:text-lg">
                   {filteredTransactions.length}
                 </p>
               </div>
