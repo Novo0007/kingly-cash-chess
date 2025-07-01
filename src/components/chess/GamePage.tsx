@@ -618,11 +618,9 @@ export const GamePage = () => {
 
       {/* Reactions (Mobile Only) */}
       {isMobile && gameId && (
-        <MobileGameReactions 
-          open={showMobileReactions}
-          onOpenChange={setShowMobileReactions}
-          gameId={gameId}
-        />
+        <div className="fixed bottom-4 right-4">
+          <MobileGameReactions gameId={gameId} />
+        </div>
       )}
     </MobileContainer>
   );
