@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,7 +61,7 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
         .eq("id", gameId);
 
       if (error) throw error;
-      
+
       toast.success("Game ended successfully");
       fetchGames();
     } catch (error) {
@@ -88,10 +87,12 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
 
   if (loading) {
     return (
-      <Card className="bg-slate-800 border-slate-600">
-        <CardContent className="p-6 text-center">
-          <div className="w-8 h-8 border-3 border-orange-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white">Loading games...</p>
+      <Card className="wood-card border-amber-600">
+        <CardContent className="p-4 sm:p-6 text-center">
+          <div className="w-6 h-6 sm:w-8 sm:h-8 border-3 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-amber-900 text-sm sm:text-base">
+            Loading games...
+          </p>
         </CardContent>
       </Card>
     );
@@ -107,7 +108,9 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
               <Crown className="h-5 w-5 text-blue-400" />
               <div>
                 <p className="text-blue-300 text-sm">Chess Games</p>
-                <p className="text-white font-bold text-lg">{chessGames.length}</p>
+                <p className="text-white font-bold text-lg">
+                  {chessGames.length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -118,7 +121,9 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
               <Dice6 className="h-5 w-5 text-orange-400" />
               <div>
                 <p className="text-orange-300 text-sm">Ludo Games</p>
-                <p className="text-white font-bold text-lg">{ludoGames.length}</p>
+                <p className="text-white font-bold text-lg">
+                  {ludoGames.length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -130,8 +135,8 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
               <div>
                 <p className="text-green-300 text-sm">Active Games</p>
                 <p className="text-white font-bold text-lg">
-                  {chessGames.filter(g => g.game_status === "active").length + 
-                   ludoGames.filter(g => g.game_status === "active").length}
+                  {chessGames.filter((g) => g.game_status === "active").length +
+                    ludoGames.filter((g) => g.game_status === "active").length}
                 </p>
               </div>
             </div>
@@ -144,8 +149,9 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
               <div>
                 <p className="text-purple-300 text-sm">Waiting</p>
                 <p className="text-white font-bold text-lg">
-                  {chessGames.filter(g => g.game_status === "waiting").length + 
-                   ludoGames.filter(g => g.game_status === "waiting").length}
+                  {chessGames.filter((g) => g.game_status === "waiting")
+                    .length +
+                    ludoGames.filter((g) => g.game_status === "waiting").length}
                 </p>
               </div>
             </div>
@@ -164,7 +170,11 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
               size="sm"
               variant={activeTab === "chess" ? "default" : "outline"}
               onClick={() => setActiveTab("chess")}
-              className={activeTab === "chess" ? "bg-blue-600" : "text-slate-300 border-slate-600"}
+              className={
+                activeTab === "chess"
+                  ? "bg-blue-600"
+                  : "text-slate-300 border-slate-600"
+              }
             >
               <Crown className="h-4 w-4 mr-2" />
               Chess Games
@@ -173,7 +183,11 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
               size="sm"
               variant={activeTab === "ludo" ? "default" : "outline"}
               onClick={() => setActiveTab("ludo")}
-              className={activeTab === "ludo" ? "bg-orange-600" : "text-slate-300 border-slate-600"}
+              className={
+                activeTab === "ludo"
+                  ? "bg-orange-600"
+                  : "text-slate-300 border-slate-600"
+              }
             >
               <Dice6 className="h-4 w-4 mr-2" />
               Ludo Games
@@ -182,109 +196,121 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {activeTab === "chess" ? (
-              chessGames.map((game) => (
-                <Card key={game.id} className="bg-slate-700 border-slate-600">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <Crown className="h-6 w-6 text-blue-400" />
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-white font-semibold">
-                              {game.game_name || `Game ${game.id.slice(0, 8)}`}
-                            </span>
-                            <Badge className={getStatusColor(game.game_status || "waiting")}>
-                              {game.game_status}
-                            </Badge>
+            {activeTab === "chess"
+              ? chessGames.map((game) => (
+                  <Card key={game.id} className="bg-slate-700 border-slate-600">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <Crown className="h-6 w-6 text-blue-400" />
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-white font-semibold">
+                                {game.game_name ||
+                                  `Game ${game.id.slice(0, 8)}`}
+                              </span>
+                              <Badge
+                                className={getStatusColor(
+                                  game.game_status || "waiting",
+                                )}
+                              >
+                                {game.game_status}
+                              </Badge>
+                            </div>
+                            <p className="text-slate-400 text-sm">
+                              Entry Fee: ₹{Number(game.entry_fee).toFixed(2)} •
+                              Prize: ₹{Number(game.prize_amount).toFixed(2)}
+                            </p>
+                            <p className="text-slate-300 text-sm">
+                              Current Turn: {game.current_turn} • Time Control:{" "}
+                              {game.time_control}s
+                            </p>
                           </div>
-                          <p className="text-slate-400 text-sm">
-                            Entry Fee: ₹{Number(game.entry_fee).toFixed(2)} • 
-                            Prize: ₹{Number(game.prize_amount).toFixed(2)}
-                          </p>
-                          <p className="text-slate-300 text-sm">
-                            Current Turn: {game.current_turn} • 
-                            Time Control: {game.time_control}s
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <p className="text-white text-sm">
-                            Created: {new Date(game.created_at || '').toLocaleDateString()}
-                          </p>
-                          <p className="text-slate-400 text-xs">
-                            {game.id.slice(0, 8)}...
-                          </p>
                         </div>
 
-                        {game.game_status === "active" && (
-                          <Button
-                            size="sm"
-                            onClick={() => endGame(game.id, "chess")}
-                            className="bg-red-600 hover:bg-red-700"
-                          >
-                            End Game
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              ludoGames.map((game) => (
-                <Card key={game.id} className="bg-slate-700 border-slate-600">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <Dice6 className="h-6 w-6 text-orange-400" />
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-white font-semibold">
-                              {game.game_name || `Ludo ${game.id.slice(0, 8)}`}
-                            </span>
-                            <Badge className={getStatusColor(game.game_status)}>
-                              {game.game_status}
-                            </Badge>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="text-white text-sm">
+                              Created:{" "}
+                              {new Date(
+                                game.created_at || "",
+                              ).toLocaleDateString()}
+                            </p>
+                            <p className="text-slate-400 text-xs">
+                              {game.id.slice(0, 8)}...
+                            </p>
                           </div>
-                          <p className="text-slate-400 text-sm">
-                            Entry Fee: ₹{Number(game.entry_fee).toFixed(2)} • 
-                            Prize: ₹{Number(game.prize_amount).toFixed(2)}
-                          </p>
-                          <p className="text-slate-300 text-sm">
-                            Players: {game.current_players}/{game.max_players} • 
-                            Current Turn: {game.current_turn}
-                          </p>
+
+                          {game.game_status === "active" && (
+                            <Button
+                              size="sm"
+                              onClick={() => endGame(game.id, "chess")}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              End Game
+                            </Button>
+                          )}
                         </div>
                       </div>
-
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <p className="text-white text-sm">
-                            Created: {new Date(game.created_at || '').toLocaleDateString()}
-                          </p>
-                          <p className="text-slate-400 text-xs">
-                            {game.id.slice(0, 8)}...
-                          </p>
+                    </CardContent>
+                  </Card>
+                ))
+              : ludoGames.map((game) => (
+                  <Card key={game.id} className="bg-slate-700 border-slate-600">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <Dice6 className="h-6 w-6 text-orange-400" />
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-white font-semibold">
+                                {game.game_name ||
+                                  `Ludo ${game.id.slice(0, 8)}`}
+                              </span>
+                              <Badge
+                                className={getStatusColor(game.game_status)}
+                              >
+                                {game.game_status}
+                              </Badge>
+                            </div>
+                            <p className="text-slate-400 text-sm">
+                              Entry Fee: ₹{Number(game.entry_fee).toFixed(2)} •
+                              Prize: ₹{Number(game.prize_amount).toFixed(2)}
+                            </p>
+                            <p className="text-slate-300 text-sm">
+                              Players: {game.current_players}/{game.max_players}{" "}
+                              • Current Turn: {game.current_turn}
+                            </p>
+                          </div>
                         </div>
 
-                        {game.game_status === "active" && (
-                          <Button
-                            size="sm"
-                            onClick={() => endGame(game.id, "ludo")}
-                            className="bg-red-600 hover:bg-red-700"
-                          >
-                            End Game
-                          </Button>
-                        )}
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="text-white text-sm">
+                              Created:{" "}
+                              {new Date(
+                                game.created_at || "",
+                              ).toLocaleDateString()}
+                            </p>
+                            <p className="text-slate-400 text-xs">
+                              {game.id.slice(0, 8)}...
+                            </p>
+                          </div>
+
+                          {game.game_status === "active" && (
+                            <Button
+                              size="sm"
+                              onClick={() => endGame(game.id, "ludo")}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              End Game
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
+                    </CardContent>
+                  </Card>
+                ))}
           </div>
         </CardContent>
       </Card>
