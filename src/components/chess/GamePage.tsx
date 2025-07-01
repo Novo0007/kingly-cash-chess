@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ChessBoard } from "./ChessBoard";
 import { ChatSystem } from "../chat/ChatSystem";
@@ -56,17 +56,135 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const { isMobile } = useDeviceType();
 
-  useEffect(() => {
-    getCurrentUser();
-    fetchGame();
+  // Refs for cleanup
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const gameSubscriptionRef = useRef<any>(null);
 
-    // Improved refresh intervals - less aggressive polling
-    const refreshInterval = isMobile ? 5000 : 4000; // Reduced frequency
-    const autoRefreshInterval = setInterval(() => {
-      if (!loading && !isUpdating) {
-        fetchGame();
+  const cleanup = useCallback(() => {
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+      refreshIntervalRef.current = null;
+    }
+    if (gameSubscriptionRef.current) {
+      try {
+        supabase.removeChannel(gameSubscriptionRef.current);
+      } catch (error) {
+        console.warn("Error removing game subscription:", error);
       }
-    }, refreshInterval);
+      gameSubscriptionRef.current = null;
+    }
+  }, []);
+
+  const fetchGame = useCallback(async () => {
+    if (isUpdating) return;
+    
+    try {
+      console.log("Fetching game data for:", gameId);
+      const { data: gameData, error } = await supabase
+        .from("chess_games")
+        .select("*")
+        .eq("id", gameId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching game:", error);
+        if (error.code !== 'PGRST116') {
+          toast.error("Error loading game");
+        }
+        return;
+      }
+
+      const gameWithPlayers: ChessGame = { ...gameData };
+
+      // Fetch player data in parallel for faster loading
+      const playerPromises = [];
+      
+      if (gameData.white_player_id) {
+        playerPromises.push(
+          supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", gameData.white_player_id)
+            .single()
+            .then(({ data }) => ({ type: 'white', data }))
+        );
+      }
+
+      if (gameData.black_player_id) {
+        playerPromises.push(
+          supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", gameData.black_player_id)
+            .single()
+            .then(({ data }) => ({ type: 'black', data }))
+        );
+      }
+
+      const playerResults = await Promise.all(playerPromises);
+      
+      playerResults.forEach(result => {
+        if (result.type === 'white') {
+          gameWithPlayers.white_player = result.data;
+        } else {
+          gameWithPlayers.black_player = result.data;
+        }
+      });
+
+      setGame(gameWithPlayers);
+
+      // Check for game end conditions
+      if (gameWithPlayers.game_status === "completed" && !showGameEndDialog) {
+        let message = "";
+        let type: "win" | "draw" | "disconnect" = "win";
+
+        if (gameWithPlayers.game_result === "draw") {
+          message = "Game ended in a draw!";
+          type = "draw";
+        } else if (gameWithPlayers.game_result === "abandoned") {
+          message =
+            gameWithPlayers.winner_id === currentUser
+              ? "Opponent abandoned the game. You win!"
+              : "You abandoned the game. Opponent wins!";
+          type = "disconnect";
+        } else if (gameWithPlayers.winner_id === currentUser) {
+          message = "Congratulations! You won! 🎉";
+          type = "win";
+        } else {
+          message = "Game over. Better luck next time!";
+          type = "win";
+        }
+
+        setGameEndMessage(message);
+        setGameEndType(type);
+        setShowGameEndDialog(true);
+      }
+
+      // Auto-start game if both players are present and status is still waiting
+      if (
+        gameWithPlayers.game_status === "waiting" &&
+        gameWithPlayers.white_player_id &&
+        gameWithPlayers.black_player_id
+      ) {
+        console.log("Both players present, starting game...");
+        await supabase
+          .from("chess_games")
+          .update({
+            game_status: "active" as any,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", gameId);
+      }
+    } catch (error) {
+      console.error("Error fetching game:", error);
+      toast.error("Error loading game");
+    } finally {
+      setLoading(false);
+    }
+  }, [gameId, currentUser, showGameEndDialog, isUpdating]);
+
+  const setupGameSubscription = useCallback(() => {
+    if (gameSubscriptionRef.current) return;
 
     const gameSubscription = supabase
       .channel(`game_${gameId}`)
@@ -81,7 +199,6 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         (payload) => {
           console.log("Real-time game update received:", payload);
           if (payload.new) {
-            // Immediate update for real-time changes
             fetchGame();
           }
         },
@@ -90,18 +207,36 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         console.log("Game subscription status:", status);
       });
 
-    return () => {
-      clearInterval(autoRefreshInterval);
-      supabase.removeChannel(gameSubscription);
-    };
-  }, [gameId, loading, isUpdating, isMobile]);
+    gameSubscriptionRef.current = gameSubscription;
+  }, [gameId, fetchGame]);
 
-  const getCurrentUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    setCurrentUser(user?.id || null);
-  };
+  const getCurrentUser = useCallback(async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user?.id || null);
+    } catch (error) {
+      console.error("Error getting current user:", error);
+      setCurrentUser(null);
+    }
+  }, []);
 
-  const handleTimeUp = async (player: 'white' | 'black') => {
+  useEffect(() => {
+    getCurrentUser();
+    fetchGame();
+    setupGameSubscription();
+
+    // Set up polling interval with cleanup
+    const refreshInterval = isMobile ? 6000 : 5000;
+    refreshIntervalRef.current = setInterval(() => {
+      if (!loading && !isUpdating) {
+        fetchGame();
+      }
+    }, refreshInterval);
+
+    return cleanup;
+  }, [getCurrentUser, fetchGame, setupGameSubscription, loading, isUpdating, isMobile, cleanup]);
+
+  const handleTimeUp = useCallback(async (player: 'white' | 'black') => {
     if (!game || game.game_status !== 'active') return;
 
     const winnerId = player === 'white' ? game.black_player_id : game.white_player_id;
@@ -113,9 +248,9 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     setGameEndMessage(`${player === 'white' ? 'White' : 'Black'} ran out of time! ${player === 'white' ? 'Black' : 'White'} wins!`);
     setShowGameEndDialog(true);
     toast.success(`${player === 'white' ? 'Black' : 'White'} wins on time!`);
-  };
+  }, [game]);
 
-  const handlePlayerDisconnected = async (playerId: string) => {
+  const handlePlayerDisconnected = useCallback(async (playerId: string) => {
     if (!game || game.game_status !== 'active') return;
 
     const winnerId = playerId === game.white_player_id ? game.black_player_id : game.white_player_id;
@@ -126,7 +261,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     setGameEndMessage(playerId === currentUser ? "You forfeited the game!" : "Opponent forfeited! You win!");
     setShowGameEndDialog(true);
     toast.success("Game won by forfeit!");
-  };
+  }, [game, currentUser]);
 
   const completeGame = async (
     winnerId: string | null,
@@ -344,112 +479,6 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     }
   };
 
-  const fetchGame = async () => {
-    if (isUpdating) return; // Prevent concurrent updates
-    
-    try {
-      console.log("Fetching game data for:", gameId);
-      const { data: gameData, error } = await supabase
-        .from("chess_games")
-        .select("*")
-        .eq("id", gameId)
-        .single();
-
-      if (error) {
-        console.error("Error fetching game:", error);
-        toast.error("Error loading game");
-        return;
-      }
-
-      const gameWithPlayers: ChessGame = { ...gameData };
-
-      // Fetch player data in parallel for faster loading
-      const playerPromises = [];
-      
-      if (gameData.white_player_id) {
-        playerPromises.push(
-          supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", gameData.white_player_id)
-            .single()
-            .then(({ data }) => ({ type: 'white', data }))
-        );
-      }
-
-      if (gameData.black_player_id) {
-        playerPromises.push(
-          supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", gameData.black_player_id)
-            .single()
-            .then(({ data }) => ({ type: 'black', data }))
-        );
-      }
-
-      const playerResults = await Promise.all(playerPromises);
-      
-      playerResults.forEach(result => {
-        if (result.type === 'white') {
-          gameWithPlayers.white_player = result.data;
-        } else {
-          gameWithPlayers.black_player = result.data;
-        }
-      });
-
-      setGame(gameWithPlayers);
-
-      // Check for game end conditions
-      if (gameWithPlayers.game_status === "completed" && !showGameEndDialog) {
-        let message = "";
-        let type: "win" | "draw" | "disconnect" = "win";
-
-        if (gameWithPlayers.game_result === "draw") {
-          message = "Game ended in a draw!";
-          type = "draw";
-        } else if (gameWithPlayers.game_result === "abandoned") {
-          message =
-            gameWithPlayers.winner_id === currentUser
-              ? "Opponent abandoned the game. You win!"
-              : "You abandoned the game. Opponent wins!";
-          type = "disconnect";
-        } else if (gameWithPlayers.winner_id === currentUser) {
-          message = "Congratulations! You won! 🎉";
-          type = "win";
-        } else {
-          message = "Game over. Better luck next time!";
-          type = "win";
-        }
-
-        setGameEndMessage(message);
-        setGameEndType(type);
-        setShowGameEndDialog(true);
-      }
-
-      // Auto-start game if both players are present and status is still waiting
-      if (
-        gameWithPlayers.game_status === "waiting" &&
-        gameWithPlayers.white_player_id &&
-        gameWithPlayers.black_player_id
-      ) {
-        console.log("Both players present, starting game...");
-        await supabase
-          .from("chess_games")
-          .update({
-            game_status: "active" as any,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", gameId);
-      }
-    } catch (error) {
-      console.error("Error fetching game:", error);
-      toast.error("Error loading game");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handlePasswordSubmit = async () => {
     if (!game) return;
 
@@ -462,7 +491,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     }
   };
 
-  const handleMove = async (from: string, to: string, promotion?: string) => {
+  const handleMove = useCallback(async (from: string, to: string, promotion?: string) => {
     if (!game || !currentUser || isUpdating) {
       console.log("No game, user found, or update in progress");
       return;
@@ -619,7 +648,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
     } finally {
       setIsUpdating(false);
     }
-  };
+  }, [game, currentUser, isUpdating, gameId, fetchGame]);
 
   const isSpectator = () => {
     if (!game || !currentUser) return true;

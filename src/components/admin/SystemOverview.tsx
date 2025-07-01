@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -27,11 +28,7 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchSystemStats();
-  }, []);
-
-  const fetchSystemStats = async () => {
+  const fetchSystemStats = useCallback(async () => {
     try {
       const [
         usersResult,
@@ -72,7 +69,7 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
           (chessGamesResult.count || 0) + (ludoGamesResult.count || 0),
         totalTransactions: transactionsResult.count || 0,
         totalRevenue,
-        todayRevenue: 0, // We'll implement this later
+        todayRevenue: 0,
         pendingWithdrawals: withdrawalsResult.count || 0,
       });
     } catch (error) {
@@ -80,7 +77,16 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchSystemStats();
+    
+    // Set up periodic refresh
+    const interval = setInterval(fetchSystemStats, 30000); // Every 30 seconds
+    
+    return () => clearInterval(interval);
+  }, [fetchSystemStats]);
 
   if (loading) {
     return (
