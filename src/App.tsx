@@ -142,27 +142,27 @@ const App = () => {
         {/* Main Content Container */}
         <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-6 sm:p-8">
           <div className="text-center space-y-10 sm:space-y-12 max-w-lg sm:max-w-xl mx-auto w-full">
-            {/* Revolutionary Logo Design */}
+            {/* Natural Wood Logo Design */}
             <div className="relative group">
-              {/* Outer Glow Ring - Enhanced Vibrancy */}
-              <div className="absolute -inset-10 bg-gradient-to-r from-purple-500/30 via-pink-500/30 via-cyan-500/30 to-green-500/30 rounded-full blur-3xl group-hover:blur-4xl transition-all duration-1000"></div>
+              {/* Outer Wood Glow */}
+              <div className="absolute -inset-10 bg-gradient-to-r from-amber-600/30 via-orange-600/30 via-green-700/30 to-yellow-600/30 rounded-full blur-3xl group-hover:blur-4xl transition-all duration-1000"></div>
 
               {/* Logo Container */}
               <div className="relative">
-                <div className="electric-glass backdrop-blur-2xl rounded-full p-8 sm:p-12 border border-purple-300/40">
-                  {/* Rotating Border - More Vibrant */}
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 via-cyan-500 to-green-500 opacity-85 blur-sm"></div>
-                  <div className="absolute inset-0.5 rounded-full bg-slate-900/85 backdrop-blur-xl"></div>
+                <div className="wood-glass backdrop-blur-lg rounded-full p-8 sm:p-12 border-2 border-amber-700/60 wood-plank">
+                  {/* Wood Border */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-700 via-orange-600 via-green-700 to-yellow-700 opacity-60 blur-sm"></div>
+                  <div className="absolute inset-1 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 backdrop-blur-xl"></div>
 
-                  {/* Logo Icon - Enhanced with Vibrant Colors */}
+                  {/* Logo Icon - Wood Themed */}
                   <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto">
                     <div
-                      className="absolute inset-0 bg-gradient-to-br from-purple-400 via-pink-500 via-cyan-400 to-green-400 rounded-3xl electric-pulse transform rotate-45"
+                      className="absolute inset-0 bg-gradient-to-br from-amber-600 via-orange-700 via-green-700 to-yellow-600 rounded-3xl wood-glow transform rotate-45"
                       style={{ filter: "brightness(1.1)" }}
                     ></div>
-                    <div className="absolute inset-3 bg-gradient-to-br from-white to-purple-50 rounded-2xl flex items-center justify-center transform -rotate-45">
+                    <div className="absolute inset-3 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl flex items-center justify-center transform -rotate-45 border border-amber-300">
                       <svg
-                        className="w-10 h-10 sm:w-12 sm:h-12 text-blue-600"
+                        className="w-10 h-10 sm:w-12 sm:h-12 text-amber-800"
                         fill="currentColor"
                         viewBox="0 0 24 24"
                       >
