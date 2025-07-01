@@ -40,7 +40,12 @@ interface GameData extends Tables<'chess_games'> {
   black_time_updated_at?: string;
 }
 
-export const GamePage = () => {
+interface GamePageProps {
+  gameId?: string;
+  onBack?: () => void;
+}
+
+export const GamePage = ({ gameId: propGameId, onBack }: GamePageProps) => {
   const [game, setGame] = useState<GameData | null>(null);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,24 +60,35 @@ export const GamePage = () => {
   const [showMobileReactions, setShowMobileReactions] = useState(false);
   const [gameEndProcessed, setGameEndProcessed] = useState(false);
   
-  const { gameId } = useParams();
+  const { gameId: urlGameId } = useParams();
   const navigate = useNavigate();
   const { isMobile } = useDeviceType();
   const gameSubscriptionRef = useRef<any>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Use prop gameId first, fallback to URL parameter
+  const gameId = propGameId || urlGameId;
+
+  const handleBack = useCallback(() => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigate('/');
+    }
+  }, [onBack, navigate]);
 
   useEffect(() => {
     // Check if gameId is valid before proceeding
     if (!gameId || gameId === 'undefined') {
       console.error('Invalid gameId:', gameId);
       toast.error('Invalid game ID');
-      navigate('/');
+      handleBack();
       return;
     }
     
     fetchGame();
     fetchUser();
-  }, [gameId, navigate]);
+  }, [gameId, handleBack]);
 
   useEffect(() => {
     if (game && currentUser) {
@@ -170,8 +186,8 @@ export const GamePage = () => {
     } catch (error) {
       console.error('Error fetching game:', error);
       toast.error('Failed to load game');
-      // Redirect to home if game doesn't exist
-      setTimeout(() => navigate('/'), 2000);
+      // Redirect back after a delay
+      setTimeout(() => handleBack(), 2000);
     } finally {
       setLoading(false);
     }
@@ -516,11 +532,11 @@ export const GamePage = () => {
           <CardContent className="p-6 text-center">
             <p className="text-muted-foreground">Game not found</p>
             <Button 
-              onClick={() => navigate('/')} 
+              onClick={handleBack} 
               className="mt-4"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              Back
             </Button>
           </CardContent>
         </Card>

@@ -181,6 +181,7 @@ const Index = () => {
 
   const handleBackToGameSelection = useCallback(() => {
     setSelectedGameType(null);
+    setCurrentGameId(null);
     setCurrentView("games");
   }, []);
 
@@ -236,7 +237,7 @@ const Index = () => {
         return currentGameId ? (
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
             <div className="xl:col-span-3">
-              <GamePage />
+              <GamePage gameId={currentGameId} onBack={handleBackToLobby} />
             </div>
             <div className="hidden xl:block">
               <ChatSystem gameId={currentGameId} />
