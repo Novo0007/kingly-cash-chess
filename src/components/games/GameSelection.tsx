@@ -164,7 +164,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 className={`absolute -inset-1 bg-gradient-to-r ${game.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-500`}
               ></div>
 
-              <Card className="relative bg-white/95 backdrop-blur-sm border-2 border-gray-100 rounded-3xl shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl overflow-hidden">
+              <Card className="relative bg-amber-50/95 backdrop-blur-sm border-2 border-amber-200 rounded-2xl wood-shadow-deep transition-all duration-300 hover:scale-[1.02] hover:wood-shadow-warm overflow-hidden wood-plank">
                 {/* Background Pattern */}
                 <div
                   className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${game.lightGradient} rounded-bl-[100px] opacity-20`}
