@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -71,6 +72,20 @@ export const WalletManager = () => {
         () => {
           console.log("New transaction, refreshing...");
           fetchTransactions();
+          fetchWallet(); // Also refresh wallet to get updated balance
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "transactions",
+        },
+        () => {
+          console.log("Transaction updated, refreshing...");
+          fetchTransactions();
+          fetchWallet();
         },
       )
       .subscribe();
@@ -108,6 +123,7 @@ export const WalletManager = () => {
         "Error loading wallet: " + (error.message || "Unknown error"),
       );
     } else {
+      console.log("Wallet data fetched:", data);
       setWallet(data);
     }
   };
@@ -146,7 +162,7 @@ export const WalletManager = () => {
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
-      .limit(10);
+      .limit(20); // Increased limit to show more transactions
 
     if (error) {
       console.error("Error fetching transactions:", error.message || error);
@@ -154,6 +170,7 @@ export const WalletManager = () => {
         "Error loading transactions: " + (error.message || "Unknown error"),
       );
     } else {
+      console.log("Transactions fetched:", data);
       setTransactions(data || []);
     }
   };
@@ -197,7 +214,7 @@ export const WalletManager = () => {
             if (!user) return;
 
             // Create transaction record
-            const { error } = await supabase.from("transactions").insert({
+            const { error: transactionError } = await supabase.from("transactions").insert({
               user_id: user.id,
               transaction_type: "deposit",
               amount: depositAmount,
@@ -206,9 +223,12 @@ export const WalletManager = () => {
               razorpay_payment_id: response.razorpay_payment_id,
             });
 
-            if (error) throw error;
+            if (transactionError) {
+              console.error("Transaction insert error:", transactionError);
+              throw transactionError;
+            }
 
-            // Update wallet balance
+            // Update wallet balance using the correct increment function
             const { error: walletError } = await supabase.rpc(
               "increment_decimal",
               {
@@ -219,12 +239,15 @@ export const WalletManager = () => {
               },
             );
 
-            if (walletError) throw walletError;
+            if (walletError) {
+              console.error("Wallet update error:", walletError);
+              throw walletError;
+            }
 
             toast.success(`💰 Successfully deposited ₹${depositAmount}!`);
             setAmount("");
-            fetchWallet();
-            fetchTransactions();
+            await fetchWallet();
+            await fetchTransactions();
           } catch (error) {
             console.error("Payment confirmation error:", error);
             toast.error("Payment confirmation failed. Please contact support.");
@@ -515,7 +538,7 @@ export const WalletManager = () => {
               </div>
             ) : (
               <div className="space-y-3">
-                {transactions.slice(0, 10).map((transaction) => (
+                {transactions.map((transaction) => (
                   <div
                     key={transaction.id}
                     className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 bg-slate-700/30 rounded-lg border border-slate-600/50 hover:bg-slate-700/50 transition-colors gap-2 sm:gap-4"
@@ -529,11 +552,11 @@ export const WalletManager = () => {
                         <p className="text-xs text-slate-400">
                           {new Date(
                             transaction.created_at,
-                          ).toLocaleDateString()}{" "}
+                          ).toLocaleDateString("en-IN")}{" "}
                           •{" "}
                           {new Date(
                             transaction.created_at,
-                          ).toLocaleTimeString()}
+                          ).toLocaleTimeString("en-IN")}
                         </p>
                         {transaction.description && (
                           <p className="text-xs text-slate-500 truncate max-w-[200px] mt-1">
@@ -552,7 +575,7 @@ export const WalletManager = () => {
                         }`}
                       >
                         {getTransactionSign(transaction.transaction_type)}₹
-                        {transaction.amount.toFixed(2)}
+                        {Number(transaction.amount).toFixed(2)}
                       </p>
                       <Badge
                         className={`${getStatusColor(transaction.status)} border text-xs mt-1`}
