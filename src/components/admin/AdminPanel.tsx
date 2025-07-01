@@ -60,10 +60,10 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
+      <div className="flex items-center justify-center p-4 sm:p-8">
         <div className="text-center space-y-4">
-          <div className="w-8 h-8 border-3 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-white">Loading admin panel...</p>
+          <div className="w-8 h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-amber-900 font-body">Loading admin lodge...</p>
         </div>
       </div>
     );
