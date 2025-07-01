@@ -257,26 +257,26 @@ const App = () => {
               </div>
             </div>
 
-            {/* Interactive Feature Cards - Enhanced Vibrancy */}
+            {/* Interactive Feature Cards - Wood Theme */}
             <div className="grid grid-cols-3 gap-4 sm:gap-6 mt-12">
               {[
                 {
                   icon: "🔒",
                   title: "Secure",
-                  desc: "End-to-end encryption",
-                  gradient: "from-purple-500/25 to-pink-500/25",
+                  desc: "Ironclad protection",
+                  gradient: "from-amber-600/25 to-orange-600/25",
                 },
                 {
                   icon: "👥",
                   title: "Multiplayer",
-                  desc: "Real-time battles",
-                  gradient: "from-cyan-500/25 to-blue-500/25",
+                  desc: "Lodge gatherings",
+                  gradient: "from-green-700/25 to-emerald-700/25",
                 },
                 {
                   icon: "⚡",
-                  title: "Lightning",
-                  desc: "Ultra-fast gaming",
-                  gradient: "from-green-500/25 to-emerald-500/25",
+                  title: "Swift",
+                  desc: "Smooth as oak",
+                  gradient: "from-yellow-600/25 to-amber-600/25",
                 },
               ].map((feature, index) => (
                 <div key={index} className="relative group tap-target">
@@ -284,21 +284,21 @@ const App = () => {
                     className={`absolute -inset-1 bg-gradient-to-r ${feature.gradient} rounded-xl blur opacity-0 group-hover:opacity-100 transition-all duration-500`}
                   ></div>
                   <div
-                    className="relative electric-glass backdrop-blur-xl p-4 sm:p-6 rounded-xl border border-purple-300/25 hover:border-purple-300/50 transition-all duration-300"
-                    style={{ background: "rgba(139, 69, 193, 0.1)" }}
+                    className="relative wood-glass backdrop-blur-xl p-4 sm:p-6 rounded-xl border border-amber-600/25 hover:border-amber-600/50 transition-all duration-300 wood-plank"
+                    style={{ background: "rgba(139, 69, 19, 0.1)" }}
                   >
                     <div className="text-2xl sm:text-3xl mb-2 filter brightness-110">
                       {feature.icon}
                     </div>
                     <h3
-                      className="text-xs sm:text-sm font-bold text-white font-heading"
-                      style={{ textShadow: "0 0 8px rgba(255, 255, 255, 0.3)" }}
+                      className="text-xs sm:text-sm font-bold text-amber-100 font-heading"
+                      style={{ textShadow: "0 0 8px rgba(245, 158, 11, 0.3)" }}
                     >
                       {feature.title}
                     </h3>
                     <p
-                      className="text-xs text-purple-200 font-body mt-1"
-                      style={{ textShadow: "0 0 4px rgba(196, 181, 253, 0.5)" }}
+                      className="text-xs text-amber-200 font-body mt-1"
+                      style={{ textShadow: "0 0 4px rgba(245, 158, 11, 0.5)" }}
                     >
                       {feature.desc}
                     </p>
