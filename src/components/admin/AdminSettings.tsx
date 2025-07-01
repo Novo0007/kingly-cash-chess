@@ -253,28 +253,30 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
             {adminUsers.map((admin) => (
               <Card
                 key={admin.id}
-                className="bg-amber-50/30 border border-amber-300"
+                className="bg-muted/20 border border-border rounded-xl"
               >
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-amber-600 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-sm">
                         {admin.email.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <h4 className="font-medium text-amber-900 text-sm">
+                        <h4 className="font-medium text-foreground text-sm">
                           {admin.email}
                         </h4>
                         <div className="flex items-center gap-2 mt-1">
                           <Badge
-                            className={`${getRoleColor(admin.role)} text-xs`}
+                            className={`${getRoleColor(admin.role)} text-xs rounded-full`}
                           >
                             {admin.role.replace("_", " ").toUpperCase()}
                           </Badge>
                           <Badge
-                            className={`text-xs ${
-                              admin.is_active ? "bg-green-600" : "bg-red-600"
-                            } text-white`}
+                            className={`text-xs rounded-full ${
+                              admin.is_active
+                                ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                                : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                            }`}
                           >
                             {admin.is_active ? "Active" : "Inactive"}
                           </Badge>
@@ -286,14 +288,11 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
                       admin.id !== adminUser.id && (
                         <Button
                           size="sm"
+                          variant={admin.is_active ? "destructive" : "default"}
                           onClick={() =>
                             toggleAdminStatus(admin.id, admin.is_active)
                           }
-                          className={`text-xs ${
-                            admin.is_active
-                              ? "bg-red-600 hover:bg-red-700"
-                              : "bg-green-600 hover:bg-green-700"
-                          }`}
+                          className="text-xs"
                         >
                           {admin.is_active ? "Deactivate" : "Activate"}
                         </Button>
