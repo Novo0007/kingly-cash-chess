@@ -542,40 +542,44 @@
   @apply electric-shimmer;
 }
 
-/* Enhanced professional styling for components */
-.electric-card {
+/* Enhanced natural styling for components */
+.wood-card {
   background: linear-gradient(
     135deg,
-    hsl(var(--electric-50)) 0%,
-    hsl(var(--electric-100)) 100%
+    hsl(var(--wood-lightest)) 0%,
+    hsl(var(--wood-cream)) 100%
   );
-  border: 1px solid hsl(var(--electric-200));
-  border-radius: 12px;
+  border: 2px solid hsl(var(--wood-medium));
+  border-radius: 8px;
   box-shadow:
-    0 4px 20px rgba(0, 150, 255, 0.08),
-    0 1px 3px rgba(0, 150, 255, 0.06);
-  font-family: "Rubik", system-ui, sans-serif;
+    0 4px 12px rgba(62, 39, 35, 0.15),
+    0 1px 3px rgba(62, 39, 35, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  font-family: "Inter", system-ui, sans-serif;
+  position: relative;
 }
 
-.electric-card:hover {
+.wood-card:hover {
   box-shadow:
-    0 8px 30px rgba(0, 150, 255, 0.12),
-    0 4px 12px rgba(0, 150, 255, 0.08);
-  transform: translateY(-2px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    0 6px 20px rgba(62, 39, 35, 0.2),
+    0 2px 6px rgba(62, 39, 35, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.electric-input {
-  background: hsl(var(--electric-50));
-  border: 2px solid hsl(var(--electric-200));
-  color: hsl(var(--electric-text));
-  font-family: "Rubik", system-ui, sans-serif;
+.wood-input {
+  background: hsl(var(--wood-cream));
+  border: 2px solid hsl(var(--wood-medium));
+  color: hsl(var(--wood-charcoal));
+  font-family: "Inter", system-ui, sans-serif;
   font-weight: 400;
+  border-radius: 6px;
 }
 
-.electric-input:focus {
-  border-color: hsl(var(--electric-500));
-  box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.1);
+.wood-input:focus {
+  border-color: hsl(var(--wood-dark));
+  box-shadow: 0 0 0 3px rgba(101, 67, 33, 0.1);
 }
 
 /* Backwards compatibility */
