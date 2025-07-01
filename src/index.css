@@ -115,8 +115,7 @@
 
   .chess-piece-premium:hover {
     transform: scale(1.1) translateY(-2px);
-    filter:
-      drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4))
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4))
       drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
   }
 
@@ -136,6 +135,8 @@
     }
   }
 }
+
+@layer base {
   body {
     @apply bg-background text-foreground;
     font-family:
