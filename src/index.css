@@ -638,10 +638,16 @@
 
 /* Backwards compatibility */
 .lavender-card {
-  @apply electric-card;
+  @apply wood-card;
 }
 .lavender-input {
-  @apply electric-input;
+  @apply wood-input;
+}
+.electric-card {
+  @apply wood-card;
+}
+.electric-input {
+  @apply wood-input;
 }
 
 /* Enhanced mobile-friendly tap targets */
