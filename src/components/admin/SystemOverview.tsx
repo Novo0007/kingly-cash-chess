@@ -104,43 +104,49 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
       title: "Total Users",
       value: stats.totalUsers.toLocaleString(),
       icon: Users,
-      color: "text-blue-400",
-      bgColor: "bg-blue-900/20 border-blue-600/30",
+      color: "text-green-800",
+      bgColor:
+        "wood-card bg-gradient-to-br from-green-50 to-green-100 border-green-700",
     },
     {
       title: "Active Games",
       value: stats.activeGames.toLocaleString(),
       icon: Gamepad2,
-      color: "text-green-400",
-      bgColor: "bg-green-900/20 border-green-600/30",
+      color: "text-amber-800",
+      bgColor:
+        "wood-card bg-gradient-to-br from-amber-50 to-amber-100 border-amber-700",
     },
     {
       title: "Total Transactions",
       value: stats.totalTransactions.toLocaleString(),
       icon: CreditCard,
-      color: "text-purple-400",
-      bgColor: "bg-purple-900/20 border-purple-600/30",
+      color: "text-orange-800",
+      bgColor:
+        "wood-card bg-gradient-to-br from-orange-50 to-orange-100 border-orange-700",
     },
     {
       title: "Total Revenue",
       value: `₹${stats.totalRevenue.toLocaleString()}`,
       icon: DollarSign,
-      color: "text-yellow-400",
-      bgColor: "bg-yellow-900/20 border-yellow-600/30",
+      color: "text-yellow-800",
+      bgColor:
+        "wood-card bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-700",
     },
     {
       title: "Today's Revenue",
       value: `₹${stats.todayRevenue.toLocaleString()}`,
       icon: TrendingUp,
-      color: "text-orange-400",
-      bgColor: "bg-orange-900/20 border-orange-600/30",
+      color: "text-emerald-800",
+      bgColor:
+        "wood-card bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-700",
     },
     {
       title: "Pending Withdrawals",
       value: stats.pendingWithdrawals.toLocaleString(),
       icon: Activity,
-      color: "text-red-400",
-      bgColor: "bg-red-900/20 border-red-600/30",
+      color: "text-red-800",
+      bgColor:
+        "wood-card bg-gradient-to-br from-red-50 to-red-100 border-red-700",
     },
   ];
 
