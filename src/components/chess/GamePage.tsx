@@ -100,35 +100,55 @@ export const GamePage = () => {
   const fetchGame = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // First, fetch the game data
+      const { data: gameData, error: gameError } = await supabase
         .from('chess_games')
-        .select(`
-          *,
-          white_player:white_player_id (username, chess_rating, avatar_url),
-          black_player:black_player_id (username, chess_rating, avatar_url)
-        `)
+        .select('*')
         .eq('id', gameId)
         .single();
 
-      if (error) throw error;
+      if (gameError) throw gameError;
       
-      const gameData: GameData = {
-        ...data,
-        white_player: Array.isArray(data.white_player) ? data.white_player[0] : data.white_player,
-        black_player: Array.isArray(data.black_player) ? data.black_player[0] : data.black_player,
-        white_time_updated_at: data.updated_at,
-        black_time_updated_at: data.updated_at
+      // Then, fetch the player data separately
+      const whitePlayerPromise = gameData.white_player_id ? 
+        supabase
+          .from('profiles')
+          .select('username, chess_rating, avatar_url')
+          .eq('id', gameData.white_player_id)
+          .single() : 
+        Promise.resolve({ data: null, error: null });
+
+      const blackPlayerPromise = gameData.black_player_id ? 
+        supabase
+          .from('profiles')
+          .select('username, chess_rating, avatar_url')
+          .eq('id', gameData.black_player_id)
+          .single() : 
+        Promise.resolve({ data: null, error: null });
+
+      const [whitePlayerResult, blackPlayerResult] = await Promise.all([
+        whitePlayerPromise,
+        blackPlayerPromise
+      ]);
+
+      const completeGameData: GameData = {
+        ...gameData,
+        white_player: whitePlayerResult.data,
+        black_player: blackPlayerResult.data,
+        white_time_updated_at: gameData.updated_at,
+        black_time_updated_at: gameData.updated_at
       };
       
-      setGame(gameData);
+      setGame(completeGameData);
       
       // Set initial time remaining based on game data
       setTimeRemaining({
-        white: data.white_time_remaining || 600,
-        black: data.black_time_remaining || 600
+        white: gameData.white_time_remaining || 600,
+        black: gameData.black_time_remaining || 600
       });
 
-      setGameStarted(data.game_status !== 'waiting');
+      setGameStarted(gameData.game_status !== 'waiting');
     } catch (error) {
       console.error('Error fetching game:', error);
       toast.error('Failed to load game');
