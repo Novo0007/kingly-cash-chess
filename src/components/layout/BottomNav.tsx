@@ -136,10 +136,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
                 {/* Smooth Label */}
                 <span
-                  className={`text-xs font-bold leading-tight transition-all duration-500 ease-out font-heading ${
+                  className={`text-xs font-bold leading-tight transition-all duration-300 ease-out font-heading ${
                     isActive
-                      ? "text-white drop-shadow-lg"
-                      : "text-white/70 hover:text-white/90"
+                      ? "text-amber-100 drop-shadow-lg"
+                      : "text-amber-200/70 hover:text-amber-100/90"
                   }`}
                 >
                   {item.label}
