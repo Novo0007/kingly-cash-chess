@@ -341,9 +341,9 @@ const App = () => {
 
         {/* Enhanced Footer */}
         <div className="absolute bottom-6 left-0 right-0 text-center">
-          <div className="electric-glass backdrop-blur-xl inline-block px-6 py-2 rounded-full border border-blue-300/20">
-            <p className="text-xs sm:text-sm text-blue-200 font-medium font-body">
-              © 2024 NNC Games • Professional Gaming Platform
+          <div className="wood-glass backdrop-blur-xl inline-block px-6 py-2 rounded-full border border-amber-600/20">
+            <p className="text-xs sm:text-sm text-amber-200 font-medium font-body">
+              © 2024 NNC Games • Rustic Gaming Lodge
             </p>
           </div>
         </div>
