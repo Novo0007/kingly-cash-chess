@@ -175,21 +175,21 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         })}
       </div>
 
-      {/* Subtle Bottom Gaming Elements */}
-      <div className="absolute bottom-1 left-0 right-0 flex justify-center transition-all duration-1000 ease-out">
+      {/* Subtle Bottom Wood Elements */}
+      <div className="absolute bottom-1 left-0 right-0 flex justify-center transition-all duration-700 ease-out">
         <div className="flex items-center gap-3 text-xs opacity-50">
-          <Sparkles className="h-3 w-3 text-yellow-300/50 filter drop-shadow-md transition-all duration-500" />
+          <Star className="h-3 w-3 text-amber-400/50 filter drop-shadow-md transition-all duration-300" />
           <div className="flex gap-1">
-            <div className="w-1 h-1 bg-yellow-400/40 rounded-full transition-all duration-500"></div>
-            <div className="w-1 h-1 bg-white/40 rounded-full transition-all duration-500"></div>
-            <div className="w-1 h-1 bg-cyan-400/40 rounded-full transition-all duration-500"></div>
+            <div className="w-1 h-1 bg-amber-600/40 rounded-full transition-all duration-300"></div>
+            <div className="w-1 h-1 bg-orange-600/40 rounded-full transition-all duration-300"></div>
+            <div className="w-1 h-1 bg-yellow-600/40 rounded-full transition-all duration-300"></div>
           </div>
-          <Sparkles className="h-3 w-3 text-cyan-300/50 filter drop-shadow-md transition-all duration-500" />
+          <Star className="h-3 w-3 text-orange-400/50 filter drop-shadow-md transition-all duration-300" />
         </div>
       </div>
 
       {/* Subtle Top edge glow */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent transition-all duration-500"></div>
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-300/30 to-transparent transition-all duration-300"></div>
     </div>
   );
 };
