@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Smile } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface GameReaction {
   id: string;
@@ -235,6 +236,3 @@ export const MobileGameReactions: React.FC<MobileGameReactionsProps> = ({ gameId
   );
 };
 
-function cn(...classes: (string | boolean | undefined)[]): string {
-  return classes.filter(Boolean).join(' ');
-}

@@ -16,6 +16,9 @@ import {
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
+import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
+import { Button as ChatButton } from "@/components/ui/button";
+import { MessageSquare } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
@@ -36,6 +39,7 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
   const [refreshing, setRefreshing] = useState(false);
   const [wallet, setWallet] = useState<Tables<"wallets"> | null>(null);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [showMobileChat, setShowMobileChat] = useState(false);
 
   const { isMobile, isTablet } = useDeviceType();
 
@@ -484,6 +488,25 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
+        
+        {/* Mobile Chat Button - Only show on mobile/tablet */}
+        {(isMobile || isTablet) && (
+          <div className="fixed bottom-20 right-4 z-30">
+            <ChatButton
+              onClick={() => setShowMobileChat(true)}
+              size="lg"
+              className="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg border-2 border-white"
+            >
+              <MessageSquare className="h-6 w-6 text-white" />
+            </ChatButton>
+          </div>
+        )}
+
+        {/* Mobile Chat System */}
+        <MobileChatSystem
+          isOpen={showMobileChat}
+          onClose={() => setShowMobileChat(false)}
+        />
         {/* Header with Wallet Balance - Wood Style */}
         <Card className="wood-card wood-plank border-amber-700/50">
           <CardContent className="p-3 md:p-4">

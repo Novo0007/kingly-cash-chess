@@ -145,15 +145,17 @@ export const DisconnectionTracker: React.FC<DisconnectionTrackerProps> = ({
           console.log('Presence channel error, attempting reconnection...');
           setConnectionStatus('reconnecting');
           
-          // Exponential backoff retry
+          // Exponential backoff retry with better error handling
           if (reconnectTimeoutRef.current) {
             clearTimeout(reconnectTimeoutRef.current);
           }
           
           reconnectTimeoutRef.current = setTimeout(() => {
-            console.log('Retrying presence connection...');
-            setupPresenceTracking();
-          }, 5000);
+            if (navigator.onLine && currentUser && gameStatus === 'active') {
+              console.log('Retrying presence connection...');
+              setupPresenceTracking();
+            }
+          }, Math.min(5000, 1000 * Math.pow(2, 1))); // Start with 2s, max 5s
         }
       });
 
