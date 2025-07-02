@@ -330,7 +330,16 @@ export const WalletManager = () => {
 
       rzp.on("payment.failed", function (response: any) {
         console.error("Payment failed:", response.error);
-        toast.error(`Payment failed: ${response.error.description}`);
+        
+        // Handle specific UPI error case
+        if (response.error && response.error.upiNoApp) {
+          toast.error("No UPI app found on this device. Please try another payment method like Card or Net Banking.");
+        } else {
+          // Handle other payment failures
+          const errorMessage = response.error?.description || "Payment failed. Please try again.";
+          toast.error(`Payment failed: ${errorMessage}`);
+        }
+        
         setLoading(false);
       });
 
