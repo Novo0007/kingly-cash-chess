@@ -180,7 +180,7 @@ export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="flex-8"
+              className="flex-5"
             />
             <Button
               onClick={sendMessage}
@@ -188,7 +188,7 @@ export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose
               size="sm"
               className="bg-blue-600 hover:bg-blue-700"
             >
-              <Send className="h-30 w-4" />
+              <Send className="h-4 w-4" />
             </Button>
           </div>
         </div>
