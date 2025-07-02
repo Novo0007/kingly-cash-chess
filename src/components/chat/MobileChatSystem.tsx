@@ -181,8 +181,8 @@ export const MobileChatSystem = ({
           </div>
         </div>
 
-        {/* Input Area */}
-        <div className="border-t border-gray-200 p-3 bg-white">
+        {/* Input Area - lifted above bottom nav */}
+        <div className="border-t border-gray-200 p-3 bg-white mb-16 sm:mb-20">
           <div className="flex gap-2 items-center">
             <Input
               placeholder="Type your message..."
