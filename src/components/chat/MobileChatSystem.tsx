@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -33,16 +32,15 @@ export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose
 
   useEffect(() => {
     if (!isOpen) return;
-    
+
     getCurrentUser();
     fetchMessages();
-    
-    // Subscribe to new messages
+
     const channelName = isGlobalChat ? 'global_chat' : `game_chat_${gameId || 'unknown'}`;
     const channel = supabase
       .channel(channelName)
       .on('broadcast', { event: 'new_message' }, (payload) => {
-        setMessages(prev => [...prev, payload.payload as Message]);
+        setMessages((prev) => [...prev, payload.payload as Message]);
         scrollToBottom();
       })
       .subscribe();
@@ -74,13 +72,13 @@ export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose
   const fetchMessages = async () => {
     const welcomeMessage: Message = {
       id: '1',
-      content: isGlobalChat 
-        ? 'Welcome to global chat! Chat with players worldwide.' 
+      content: isGlobalChat
+        ? 'Welcome to global chat! Chat with players worldwide.'
         : 'Game started! Good luck!',
       sender_id: 'system',
       sender_username: 'System',
       created_at: new Date().toISOString(),
-      game_id: gameId
+      game_id: gameId,
     };
 
     setMessages([welcomeMessage]);
@@ -95,20 +93,19 @@ export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose
       sender_id: currentUser,
       sender_username: currentUsername,
       created_at: new Date().toISOString(),
-      game_id: gameId
+      game_id: gameId,
     };
 
-    // Broadcast message to other users
     const channelName = isGlobalChat ? 'global_chat' : `game_chat_${gameId || 'unknown'}`;
     const channel = supabase.channel(channelName);
+
     await channel.send({
       type: 'broadcast',
       event: 'new_message',
-      payload: message
+      payload: message,
     });
 
-    // Add to local state
-    setMessages(prev => [...prev, message]);
+    setMessages((prev) => [...prev, message]);
     setNewMessage('');
     scrollToBottom();
   };
@@ -128,11 +125,11 @@ export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
-      <div className="bg-white w-full h-2/3 rounded-t-xl shadow-xl flex flex-col">
+      <div className="bg-white w-full max-h-[90%] rounded-t-xl shadow-xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b border-gray-200">
           <div className="flex items-center gap-2">
-            <h3 className="font-bold text-lg">{isGlobalChat ? "Global Chat" : "Game Chat"}</h3>
+            <h3 className="font-bold text-lg">{isGlobalChat ? 'Global Chat' : 'Game Chat'}</h3>
             <Badge variant="outline" className="text-green-600 border-green-600">
               <Users className="h-3 w-3 mr-1" />
               Online
@@ -144,52 +141,63 @@ export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose
         </div>
 
         {/* Messages Area */}
-        <ScrollArea className="flex-1 p-3">
-          <div className="space-y-3">
-            {messages.map((message) => (
-              <div key={message.id} className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className={`text-sm font-medium ${
-                    message.sender_id === 'system' ? 'text-yellow-600' :
-                    message.sender_id === currentUser ? 'text-blue-600' : 'text-gray-700'
-                  }`}>
-                    {message.sender_username}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {new Date(message.created_at).toLocaleTimeString()}
-                  </span>
+        <div className="flex-1 overflow-y-auto p-3">
+          <ScrollArea className="h-full">
+            <div className="space-y-3">
+              {messages.map((message) => (
+                <div key={message.id} className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-sm font-medium ${
+                        message.sender_id === 'system'
+                          ? 'text-yellow-600'
+                          : message.sender_id === currentUser
+                          ? 'text-blue-600'
+                          : 'text-gray-700'
+                      }`}
+                    >
+                      {message.sender_username}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {new Date(message.created_at).toLocaleTimeString()}
+                    </span>
+                  </div>
+                  <div
+                    className={`text-sm p-2 rounded-lg ${
+                      message.sender_id === 'system'
+                        ? 'bg-yellow-50 text-yellow-800'
+                        : message.sender_id === currentUser
+                        ? 'bg-blue-50 text-blue-800 ml-4'
+                        : 'bg-gray-50 text-gray-800'
+                    }`}
+                  >
+                    {message.content}
+                  </div>
                 </div>
-                <div className={`text-sm p-2 rounded-lg ${
-                  message.sender_id === 'system' ? 'bg-yellow-50 text-yellow-800' :
-                  message.sender_id === currentUser ? 'bg-blue-50 text-blue-800 ml-4' : 
-                  'bg-gray-50 text-gray-800'
-                }`}>
-                  {message.content}
-                </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+          </ScrollArea>
+        </div>
 
         {/* Input Area */}
-       <div className="border-t border-gray-200 p-3 bg-white">
-  <div className="flex gap-2 items-center">
-    <Input
-      placeholder="Type your message..."
-      value={newMessage}
-      onChange={(e) => setNewMessage(e.target.value)}
-      onKeyPress={handleKeyPress}
-      className="flex-1 h-12"
-    />
+        <div className="border-t border-gray-200 p-3 bg-white">
+          <div className="flex gap-2 items-center">
+            <Input
+              placeholder="Type your message..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="flex-1 h-12"
+            />
             <Button
-      onClick={sendMessage}
-      disabled={!newMessage.trim()}
-      size="sm"
-      className="bg-blue-600 hover:bg-blue-700 h-12"
-    >
-      <Send className="h-4 w-4" />
-    </Button>
+              onClick={sendMessage}
+              disabled={!newMessage.trim()}
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700 h-12"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
