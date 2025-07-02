@@ -2,9 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
 import { Send, Users, X } from 'lucide-react';
 
 interface Message {
@@ -23,7 +21,12 @@ interface MobileChatSystemProps {
   onClose: () => void;
 }
 
-export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose }: MobileChatSystemProps) => {
+export const MobileChatSystem = ({
+  gameId,
+  isGlobalChat = false,
+  isOpen,
+  onClose,
+}: MobileChatSystemProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [currentUser, setCurrentUser] = useState<string | null>(null);
@@ -125,7 +128,7 @@ export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
-      <div className="bg-white w-full max-h-[90%] rounded-t-xl shadow-xl flex flex-col">
+      <div className="bg-white w-full h-[90%] rounded-t-xl shadow-xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b border-gray-200">
           <div className="flex items-center gap-2">
@@ -142,42 +145,40 @@ export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose
 
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto p-3">
-          <ScrollArea className="h-full">
-            <div className="space-y-3">
-              {messages.map((message) => (
-                <div key={message.id} className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`text-sm font-medium ${
-                        message.sender_id === 'system'
-                          ? 'text-yellow-600'
-                          : message.sender_id === currentUser
-                          ? 'text-blue-600'
-                          : 'text-gray-700'
-                      }`}
-                    >
-                      {message.sender_username}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {new Date(message.created_at).toLocaleTimeString()}
-                    </span>
-                  </div>
-                  <div
-                    className={`text-sm p-2 rounded-lg ${
+          <div className="space-y-3">
+            {messages.map((message) => (
+              <div key={message.id} className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-sm font-medium ${
                       message.sender_id === 'system'
-                        ? 'bg-yellow-50 text-yellow-800'
+                        ? 'text-yellow-600'
                         : message.sender_id === currentUser
-                        ? 'bg-blue-50 text-blue-800 ml-4'
-                        : 'bg-gray-50 text-gray-800'
+                        ? 'text-blue-600'
+                        : 'text-gray-700'
                     }`}
                   >
-                    {message.content}
-                  </div>
+                    {message.sender_username}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {new Date(message.created_at).toLocaleTimeString()}
+                  </span>
                 </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-          </ScrollArea>
+                <div
+                  className={`text-sm p-2 rounded-lg ${
+                    message.sender_id === 'system'
+                      ? 'bg-yellow-50 text-yellow-800'
+                      : message.sender_id === currentUser
+                      ? 'bg-blue-50 text-blue-800 ml-4'
+                      : 'bg-gray-50 text-gray-800'
+                  }`}
+                >
+                  {message.content}
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
         </div>
 
         {/* Input Area */}
