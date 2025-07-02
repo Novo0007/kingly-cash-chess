@@ -76,7 +76,7 @@ const App = () => {
               </h1>
               <p className="text-lg text-muted-foreground">
                 BY{" "}
-                <span className="font-semibold text-foreground">NNC GAMES</span>
+                <span className="font-semibold text-foreground">NNC GAMES / Hacker Team Legacy 😜</span>
               </p>
             </div>
 
@@ -137,7 +137,7 @@ const App = () => {
             {/* Status */}
             <div className="bg-card border border-border rounded-2xl p-4">
               <p className="text-sm text-card-foreground">
-                🎮 Welcome to Game Hub
+                🎮 Welcome to Game Hub 
               </p>
             </div>
           </div>
@@ -145,7 +145,7 @@ const App = () => {
 
         {/* Footer */}
         <div className="absolute bottom-6 left-0 right-0 text-center">
-          <p className="text-xs text-muted-foreground">© 2024 NNC Games</p>
+          <p className="text-xs text-muted-foreground">© 2024 NNC Games / Hacker See You 😘</p>
         </div>
       </div>
     );
