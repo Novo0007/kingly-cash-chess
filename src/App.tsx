@@ -76,7 +76,7 @@ const App = () => {
               </h1>
               <p className="text-lg text-muted-foreground">
                 BY{" "}
-                <span className="font-semibold text-foreground">NNC GAMES / Hacker Team Legacy 😜</span>
+                <span className="font-semibold text-foreground">NNC GAMES / HACKER TEAM LEGACY 😜</span>
               </p>
             </div>
 
