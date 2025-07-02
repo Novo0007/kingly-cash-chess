@@ -1,8 +1,18 @@
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminInvitations } from "./AdminInvitations";
 import type { Tables } from "@/integrations/supabase/types";
 
 type AdminUser = Tables<"admin_users">;
+
+interface AdminPermissions {
+  payments?: boolean;
+  withdrawals?: boolean;
+  users?: boolean;
+  games?: boolean;
+  full_access?: boolean;
+  invite_admins?: boolean;
+}
 
 interface AdminTabsProps {
   adminUser: AdminUser;
@@ -11,7 +21,8 @@ interface AdminTabsProps {
 }
 
 export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps) => {
-  const canInviteAdmins = adminUser.permissions?.invite_admins || 
+  const permissions = adminUser.permissions as AdminPermissions | null;
+  const canInviteAdmins = permissions?.invite_admins || 
     adminUser.role === 'super_admin';
 
   return (

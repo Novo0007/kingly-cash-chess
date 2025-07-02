@@ -11,6 +11,15 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type AdminUser = Tables<"admin_users">;
 
+interface AdminPermissions {
+  payments?: boolean;
+  withdrawals?: boolean;
+  users?: boolean;
+  games?: boolean;
+  full_access?: boolean;
+  invite_admins?: boolean;
+}
+
 interface AdminInvitationsProps {
   currentAdminUser: AdminUser;
 }
@@ -116,7 +125,8 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
     }
   };
 
-  const canInviteAdmins = currentAdminUser.permissions?.invite_admins || 
+  const permissions = currentAdminUser.permissions as AdminPermissions | null;
+  const canInviteAdmins = permissions?.invite_admins || 
     currentAdminUser.role === 'super_admin';
 
   return (
