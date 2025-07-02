@@ -244,7 +244,7 @@ export const PrivacyPolicySection = ({ onBack }: PrivacyPolicySectionProps) => {
                 Contact Privacy Team
               </Button>
               <p className="text-gray-400 text-xs">
-                Email: privacy@nncgames.com
+                Email: mynameisjyotirmoy@gmail.com 
               </p>
             </div>
           </div>
