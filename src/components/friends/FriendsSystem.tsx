@@ -175,7 +175,7 @@ export const FriendsSystem = () => {
       .select(
         `
         *,
-        to_user:profiles!game_invitations_to_user_id_fkey(*),
+        to_user:profiles(*),
         chess_game:chess_games(*),
         ludo_game:ludo_games(*)
       `,
@@ -197,7 +197,7 @@ export const FriendsSystem = () => {
       .select(
         `
         *,
-        from_user:profiles!game_invitations_from_user_id_fkey(*),
+        from_user:profiles(*),
         chess_game:chess_games(*),
         ludo_game:ludo_games(*)
       `,
