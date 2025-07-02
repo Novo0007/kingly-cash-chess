@@ -19,11 +19,12 @@ interface Message {
 
 interface MobileChatSystemProps {
   gameId?: string;
+  isGlobalChat?: boolean;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const MobileChatSystem = ({ gameId, isOpen, onClose }: MobileChatSystemProps) => {
+export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose }: MobileChatSystemProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [currentUser, setCurrentUser] = useState<string | null>(null);
@@ -37,8 +38,9 @@ export const MobileChatSystem = ({ gameId, isOpen, onClose }: MobileChatSystemPr
     fetchMessages();
     
     // Subscribe to new messages
+    const channelName = isGlobalChat ? 'global_chat' : `game_chat_${gameId || 'unknown'}`;
     const channel = supabase
-      .channel(`mobile_chat_${gameId || 'global'}`)
+      .channel(channelName)
       .on('broadcast', { event: 'new_message' }, (payload) => {
         setMessages(prev => [...prev, payload.payload as Message]);
         scrollToBottom();
@@ -48,7 +50,7 @@ export const MobileChatSystem = ({ gameId, isOpen, onClose }: MobileChatSystemPr
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [gameId, isOpen]);
+  }, [gameId, isGlobalChat, isOpen]);
 
   useEffect(() => {
     scrollToBottom();
@@ -70,18 +72,18 @@ export const MobileChatSystem = ({ gameId, isOpen, onClose }: MobileChatSystemPr
   };
 
   const fetchMessages = async () => {
-    const simulatedMessages: Message[] = [
-      {
-        id: '1',
-        content: 'Game started! Good luck!',
-        sender_id: 'system',
-        sender_username: 'System',
-        created_at: new Date().toISOString(),
-        game_id: gameId
-      }
-    ];
+    const welcomeMessage: Message = {
+      id: '1',
+      content: isGlobalChat 
+        ? 'Welcome to global chat! Chat with players worldwide.' 
+        : 'Game started! Good luck!',
+      sender_id: 'system',
+      sender_username: 'System',
+      created_at: new Date().toISOString(),
+      game_id: gameId
+    };
 
-    setMessages(simulatedMessages);
+    setMessages([welcomeMessage]);
   };
 
   const sendMessage = async () => {
@@ -97,7 +99,8 @@ export const MobileChatSystem = ({ gameId, isOpen, onClose }: MobileChatSystemPr
     };
 
     // Broadcast message to other users
-    const channel = supabase.channel(`mobile_chat_${gameId || 'global'}`);
+    const channelName = isGlobalChat ? 'global_chat' : `game_chat_${gameId || 'unknown'}`;
+    const channel = supabase.channel(channelName);
     await channel.send({
       type: 'broadcast',
       event: 'new_message',
@@ -129,7 +132,7 @@ export const MobileChatSystem = ({ gameId, isOpen, onClose }: MobileChatSystemPr
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b border-gray-200">
           <div className="flex items-center gap-2">
-            <h3 className="font-bold text-lg">Game Chat</h3>
+            <h3 className="font-bold text-lg">{isGlobalChat ? "Global Chat" : "Game Chat"}</h3>
             <Badge variant="outline" className="text-green-600 border-green-600">
               <Users className="h-3 w-3 mr-1" />
               Online

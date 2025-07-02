@@ -19,6 +19,9 @@ import {
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
+import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
+import { Button as ChatButton } from "@/components/ui/button";
+import { MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface GameSelectionProps {
@@ -30,6 +33,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 }) => {
   const { isMobile, isTablet } = useDeviceType();
   const navigate = useNavigate();
+  const [showGlobalChat, setShowGlobalChat] = React.useState(false);
 
   const games = [
     {
@@ -81,6 +85,26 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
+        
+        {/* Global Chat Button - Only show on mobile/tablet */}
+        {(isMobile || isTablet) && (
+          <div className="fixed bottom-20 left-4 z-30">
+            <ChatButton
+              onClick={() => setShowGlobalChat(true)}
+              size="lg"
+              className="w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 shadow-lg border-2 border-white"
+            >
+              <MessageSquare className="h-6 w-6 text-white" />
+            </ChatButton>
+          </div>
+        )}
+
+        {/* Global Chat System */}
+        <MobileChatSystem
+          isGlobalChat={true}
+          isOpen={showGlobalChat}
+          onClose={() => setShowGlobalChat(false)}
+        />
         {/* Natural Wood Header Background */}
         <div className="relative overflow-hidden">
           {/* Wood Background Effects */}

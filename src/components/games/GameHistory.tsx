@@ -17,6 +17,7 @@ import {
   Target
 } from "lucide-react";
 import { toast } from "sonner";
+import { GameViewer } from "./GameViewer";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface GameHistoryProps {
@@ -48,6 +49,7 @@ export const GameHistory = ({ userId, isOwnHistory = true }: GameHistoryProps) =
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedGame, setSelectedGame] = useState<GameWithPlayers | null>(null);
+  const [showGameViewer, setShowGameViewer] = useState(false);
   const gamesPerPage = 10;
 
   useEffect(() => {
@@ -185,6 +187,9 @@ export const GameHistory = ({ userId, isOwnHistory = true }: GameHistoryProps) =
           <CardTitle className="text-amber-900 flex items-center gap-2">
             <Trophy className="h-5 w-5" />
             {isOwnHistory ? "Your Game History" : "Player Game History"}
+            <Badge variant="secondary" className="ml-auto text-xs">
+              {games.length} games
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4">
@@ -243,7 +248,10 @@ export const GameHistory = ({ userId, isOwnHistory = true }: GameHistoryProps) =
                             size="sm"
                             variant="outline"
                             className="mt-2 border-amber-400 text-amber-800 hover:bg-amber-100"
-                            onClick={() => setSelectedGame(game)}
+                            onClick={() => {
+                              setSelectedGame(game);
+                              setShowGameViewer(true);
+                            }}
                           >
                             <Eye className="h-3 w-3 mr-1" />
                             View
@@ -287,6 +295,16 @@ export const GameHistory = ({ userId, isOwnHistory = true }: GameHistoryProps) =
           )}
         </CardContent>
       </Card>
+
+      {/* Game Viewer Modal */}
+      <GameViewer
+        game={selectedGame}
+        isOpen={showGameViewer}
+        onClose={() => {
+          setShowGameViewer(false);
+          setSelectedGame(null);
+        }}
+      />
     </div>
   );
 };
