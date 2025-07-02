@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Mail, UserPlus, Trash2 } from "lucide-react";
+import { Mail, UserPlus, Trash2, Shield, AlertTriangle } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type AdminUser = Tables<"admin_users">;
@@ -28,10 +28,25 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [invitations, setInvitations] = useState<AdminUser[]>([]);
+  const [canInvite, setCanInvite] = useState(false);
 
   useEffect(() => {
     fetchInvitations();
+    checkInvitePermissions();
   }, []);
+
+  const checkInvitePermissions = async () => {
+    try {
+      const { data, error } = await supabase.rpc('can_invite_admins');
+      if (error) {
+        console.error("Error checking invite permissions:", error);
+        return;
+      }
+      setCanInvite(data || false);
+    } catch (error) {
+      console.error("Unexpected error checking permissions:", error);
+    }
+  };
 
   const fetchInvitations = async () => {
     try {
@@ -51,60 +66,91 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
     }
   };
 
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const inviteAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    
+    const trimmedEmail = email.trim().toLowerCase();
+    
+    if (!trimmedEmail) {
+      toast.error("Please enter an email address");
+      return;
+    }
+
+    if (!validateEmail(trimmedEmail)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    if (!canInvite) {
+      toast.error("You don't have permission to invite admins");
+      return;
+    }
 
     setLoading(true);
     try {
       // Check if email is already invited
       const { data: existing } = await supabase
         .from("admin_users")
-        .select("id")
-        .eq("email", email)
+        .select("id, is_active")
+        .eq("email", trimmedEmail)
         .maybeSingle();
 
       if (existing) {
-        toast.error("This email is already invited as an admin");
+        if (existing.is_active) {
+          toast.error("This email is already an active admin");
+        } else {
+          toast.error("This email has a deactivated admin account");
+        }
         setLoading(false);
         return;
       }
 
-      // Create admin invitation
+      // Create admin invitation with secure defaults
       const { error } = await supabase
         .from("admin_users")
         .insert({
-          email: email,
+          email: trimmedEmail,
           role: "admin",
           invited_by: currentAdminUser.user_id,
           is_active: true,
           permissions: {
-            payments: true,
-            withdrawals: true,
-            users: true,
-            games: true,
-            full_access: false
+            payments: false,
+            withdrawals: false,
+            users: false,
+            games: false,
+            full_access: false,
+            invite_admins: false
           }
         });
 
       if (error) {
         console.error("Error inviting admin:", error);
-        toast.error("Failed to send invitation");
+        toast.error("Failed to send invitation. Please try again.");
         return;
       }
 
-      toast.success(`Admin invitation sent to ${email}`);
+      toast.success(`Admin invitation sent to ${trimmedEmail}`);
       setEmail("");
       fetchInvitations();
     } catch (error) {
       console.error("Unexpected error:", error);
-      toast.error("Failed to send invitation");
+      toast.error("Failed to send invitation. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const removeInvitation = async (adminId: string) => {
+    if (!canInvite) {
+      toast.error("You don't have permission to remove admin invitations");
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from("admin_users")
@@ -117,7 +163,7 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
         return;
       }
 
-      toast.success("Invitation removed");
+      toast.success("Admin access revoked");
       fetchInvitations();
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -126,12 +172,24 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
   };
 
   const permissions = currentAdminUser.permissions as AdminPermissions | null;
-  const canInviteAdmins = permissions?.invite_admins || 
-    currentAdminUser.role === 'super_admin';
+  const isSuperAdmin = currentAdminUser.role === 'super_admin';
 
   return (
     <div className="space-y-6">
-      {canInviteAdmins && (
+      {!canInvite && (
+        <Card className="bg-yellow-50 border-yellow-200">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 text-yellow-800">
+              <AlertTriangle className="h-5 w-5" />
+              <p className="text-sm">
+                You don't have permission to invite or manage admin users. Contact a super admin for access.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {canInvite && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -148,11 +206,15 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="flex-1"
+                disabled={loading}
               />
               <Button type="submit" disabled={loading}>
                 {loading ? "Inviting..." : "Invite"}
               </Button>
             </form>
+            <p className="text-sm text-muted-foreground mt-2">
+              New admins will be created with minimal permissions. You can adjust their permissions after creation.
+            </p>
           </CardContent>
         </Card>
       )}
@@ -160,7 +222,7 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
+            <Shield className="h-5 w-5" />
             Admin Users
           </CardTitle>
         </CardHeader>
@@ -178,11 +240,16 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
                       <Badge variant={invitation.user_id ? "default" : "secondary"}>
                         {invitation.user_id ? "Active" : "Pending"}
                       </Badge>
-                      <Badge variant="outline">{invitation.role}</Badge>
+                      <Badge variant={invitation.role === 'super_admin' ? "destructive" : "outline"}>
+                        {invitation.role === 'super_admin' ? 'Super Admin' : 'Admin'}
+                      </Badge>
+                      {!invitation.is_active && (
+                        <Badge variant="secondary">Deactivated</Badge>
+                      )}
                     </div>
                   </div>
                 </div>
-                {canInviteAdmins && invitation.is_active && (
+                {canInvite && invitation.is_active && invitation.role !== 'super_admin' && invitation.id !== currentAdminUser.id && (
                   <Button
                     variant="outline"
                     size="sm"

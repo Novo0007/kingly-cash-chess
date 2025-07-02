@@ -425,6 +425,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_invite_admins: {
+        Args: { user_email?: string }
+        Returns: boolean
+      }
       increment: {
         Args: {
           table_name: string

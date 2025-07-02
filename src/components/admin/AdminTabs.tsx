@@ -1,6 +1,11 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminInvitations } from "./AdminInvitations";
+import { AdminSettings } from "./AdminSettings";
+import { SystemOverview } from "./SystemOverview";
+import { UserManagement } from "./UserManagement";
+import { GameManagement } from "./GameManagement";
+import { PaymentManagement } from "./PaymentManagement";
 import type { Tables } from "@/integrations/supabase/types";
 
 type AdminUser = Tables<"admin_users">;
@@ -22,8 +27,13 @@ interface AdminTabsProps {
 
 export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps) => {
   const permissions = adminUser.permissions as AdminPermissions | null;
-  const canInviteAdmins = permissions?.invite_admins || 
-    adminUser.role === 'super_admin';
+  const isSuperAdmin = adminUser.role === 'super_admin';
+  
+  // Permission checks
+  const canInviteAdmins = permissions?.invite_admins || isSuperAdmin;
+  const canManageUsers = permissions?.users || permissions?.full_access || isSuperAdmin;
+  const canManageGames = permissions?.games || permissions?.full_access || isSuperAdmin;
+  const canManagePayments = permissions?.payments || permissions?.full_access || isSuperAdmin;
 
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="space-y-4">
@@ -34,24 +44,34 @@ export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps)
         >
           Overview
         </TabsTrigger>
-        <TabsTrigger 
-          value="users" 
-          className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
-        >
-          Users
-        </TabsTrigger>
-        <TabsTrigger 
-          value="games" 
-          className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
-        >
-          Games
-        </TabsTrigger>
-        <TabsTrigger 
-          value="payments" 
-          className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
-        >
-          Payments
-        </TabsTrigger>
+        
+        {canManageUsers && (
+          <TabsTrigger 
+            value="users" 
+            className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
+          >
+            Users
+          </TabsTrigger>
+        )}
+        
+        {canManageGames && (
+          <TabsTrigger 
+            value="games" 
+            className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
+          >
+            Games
+          </TabsTrigger>
+        )}
+        
+        {canManagePayments && (
+          <TabsTrigger 
+            value="payments" 
+            className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
+          >
+            Payments
+          </TabsTrigger>
+        )}
+        
         {canInviteAdmins && (
           <TabsTrigger 
             value="admins" 
@@ -60,6 +80,7 @@ export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps)
             Admins
           </TabsTrigger>
         )}
+        
         <TabsTrigger 
           value="settings" 
           className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
@@ -69,17 +90,26 @@ export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps)
       </TabsList>
 
       <TabsContent value="overview">
-        <p>Overview content</p>
+        <SystemOverview adminUser={adminUser} />
       </TabsContent>
-      <TabsContent value="users">
-        <p>Users content</p>
-      </TabsContent>
-      <TabsContent value="games">
-        <p>Games content</p>
-      </TabsContent>
-      <TabsContent value="payments">
-        <p>Payments content</p>
-      </TabsContent>
+      
+      {canManageUsers && (
+        <TabsContent value="users">
+          <UserManagement adminUser={adminUser} />
+        </TabsContent>
+      )}
+      
+      {canManageGames && (
+        <TabsContent value="games">
+          <GameManagement adminUser={adminUser} />
+        </TabsContent>
+      )}
+      
+      {canManagePayments && (
+        <TabsContent value="payments">
+          <PaymentManagement adminUser={adminUser} />
+        </TabsContent>
+      )}
 
       {canInviteAdmins && (
         <TabsContent value="admins">
@@ -88,7 +118,7 @@ export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps)
       )}
 
       <TabsContent value="settings">
-        <p>Settings content</p>
+        <AdminSettings adminUser={adminUser} />
       </TabsContent>
     </Tabs>
   );
