@@ -173,23 +173,23 @@ export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose
         </ScrollArea>
 
         {/* Input Area */}
-        <div className="border-t border-gray-200 p-3">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Type your message..."
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="flex-5 h-12"
-            />
+       <div className="border-t border-gray-200 p-3 bg-white">
+  <div className="flex gap-2 items-center">
+    <Input
+      placeholder="Type your message..."
+      value={newMessage}
+      onChange={(e) => setNewMessage(e.target.value)}
+      onKeyPress={handleKeyPress}
+      className="flex-1 h-12"
+    />
             <Button
-              onClick={sendMessage}
-              disabled={!newMessage.trim()}
-              size="sm"
-              className="bg-blue-600 hover:bg-blue-700 h-12"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
+      onClick={sendMessage}
+      disabled={!newMessage.trim()}
+      size="sm"
+      className="bg-blue-600 hover:bg-blue-700 h-12"
+    >
+      <Send className="h-4 w-4" />
+    </Button>
           </div>
         </div>
       </div>
