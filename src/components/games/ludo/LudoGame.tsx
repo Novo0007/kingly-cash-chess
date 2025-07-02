@@ -343,8 +343,6 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
           } else {
             console.log("✅ Game started successfully!");
             toast.success("🎮 Game started! Red player goes first.");
-            // Don't call fetchGame here to avoid infinite loop
-            // The real-time subscription will handle the update
           }
         } catch (error) {
           console.error("❌ Exception starting game:", error);
@@ -487,7 +485,7 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
   };
 
   const handleMove = async (playerId: string, pieceId: number, steps: number) => {
-    if (!game || !currentUser) return;
+    if (!game || !currentUser || !game.game_state) return;
 
     if (game.current_turn !== getPlayerColor()) {
       toast.error("Not your turn!");
@@ -497,8 +495,8 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
     try {
       console.log(`🎯 Enhanced move: ${playerId} piece ${pieceId} by ${steps} steps`);
       
-      const newGameState = { ...game.game_state };
-      const piece = newGameState.pieces[playerId][pieceId];
+      const newGameState = JSON.parse(JSON.stringify(game.game_state)); // Deep clone
+      const piece = newGameState.pieces[playerId]?.[pieceId];
       
       if (!piece) {
         toast.error("Invalid piece!");
@@ -640,7 +638,7 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
   };
 
   const handleTurnEnd = async () => {
-    if (!game || !currentUser) return;
+    if (!game || !currentUser || !game.game_state) return;
 
     try {
       const activeColors = game.game_state?.playerColors || ["red", "blue", "green", "yellow"].slice(0, game.current_players);
@@ -667,9 +665,13 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
   };
 
   const findPieceAtPosition = (gameState: any, row: number, col: number) => {
+    if (!gameState?.pieces) return null;
+    
     for (const [color, pieces] of Object.entries(gameState.pieces)) {
-      for (const [index, piece] of (pieces as any[]).entries()) {
-        if (piece.row === row && piece.col === col && piece.position === "active") {
+      if (!Array.isArray(pieces)) continue;
+      
+      for (const [index, piece] of pieces.entries()) {
+        if (piece && piece.row === row && piece.col === col && piece.position === "active") {
           return { ...piece, color, index };
         }
       }
@@ -678,6 +680,8 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
   };
 
   const sendPieceHome = (gameState: any, capturedPiece: any) => {
+    if (!gameState?.pieces?.[capturedPiece.color]?.[capturedPiece.index]) return;
+    
     const piece = gameState.pieces[capturedPiece.color][capturedPiece.index];
     const homePos = getHomePosition(capturedPiece.color);
     
