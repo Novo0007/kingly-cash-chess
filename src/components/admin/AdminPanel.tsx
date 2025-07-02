@@ -23,7 +23,7 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
 
   const fetchAdminUser = async () => {
     try {
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from("admin_users")
         .select("*")
         .eq("email", userEmail)
@@ -33,6 +33,23 @@ export const AdminPanel = ({ userEmail }: AdminPanelProps) => {
       if (error && error.code !== "PGRST116") {
         console.error("Error fetching admin user:", error);
         return;
+      }
+
+      // If admin record exists but user_id is null, update it with current user
+      if (data && !data.user_id) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: updatedData, error: updateError } = await supabase
+            .from("admin_users")
+            .update({ user_id: user.id })
+            .eq("id", data.id)
+            .select()
+            .single();
+
+          if (!updateError) {
+            data = updatedData;
+          }
+        }
       }
 
       setAdminUser(data);
