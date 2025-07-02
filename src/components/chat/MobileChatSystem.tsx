@@ -174,13 +174,13 @@ export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose
 
         {/* Input Area */}
         <div className="border-t border-gray-200 p-3">
-          <div className="flex gap-6">
+          <div className="flex gap-2">
             <Input
               placeholder="Type your message..."
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="flex-5"
+              className="flex-8"
             />
             <Button
               onClick={sendMessage}
@@ -188,7 +188,7 @@ export const MobileChatSystem = ({ gameId, isGlobalChat = false, isOpen, onClose
               size="sm"
               className="bg-blue-600 hover:bg-blue-700"
             >
-              <Send className="h-9 w-4" />
+              <Send className="h-30 w-4" />
             </Button>
           </div>
         </div>
