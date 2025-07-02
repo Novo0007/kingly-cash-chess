@@ -24,6 +24,7 @@ const Index = () => {
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
   const [selectedGameType, setSelectedGameType] = useState<"chess" | "ludo" | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Optimized profile fetching with caching
   const fetchUserProfile = useCallback(async (userId: string) => {
@@ -104,6 +105,31 @@ const Index = () => {
     };
   }, [fetchUserProfile]);
 
+  // Check admin status when user changes
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user?.email) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.rpc('is_admin');
+        if (error) {
+          console.error("Error checking admin status:", error);
+          setIsAdmin(false);
+          return;
+        }
+        setIsAdmin(data || false);
+      } catch (error) {
+        console.error("Unexpected error checking admin status:", error);
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user?.email]);
+
   const handleSelectGame = (gameType: "chess" | "ludo") => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
@@ -159,32 +185,6 @@ const Index = () => {
     );
   }
 
-  // Check if user is admin using the admin_users table
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!user?.email) {
-        setIsAdmin(false);
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase.rpc('is_admin');
-        if (error) {
-          console.error("Error checking admin status:", error);
-          setIsAdmin(false);
-          return;
-        }
-        setIsAdmin(data || false);
-      } catch (error) {
-        console.error("Unexpected error checking admin status:", error);
-        setIsAdmin(false);
-      }
-    };
-
-    checkAdminStatus();
-  }, [user?.email]);
 
   const renderCurrentView = () => {
     switch (currentView) {
