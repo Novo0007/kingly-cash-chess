@@ -128,18 +128,18 @@ export const MobileChatSystem = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
-      <div className="bg-white w-full h-[90%] rounded-t-xl shadow-xl flex flex-col overflow-hidden">
+      <div className="bg-white w-full h-[90%] rounded-t-xl shadow-xl flex flex-col overflow-hidden max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b border-gray-200">
           <div className="flex items-center gap-2">
-            <h3 className="font-bold text-lg">{isGlobalChat ? 'Global Chat' : 'Game Chat'}</h3>
+            <h3 className="font-bold text-base sm:text-lg">{isGlobalChat ? "Global Chat" : "Game Chat"}</h3>
             <Badge variant="outline" className="text-green-600 border-green-600">
               <Users className="h-3 w-3 mr-1" />
               Online
             </Badge>
           </div>
-          <Button onClick={onClose} variant="ghost" size="sm">
-            <X className="h-4 w-4" />
+          <Button onClick={onClose} variant="ghost" size="icon">
+            <X className="h-5 w-5" />
           </Button>
         </div>
 
@@ -189,13 +189,13 @@ export const MobileChatSystem = ({
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="flex-1 h-12"
+              className="flex-1 h-12 text-sm"
             />
             <Button
               onClick={sendMessage}
               disabled={!newMessage.trim()}
-              size="sm"
-              className="bg-blue-600 hover:bg-blue-700 h-12"
+              size="icon"
+              className="bg-blue-600 hover:bg-blue-700 h-12 w-12"
             >
               <Send className="h-4 w-4" />
             </Button>
