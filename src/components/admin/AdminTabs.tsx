@@ -1,16 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Users,
-  CreditCard,
-  Gamepad2,
-  Settings,
-  TrendingUp,
-} from "lucide-react";
-import { UserManagement } from "./UserManagement";
-import { PaymentManagement } from "./PaymentManagement";
-import { GameManagement } from "./GameManagement";
-import { AdminSettings } from "./AdminSettings";
-import { SystemOverview } from "./SystemOverview";
+import { AdminInvitations } from "./AdminInvitations";
 import type { Tables } from "@/integrations/supabase/types";
 
 type AdminUser = Tables<"admin_users">;
@@ -21,125 +10,74 @@ interface AdminTabsProps {
   onTabChange: (tab: string) => void;
 }
 
-export const AdminTabs = ({
-  adminUser,
-  activeTab,
-  onTabChange,
-}: AdminTabsProps) => {
-  const hasPermission = (permission: string) => {
-    if (!adminUser.permissions || typeof adminUser.permissions !== "object") {
-      return false;
-    }
-    const permissions = adminUser.permissions as Record<string, any>;
-    return permissions[permission] === true || adminUser.role === "super_admin";
-  };
+export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps) => {
+  const canInviteAdmins = adminUser.permissions?.invite_admins || 
+    adminUser.role === 'super_admin';
 
   return (
-    <Tabs
-      value={activeTab}
-      onValueChange={onTabChange}
-      className="w-full bg-transparent"
-    >
-      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 bg-muted/95 backdrop-blur-sm p-2 rounded-2xl sticky top-0 z-50 mb-6 shadow-sm border border-border">
-        <TabsTrigger
-          value="overview"
-          className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 min-h-[52px] rounded-xl font-medium text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2"
+    <Tabs value={activeTab} onValueChange={onTabChange} className="space-y-4">
+      <TabsList className="grid w-full grid-cols-6 bg-amber-100/50 border border-amber-200/50">
+        <TabsTrigger 
+          value="overview" 
+          className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
         >
-          <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
-          <span className="hidden sm:inline">Overview</span>
-          <span className="sm:hidden">Stats</span>
+          Overview
         </TabsTrigger>
-
-        <TabsTrigger
-          value="users"
-          className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 min-h-[52px] rounded-xl font-medium text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={!hasPermission("users")}
+        <TabsTrigger 
+          value="users" 
+          className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
         >
-          <Users className="h-4 w-4 sm:h-5 sm:w-5" />
-          <span className="hidden sm:inline">Users</span>
-          <span className="sm:hidden">Users</span>
+          Users
         </TabsTrigger>
-
-        <TabsTrigger
-          value="payments"
-          className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 min-h-[52px] rounded-xl font-medium text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={!hasPermission("payments")}
+        <TabsTrigger 
+          value="games" 
+          className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
         >
-          <CreditCard className="h-4 w-4 sm:h-5 sm:w-5" />
-          <span className="hidden sm:inline">Payments</span>
-          <span className="sm:hidden">Pay</span>
+          Games
         </TabsTrigger>
-
-        <TabsTrigger
-          value="games"
-          className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 min-h-[52px] rounded-xl font-medium text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={!hasPermission("games")}
+        <TabsTrigger 
+          value="payments" 
+          className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
         >
-          <Gamepad2 className="h-4 w-4 sm:h-5 sm:w-5" />
-          <span className="hidden sm:inline">Games</span>
-          <span className="sm:hidden">Games</span>
+          Payments
         </TabsTrigger>
-
-        <TabsTrigger
-          value="settings"
-          className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-background text-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 min-h-[52px] rounded-xl font-medium text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 col-span-2 sm:col-span-1"
+        {canInviteAdmins && (
+          <TabsTrigger 
+            value="admins" 
+            className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
+          >
+            Admins
+          </TabsTrigger>
+        )}
+        <TabsTrigger 
+          value="settings" 
+          className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
         >
-          <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
-          <span className="hidden sm:inline">Settings</span>
-          <span className="sm:hidden">Settings</span>
+          Settings
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent
-        value="overview"
-        className="w-full"
-        style={{ paddingTop: "80px" }}
-      >
-        <div className="space-y-6">
-          <SystemOverview adminUser={adminUser} />
-        </div>
+      <TabsContent value="overview">
+        <p>Overview content</p>
+      </TabsContent>
+      <TabsContent value="users">
+        <p>Users content</p>
+      </TabsContent>
+      <TabsContent value="games">
+        <p>Games content</p>
+      </TabsContent>
+      <TabsContent value="payments">
+        <p>Payments content</p>
       </TabsContent>
 
-      <TabsContent
-        value="users"
-        className="w-full"
-        style={{ paddingTop: "80px" }}
-      >
-        <div className="space-y-6">
-          <UserManagement adminUser={adminUser} />
-        </div>
-      </TabsContent>
+      {canInviteAdmins && (
+        <TabsContent value="admins">
+          <AdminInvitations currentAdminUser={adminUser} />
+        </TabsContent>
+      )}
 
-      <TabsContent
-        value="payments"
-        className="w-full"
-        style={{ paddingTop: "80px" }}
-      >
-        <div className="space-y-6">
-          <div className="bg-muted/20 rounded-2xl p-4">
-            <PaymentManagement adminUser={adminUser} />
-          </div>
-        </div>
-      </TabsContent>
-
-      <TabsContent
-        value="games"
-        className="w-full"
-        style={{ paddingTop: "80px" }}
-      >
-        <div className="space-y-6">
-          <GameManagement adminUser={adminUser} />
-        </div>
-      </TabsContent>
-
-      <TabsContent
-        value="settings"
-        className="w-full"
-        style={{ paddingTop: "80px" }}
-      >
-        <div className="space-y-6">
-          <AdminSettings adminUser={adminUser} />
-        </div>
+      <TabsContent value="settings">
+        <p>Settings content</p>
       </TabsContent>
     </Tabs>
   );

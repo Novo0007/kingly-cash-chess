@@ -159,6 +159,7 @@ const Index = () => {
     );
   }
 
+  // Enhanced admin checking - check both profile and admin_users table
   const isAdmin = userProfile?.is_admin || 
     (user?.email && ['admin@example.com', 'jyotirmoysarkar2003chalsa@gmail.com', 'mynameisjyotirmoy@gmail.com'].includes(user.email));
 
@@ -171,6 +172,9 @@ const Index = () => {
           <div className="text-center p-8">
             <h2 className="text-2xl font-bold text-amber-900 mb-4">Access Denied</h2>
             <p className="text-amber-800">You don't have admin privileges.</p>
+            <p className="text-amber-600 text-sm mt-2">
+              If you were invited as an admin, please make sure you're signed in with the correct email address.
+            </p>
           </div>
         );
       case "games":
