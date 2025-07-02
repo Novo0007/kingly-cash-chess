@@ -63,10 +63,10 @@ export const ContactSection = ({ onBack }: ContactSectionProps) => {
     {
       icon: Mail,
       title: "Email Support",
-      value: "support@nncgames.com",
+      value: "mynameisjyotirmoy@gmail.com",
       description: "Get help via email",
       color: "from-blue-600 to-indigo-600",
-      action: () => window.open("mailto:support@nncgames.com"),
+      action: () => window.open("mailto:mynameisjyotirmoy@gmail.com"),
     },
     {
       icon: MessageCircle,
@@ -79,7 +79,7 @@ export const ContactSection = ({ onBack }: ContactSectionProps) => {
     {
       icon: Phone,
       title: "Phone Support",
-      value: "+91-XXXX-XXXXXX",
+      value: "+91-8016-487441",
       description: "Call us for urgent issues",
       color: "from-purple-600 to-pink-600",
       action: () => toast.info("Phone support coming soon!"),
@@ -216,7 +216,7 @@ export const ContactSection = ({ onBack }: ContactSectionProps) => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
-                  placeholder="your.email@example.com"
+                  placeholder="mynameisjyotirmoy@gmail.com"
                   className="bg-slate-600/50 border-slate-500 text-white placeholder:text-gray-400"
                   required
                 />
@@ -334,7 +334,7 @@ export const ContactSection = ({ onBack }: ContactSectionProps) => {
             <div className="space-y-2 text-gray-300 text-sm md:text-base">
               <div className="flex items-center justify-center gap-2">
                 <MapPin className="h-4 w-4" />
-                <span>NNC Games Headquarters</span>
+                <span>NNC Games Headquarters / Chalsa, WB </span>
               </div>
               <div className="flex items-center justify-center gap-2">
                 <Globe className="h-4 w-4" />
@@ -347,7 +347,7 @@ export const ContactSection = ({ onBack }: ContactSectionProps) => {
             </div>
             <p className="text-gray-400 text-xs">
               Made with <Heart className="h-3 w-3 inline text-red-400" /> for
-              our gaming community
+              our gaming community By NNC
             </p>
           </div>
         </CardContent>
