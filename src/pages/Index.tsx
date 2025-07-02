@@ -159,9 +159,32 @@ const Index = () => {
     );
   }
 
-  // Enhanced admin checking - check both profile and admin_users table
-  const isAdmin = userProfile?.is_admin || 
-    (user?.email && ['admin@example.com', 'jyotirmoysarkar2003chalsa@gmail.com', 'mynameisjyotirmoy@gmail.com'].includes(user.email));
+  // Check if user is admin using the admin_users table
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user?.email) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.rpc('is_admin');
+        if (error) {
+          console.error("Error checking admin status:", error);
+          setIsAdmin(false);
+          return;
+        }
+        setIsAdmin(data || false);
+      } catch (error) {
+        console.error("Unexpected error checking admin status:", error);
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user?.email]);
 
   const renderCurrentView = () => {
     switch (currentView) {
