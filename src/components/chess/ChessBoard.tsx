@@ -283,16 +283,16 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
       {/* Full Width Chess Board - Enhanced Wood Theme */}
       <div className="w-full h-full flex flex-col">
         {/* Premium Chess Board Container */}
-        <div 
+        <div
           ref={boardRef}
           className="grid grid-cols-8 gap-0 aspect-square w-full h-full rounded-lg overflow-hidden shadow-2xl relative"
           style={{
             background: `
-              linear-gradient(45deg, 
-                rgba(101, 67, 33, 0.1) 0%, 
-                rgba(139, 69, 19, 0.15) 25%, 
-                rgba(160, 82, 45, 0.1) 50%, 
-                rgba(139, 69, 19, 0.15) 75%, 
+              linear-gradient(45deg,
+                rgba(101, 67, 33, 0.1) 0%,
+                rgba(139, 69, 19, 0.15) 25%,
+                rgba(160, 82, 45, 0.1) 50%,
+                rgba(139, 69, 19, 0.15) 75%,
                 rgba(101, 67, 33, 0.1) 100%
               )
             `,
@@ -321,8 +321,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     transition-all duration-300 hover:scale-105 active:scale-95 relative overflow-hidden shadow-inner
                     ${
                       isLightSquare(rowIndex, colIndex)
-                        ? "bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 hover:from-amber-100 hover:via-orange-100 hover:to-yellow-100"
-                        : "bg-gradient-to-br from-amber-900 via-orange-900 to-yellow-900 hover:from-amber-800 hover:via-orange-800 hover:to-yellow-800"
+                        ? "bg-gradient-to-br from-white via-gray-50 to-gray-100 hover:from-gray-50 hover:via-gray-100 hover:to-gray-150"
+                        : "bg-gradient-to-br from-green-700 via-green-800 to-green-900 hover:from-green-600 hover:via-green-700 hover:to-green-800"
                     }
                     ${
                       isSquareHighlighted(rowIndex, colIndex)
@@ -345,11 +345,11 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                   style={{
                     background: isLightSquare(rowIndex, colIndex)
                       ? `
-                        linear-gradient(135deg, 
-                          #fef3c7 0%, 
-                          #fcd34d 25%, 
-                          #f59e0b 50%, 
-                          #fcd34d 75%, 
+                        linear-gradient(135deg,
+                          #fef3c7 0%,
+                          #fcd34d 25%,
+                          #f59e0b 50%,
+                          #fcd34d 75%,
                           #fef3c7 100%
                         ),
                         repeating-linear-gradient(0deg,
@@ -358,11 +358,11 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                           rgba(245, 158, 11, 0.1) 4px)
                       `
                       : `
-                        linear-gradient(135deg, 
-                          #451a03 0%, 
-                          #7c2d12 25%, 
-                          #a16207 50%, 
-                          #7c2d12 75%, 
+                        linear-gradient(135deg,
+                          #451a03 0%,
+                          #7c2d12 25%,
+                          #a16207 50%,
+                          #7c2d12 75%,
                           #451a03 100%
                         ),
                         repeating-linear-gradient(45deg,
@@ -405,13 +405,13 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
 
         {/* Status Display - Enhanced Wood Theme */}
         <div className="mt-4 sm:mt-6 text-center">
-          <div 
+          <div
             className="text-base sm:text-xl md:text-2xl font-bold rounded-lg px-6 py-4 sm:px-8 sm:py-6 shadow-lg"
             style={{
               background: `
-                linear-gradient(135deg, 
-                  #fef3c7 0%, 
-                  #fcd34d 50%, 
+                linear-gradient(135deg,
+                  #fef3c7 0%,
+                  #fcd34d 50%,
                   #f59e0b 100%
                 ),
                 repeating-linear-gradient(45deg,
@@ -420,25 +420,27 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                   rgba(245, 158, 11, 0.1) 4px)
               `,
               color: "#451a03",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2), inset 0 2px 4px rgba(255, 255, 255, 0.3)",
+              boxShadow:
+                "0 4px 8px rgba(0, 0, 0, 0.2), inset 0 2px 4px rgba(255, 255, 255, 0.3)",
               border: "2px solid #a16207",
             }}
           >
             Playing as {playerColor === "white" ? "⚪ White" : "⚫ Black"}
           </div>
           {!isPlayerTurn && !disabled && (
-            <div 
+            <div
               className="mt-3 sm:mt-4 text-base sm:text-lg md:text-xl font-bold rounded-lg px-4 py-3 sm:px-6 sm:py-4 inline-block shadow-lg"
               style={{
                 background: `
-                  linear-gradient(135deg, 
-                    #fed7aa 0%, 
-                    #fdba74 50%, 
+                  linear-gradient(135deg,
+                    #fed7aa 0%,
+                    #fdba74 50%,
                     #fb923c 100%
                   )
                 `,
                 color: "#7c2d12",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.2)",
+                boxShadow:
+                  "0 4px 8px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.2)",
                 border: "2px solid #ea580c",
               }}
             >
@@ -446,18 +448,19 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
             </div>
           )}
           {disabled && (
-            <div 
+            <div
               className="mt-3 sm:mt-4 text-base sm:text-lg md:text-xl font-bold rounded-lg px-4 py-3 sm:px-6 sm:py-4 inline-block shadow-lg"
               style={{
                 background: `
-                  linear-gradient(135deg, 
-                    #fef3c7 0%, 
-                    #fde68a 50%, 
+                  linear-gradient(135deg,
+                    #fef3c7 0%,
+                    #fde68a 50%,
                     #fbbf24 100%
                   )
                 `,
                 color: "#92400e",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.2)",
+                boxShadow:
+                  "0 4px 8px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.2)",
                 border: "2px solid #d97706",
               }}
             >
