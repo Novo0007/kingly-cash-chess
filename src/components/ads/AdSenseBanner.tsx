@@ -1,7 +1,7 @@
 import React from "react";
 import AdSenseAd from "./AdSenseAd";
 import { ADSENSE_CONFIG, AD_PLACEMENT } from "./AdSenseConfig";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AdSenseBannerProps {
   position?: "top" | "bottom" | "middle";
