@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import {
   Zap,
   Crown,
   Star,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import { MazeGameState, MazeGameLogic, Position } from "./MazeGameLogic";
 import { useDeviceType } from "@/hooks/use-mobile";
@@ -35,6 +37,12 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
   const [isPaused, setIsPaused] = useState(false);
   const [moves, setMoves] = useState(0);
   const [trail, setTrail] = useState<Position[]>([]);
+  const [isHorizontalMode, setIsHorizontalMode] = useState(false);
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const [showMiniMap, setShowMiniMap] = useState(false);
+  const mazeContainerRef = useRef<HTMLDivElement>(null);
 
   // Timer effect
   useEffect(() => {
@@ -97,6 +105,12 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
   }, [handleKeyPress]);
 
   const handleMove = (direction: "up" | "down" | "left" | "right") => {
+    // In horizontal mode, only allow left/right movement
+    if (isHorizontalMode && (direction === "up" || direction === "down")) {
+      toast.info("🔄 Horizontal mode: Only left/right movement allowed!");
+      return;
+    }
+
     const newPosition = MazeGameLogic.canMoveTo(
       gameState.maze,
       gameState.playerPosition,
@@ -107,6 +121,26 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
       // Update game state with new position
       gameState.playerPosition = newPosition;
       setMoves((prev) => prev + 1);
+
+      // Auto-scroll to keep player in view on horizontal movement
+      if (
+        (direction === "left" || direction === "right") &&
+        mazeContainerRef.current
+      ) {
+        const container = mazeContainerRef.current;
+        const cellSize = isMobile
+          ? Math.max(12, Math.min(18, 350 / gameState.size))
+          : Math.max(18, Math.min(28, 600 / gameState.size));
+
+        const targetX = newPosition.x * (cellSize + 1);
+        const containerWidth = container.offsetWidth;
+        const scrollLeft = targetX - containerWidth / 2;
+
+        container.scrollTo({
+          left: Math.max(0, scrollLeft),
+          behavior: "smooth",
+        });
+      }
 
       // Check if game is complete
       if (MazeGameLogic.isGameComplete(newPosition, gameState.endPosition)) {
@@ -122,6 +156,36 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
         onGameComplete(finalScore, timeTaken);
       }
     }
+  };
+
+  // Touch/swipe gesture handling
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    setTouchStart({ x: touch.clientX, y: touch.clientY });
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStart.x;
+    const deltaY = touch.clientY - touchStart.y;
+    const minSwipeDistance = 50;
+
+    // Determine swipe direction
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      // Horizontal swipe
+      if (Math.abs(deltaX) > minSwipeDistance) {
+        handleMove(deltaX > 0 ? "right" : "left");
+      }
+    } else {
+      // Vertical swipe
+      if (Math.abs(deltaY) > minSwipeDistance) {
+        handleMove(deltaY > 0 ? "down" : "up");
+      }
+    }
+
+    setTouchStart(null);
   };
 
   const getCellClasses = (x: number, y: number) => {
@@ -191,7 +255,7 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
   return (
     <div className="w-full bg-gradient-to-br from-gray-50 to-white min-h-screen">
       <div className="p-4 md:p-6 max-w-7xl mx-auto">
-        {/* Clean Game Header */}
+        {/* Enhanced Game Header with Horizontal Features */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
@@ -202,14 +266,43 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
                   Maze Challenge
                 </h1>
-                <p className="text-gray-500 text-sm">
+                <p className="text-gray-500 text-sm flex items-center gap-2">
                   {gameState.difficulty} • {gameState.size}×{gameState.size}
+                  {isHorizontalMode && (
+                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                      H-Mode
+                    </span>
+                  )}
                 </p>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setIsHorizontalMode(!isHorizontalMode)}
+              variant="outline"
+              size="sm"
+              className="h-10 px-4 bg-white border-gray-200 hover:bg-gray-50 transition-colors"
+              title="Toggle Horizontal Mode"
+            >
+              {isHorizontalMode ? (
+                <Minimize2 className="h-4 w-4" />
+              ) : (
+                <Maximize2 className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              onClick={() => setShowMiniMap(!showMiniMap)}
+              variant="outline"
+              size="sm"
+              className="h-10 px-4 bg-white border-gray-200 hover:bg-gray-50 transition-colors"
+              title="Toggle Mini Map"
+            >
+              <Target
+                className={`h-4 w-4 ${showMiniMap ? "text-blue-600" : ""}`}
+              />
+            </Button>
             <Button
               onClick={() => setIsPaused(!isPaused)}
               variant="outline"
@@ -275,9 +368,45 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
           </div>
         </div>
 
-        {/* Clean Maze Board */}
-        <div className="relative bg-white rounded-2xl p-6 shadow-lg border border-gray-100 overflow-auto">
+        {/* Enhanced Maze Board with Horizontal Features */}
+        <div className="relative bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
           <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent rounded-2xl pointer-events-none"></div>
+
+          {/* Mini Map */}
+          {showMiniMap && (
+            <div className="absolute top-6 right-6 z-30 bg-white rounded-lg p-3 shadow-lg border border-gray-200">
+              <div className="text-xs font-medium text-gray-600 mb-2">
+                Mini Map
+              </div>
+              <div
+                className="grid gap-0 bg-gray-100 rounded"
+                style={{
+                  gridTemplateColumns: `repeat(${gameState.size}, 2px)`,
+                  width: "fit-content",
+                  maxWidth: "120px",
+                }}
+              >
+                {gameState.maze.map((row, y) =>
+                  row.map((cell, x) => (
+                    <div
+                      key={`mini-${x}-${y}`}
+                      className={`w-0.5 h-0.5 ${
+                        gameState.playerPosition.x === x &&
+                        gameState.playerPosition.y === y
+                          ? "bg-green-500"
+                          : gameState.endPosition.x === x &&
+                              gameState.endPosition.y === y
+                            ? "bg-amber-500"
+                            : cell.isWall
+                              ? "bg-gray-800"
+                              : "bg-white"
+                      }`}
+                    />
+                  )),
+                )}
+              </div>
+            </div>
+          )}
 
           {isPaused && (
             <div className="fixed inset-0 bg-white/80 backdrop-blur-lg flex items-center justify-center z-50 p-4">
@@ -302,80 +431,136 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
             </div>
           )}
 
-          {/* Clean Maze Grid */}
-          <div className="relative flex justify-center">
-            <div
-              className="grid gap-1 bg-gray-100 p-4 rounded-xl shadow-inner border border-gray-200"
-              style={{
-                gridTemplateColumns: `repeat(${gameState.size}, ${cellSize}px)`,
-                width: "fit-content",
-                maxWidth: "100%",
-                overflowX: "auto",
-              }}
-            >
-              {gameState.maze.map((row, y) =>
-                row.map((cell, x) => (
-                  <div
-                    key={`${x}-${y}`}
-                    className={getCellClasses(x, y)}
-                    style={{
-                      width: `${cellSize}px`,
-                      height: `${cellSize}px`,
-                      minWidth: `${cellSize}px`,
-                      minHeight: `${cellSize}px`,
-                    }}
-                  >
-                    {/* Player */}
-                    {gameState.playerPosition.x === x &&
-                      gameState.playerPosition.y === y && (
-                        <div className="w-full h-full flex items-center justify-center relative z-10">
-                          <div className="w-3/4 h-3/4 bg-white rounded-full flex items-center justify-center shadow-lg transform transition-transform duration-300">
-                            <div className="w-2 h-2 bg-emerald-600 rounded-full animate-pulse"></div>
+          {/* Horizontal Mode Indicator */}
+          {isHorizontalMode && (
+            <div className="mb-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <div className="flex items-center gap-2 text-blue-800">
+                  <Maximize2 className="h-4 w-4" />
+                  <span className="text-sm font-medium">
+                    Horizontal Mode Active
+                  </span>
+                </div>
+                <p className="text-xs text-blue-600 mt-1">
+                  Only left/right movement allowed. Use horizontal navigation!
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Horizontal Scroll Maze Grid with Swipe Support */}
+          <div
+            className="relative overflow-x-auto overflow-y-hidden"
+            ref={mazeContainerRef}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            style={{
+              scrollbarWidth: "thin",
+              scrollbarColor: "#d1d5db #f3f4f6",
+            }}
+          >
+            <div className="flex justify-center py-4">
+              <div
+                className="grid gap-1 bg-gray-100 p-4 rounded-xl shadow-inner border border-gray-200"
+                style={{
+                  gridTemplateColumns: `repeat(${gameState.size}, ${cellSize}px)`,
+                  width: "fit-content",
+                  minWidth: "100%",
+                }}
+              >
+                {gameState.maze.map((row, y) =>
+                  row.map((cell, x) => (
+                    <div
+                      key={`${x}-${y}`}
+                      className={getCellClasses(x, y)}
+                      style={{
+                        width: `${cellSize}px`,
+                        height: `${cellSize}px`,
+                        minWidth: `${cellSize}px`,
+                        minHeight: `${cellSize}px`,
+                      }}
+                    >
+                      {/* Player */}
+                      {gameState.playerPosition.x === x &&
+                        gameState.playerPosition.y === y && (
+                          <div className="w-full h-full flex items-center justify-center relative z-10">
+                            <div className="w-3/4 h-3/4 bg-white rounded-full flex items-center justify-center shadow-lg transform transition-transform duration-300">
+                              <div className="w-2 h-2 bg-emerald-600 rounded-full animate-pulse"></div>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    {/* Start */}
-                    {gameState.startPosition.x === x &&
-                      gameState.startPosition.y === y &&
-                      !(
-                        gameState.playerPosition.x === x &&
-                        gameState.playerPosition.y === y
-                      ) && (
-                        <div className="w-full h-full flex items-center justify-center relative z-10">
-                          <div className="w-3/4 h-3/4 bg-white rounded-full flex items-center justify-center shadow-lg">
-                            <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                        )}
+                      {/* Start */}
+                      {gameState.startPosition.x === x &&
+                        gameState.startPosition.y === y &&
+                        !(
+                          gameState.playerPosition.x === x &&
+                          gameState.playerPosition.y === y
+                        ) && (
+                          <div className="w-full h-full flex items-center justify-center relative z-10">
+                            <div className="w-3/4 h-3/4 bg-white rounded-full flex items-center justify-center shadow-lg">
+                              <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    {/* End */}
-                    {gameState.endPosition.x === x &&
-                      gameState.endPosition.y === y && (
-                        <div className="w-full h-full flex items-center justify-center relative z-10">
-                          <div className="w-3/4 h-3/4 bg-white rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                            <div className="w-2 h-2 bg-amber-600 rounded-full"></div>
+                        )}
+                      {/* End */}
+                      {gameState.endPosition.x === x &&
+                        gameState.endPosition.y === y && (
+                          <div className="w-full h-full flex items-center justify-center relative z-10">
+                            <div className="w-3/4 h-3/4 bg-white rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                              <div className="w-2 h-2 bg-amber-600 rounded-full"></div>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                  </div>
-                )),
-              )}
+                        )}
+                    </div>
+                  )),
+                )}
+              </div>
             </div>
           </div>
+
+          {/* Horizontal Scroll Indicator */}
+          {gameState.size > 20 && (
+            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500">
+              <div className="flex items-center gap-1">
+                <div className="w-4 h-1 bg-gray-300 rounded-full overflow-hidden">
+                  <div className="w-1/3 h-full bg-blue-500 rounded-full"></div>
+                </div>
+                <span>Scroll horizontally to explore</span>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Clean Mobile Controls */}
+        {/* Enhanced Mobile Controls with Horizontal Features */}
         {isMobile && gameState.gameStatus === "playing" && (
           <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-40">
+            {/* Swipe Gesture Hint */}
+            <div className="mb-2 text-center">
+              <div className="bg-black/80 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-xs">
+                {isHorizontalMode
+                  ? "↔️ Swipe left/right only"
+                  : "👆 Swipe in any direction"}
+              </div>
+            </div>
+
             <div className="grid grid-cols-3 gap-3 w-52 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-gray-200 shadow-xl">
               <div></div>
               <Button
                 onTouchStart={() => handleMove("up")}
                 variant="outline"
                 size="sm"
-                className="aspect-square bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200"
-                disabled={isPaused}
+                className={`aspect-square border-2 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200 ${
+                  isHorizontalMode
+                    ? "bg-gray-100 border-gray-300 opacity-50 cursor-not-allowed"
+                    : "bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+                disabled={isPaused || isHorizontalMode}
               >
-                <div className="w-3 h-3 border-t-2 border-r-2 border-gray-700 transform rotate-[-45deg]"></div>
+                <div
+                  className={`w-3 h-3 border-t-2 border-r-2 transform rotate-[-45deg] ${
+                    isHorizontalMode ? "border-gray-400" : "border-gray-700"
+                  }`}
+                ></div>
               </Button>
               <div></div>
 
@@ -383,24 +568,50 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
                 onTouchStart={() => handleMove("left")}
                 variant="outline"
                 size="sm"
-                className="aspect-square bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200"
+                className={`aspect-square border-2 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200 ${
+                  isHorizontalMode
+                    ? "bg-blue-50 border-blue-300 hover:border-blue-400 hover:bg-blue-100"
+                    : "bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                }`}
                 disabled={isPaused}
               >
-                <div className="w-3 h-3 border-t-2 border-r-2 border-gray-700 transform rotate-[-135deg]"></div>
+                <div
+                  className={`w-3 h-3 border-t-2 border-r-2 transform rotate-[-135deg] ${
+                    isHorizontalMode ? "border-blue-700" : "border-gray-700"
+                  }`}
+                ></div>
               </Button>
               <div className="flex items-center justify-center">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center shadow-sm border border-gray-200">
-                  <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                <div
+                  className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm border ${
+                    isHorizontalMode
+                      ? "bg-blue-100 border-blue-200"
+                      : "bg-gray-100 border-gray-200"
+                  }`}
+                >
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      isHorizontalMode ? "bg-blue-500" : "bg-gray-400"
+                    }`}
+                  ></div>
                 </div>
               </div>
               <Button
                 onTouchStart={() => handleMove("right")}
                 variant="outline"
                 size="sm"
-                className="aspect-square bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200"
+                className={`aspect-square border-2 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200 ${
+                  isHorizontalMode
+                    ? "bg-blue-50 border-blue-300 hover:border-blue-400 hover:bg-blue-100"
+                    : "bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                }`}
                 disabled={isPaused}
               >
-                <div className="w-3 h-3 border-t-2 border-r-2 border-gray-700 transform rotate-[45deg]"></div>
+                <div
+                  className={`w-3 h-3 border-t-2 border-r-2 transform rotate-[45deg] ${
+                    isHorizontalMode ? "border-blue-700" : "border-gray-700"
+                  }`}
+                ></div>
               </Button>
 
               <div></div>
@@ -408,10 +619,18 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
                 onTouchStart={() => handleMove("down")}
                 variant="outline"
                 size="sm"
-                className="aspect-square bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200"
-                disabled={isPaused}
+                className={`aspect-square border-2 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200 ${
+                  isHorizontalMode
+                    ? "bg-gray-100 border-gray-300 opacity-50 cursor-not-allowed"
+                    : "bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+                disabled={isPaused || isHorizontalMode}
               >
-                <div className="w-3 h-3 border-t-2 border-r-2 border-gray-700 transform rotate-[135deg]"></div>
+                <div
+                  className={`w-3 h-3 border-t-2 border-r-2 transform rotate-[135deg] ${
+                    isHorizontalMode ? "border-gray-400" : "border-gray-700"
+                  }`}
+                ></div>
               </Button>
               <div></div>
             </div>
