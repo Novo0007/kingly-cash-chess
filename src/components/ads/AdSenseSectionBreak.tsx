@@ -12,7 +12,7 @@ export const AdSenseSectionBreak: React.FC<AdSenseSectionBreakProps> = ({
   className = "",
   title = "",
 }) => {
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   if (!AD_PLACEMENT.SHOW_SECTION_BREAKS) {
     return null;
