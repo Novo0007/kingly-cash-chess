@@ -12,7 +12,7 @@ export const AdSenseBanner: React.FC<AdSenseBannerProps> = ({
   position = "top",
   className = "",
 }) => {
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   if (!AD_PLACEMENT.SHOW_BANNER) {
     return null;
