@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { ChessRulesPage } from "./pages/ChessRulesPage";
 import { LudoRulesPage } from "./pages/LudoRulesPage";
+import MazeRulesPage from "./pages/MazeRulesPage";
 import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { DraggableMusicControl } from "@/components/music/DraggableMusicControl";
 
@@ -76,7 +77,9 @@ const App = () => {
               </h1>
               <p className="text-lg text-muted-foreground">
                 BY{" "}
-                <span className="font-semibold text-foreground">NNC GAMES / HACKER TEAM LEGACY 😜</span>
+                <span className="font-semibold text-foreground">
+                  NNC GAMES / HACKER TEAM LEGACY 😜
+                </span>
               </p>
             </div>
 
@@ -137,7 +140,7 @@ const App = () => {
             {/* Status */}
             <div className="bg-card border border-border rounded-2xl p-4">
               <p className="text-sm text-card-foreground">
-                🎮 Welcome to Game Hub 
+                🎮 Welcome to Game Hub
               </p>
             </div>
           </div>
@@ -145,7 +148,9 @@ const App = () => {
 
         {/* Footer */}
         <div className="absolute bottom-6 left-0 right-0 text-center">
-          <p className="text-xs text-muted-foreground">© 2024 NNC Games / Hacker See You 😘</p>
+          <p className="text-xs text-muted-foreground">
+            © 2024 NNC Games / Hacker See You 😘
+          </p>
         </div>
       </div>
     );
@@ -171,6 +176,7 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/chess-rules" element={<ChessRulesPage />} />
               <Route path="/ludo-rules" element={<LudoRulesPage />} />
+              <Route path="/maze-rules" element={<MazeRulesPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
