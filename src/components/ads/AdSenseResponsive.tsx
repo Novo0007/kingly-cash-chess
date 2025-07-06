@@ -14,7 +14,7 @@ export const AdSenseResponsive: React.FC<AdSenseResponsiveProps> = ({
   size = "medium",
   showLabel = true,
 }) => {
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   const getSizeConfig = () => {
     switch (size) {
