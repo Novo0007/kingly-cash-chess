@@ -25,7 +25,7 @@ import { MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface GameSelectionProps {
-  onSelectGame: (gameType: "chess" | "ludo") => void;
+  onSelectGame: (gameType: "chess" | "ludo" | "maze") => void;
 }
 
 export const GameSelection: React.FC<GameSelectionProps> = ({
@@ -73,6 +73,25 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       status: "Hot",
       players: "1.8K+ Online",
     },
+    {
+      id: "maze",
+      title: "Maze Challenge",
+      description:
+        "Navigate labyrinth puzzles and earn points - completely FREE!",
+      icon: Target,
+      emoji: "🧩",
+      color: "purple",
+      gradient: "from-purple-700 via-indigo-700 to-blue-700",
+      lightGradient: "from-purple-100 via-indigo-100 to-blue-100",
+      features: [
+        "🆓 Free to Play",
+        "🧠 Brain Training",
+        "🏆 Leaderboards",
+        "⚡ Multiple Levels",
+      ],
+      status: "NEW",
+      players: "500+ Playing",
+    },
   ];
 
   const comingSoonGames = [
@@ -85,7 +104,6 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
-        
         {/* Global Chat Button - Only show on mobile/tablet */}
         {(isMobile || isTablet) && (
           <div className="fixed bottom-20 left-4 z-30">
@@ -261,7 +279,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 
                   {/* Enhanced Play Button with Animation */}
                   <Button
-                    onClick={() => onSelectGame(game.id as "chess" | "ludo")}
+                    onClick={() =>
+                      onSelectGame(game.id as "chess" | "ludo" | "maze")
+                    }
                     className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:${game.gradient} text-white border-0 py-4 md:py-5 text-base md:text-lg font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] group/btn`}
                   >
                     {/* Button Background Animation */}
@@ -284,7 +304,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                     </div>
                     <div className="flex items-center gap-1">
                       <span className="text-lg font-black text-green-600">
-                        ₹{index === 0 ? "2,50,000" : "1,80,000"}
+                        {game.id === "maze"
+                          ? "FREE"
+                          : `₹${index === 0 ? "2,50,000" : "1,80,000"}`}
                       </span>
                       <Sparkles className="h-4 w-4 text-yellow-500" />
                     </div>
@@ -402,7 +424,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         </div>
 
         {/* Enhanced Game Rules Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           <Card className="relative bg-gradient-to-br from-blue-500 to-purple-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20"></div>
             <CardContent className="relative p-6">
@@ -451,6 +473,35 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </div>
                 <Button
                   onClick={() => navigate("/ludo-rules")}
+                  variant="secondary"
+                  className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
+                >
+                  Learn
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="relative bg-gradient-to-br from-purple-500 to-indigo-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-indigo-400/20"></div>
+            <CardContent className="relative p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <Target className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-lg font-heading">
+                      Maze Rules Guide
+                    </h4>
+                    <p className="text-white/90 text-sm font-medium">
+                      Learn puzzle-solving strategies and tips
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => navigate("/maze-rules")}
                   variant="secondary"
                   className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
                 >

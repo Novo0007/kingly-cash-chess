@@ -93,7 +93,7 @@ export const useBackgroundMusic = (options: BackgroundMusicOptions = {}) => {
 
   // Use external music file
   const getMusicUrl = () => {
-    return "https://cdn.pixabay.com/audio/2023/07/22/audio_720626056a.mp3";
+    return "https://cdn.pixabay.com/audio/2025/03/19/audio_91b4c0a3b6.mp3";
   };
 
   useEffect(() => {
