@@ -12,7 +12,7 @@ export const AdSenseSidebar: React.FC<AdSenseSidebarProps> = ({
   className = "",
   position = "right",
 }) => {
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   // Don't show sidebar ads on mobile or if disabled
   if (isMobile || !AD_PLACEMENT.SHOW_SIDEBAR) {
