@@ -134,42 +134,28 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
       gameState.endPosition.x === x && gameState.endPosition.y === y;
     const isInTrail = trail.some((pos) => pos.x === x && pos.y === y);
 
-    let classes = "transition-all duration-300 relative overflow-hidden ";
+    let classes = "transition-all duration-500 ease-out relative rounded-sm ";
 
     if (cell.isWall) {
-      classes +=
-        "bg-gradient-to-br from-slate-800 via-gray-900 to-slate-900 border border-slate-700 shadow-inner";
-      // Add some texture to walls
-      classes +=
-        " before:absolute before:inset-0 before:bg-gradient-to-br before:from-slate-600/20 before:to-transparent";
+      classes += "bg-slate-900 border-0 shadow-inner";
     } else {
-      classes +=
-        "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border border-indigo-200 shadow-sm";
-      // Add subtle glow to paths
-      classes +=
-        " before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/40 before:to-transparent";
+      classes += "bg-white border-0 shadow-sm";
     }
 
     if (isPlayer) {
       classes +=
-        " !bg-gradient-to-br !from-emerald-400 !via-green-500 !to-emerald-600 !border-2 !border-emerald-300 !shadow-xl !scale-110 animate-pulse";
-      classes +=
-        " after:absolute after:inset-0 after:bg-gradient-to-br after:from-white/30 after:to-transparent after:animate-pulse";
+        " !bg-gradient-to-br !from-emerald-400 !to-emerald-600 !shadow-lg !scale-110";
+      classes += " ring-4 ring-emerald-300/50 ring-offset-2 ring-offset-white";
     } else if (isEnd) {
       classes +=
-        " !bg-gradient-to-br !from-yellow-400 !via-orange-500 !to-red-500 !border-2 !border-yellow-300 !shadow-lg animate-bounce";
+        " !bg-gradient-to-br !from-amber-400 !to-orange-500 !shadow-lg";
       classes +=
-        " after:absolute after:inset-0 after:bg-gradient-to-br after:from-white/50 after:to-transparent";
+        " ring-4 ring-amber-300/50 ring-offset-2 ring-offset-white animate-pulse";
     } else if (isStart) {
-      classes +=
-        " !bg-gradient-to-br !from-blue-400 !via-cyan-500 !to-blue-600 !border-2 !border-blue-300 !shadow-lg";
-      classes +=
-        " after:absolute after:inset-0 after:bg-gradient-to-br after:from-white/40 after:to-transparent";
+      classes += " !bg-gradient-to-br !from-blue-400 !to-blue-600 !shadow-lg";
+      classes += " ring-4 ring-blue-300/50 ring-offset-2 ring-offset-white";
     } else if (isInTrail && !cell.isWall) {
-      classes +=
-        " !bg-gradient-to-br !from-green-100 !via-emerald-100 !to-green-200 !border !border-green-300";
-      classes +=
-        " after:absolute after:inset-0 after:bg-gradient-to-br after:from-white/20 after:to-transparent";
+      classes += " !bg-gradient-to-br !from-emerald-50 !to-emerald-100";
     }
 
     return classes;
@@ -203,135 +189,127 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
     : Math.max(18, Math.min(28, 600 / gameState.size));
 
   return (
-    <div className="w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
-      <div className="p-4 md:p-6">
-        {/* Game Header - Mobile Optimized */}
-        <div className="flex flex-col gap-3 mb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div
-                className={`p-2 bg-gradient-to-r ${getDifficultyColor()} rounded-lg text-white shadow-lg`}
-              >
-                <Target className="h-5 w-5" />
+    <div className="w-full bg-gradient-to-br from-gray-50 to-white min-h-screen">
+      <div className="p-4 md:p-6 max-w-7xl mx-auto">
+        {/* Clean Game Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl flex items-center justify-center shadow-lg">
+                <Target className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg md:text-xl font-bold text-gray-800 flex items-center gap-2">
-                  🧩 Maze
-                  <Badge
-                    className={`bg-gradient-to-r ${getDifficultyColor()} text-white border-0 text-xs`}
-                  >
-                    {gameState.difficulty.toUpperCase()}
-                  </Badge>
-                </h3>
-                <p className="text-xs md:text-sm text-gray-600">
-                  {gameState.size}×{gameState.size} • Score: {gameState.score}
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+                  Maze Challenge
+                </h1>
+                <p className="text-gray-500 text-sm">
+                  {gameState.difficulty} • {gameState.size}×{gameState.size}
                 </p>
               </div>
             </div>
+          </div>
 
-            <div className="flex items-center gap-1">
-              <Button
-                onClick={() => setIsPaused(!isPaused)}
-                variant="outline"
-                size="sm"
-                disabled={gameState.gameStatus !== "playing"}
-                className="flex items-center gap-1 text-xs px-2 py-1"
-              >
-                {isPaused ? (
-                  <Play className="h-3 w-3" />
-                ) : (
-                  <Pause className="h-3 w-3" />
-                )}
-                {isPaused ? "Resume" : "Pause"}
-              </Button>
-              <Button
-                onClick={onGameReset}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1 text-xs px-2 py-1"
-              >
-                <RefreshCw className="h-3 w-3" />
-                Reset
-              </Button>
-            </div>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setIsPaused(!isPaused)}
+              variant="outline"
+              size="sm"
+              disabled={gameState.gameStatus !== "playing"}
+              className="h-10 px-4 bg-white border-gray-200 hover:bg-gray-50 transition-colors"
+            >
+              {isPaused ? (
+                <Play className="h-4 w-4" />
+              ) : (
+                <Pause className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              onClick={onGameReset}
+              variant="outline"
+              size="sm"
+              className="h-10 px-4 bg-white border-gray-200 hover:bg-gray-50 transition-colors"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
-        {/* Game Stats - Mobile Optimized */}
-        <div className="grid grid-cols-4 gap-2 mb-4">
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 border border-blue-200 text-center">
-            <Timer className="h-4 w-4 text-blue-600 mx-auto mb-1" />
-            <div className="text-sm md:text-lg font-bold text-gray-800">
+        {/* Clean Stats Display */}
+        <div className="grid grid-cols-4 gap-3 mb-8">
+          <div className="bg-white rounded-xl p-4 border border-gray-100 text-center shadow-sm hover:shadow-md transition-shadow">
+            <div className="text-2xl font-bold text-gray-900 mb-1">
               {formatTime(gameTimer)}
             </div>
-            <div className="text-xs text-gray-600">Time</div>
-          </div>
-
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 border border-green-200 text-center">
-            <Zap className="h-4 w-4 text-green-600 mx-auto mb-1" />
-            <div className="text-sm md:text-lg font-bold text-gray-800">
-              {moves}
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              Time
             </div>
-            <div className="text-xs text-gray-600">Moves</div>
           </div>
 
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 border border-yellow-200 text-center">
-            <Trophy className="h-4 w-4 text-yellow-600 mx-auto mb-1" />
-            <div className="text-sm md:text-lg font-bold text-gray-800">
-              {gameState.score}
+          <div className="bg-white rounded-xl p-4 border border-gray-100 text-center shadow-sm hover:shadow-md transition-shadow">
+            <div className="text-2xl font-bold text-gray-900 mb-1">{moves}</div>
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              Moves
             </div>
-            <div className="text-xs text-gray-600">Score</div>
           </div>
 
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 border border-purple-200 text-center">
-            <Star className="h-4 w-4 text-purple-600 mx-auto mb-1" />
-            <div className="text-sm md:text-lg font-bold text-gray-800">
+          <div className="bg-white rounded-xl p-4 border border-gray-100 text-center shadow-sm hover:shadow-md transition-shadow">
+            <div className="text-2xl font-bold text-gray-900 mb-1">
+              {gameState.score.toLocaleString()}
+            </div>
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              Score
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl p-4 border border-gray-100 text-center shadow-sm hover:shadow-md transition-shadow">
+            <div className="text-2xl mb-1">
               {gameState.gameStatus === "completed"
                 ? "🎉"
                 : gameState.gameStatus === "playing"
-                  ? "🎮"
+                  ? "🎯"
                   : "⏳"}
             </div>
-            <div className="text-xs text-gray-600">Status</div>
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              Status
+            </div>
           </div>
         </div>
 
-        {/* Maze Board - Full Width Mobile Friendly */}
-        <div className="relative bg-gradient-to-br from-slate-100 via-gray-50 to-indigo-50 rounded-xl p-2 md:p-4 shadow-lg overflow-auto">
-          {/* Subtle background pattern */}
-          <div className="absolute inset-0 opacity-3">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-pink-600/10 rounded-xl"></div>
-          </div>
+        {/* Clean Maze Board */}
+        <div className="relative bg-white rounded-2xl p-6 shadow-lg border border-gray-100 overflow-auto">
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent rounded-2xl pointer-events-none"></div>
 
           {isPaused && (
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-xl p-6 md:p-8 text-center shadow-2xl border border-indigo-200 max-w-sm w-full">
-                <Pause className="h-12 w-12 md:h-16 md:w-16 text-indigo-600 mx-auto mb-4 md:mb-6" />
-                <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">
+            <div className="fixed inset-0 bg-white/80 backdrop-blur-lg flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-2xl p-8 text-center shadow-xl border border-gray-100 max-w-sm w-full">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Pause className="h-8 w-8 text-gray-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
                   Game Paused
                 </h3>
-                <p className="text-gray-600 mb-4 md:mb-6 text-sm md:text-lg">
-                  Press Space or tap Resume to continue
+                <p className="text-gray-600 mb-6 text-base">
+                  Ready to continue your maze adventure?
                 </p>
                 <Button
                   onClick={() => setIsPaused(false)}
-                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 md:px-8 md:py-3 rounded-lg md:rounded-xl shadow-lg w-full justify-center"
+                  className="flex items-center gap-3 bg-gray-900 hover:bg-gray-800 text-white px-8 py-3 rounded-xl shadow-lg w-full justify-center transition-colors"
                 >
-                  <Play className="h-4 w-4 md:h-5 md:w-5" />
+                  <Play className="h-5 w-5" />
                   Resume Game
                 </Button>
               </div>
             </div>
           )}
 
-          {/* Maze container - Mobile optimized */}
+          {/* Clean Maze Grid */}
           <div className="relative flex justify-center">
             <div
-              className="grid gap-0.5 bg-gradient-to-br from-slate-800 via-gray-900 to-slate-900 p-2 md:p-3 rounded-lg shadow-xl border border-slate-600"
+              className="grid gap-1 bg-gray-100 p-4 rounded-xl shadow-inner border border-gray-200"
               style={{
                 gridTemplateColumns: `repeat(${gameState.size}, ${cellSize}px)`,
                 width: "fit-content",
-                maxWidth: "100vw",
+                maxWidth: "100%",
                 overflowX: "auto",
               }}
             >
@@ -350,15 +328,10 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
                     {/* Player */}
                     {gameState.playerPosition.x === x &&
                       gameState.playerPosition.y === y && (
-                        <div className="w-full h-full flex items-center justify-center text-white font-bold relative z-10">
-                          <span
-                            className="text-xl drop-shadow-lg transform transition-transform duration-300 hover:scale-110"
-                            style={{
-                              fontSize: `${Math.max(12, cellSize * 0.7)}px`,
-                            }}
-                          >
-                            🏃‍♂️
-                          </span>
+                        <div className="w-full h-full flex items-center justify-center relative z-10">
+                          <div className="w-3/4 h-3/4 bg-white rounded-full flex items-center justify-center shadow-lg transform transition-transform duration-300">
+                            <div className="w-2 h-2 bg-emerald-600 rounded-full animate-pulse"></div>
+                          </div>
                         </div>
                       )}
                     {/* Start */}
@@ -368,42 +341,20 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
                         gameState.playerPosition.x === x &&
                         gameState.playerPosition.y === y
                       ) && (
-                        <div className="w-full h-full flex items-center justify-center text-white relative z-10">
-                          <span
-                            className="drop-shadow-lg animate-pulse"
-                            style={{
-                              fontSize: `${Math.max(12, cellSize * 0.7)}px`,
-                            }}
-                          >
-                            🚀
-                          </span>
+                        <div className="w-full h-full flex items-center justify-center relative z-10">
+                          <div className="w-3/4 h-3/4 bg-white rounded-full flex items-center justify-center shadow-lg">
+                            <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                          </div>
                         </div>
                       )}
                     {/* End */}
                     {gameState.endPosition.x === x &&
                       gameState.endPosition.y === y && (
-                        <div className="w-full h-full flex items-center justify-center text-white relative z-10">
-                          <span
-                            className="drop-shadow-lg animate-bounce"
-                            style={{
-                              fontSize: `${Math.max(12, cellSize * 0.8)}px`,
-                            }}
-                          >
-                            🎯
-                          </span>
+                        <div className="w-full h-full flex items-center justify-center relative z-10">
+                          <div className="w-3/4 h-3/4 bg-white rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                            <div className="w-2 h-2 bg-amber-600 rounded-full"></div>
+                          </div>
                         </div>
-                      )}
-
-                    {/* Wall decoration */}
-                    {gameState.maze[y][x].isWall && (
-                      <div className="absolute inset-0 bg-gradient-to-br from-slate-600/30 via-gray-700/20 to-slate-800/30 opacity-60"></div>
-                    )}
-
-                    {/* Path glow effect */}
-                    {!gameState.maze[y][x].isWall &&
-                      !gameState.playerPosition.x === x &&
-                      !gameState.playerPosition.y === y && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-blue-200/10 via-indigo-200/5 to-purple-200/10 opacity-50"></div>
                       )}
                   </div>
                 )),
@@ -412,19 +363,19 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
           </div>
         </div>
 
-        {/* Mobile Controls - Fixed Position */}
+        {/* Clean Mobile Controls */}
         {isMobile && gameState.gameStatus === "playing" && (
           <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-40">
-            <div className="grid grid-cols-3 gap-2 w-48 bg-black/80 backdrop-blur-md p-3 rounded-2xl border border-white/20 shadow-2xl">
+            <div className="grid grid-cols-3 gap-3 w-52 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-gray-200 shadow-xl">
               <div></div>
               <Button
                 onTouchStart={() => handleMove("up")}
                 variant="outline"
                 size="sm"
-                className="aspect-square bg-gradient-to-br from-blue-500 to-indigo-600 text-white border border-blue-400 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-lg font-bold rounded-lg active:scale-95 h-12 w-12"
+                className="aspect-square bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200"
                 disabled={isPaused}
               >
-                ↑
+                <div className="w-3 h-3 border-t-2 border-r-2 border-gray-700 transform rotate-[-45deg]"></div>
               </Button>
               <div></div>
 
@@ -432,24 +383,24 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
                 onTouchStart={() => handleMove("left")}
                 variant="outline"
                 size="sm"
-                className="aspect-square bg-gradient-to-br from-blue-500 to-indigo-600 text-white border border-blue-400 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-lg font-bold rounded-lg active:scale-95 h-12 w-12"
+                className="aspect-square bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200"
                 disabled={isPaused}
               >
-                ←
+                <div className="w-3 h-3 border-t-2 border-r-2 border-gray-700 transform rotate-[-135deg]"></div>
               </Button>
               <div className="flex items-center justify-center">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-sm shadow-lg border border-purple-400">
-                  🎮
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center shadow-sm border border-gray-200">
+                  <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
                 </div>
               </div>
               <Button
                 onTouchStart={() => handleMove("right")}
                 variant="outline"
                 size="sm"
-                className="aspect-square bg-gradient-to-br from-blue-500 to-indigo-600 text-white border border-blue-400 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-lg font-bold rounded-lg active:scale-95 h-12 w-12"
+                className="aspect-square bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200"
                 disabled={isPaused}
               >
-                →
+                <div className="w-3 h-3 border-t-2 border-r-2 border-gray-700 transform rotate-[45deg]"></div>
               </Button>
 
               <div></div>
@@ -457,32 +408,12 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
                 onTouchStart={() => handleMove("down")}
                 variant="outline"
                 size="sm"
-                className="aspect-square bg-gradient-to-br from-blue-500 to-indigo-600 text-white border border-blue-400 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-lg font-bold rounded-lg active:scale-95 h-12 w-12"
+                className="aspect-square bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200"
                 disabled={isPaused}
               >
-                ↓
+                <div className="w-3 h-3 border-t-2 border-r-2 border-gray-700 transform rotate-[135deg]"></div>
               </Button>
               <div></div>
-            </div>
-
-            {/* Quick tip */}
-            <div className="mt-2 text-center">
-              <p className="text-xs text-white/80 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-1 inline-block">
-                💡 Tap to move
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Instructions - Mobile Optimized */}
-        {!isMobile && (
-          <div className="mt-4 text-center">
-            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg p-3 text-white shadow-lg">
-              <p className="text-sm font-semibold mb-1">⌨️ Desktop Controls</p>
-              <p className="text-xs opacity-90">
-                Arrow keys or WASD to move • Spacebar to pause • Reach the
-                target to win!
-              </p>
             </div>
           </div>
         )}
