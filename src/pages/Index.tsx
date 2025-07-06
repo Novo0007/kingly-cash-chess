@@ -138,12 +138,14 @@ const Index = () => {
     checkAdminStatus();
   }, [user?.email]);
 
-  const handleSelectGame = (gameType: "chess" | "ludo") => {
+  const handleSelectGame = (gameType: "chess" | "ludo" | "maze") => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
       setCurrentView("lobby");
     } else if (gameType === "ludo") {
       setCurrentView("ludo-lobby");
+    } else if (gameType === "maze") {
+      setCurrentView("maze-game");
     }
   };
 
@@ -153,6 +155,8 @@ const Index = () => {
       setCurrentView("game");
     } else if (selectedGameType === "ludo") {
       setCurrentView("ludo-game");
+    } else if (selectedGameType === "maze") {
+      setCurrentView("maze-game");
     }
   };
 
@@ -162,6 +166,8 @@ const Index = () => {
       setCurrentView("lobby");
     } else if (selectedGameType === "ludo") {
       setCurrentView("ludo-lobby");
+    } else if (selectedGameType === "maze") {
+      setCurrentView("maze-game");
     }
   };
 
