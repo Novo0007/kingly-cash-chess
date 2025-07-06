@@ -357,17 +357,31 @@ const Index = () => {
       </div>
 
       <main className="relative z-20 max-w-7xl mx-auto px-1 sm:px-2 md:px-4 py-1 sm:py-2 md:py-8 pb-16 sm:pb-20 md:pb-8">
-        <div className="relative">
-          <div className="absolute inset-0 wood-glass rounded-lg sm:rounded-xl md:rounded-2xl wood-shadow-lg wood-plank">
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-50/5 via-transparent to-orange-600/5 rounded-lg sm:rounded-xl md:rounded-2xl"></div>
-            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-200/50 to-transparent"></div>
-          </div>
+        <div className="relative flex gap-4">
+          {/* Sidebar Ad */}
+          <AdSenseSidebar position="left" />
 
-          <div className="relative z-10 p-1 sm:p-2 md:p-4">
-            <div className="space-y-4 slide-in-bottom">
-              {renderCurrentView()}
+          {/* Main Content */}
+          <div className="flex-1 relative">
+            <div className="absolute inset-0 wood-glass rounded-lg sm:rounded-xl md:rounded-2xl wood-shadow-lg wood-plank">
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-50/5 via-transparent to-orange-600/5 rounded-lg sm:rounded-xl md:rounded-2xl"></div>
+              <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-200/50 to-transparent"></div>
+            </div>
+
+            <div className="relative z-10 p-1 sm:p-2 md:p-4">
+              <div className="space-y-4 slide-in-bottom">
+                {renderCurrentView()}
+
+                {/* Section Break Ad - Only show on main game selection page */}
+                {currentView === "games" && (
+                  <AdSenseSectionBreak title="Discover More Games" />
+                )}
+              </div>
             </div>
           </div>
+
+          {/* Right Sidebar Ad */}
+          <AdSenseSidebar position="right" />
         </div>
       </main>
 
