@@ -203,48 +203,44 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
     : Math.max(18, Math.min(28, 600 / gameState.size));
 
   return (
-    <Card className="w-full max-w-6xl mx-auto bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-4 border-transparent bg-clip-padding shadow-2xl">
-      {/* Enhanced card background with glow effect */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl blur-sm opacity-30"></div>
-      <div className="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl border-2 border-white/50 backdrop-blur-sm">
-        <CardContent className="p-6 md:p-8">
-          {/* Game Header */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-3">
+    <div className="w-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+      <div className="p-4 md:p-6">
+        {/* Game Header - Mobile Optimized */}
+        <div className="flex flex-col gap-3 mb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
               <div
-                className={`p-3 bg-gradient-to-r ${getDifficultyColor()} rounded-xl text-white shadow-lg`}
+                className={`p-2 bg-gradient-to-r ${getDifficultyColor()} rounded-lg text-white shadow-lg`}
               >
-                <Target className="h-6 w-6" />
+                <Target className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  🧩 Maze Challenge
+                <h3 className="text-lg md:text-xl font-bold text-gray-800 flex items-center gap-2">
+                  🧩 Maze
                   <Badge
-                    className={`bg-gradient-to-r ${getDifficultyColor()} text-white border-0`}
+                    className={`bg-gradient-to-r ${getDifficultyColor()} text-white border-0 text-xs`}
                   >
-                    <Crown className="h-3 w-3 mr-1" />
                     {gameState.difficulty.toUpperCase()}
                   </Badge>
                 </h3>
-                <p className="text-sm text-gray-600">
-                  Size: {gameState.size}×{gameState.size} • Target Score:{" "}
-                  {gameState.score}
+                <p className="text-xs md:text-sm text-gray-600">
+                  {gameState.size}×{gameState.size} • Score: {gameState.score}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <Button
                 onClick={() => setIsPaused(!isPaused)}
                 variant="outline"
                 size="sm"
                 disabled={gameState.gameStatus !== "playing"}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 text-xs px-2 py-1"
               >
                 {isPaused ? (
-                  <Play className="h-4 w-4" />
+                  <Play className="h-3 w-3" />
                 ) : (
-                  <Pause className="h-4 w-4" />
+                  <Pause className="h-3 w-3" />
                 )}
                 {isPaused ? "Resume" : "Pause"}
               </Button>
@@ -252,255 +248,245 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
                 onClick={onGameReset}
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 text-xs px-2 py-1"
               >
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className="h-3 w-3" />
                 Reset
               </Button>
             </div>
           </div>
+        </div>
 
-          {/* Game Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white rounded-xl p-3 border border-blue-200 text-center">
-              <Timer className="h-5 w-5 text-blue-600 mx-auto mb-1" />
-              <div className="text-lg font-bold text-gray-800">
-                {formatTime(gameTimer)}
-              </div>
-              <div className="text-xs text-gray-600">Time</div>
+        {/* Game Stats - Mobile Optimized */}
+        <div className="grid grid-cols-4 gap-2 mb-4">
+          <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 border border-blue-200 text-center">
+            <Timer className="h-4 w-4 text-blue-600 mx-auto mb-1" />
+            <div className="text-sm md:text-lg font-bold text-gray-800">
+              {formatTime(gameTimer)}
             </div>
-
-            <div className="bg-white rounded-xl p-3 border border-green-200 text-center">
-              <Zap className="h-5 w-5 text-green-600 mx-auto mb-1" />
-              <div className="text-lg font-bold text-gray-800">{moves}</div>
-              <div className="text-xs text-gray-600">Moves</div>
-            </div>
-
-            <div className="bg-white rounded-xl p-3 border border-yellow-200 text-center">
-              <Trophy className="h-5 w-5 text-yellow-600 mx-auto mb-1" />
-              <div className="text-lg font-bold text-gray-800">
-                {gameState.score}
-              </div>
-              <div className="text-xs text-gray-600">Score</div>
-            </div>
-
-            <div className="bg-white rounded-xl p-3 border border-purple-200 text-center">
-              <Star className="h-5 w-5 text-purple-600 mx-auto mb-1" />
-              <div className="text-lg font-bold text-gray-800">
-                {gameState.gameStatus === "completed"
-                  ? "🎉"
-                  : gameState.gameStatus === "playing"
-                    ? "🎮"
-                    : "⏳"}
-              </div>
-              <div className="text-xs text-gray-600">Status</div>
-            </div>
+            <div className="text-xs text-gray-600">Time</div>
           </div>
 
-          {/* Maze Board */}
-          <div className="relative bg-gradient-to-br from-slate-100 via-gray-50 to-indigo-50 rounded-2xl border-4 border-gradient-to-r from-indigo-300 to-purple-300 p-6 shadow-2xl overflow-auto">
-            {/* Decorative background pattern */}
-            <div className="absolute inset-0 opacity-5">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20 rounded-2xl"></div>
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-transparent via-white/10 to-transparent rounded-2xl"></div>
+          <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 border border-green-200 text-center">
+            <Zap className="h-4 w-4 text-green-600 mx-auto mb-1" />
+            <div className="text-sm md:text-lg font-bold text-gray-800">
+              {moves}
             </div>
-
-            {isPaused && (
-              <div className="absolute inset-0 bg-black/60 backdrop-blur-md rounded-2xl flex items-center justify-center z-10">
-                <div className="bg-white rounded-2xl p-8 text-center shadow-2xl border-2 border-indigo-200 transform scale-105">
-                  <div className="relative">
-                    <div className="absolute -inset-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-lg opacity-30"></div>
-                    <Pause className="relative h-16 w-16 text-indigo-600 mx-auto mb-6" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-800 mb-3">
-                    Game Paused
-                  </h3>
-                  <p className="text-gray-600 mb-6 text-lg">
-                    Press Space or click Resume to continue
-                  </p>
-                  <Button
-                    onClick={() => setIsPaused(false)}
-                    className="flex items-center gap-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105"
-                  >
-                    <Play className="h-5 w-5" />
-                    Resume Game
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {/* Maze container with enhanced styling */}
-            <div className="relative">
-              {/* Maze glow effect */}
-              <div className="absolute -inset-4 bg-gradient-to-br from-blue-400/20 via-purple-400/20 to-pink-400/20 rounded-3xl blur-xl"></div>
-
-              <div
-                className="relative grid gap-1 mx-auto bg-gradient-to-br from-slate-800 via-gray-900 to-slate-900 p-4 rounded-xl shadow-2xl border-2 border-slate-700"
-                style={{
-                  gridTemplateColumns: `repeat(${gameState.size}, ${cellSize}px)`,
-                  maxWidth: "fit-content",
-                }}
-              >
-                {gameState.maze.map((row, y) =>
-                  row.map((cell, x) => (
-                    <div
-                      key={`${x}-${y}`}
-                      className={getCellClasses(x, y)}
-                      style={{
-                        width: `${cellSize}px`,
-                        height: `${cellSize}px`,
-                        minWidth: `${cellSize}px`,
-                        minHeight: `${cellSize}px`,
-                      }}
-                    >
-                      {/* Player */}
-                      {gameState.playerPosition.x === x &&
-                        gameState.playerPosition.y === y && (
-                          <div className="w-full h-full flex items-center justify-center text-white font-bold relative z-10">
-                            <span
-                              className="text-xl drop-shadow-lg transform transition-transform duration-300 hover:scale-110"
-                              style={{
-                                fontSize: `${Math.max(12, cellSize * 0.7)}px`,
-                              }}
-                            >
-                              🏃‍♂️
-                            </span>
-                          </div>
-                        )}
-                      {/* Start */}
-                      {gameState.startPosition.x === x &&
-                        gameState.startPosition.y === y &&
-                        !(
-                          gameState.playerPosition.x === x &&
-                          gameState.playerPosition.y === y
-                        ) && (
-                          <div className="w-full h-full flex items-center justify-center text-white relative z-10">
-                            <span
-                              className="drop-shadow-lg animate-pulse"
-                              style={{
-                                fontSize: `${Math.max(12, cellSize * 0.7)}px`,
-                              }}
-                            >
-                              🚀
-                            </span>
-                          </div>
-                        )}
-                      {/* End */}
-                      {gameState.endPosition.x === x &&
-                        gameState.endPosition.y === y && (
-                          <div className="w-full h-full flex items-center justify-center text-white relative z-10">
-                            <span
-                              className="drop-shadow-lg animate-bounce"
-                              style={{
-                                fontSize: `${Math.max(12, cellSize * 0.8)}px`,
-                              }}
-                            >
-                              🎯
-                            </span>
-                          </div>
-                        )}
-
-                      {/* Wall decoration */}
-                      {gameState.maze[y][x].isWall && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-slate-600/30 via-gray-700/20 to-slate-800/30 opacity-60"></div>
-                      )}
-
-                      {/* Path glow effect */}
-                      {!gameState.maze[y][x].isWall &&
-                        !gameState.playerPosition.x === x &&
-                        !gameState.playerPosition.y === y && (
-                          <div className="absolute inset-0 bg-gradient-to-br from-blue-200/10 via-indigo-200/5 to-purple-200/10 opacity-50"></div>
-                        )}
-                    </div>
-                  )),
-                )}
-              </div>
-            </div>
+            <div className="text-xs text-gray-600">Moves</div>
           </div>
 
-          {/* Enhanced Mobile Controls */}
-          {isMobile && gameState.gameStatus === "playing" && (
-            <div className="mt-8">
-              <h4 className="text-lg font-bold text-gray-800 mb-4 text-center flex items-center justify-center gap-2">
-                <span className="text-xl">📱</span>
-                Touch Controls
-              </h4>
-              <div className="grid grid-cols-3 gap-3 max-w-56 mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 p-4 rounded-2xl border-2 border-blue-200 shadow-lg">
-                <div></div>
-                <Button
-                  onTouchStart={() => handleMove("up")}
-                  variant="outline"
-                  size="lg"
-                  className="aspect-square bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-2 border-blue-400 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-xl font-bold rounded-xl transform transition-all duration-200 hover:scale-105 active:scale-95"
-                  disabled={isPaused}
-                >
-                  ↑
-                </Button>
-                <div></div>
+          <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 border border-yellow-200 text-center">
+            <Trophy className="h-4 w-4 text-yellow-600 mx-auto mb-1" />
+            <div className="text-sm md:text-lg font-bold text-gray-800">
+              {gameState.score}
+            </div>
+            <div className="text-xs text-gray-600">Score</div>
+          </div>
 
-                <Button
-                  onTouchStart={() => handleMove("left")}
-                  variant="outline"
-                  size="lg"
-                  className="aspect-square bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-2 border-blue-400 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-xl font-bold rounded-xl transform transition-all duration-200 hover:scale-105 active:scale-95"
-                  disabled={isPaused}
-                >
-                  ←
-                </Button>
-                <div className="flex items-center justify-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-lg shadow-lg border-2 border-purple-400">
-                    🎮
-                  </div>
-                </div>
-                <Button
-                  onTouchStart={() => handleMove("right")}
-                  variant="outline"
-                  size="lg"
-                  className="aspect-square bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-2 border-blue-400 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-xl font-bold rounded-xl transform transition-all duration-200 hover:scale-105 active:scale-95"
-                  disabled={isPaused}
-                >
-                  →
-                </Button>
+          <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 border border-purple-200 text-center">
+            <Star className="h-4 w-4 text-purple-600 mx-auto mb-1" />
+            <div className="text-sm md:text-lg font-bold text-gray-800">
+              {gameState.gameStatus === "completed"
+                ? "🎉"
+                : gameState.gameStatus === "playing"
+                  ? "🎮"
+                  : "⏳"}
+            </div>
+            <div className="text-xs text-gray-600">Status</div>
+          </div>
+        </div>
 
-                <div></div>
-                <Button
-                  onTouchStart={() => handleMove("down")}
-                  variant="outline"
-                  size="lg"
-                  className="aspect-square bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-2 border-blue-400 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-xl font-bold rounded-xl transform transition-all duration-200 hover:scale-105 active:scale-95"
-                  disabled={isPaused}
-                >
-                  ↓
-                </Button>
-                <div></div>
-              </div>
+        {/* Maze Board - Full Width Mobile Friendly */}
+        <div className="relative bg-gradient-to-br from-slate-100 via-gray-50 to-indigo-50 rounded-xl p-2 md:p-4 shadow-lg overflow-auto">
+          {/* Subtle background pattern */}
+          <div className="absolute inset-0 opacity-3">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-pink-600/10 rounded-xl"></div>
+          </div>
 
-              {/* Control hints */}
-              <div className="mt-4 text-center">
-                <p className="text-sm text-gray-600 bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 inline-block border border-gray-200">
-                  💡 <strong>Tip:</strong> Tap and hold for continuous movement
+          {isPaused && (
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-xl p-6 md:p-8 text-center shadow-2xl border border-indigo-200 max-w-sm w-full">
+                <Pause className="h-12 w-12 md:h-16 md:w-16 text-indigo-600 mx-auto mb-4 md:mb-6" />
+                <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">
+                  Game Paused
+                </h3>
+                <p className="text-gray-600 mb-4 md:mb-6 text-sm md:text-lg">
+                  Press Space or tap Resume to continue
                 </p>
+                <Button
+                  onClick={() => setIsPaused(false)}
+                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 md:px-8 md:py-3 rounded-lg md:rounded-xl shadow-lg w-full justify-center"
+                >
+                  <Play className="h-4 w-4 md:h-5 md:w-5" />
+                  Resume Game
+                </Button>
               </div>
             </div>
           )}
 
-          {/* Enhanced Instructions */}
-          <div className="mt-6 text-center">
-            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-4 text-white shadow-lg">
-              <p className="text-base font-semibold mb-2">
-                {isMobile
-                  ? "📱 Mobile Instructions"
-                  : "⌨️ Desktop Instructions"}
-              </p>
-              <p className="text-sm opacity-90">
-                {isMobile
-                  ? "🎯 Use touch controls above to navigate • 🎯 Reach the target to complete the maze!"
-                  : "🎯 Arrow keys or WASD to move • Spacebar to pause • 🎯 Reach the target to win!"}
+          {/* Maze container - Mobile optimized */}
+          <div className="relative flex justify-center">
+            <div
+              className="grid gap-0.5 bg-gradient-to-br from-slate-800 via-gray-900 to-slate-900 p-2 md:p-3 rounded-lg shadow-xl border border-slate-600"
+              style={{
+                gridTemplateColumns: `repeat(${gameState.size}, ${cellSize}px)`,
+                width: "fit-content",
+                maxWidth: "100vw",
+                overflowX: "auto",
+              }}
+            >
+              {gameState.maze.map((row, y) =>
+                row.map((cell, x) => (
+                  <div
+                    key={`${x}-${y}`}
+                    className={getCellClasses(x, y)}
+                    style={{
+                      width: `${cellSize}px`,
+                      height: `${cellSize}px`,
+                      minWidth: `${cellSize}px`,
+                      minHeight: `${cellSize}px`,
+                    }}
+                  >
+                    {/* Player */}
+                    {gameState.playerPosition.x === x &&
+                      gameState.playerPosition.y === y && (
+                        <div className="w-full h-full flex items-center justify-center text-white font-bold relative z-10">
+                          <span
+                            className="text-xl drop-shadow-lg transform transition-transform duration-300 hover:scale-110"
+                            style={{
+                              fontSize: `${Math.max(12, cellSize * 0.7)}px`,
+                            }}
+                          >
+                            🏃‍♂️
+                          </span>
+                        </div>
+                      )}
+                    {/* Start */}
+                    {gameState.startPosition.x === x &&
+                      gameState.startPosition.y === y &&
+                      !(
+                        gameState.playerPosition.x === x &&
+                        gameState.playerPosition.y === y
+                      ) && (
+                        <div className="w-full h-full flex items-center justify-center text-white relative z-10">
+                          <span
+                            className="drop-shadow-lg animate-pulse"
+                            style={{
+                              fontSize: `${Math.max(12, cellSize * 0.7)}px`,
+                            }}
+                          >
+                            🚀
+                          </span>
+                        </div>
+                      )}
+                    {/* End */}
+                    {gameState.endPosition.x === x &&
+                      gameState.endPosition.y === y && (
+                        <div className="w-full h-full flex items-center justify-center text-white relative z-10">
+                          <span
+                            className="drop-shadow-lg animate-bounce"
+                            style={{
+                              fontSize: `${Math.max(12, cellSize * 0.8)}px`,
+                            }}
+                          >
+                            🎯
+                          </span>
+                        </div>
+                      )}
+
+                    {/* Wall decoration */}
+                    {gameState.maze[y][x].isWall && (
+                      <div className="absolute inset-0 bg-gradient-to-br from-slate-600/30 via-gray-700/20 to-slate-800/30 opacity-60"></div>
+                    )}
+
+                    {/* Path glow effect */}
+                    {!gameState.maze[y][x].isWall &&
+                      !gameState.playerPosition.x === x &&
+                      !gameState.playerPosition.y === y && (
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-200/10 via-indigo-200/5 to-purple-200/10 opacity-50"></div>
+                      )}
+                  </div>
+                )),
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Controls - Fixed Position */}
+        {isMobile && gameState.gameStatus === "playing" && (
+          <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-40">
+            <div className="grid grid-cols-3 gap-2 w-48 bg-black/80 backdrop-blur-md p-3 rounded-2xl border border-white/20 shadow-2xl">
+              <div></div>
+              <Button
+                onTouchStart={() => handleMove("up")}
+                variant="outline"
+                size="sm"
+                className="aspect-square bg-gradient-to-br from-blue-500 to-indigo-600 text-white border border-blue-400 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-lg font-bold rounded-lg active:scale-95 h-12 w-12"
+                disabled={isPaused}
+              >
+                ↑
+              </Button>
+              <div></div>
+
+              <Button
+                onTouchStart={() => handleMove("left")}
+                variant="outline"
+                size="sm"
+                className="aspect-square bg-gradient-to-br from-blue-500 to-indigo-600 text-white border border-blue-400 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-lg font-bold rounded-lg active:scale-95 h-12 w-12"
+                disabled={isPaused}
+              >
+                ←
+              </Button>
+              <div className="flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-sm shadow-lg border border-purple-400">
+                  🎮
+                </div>
+              </div>
+              <Button
+                onTouchStart={() => handleMove("right")}
+                variant="outline"
+                size="sm"
+                className="aspect-square bg-gradient-to-br from-blue-500 to-indigo-600 text-white border border-blue-400 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-lg font-bold rounded-lg active:scale-95 h-12 w-12"
+                disabled={isPaused}
+              >
+                →
+              </Button>
+
+              <div></div>
+              <Button
+                onTouchStart={() => handleMove("down")}
+                variant="outline"
+                size="sm"
+                className="aspect-square bg-gradient-to-br from-blue-500 to-indigo-600 text-white border border-blue-400 hover:from-blue-600 hover:to-indigo-700 shadow-lg text-lg font-bold rounded-lg active:scale-95 h-12 w-12"
+                disabled={isPaused}
+              >
+                ↓
+              </Button>
+              <div></div>
+            </div>
+
+            {/* Quick tip */}
+            <div className="mt-2 text-center">
+              <p className="text-xs text-white/80 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-1 inline-block">
+                💡 Tap to move
               </p>
             </div>
           </div>
-        </CardContent>
+        )}
+
+        {/* Instructions - Mobile Optimized */}
+        {!isMobile && (
+          <div className="mt-4 text-center">
+            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg p-3 text-white shadow-lg">
+              <p className="text-sm font-semibold mb-1">⌨️ Desktop Controls</p>
+              <p className="text-xs opacity-90">
+                Arrow keys or WASD to move • Spacebar to pause • Reach the
+                target to win!
+              </p>
+            </div>
+          </div>
+        )}
       </div>
-    </Card>
+    </div>
   );
 };
