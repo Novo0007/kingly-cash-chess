@@ -404,6 +404,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
           </Card>
         </div>
 
+        {/* Responsive Ad Before Rules */}
+        <AdSenseResponsive size="small" />
+
         {/* Enhanced Game Rules Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <Card className="relative bg-gradient-to-br from-blue-500 to-purple-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
