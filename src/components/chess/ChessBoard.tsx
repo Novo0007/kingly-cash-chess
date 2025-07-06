@@ -346,29 +346,29 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                     background: isLightSquare(rowIndex, colIndex)
                       ? `
                         linear-gradient(135deg,
-                          #fef3c7 0%,
-                          #fcd34d 25%,
-                          #f59e0b 50%,
-                          #fcd34d 75%,
-                          #fef3c7 100%
+                          #ffffff 0%,
+                          #f9fafb 25%,
+                          #f3f4f6 50%,
+                          #f9fafb 75%,
+                          #ffffff 100%
                         ),
                         repeating-linear-gradient(0deg,
-                          rgba(245, 158, 11, 0.1) 0px,
-                          rgba(251, 191, 36, 0.05) 2px,
-                          rgba(245, 158, 11, 0.1) 4px)
+                          rgba(0, 0, 0, 0.02) 0px,
+                          rgba(0, 0, 0, 0.01) 2px,
+                          rgba(0, 0, 0, 0.02) 4px)
                       `
                       : `
                         linear-gradient(135deg,
-                          #451a03 0%,
-                          #7c2d12 25%,
-                          #a16207 50%,
-                          #7c2d12 75%,
-                          #451a03 100%
+                          #14532d 0%,
+                          #166534 25%,
+                          #15803d 50%,
+                          #166534 75%,
+                          #14532d 100%
                         ),
                         repeating-linear-gradient(45deg,
-                          rgba(124, 45, 18, 0.2) 0px,
-                          rgba(161, 98, 7, 0.1) 2px,
-                          rgba(124, 45, 18, 0.2) 4px)
+                          rgba(21, 128, 61, 0.2) 0px,
+                          rgba(22, 101, 52, 0.1) 2px,
+                          rgba(21, 128, 61, 0.2) 4px)
                       `,
                     boxShadow: isLightSquare(rowIndex, colIndex)
                       ? "inset 0 2px 4px rgba(245, 158, 11, 0.2), inset 0 -2px 4px rgba(251, 191, 36, 0.1)"
