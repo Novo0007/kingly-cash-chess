@@ -295,6 +295,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
           ))}
         </div>
 
+        {/* Responsive Ad Between Sections */}
+        <AdSenseResponsive size="medium" />
+
         {/* Enhanced Coming Soon Section */}
         <div className="relative overflow-hidden">
           {/* Background Gradient */}
