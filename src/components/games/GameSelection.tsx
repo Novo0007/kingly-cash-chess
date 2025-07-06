@@ -279,7 +279,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 
                   {/* Enhanced Play Button with Animation */}
                   <Button
-                    onClick={() => onSelectGame(game.id as "chess" | "ludo")}
+                    onClick={() =>
+                      onSelectGame(game.id as "chess" | "ludo" | "maze")
+                    }
                     className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:${game.gradient} text-white border-0 py-4 md:py-5 text-base md:text-lg font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] group/btn`}
                   >
                     {/* Button Background Animation */}
@@ -302,7 +304,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                     </div>
                     <div className="flex items-center gap-1">
                       <span className="text-lg font-black text-green-600">
-                        ₹{index === 0 ? "2,50,000" : "1,80,000"}
+                        {game.id === "maze"
+                          ? "FREE"
+                          : `₹${index === 0 ? "2,50,000" : "1,80,000"}`}
                       </span>
                       <Sparkles className="h-4 w-4 text-yellow-500" />
                     </div>
