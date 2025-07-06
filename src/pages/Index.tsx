@@ -273,6 +273,8 @@ const Index = () => {
             onBackToGameSelection={handleBackToGameSelection}
           />
         );
+      case "maze-game":
+        return <MazeGame onBack={handleBackToGameSelection} user={user} />;
       case "wallet":
         return <WalletManager />;
       case "friends":
