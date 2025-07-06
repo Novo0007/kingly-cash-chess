@@ -14,6 +14,11 @@ import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
 import { ChatSystem } from "@/components/chat/ChatSystem";
 import { AdminPanel } from "@/components/admin/AdminPanel";
+import {
+  AdSenseBanner,
+  AdSenseSidebar,
+  AdSenseSectionBreak,
+} from "@/components/ads";
 import { toast } from "sonner";
 import type { User } from "@supabase/supabase-js";
 
@@ -23,7 +28,9 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
-  const [selectedGameType, setSelectedGameType] = useState<"chess" | "ludo" | null>(null);
+  const [selectedGameType, setSelectedGameType] = useState<
+    "chess" | "ludo" | null
+  >(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
   // Optimized profile fetching with caching
@@ -36,7 +43,7 @@ const Index = () => {
         .eq("id", userId)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.code !== "PGRST116") {
         console.error("Profile fetch error:", error);
         return;
       }
@@ -55,10 +62,13 @@ const Index = () => {
     const initializeApp = async () => {
       try {
         console.log("🚀 Initializing app...");
-        
+
         // Get current session immediately
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
         if (error) {
           console.error("Session error:", error);
         } else if (session?.user && mounted) {
@@ -78,12 +88,14 @@ const Index = () => {
     };
 
     // Set up auth listener first
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
-      
+
       console.log("Auth state changed:", event, session?.user?.id);
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
         // Fetch profile asynchronously
         setTimeout(() => {
@@ -114,7 +126,7 @@ const Index = () => {
       }
 
       try {
-        const { data, error } = await supabase.rpc('is_admin');
+        const { data, error } = await supabase.rpc("is_admin");
         if (error) {
           console.error("Error checking admin status:", error);
           setIsAdmin(false);
@@ -171,7 +183,9 @@ const Index = () => {
           <div className="relative bg-gradient-to-r from-amber-900 to-orange-900 p-6 rounded-full border-2 border-amber-600/50 backdrop-blur-sm wood-plank">
             <div className="w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
           </div>
-          <p className="text-white text-center mt-4 font-semibold">Loading Game Platform...</p>
+          <p className="text-white text-center mt-4 font-semibold">
+            Loading Game Platform...
+          </p>
         </div>
       </MobileOptimized>
     );
@@ -185,18 +199,20 @@ const Index = () => {
     );
   }
 
-
   const renderCurrentView = () => {
     switch (currentView) {
       case "admin":
         return isAdmin ? (
-          <AdminPanel userEmail={user?.email || ''} />
+          <AdminPanel userEmail={user?.email || ""} />
         ) : (
           <div className="text-center p-8">
-            <h2 className="text-2xl font-bold text-amber-900 mb-4">Access Denied</h2>
+            <h2 className="text-2xl font-bold text-amber-900 mb-4">
+              Access Denied
+            </h2>
             <p className="text-amber-800">You don't have admin privileges.</p>
             <p className="text-amber-600 text-sm mt-2">
-              If you were invited as an admin, please make sure you're signed in with the correct email address.
+              If you were invited as an admin, please make sure you're signed in
+              with the correct email address.
             </p>
           </div>
         );
@@ -328,7 +344,11 @@ const Index = () => {
       </div>
 
       <div className="hidden md:block relative z-30">
-        <Navbar currentView={currentView} onViewChange={setCurrentView} isAdmin={isAdmin} />
+        <Navbar
+          currentView={currentView}
+          onViewChange={setCurrentView}
+          isAdmin={isAdmin}
+        />
       </div>
 
       <main className="relative z-20 max-w-7xl mx-auto px-1 sm:px-2 md:px-4 py-1 sm:py-2 md:py-8 pb-16 sm:pb-20 md:pb-8">
@@ -347,7 +367,11 @@ const Index = () => {
       </main>
 
       <div className="md:hidden relative z-30">
-        <BottomNav currentView={currentView} onViewChange={setCurrentView} isAdmin={isAdmin} />
+        <BottomNav
+          currentView={currentView}
+          onViewChange={setCurrentView}
+          isAdmin={isAdmin}
+        />
       </div>
     </MobileOptimized>
   );
