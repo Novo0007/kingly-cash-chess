@@ -23,6 +23,7 @@ import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
 import { Button as ChatButton } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { AdSenseResponsive } from "@/components/ads";
 
 interface GameSelectionProps {
   onSelectGame: (gameType: "chess" | "ludo") => void;
@@ -85,7 +86,6 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
-        
         {/* Global Chat Button - Only show on mobile/tablet */}
         {(isMobile || isTablet) && (
           <div className="fixed bottom-20 left-4 z-30">
