@@ -371,8 +371,8 @@ export const ChessBoard: React.FC<ChessBoardProps> = ({
                           rgba(21, 128, 61, 0.2) 4px)
                       `,
                     boxShadow: isLightSquare(rowIndex, colIndex)
-                      ? "inset 0 2px 4px rgba(245, 158, 11, 0.2), inset 0 -2px 4px rgba(251, 191, 36, 0.1)"
-                      : "inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -2px 4px rgba(124, 45, 18, 0.3)",
+                      ? "inset 0 2px 4px rgba(0, 0, 0, 0.05), inset 0 -2px 4px rgba(0, 0, 0, 0.02)"
+                      : "inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -2px 4px rgba(21, 128, 61, 0.3)",
                   }}
                   onClick={() => handleSquareClick(rowIndex, colIndex)}
                 >
