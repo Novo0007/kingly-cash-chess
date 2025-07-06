@@ -25,7 +25,7 @@ import { MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface GameSelectionProps {
-  onSelectGame: (gameType: "chess" | "ludo") => void;
+  onSelectGame: (gameType: "chess" | "ludo" | "maze") => void;
 }
 
 export const GameSelection: React.FC<GameSelectionProps> = ({
@@ -73,6 +73,25 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       status: "Hot",
       players: "1.8K+ Online",
     },
+    {
+      id: "maze",
+      title: "Maze Challenge",
+      description:
+        "Navigate labyrinth puzzles and earn points - completely FREE!",
+      icon: Target,
+      emoji: "🧩",
+      color: "purple",
+      gradient: "from-purple-700 via-indigo-700 to-blue-700",
+      lightGradient: "from-purple-100 via-indigo-100 to-blue-100",
+      features: [
+        "🆓 Free to Play",
+        "🧠 Brain Training",
+        "🏆 Leaderboards",
+        "⚡ Multiple Levels",
+      ],
+      status: "NEW",
+      players: "500+ Playing",
+    },
   ];
 
   const comingSoonGames = [
@@ -85,7 +104,6 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
-        
         {/* Global Chat Button - Only show on mobile/tablet */}
         {(isMobile || isTablet) && (
           <div className="fixed bottom-20 left-4 z-30">
