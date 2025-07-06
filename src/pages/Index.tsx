@@ -385,6 +385,11 @@ const Index = () => {
         </div>
       </main>
 
+      {/* Bottom Banner Ad */}
+      <div className="relative z-20">
+        <AdSenseBanner position="bottom" />
+      </div>
+
       <div className="md:hidden relative z-30">
         <BottomNav
           currentView={currentView}
