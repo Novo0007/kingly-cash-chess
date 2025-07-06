@@ -93,7 +93,7 @@ export const useBackgroundMusic = (options: BackgroundMusicOptions = {}) => {
 
   // Use external music file
   const getMusicUrl = () => {
-    return "https://firebasestorage.googleapis.com/v0/b/nopeca-106bd.appspot.com/o/app%2FLIGHT%20IT%20UP.mp3?alt=media&token=ab99d06b-07b9-4141-b37b-845b2f6c9398";
+    return "https://cdn.pixabay.com/audio/2025/03/19/audio_91b4c0a3b6.mp3";
   };
 
   useEffect(() => {
