@@ -351,6 +351,11 @@ const Index = () => {
         />
       </div>
 
+      {/* Top Banner Ad */}
+      <div className="relative z-20">
+        <AdSenseBanner position="top" />
+      </div>
+
       <main className="relative z-20 max-w-7xl mx-auto px-1 sm:px-2 md:px-4 py-1 sm:py-2 md:py-8 pb-16 sm:pb-20 md:pb-8">
         <div className="relative">
           <div className="absolute inset-0 wood-glass rounded-lg sm:rounded-xl md:rounded-2xl wood-shadow-lg wood-plank">
