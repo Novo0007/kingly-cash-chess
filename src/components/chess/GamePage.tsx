@@ -423,6 +423,8 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
           .from("chess_games")
           .update({
             game_status: "active" as any,
+            white_time_remaining: 60,
+            black_time_remaining: 60,
             updated_at: new Date().toISOString(),
           })
           .eq("id", gameId);
