@@ -75,7 +75,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         lightGradient: "from-amber-100 via-orange-100 to-yellow-100",
         features: [
           "🏆 Tournaments",
-          "��� Quick Matches",
+          "⚡ Quick Matches",
           "💰 Real Prizes",
           "📈 Rankings",
         ],
@@ -205,7 +205,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         <MobileChatSystem
           isGlobalChat={true}
           isOpen={showGlobalChat}
-          onClose={() => setShowGlobalChat(false)}
+          onClose={handleChatClose}
         />
 
         {/* Game Filter Options */}
