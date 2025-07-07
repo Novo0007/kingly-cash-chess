@@ -32,6 +32,12 @@ interface Game2048Props {
 
 type GameView = "lobby" | "game" | "rules" | "leaderboard" | "gameComplete";
 
+// UUID validation function
+const isValidUUID = (uuid: string): boolean => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+};
+
 export const Game2048: React.FC<Game2048Props> = ({ onBack, user }) => {
   const { isMobile } = useDeviceType();
   const [currentView, setCurrentView] = useState<GameView>("lobby");
@@ -140,8 +146,15 @@ export const Game2048: React.FC<Game2048Props> = ({ onBack, user }) => {
   }, [gameLogic]);
 
   const handleGameEnd = async (finalState: Game2048State) => {
+    // Validate user and user ID
     if (!user) {
       toast.error("Please sign in to save your score!");
+      return;
+    }
+
+    if (!user.id || !isValidUUID(user.id)) {
+      console.error("Invalid user ID:", user.id);
+      toast.error("Invalid user session. Please sign in again.");
       return;
     }
 
@@ -154,6 +167,8 @@ export const Game2048: React.FC<Game2048Props> = ({ onBack, user }) => {
         user.email?.split("@")[0] ||
         "Anonymous";
 
+      console.log("Saving score data:", scoreData);
+
       const { data, error } = await supabase
         .from("game2048_scores")
         .insert([scoreData])
@@ -162,7 +177,11 @@ export const Game2048: React.FC<Game2048Props> = ({ onBack, user }) => {
 
       if (error) {
         console.error("Error saving score:", error);
-        toast.error("Failed to save score. Please try again.");
+        if (error.message.includes("invalid input syntax for type uuid")) {
+          toast.error("Invalid user session. Please sign out and sign in again.");
+        } else {
+          toast.error("Failed to save score. Please try again.");
+        }
       } else {
         setCurrentScore(data);
         toast.success("Score saved successfully! 🏆");
@@ -299,6 +318,37 @@ export const Game2048: React.FC<Game2048Props> = ({ onBack, user }) => {
       </div>
     );
   };
+
+  // Early validation - show error if user is invalid
+  if (!user || !user.id || !isValidUUID(user.id)) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-4 mb-6">
+          <Button onClick={onBack} variant="outline" size="sm">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Games
+          </Button>
+        </div>
+        
+        <Card className="max-w-md mx-auto">
+          <CardHeader>
+            <CardTitle className="text-center text-red-600">Authentication Required</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-gray-600">
+              You need to be signed in with a valid account to play 2048 and save your scores.
+            </p>
+            <p className="text-sm text-gray-500">
+              Please sign out and sign in again if you continue to see this message.
+            </p>
+            <Button onClick={onBack} className="w-full">
+              Back to Games
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (currentView === "lobby") {
     return (
