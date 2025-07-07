@@ -25,7 +25,7 @@ import { MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface GameSelectionProps {
-  onSelectGame: (gameType: "chess" | "ludo" | "maze") => void;
+  onSelectGame: (gameType: "chess" | "ludo" | "maze" | "game2048") => void;
 }
 
 export const GameSelection: React.FC<GameSelectionProps> = ({
@@ -91,6 +91,25 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       ],
       status: "NEW",
       players: "500+ Playing",
+    },
+    {
+      id: "game2048",
+      title: "2048 Puzzle",
+      description:
+        "Combine numbered tiles to reach 2048 - addictive puzzle game!",
+      icon: Gamepad2,
+      emoji: "🎯",
+      color: "cyan",
+      gradient: "from-cyan-700 via-blue-700 to-indigo-700",
+      lightGradient: "from-cyan-100 via-blue-100 to-indigo-100",
+      features: [
+        "🆓 Free to Play",
+        "🧠 Brain Training",
+        "🏆 Leaderboards",
+        "⚡ 3 Difficulty Modes",
+      ],
+      status: "NEW",
+      players: "300+ Playing",
     },
   ];
 
@@ -280,7 +299,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   {/* Enhanced Play Button with Animation */}
                   <Button
                     onClick={() =>
-                      onSelectGame(game.id as "chess" | "ludo" | "maze")
+                      onSelectGame(
+                        game.id as "chess" | "ludo" | "maze" | "game2048",
+                      )
                     }
                     className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:${game.gradient} text-white border-0 py-4 md:py-5 text-base md:text-lg font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] group/btn`}
                   >
@@ -424,7 +445,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         </div>
 
         {/* Enhanced Game Rules Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
           <Card className="relative bg-gradient-to-br from-blue-500 to-purple-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20"></div>
             <CardContent className="relative p-6">
@@ -502,6 +523,35 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </div>
                 <Button
                   onClick={() => navigate("/maze-rules")}
+                  variant="secondary"
+                  className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
+                >
+                  Learn
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="relative bg-gradient-to-br from-cyan-500 to-blue-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-400/20"></div>
+            <CardContent className="relative p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <Gamepad2 className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-lg font-heading">
+                      2048 Rules Guide
+                    </h4>
+                    <p className="text-white/90 text-sm font-medium">
+                      Master the addictive number puzzle game
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => navigate("/game2048-rules")}
                   variant="secondary"
                   className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
                 >

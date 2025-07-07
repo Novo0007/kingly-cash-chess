@@ -14,31 +14,32 @@ import {
   TrendingUp,
   Award,
   Zap,
+  Move,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { MazeScore } from "./MazeGameLogic";
+import { Game2048Score } from "./Game2048Logic";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useDeviceType } from "@/hooks/use-mobile";
 
-interface MazeLeaderboardProps {
-  currentUserScore?: MazeScore;
+interface Game2048LeaderboardProps {
+  currentUserScore?: Game2048Score;
   onRefresh?: () => void;
 }
 
-export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
+export const Game2048Leaderboard: React.FC<Game2048LeaderboardProps> = ({
   currentUserScore,
   onRefresh,
 }) => {
   const { isMobile } = useDeviceType();
   const [leaderboards, setLeaderboards] = useState<{
-    easy: MazeScore[];
-    medium: MazeScore[];
-    hard: MazeScore[];
-    overall: MazeScore[];
+    classic: Game2048Score[];
+    challenge: Game2048Score[];
+    expert: Game2048Score[];
+    overall: Game2048Score[];
   }>({
-    easy: [],
-    medium: [],
-    hard: [],
+    classic: [],
+    challenge: [],
+    expert: [],
     overall: [],
   });
   const [loading, setLoading] = useState(true);
@@ -54,7 +55,7 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
       // Helper function to get top scores per user for a specific difficulty
       const getTopScoresByDifficulty = async (difficulty: string) => {
         const { data, error } = await supabase
-          .from("maze_scores")
+          .from("game2048_scores")
           .select("*")
           .eq("difficulty", difficulty)
           .order("score", { ascending: false });
@@ -62,7 +63,7 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
         if (error) throw error;
 
         // Group by username and get highest score for each user
-        const userBestScores = new Map<string, MazeScore>();
+        const userBestScores = new Map<string, Game2048Score>();
         (data || []).forEach((score) => {
           const existing = userBestScores.get(score.username);
           if (!existing || score.score > existing.score) {
@@ -77,7 +78,7 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
       };
 
       // Fetch scores for each difficulty
-      const difficulties = ["easy", "medium", "hard"];
+      const difficulties = ["classic", "challenge", "expert"];
       const leaderboardPromises = difficulties.map(async (difficulty) => {
         const scores = await getTopScoresByDifficulty(difficulty);
         return { difficulty, scores };
@@ -85,14 +86,14 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
 
       // Fetch overall leaderboard (highest score per user across all difficulties)
       const { data: overallData, error: overallError } = await supabase
-        .from("maze_scores")
+        .from("game2048_scores")
         .select("*")
         .order("score", { ascending: false });
 
       if (overallError) throw overallError;
 
       // Group by username and get highest score for each user across all difficulties
-      const userBestOverallScores = new Map<string, MazeScore>();
+      const userBestOverallScores = new Map<string, Game2048Score>();
       (overallData || []).forEach((score) => {
         const existing = userBestOverallScores.get(score.username);
         if (!existing || score.score > existing.score) {
@@ -106,9 +107,9 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
 
       const results = await Promise.all(leaderboardPromises);
       const newLeaderboards = {
-        easy: [],
-        medium: [],
-        hard: [],
+        classic: [],
+        challenge: [],
+        expert: [],
         overall: overallTopScores,
       } as any;
 
@@ -139,14 +140,14 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case "easy":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "medium":
+      case "classic":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "challenge":
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "hard":
+      case "expert":
         return "bg-red-100 text-red-800 border-red-200";
       default:
-        return "bg-blue-100 text-blue-800 border-blue-200";
+        return "bg-purple-100 text-purple-800 border-purple-200";
     }
   };
 
@@ -161,11 +162,18 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
     return `${remainingSeconds}s`;
   };
 
+  const formatTargetTile = (target: number) => {
+    if (target >= 1000) {
+      return `${(target / 1000).toFixed(target % 1000 === 0 ? 0 : 1)}k`;
+    }
+    return target.toString();
+  };
+
   const LeaderboardList = ({
     scores,
     showDifficulty = false,
   }: {
-    scores: MazeScore[];
+    scores: Game2048Score[];
     showDifficulty?: boolean;
   }) => (
     <div className="space-y-3">
@@ -216,8 +224,12 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
                   {formatTime(score.time_taken)}
                 </span>
                 <span className="flex items-center gap-1">
+                  <Move className="h-3 w-3" />
+                  {score.moves}
+                </span>
+                <span className="flex items-center gap-1">
                   <Target className="h-3 w-3" />
-                  {score.maze_size}×{score.maze_size}
+                  {formatTargetTile(score.target_reached)}
                 </span>
               </div>
             </div>
@@ -243,7 +255,7 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
             No scores yet
           </h3>
           <p className="text-gray-500">
-            Be the first to complete a maze and set a record!
+            Be the first to play and set a record!
           </p>
         </div>
       )}
@@ -251,22 +263,22 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
   );
 
   return (
-    <Card className="w-full max-w-4xl mx-auto bg-gradient-to-br from-purple-50 to-indigo-100 border-2 border-purple-200 shadow-xl">
+    <Card className="w-full max-w-4xl mx-auto bg-gradient-to-br from-blue-50 to-purple-100 border-2 border-blue-200 shadow-xl">
       <CardHeader className="text-center pb-6">
         <CardTitle>
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="relative">
-              <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 rounded-full blur-lg opacity-60"></div>
-              <div className="relative p-3 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full text-white shadow-lg">
+              <div className="absolute -inset-2 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-full blur-lg opacity-60"></div>
+              <div className="relative p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white shadow-lg">
                 <Trophy className="h-8 w-8" />
               </div>
             </div>
             <div>
               <span className="block text-2xl md:text-3xl font-black text-gray-800">
-                🏆 Maze Champions
+                🏆 2048 Champions
               </span>
-              <p className="text-purple-600 text-sm font-medium">
-                Top puzzle solvers and their amazing records
+              <p className="text-blue-600 text-sm font-medium">
+                Top puzzle masters and their amazing scores
               </p>
             </div>
           </div>
@@ -299,25 +311,25 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
               {isMobile ? "All" : "Overall"}
             </TabsTrigger>
             <TabsTrigger
-              value="easy"
-              className="flex items-center gap-2 text-green-600"
+              value="classic"
+              className="flex items-center gap-2 text-blue-600"
             >
               <Zap className="h-4 w-4" />
-              Easy
+              Classic
             </TabsTrigger>
             <TabsTrigger
-              value="medium"
+              value="challenge"
               className="flex items-center gap-2 text-yellow-600"
             >
               <Target className="h-4 w-4" />
-              Medium
+              Challenge
             </TabsTrigger>
             <TabsTrigger
-              value="hard"
+              value="expert"
               className="flex items-center gap-2 text-red-600"
             >
               <Crown className="h-4 w-4" />
-              Hard
+              Expert
             </TabsTrigger>
           </TabsList>
 
@@ -337,54 +349,54 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
             />
           </TabsContent>
 
-          <TabsContent value="easy">
+          <TabsContent value="classic">
             <div className="mb-4">
               <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
-                <Zap className="h-5 w-5 text-green-600" />
-                Easy Mode Champions
+                <Zap className="h-5 w-5 text-blue-600" />
+                Classic Mode Champions
               </h3>
               <p className="text-gray-600 text-sm">
-                Masters of quick thinking and efficient paths
+                Masters of the original 2048 challenge (4x4, reach 2048)
               </p>
             </div>
-            <LeaderboardList scores={leaderboards.easy} />
+            <LeaderboardList scores={leaderboards.classic} />
           </TabsContent>
 
-          <TabsContent value="medium">
+          <TabsContent value="challenge">
             <div className="mb-4">
               <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
                 <Target className="h-5 w-5 text-yellow-600" />
-                Medium Mode Champions
+                Challenge Mode Champions
               </h3>
               <p className="text-gray-600 text-sm">
-                Balanced challengers with strategic thinking
+                Strategic players tackling the 5x5 board (reach 4096)
               </p>
             </div>
-            <LeaderboardList scores={leaderboards.medium} />
+            <LeaderboardList scores={leaderboards.challenge} />
           </TabsContent>
 
-          <TabsContent value="hard">
+          <TabsContent value="expert">
             <div className="mb-4">
               <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
                 <Crown className="h-5 w-5 text-red-600" />
-                Hard Mode Champions
+                Expert Mode Champions
               </h3>
               <p className="text-gray-600 text-sm">
-                Elite puzzle solvers who conquered the ultimate challenge
+                Elite puzzle solvers conquering the 6x6 board (reach 8192)
               </p>
             </div>
-            <LeaderboardList scores={leaderboards.hard} />
+            <LeaderboardList scores={leaderboards.expert} />
           </TabsContent>
         </Tabs>
 
-        {/* Your Best Score Section */}
+        {/* Your Latest Score Section */}
         {currentUserScore && (
-          <div className="mt-6 pt-6 border-t border-purple-200">
+          <div className="mt-6 pt-6 border-t border-blue-200">
             <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <Star className="h-5 w-5 text-purple-600" />
+              <Star className="h-5 w-5 text-blue-600" />
               Your Latest Achievement
             </h3>
-            <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl p-4 text-white">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-4 text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white/20 rounded-lg">
@@ -394,15 +406,15 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
                     <div className="font-bold text-lg">
                       {currentUserScore.score.toLocaleString()} Points
                     </div>
-                    <div className="text-purple-100 text-sm">
-                      {currentUserScore.difficulty} •{" "}
-                      {formatTime(currentUserScore.time_taken)} •{" "}
-                      {currentUserScore.maze_size}×{currentUserScore.maze_size}
+                    <div className="text-blue-100 text-sm">
+                      {currentUserScore.difficulty} • {currentUserScore.moves}{" "}
+                      moves • {formatTime(currentUserScore.time_taken)} • Max:{" "}
+                      {formatTargetTile(currentUserScore.target_reached)}
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-purple-100 text-sm">Completed</div>
+                  <div className="text-blue-100 text-sm">Completed</div>
                   <div className="text-white font-semibold">
                     {new Date(
                       currentUserScore.completed_at,
