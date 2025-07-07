@@ -139,7 +139,9 @@ const Index = () => {
     checkAdminStatus();
   }, [user?.email]);
 
-  const handleSelectGame = (gameType: "chess" | "ludo" | "maze") => {
+  const handleSelectGame = (
+    gameType: "chess" | "ludo" | "maze" | "game2048",
+  ) => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
       setCurrentView("lobby");
@@ -147,6 +149,8 @@ const Index = () => {
       setCurrentView("ludo-lobby");
     } else if (gameType === "maze") {
       setCurrentView("maze-game");
+    } else if (gameType === "game2048") {
+      setCurrentView("game2048");
     }
   };
 
@@ -158,6 +162,8 @@ const Index = () => {
       setCurrentView("ludo-game");
     } else if (selectedGameType === "maze") {
       setCurrentView("maze-game");
+    } else if (selectedGameType === "game2048") {
+      setCurrentView("game2048");
     }
   };
 
@@ -169,6 +175,8 @@ const Index = () => {
       setCurrentView("ludo-lobby");
     } else if (selectedGameType === "maze") {
       setCurrentView("maze-game");
+    } else if (selectedGameType === "game2048") {
+      setCurrentView("game2048");
     }
   };
 
