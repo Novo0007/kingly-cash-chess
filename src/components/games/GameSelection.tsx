@@ -252,7 +252,6 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
           </Card>
         </div>
 
-<<<<<<< HEAD
         {/* Game Filter Options */}
         <Card className="bg-gradient-to-r from-gray-50 to-blue-50 border-blue-200">
           <CardContent className="p-4 md:p-6">
@@ -270,16 +269,6 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   </p>
                 </div>
               </div>
-=======
-        {/* Main Games - Responsive Grid: 2x2 on mobile/tablet, 4x4 on PC */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
-          {games.map((game, index) => (
-            <div key={game.id} className="relative group">
-              {/* Hover Glow Effect */}
-              <div
-                className={`absolute -inset-1 bg-gradient-to-r ${game.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-500`}
-              ></div>
->>>>>>> 013ed6e6c848ef2b47d1789d407970ad09548417
 
               <div className="flex items-center gap-2 bg-white rounded-lg p-1 border border-gray-200">
                 <Button
