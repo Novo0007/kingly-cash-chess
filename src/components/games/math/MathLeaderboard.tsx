@@ -514,8 +514,10 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
             </div>
             <div className="p-4 bg-white rounded-lg border">
               <div className="text-2xl font-bold text-green-600">
-                {scores.length > 0
-                  ? Math.max(...scores.map((s) => s.score)).toLocaleString()
+                {getHighestScorePerPlayer(scores).length > 0
+                  ? Math.max(
+                      ...getHighestScorePerPlayer(scores).map((s) => s.score),
+                    ).toLocaleString()
                   : 0}
               </div>
               <div className="text-sm text-gray-600">Highest Score</div>
