@@ -136,8 +136,14 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
       } else {
         // Move to next question after a delay
         setTimeout(() => {
-          gameLogic.nextQuestion();
-          setGameState(gameLogic.getState());
+          const hasNextQuestion = gameLogic.nextQuestion();
+          const updatedState = gameLogic.getState();
+          setGameState(updatedState);
+
+          // Check if game ended after moving to next question
+          if (!hasNextQuestion || updatedState.gameStatus === "finished") {
+            handleGameEnd(updatedState);
+          }
         }, 1500);
       }
 
