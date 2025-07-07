@@ -536,9 +536,9 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
             </div>
             <div className="p-4 bg-white rounded-lg border">
               <div className="text-2xl font-bold text-orange-600">
-                {scores.length > 0
+                {getHighestScorePerPlayer(scores).length > 0
                   ? Math.round(
-                      scores.reduce(
+                      getHighestScorePerPlayer(scores).reduce(
                         (acc, s) =>
                           acc +
                           calculateAccuracy(
@@ -546,7 +546,7 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
                             s.total_questions,
                           ),
                         0,
-                      ) / scores.length,
+                      ) / getHighestScorePerPlayer(scores).length,
                     )
                   : 0}
                 %
