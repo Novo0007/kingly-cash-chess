@@ -16,6 +16,7 @@ import {
   ArrowRight,
   CheckCircle,
   Clock,
+  Brain,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
@@ -25,7 +26,9 @@ import { MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface GameSelectionProps {
-  onSelectGame: (gameType: "chess" | "ludo" | "maze" | "game2048") => void;
+  onSelectGame: (
+    gameType: "chess" | "ludo" | "maze" | "game2048" | "math",
+  ) => void;
 }
 
 export const GameSelection: React.FC<GameSelectionProps> = ({
@@ -110,6 +113,24 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       ],
       status: "NEW",
       players: "300+ Playing",
+    },
+    {
+      id: "math",
+      title: "Math: Brain Puzzles",
+      description: "Improve arithmetic skills with fun, timed math puzzles!",
+      icon: Brain,
+      emoji: "🧮",
+      color: "pink",
+      gradient: "from-pink-700 via-rose-700 to-red-700",
+      lightGradient: "from-pink-100 via-rose-100 to-red-100",
+      features: [
+        "🆓 Free to Play",
+        "🧠 6 Question Types",
+        "⏱️ 3 Difficulty Levels",
+        "🎮 Multiple Game Modes",
+      ],
+      status: "NEW",
+      players: "200+ Playing",
     },
   ];
 
@@ -552,6 +573,35 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </div>
                 <Button
                   onClick={() => navigate("/game2048-rules")}
+                  variant="secondary"
+                  className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
+                >
+                  Learn
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="relative bg-gradient-to-br from-pink-500 to-rose-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-rose-400/20"></div>
+            <CardContent className="relative p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <Brain className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-lg font-heading">
+                      Math Rules Guide
+                    </h4>
+                    <p className="text-white/90 text-sm font-medium">
+                      Learn arithmetic puzzle strategies and tips
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => navigate("/math-rules")}
                   variant="secondary"
                   className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
                 >
