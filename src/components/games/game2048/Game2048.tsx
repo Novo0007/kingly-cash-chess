@@ -161,17 +161,25 @@ export const Game2048: React.FC<Game2048Props> = ({ onBack, user }) => {
     setIsSubmittingScore(true);
     try {
       const scoreData = gameLogic!.calculateFinalScore();
-      scoreData.user_id = user.id;
-      scoreData.username =
-        user.user_metadata?.username ||
-        user.email?.split("@")[0] ||
-        "Anonymous";
+      
+      // Create a new object with only the database-relevant properties, excluding the client-generated id
+      const dbScoreData = {
+        user_id: user.id,
+        username: user.user_metadata?.username || user.email?.split("@")[0] || "Anonymous",
+        score: scoreData.score,
+        moves: scoreData.moves,
+        time_taken: scoreData.time_taken,
+        difficulty: scoreData.difficulty,
+        board_size: scoreData.board_size,
+        target_reached: scoreData.target_reached,
+        completed_at: scoreData.completed_at
+      };
 
-      console.log("Saving score data:", scoreData);
+      console.log("Saving score data:", dbScoreData);
 
       const { data, error } = await supabase
         .from("game2048_scores")
-        .insert([scoreData])
+        .insert([dbScoreData])
         .select()
         .single();
 
