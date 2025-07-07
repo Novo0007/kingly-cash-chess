@@ -69,7 +69,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         description:
           "Classic strategy game with timed matches and real money prizes",
         icon: Crown,
-        emoji: "���",
+        emoji: "♛",
         color: "amber",
         gradient: "from-amber-700 via-orange-700 to-yellow-700",
         lightGradient: "from-amber-100 via-orange-100 to-yellow-100",
@@ -228,12 +228,12 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 
               <div className="flex items-center gap-2 bg-white rounded-lg p-1 border border-gray-200">
                 <Button
-                  onClick={() => setGameFilter("all")}
+                  onClick={() => handleFilterChange("all")}
                   variant={gameFilter === "all" ? "default" : "ghost"}
                   size="sm"
-                  className={`flex items-center gap-2 ${
+                  className={`flex items-center gap-2 transition-all duration-300 ${
                     gameFilter === "all"
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-lg"
                       : "text-gray-600 hover:bg-gray-100"
                   }`}
                 >
@@ -242,12 +242,12 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </Button>
 
                 <Button
-                  onClick={() => setGameFilter("free")}
+                  onClick={() => handleFilterChange("free")}
                   variant={gameFilter === "free" ? "default" : "ghost"}
                   size="sm"
-                  className={`flex items-center gap-2 ${
+                  className={`flex items-center gap-2 transition-all duration-300 ${
                     gameFilter === "free"
-                      ? "bg-green-600 text-white hover:bg-green-700"
+                      ? "bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 shadow-lg"
                       : "text-gray-600 hover:bg-gray-100"
                   }`}
                 >
@@ -256,12 +256,12 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </Button>
 
                 <Button
-                  onClick={() => setGameFilter("money")}
+                  onClick={() => handleFilterChange("money")}
                   variant={gameFilter === "money" ? "default" : "ghost"}
                   size="sm"
-                  className={`flex items-center gap-2 ${
+                  className={`flex items-center gap-2 transition-all duration-300 ${
                     gameFilter === "money"
-                      ? "bg-yellow-600 text-white hover:bg-yellow-700"
+                      ? "bg-gradient-to-r from-yellow-600 to-yellow-700 text-white hover:from-yellow-700 hover:to-yellow-800 shadow-lg"
                       : "text-gray-600 hover:bg-gray-100"
                   }`}
                 >
