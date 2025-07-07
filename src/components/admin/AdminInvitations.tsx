@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,7 +23,9 @@ interface AdminInvitationsProps {
   currentAdminUser: AdminUser;
 }
 
-export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) => {
+export const AdminInvitations = ({
+  currentAdminUser,
+}: AdminInvitationsProps) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [invitations, setInvitations] = useState<AdminUser[]>([]);
@@ -37,14 +38,21 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
 
   const checkInvitePermissions = async () => {
     try {
-      const { data, error } = await supabase.rpc('can_invite_admins');
+      const { data, error } = await supabase.rpc("can_invite_admins");
       if (error) {
-        console.error("Error checking invite permissions:", error);
+        console.error("Error checking invite permissions:", {
+          message: error.message,
+          details: error.details,
+          code: error.code,
+        });
         return;
       }
       setCanInvite(data || false);
     } catch (error) {
-      console.error("Unexpected error checking permissions:", error);
+      console.error(
+        "Unexpected error checking permissions:",
+        error instanceof Error ? error.message : String(error),
+      );
     }
   };
 
@@ -73,9 +81,9 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
 
   const inviteAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const trimmedEmail = email.trim().toLowerCase();
-    
+
     if (!trimmedEmail) {
       toast.error("Please enter an email address");
       return;
@@ -111,22 +119,20 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
       }
 
       // Create admin invitation with secure defaults
-      const { error } = await supabase
-        .from("admin_users")
-        .insert({
-          email: trimmedEmail,
-          role: "admin",
-          invited_by: currentAdminUser.user_id,
-          is_active: true,
-          permissions: {
-            payments: false,
-            withdrawals: false,
-            users: false,
-            games: false,
-            full_access: false,
-            invite_admins: false
-          }
-        });
+      const { error } = await supabase.from("admin_users").insert({
+        email: trimmedEmail,
+        role: "admin",
+        invited_by: currentAdminUser.user_id,
+        is_active: true,
+        permissions: {
+          payments: false,
+          withdrawals: false,
+          users: false,
+          games: false,
+          full_access: false,
+          invite_admins: false,
+        },
+      });
 
       if (error) {
         console.error("Error inviting admin:", error);
@@ -172,7 +178,7 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
   };
 
   const permissions = currentAdminUser.permissions as AdminPermissions | null;
-  const isSuperAdmin = currentAdminUser.role === 'super_admin';
+  const isSuperAdmin = currentAdminUser.role === "super_admin";
 
   return (
     <div className="space-y-6">
@@ -182,7 +188,8 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
             <div className="flex items-center gap-2 text-yellow-800">
               <AlertTriangle className="h-5 w-5" />
               <p className="text-sm">
-                You don't have permission to invite or manage admin users. Contact a super admin for access.
+                You don't have permission to invite or manage admin users.
+                Contact a super admin for access.
               </p>
             </div>
           </CardContent>
@@ -213,7 +220,8 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
               </Button>
             </form>
             <p className="text-sm text-muted-foreground mt-2">
-              New admins will be created with minimal permissions. You can adjust their permissions after creation.
+              New admins will be created with minimal permissions. You can
+              adjust their permissions after creation.
             </p>
           </CardContent>
         </Card>
@@ -237,11 +245,21 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
                   <div>
                     <p className="font-medium">{invitation.email}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge variant={invitation.user_id ? "default" : "secondary"}>
+                      <Badge
+                        variant={invitation.user_id ? "default" : "secondary"}
+                      >
                         {invitation.user_id ? "Active" : "Pending"}
                       </Badge>
-                      <Badge variant={invitation.role === 'super_admin' ? "destructive" : "outline"}>
-                        {invitation.role === 'super_admin' ? 'Super Admin' : 'Admin'}
+                      <Badge
+                        variant={
+                          invitation.role === "super_admin"
+                            ? "destructive"
+                            : "outline"
+                        }
+                      >
+                        {invitation.role === "super_admin"
+                          ? "Super Admin"
+                          : "Admin"}
                       </Badge>
                       {!invitation.is_active && (
                         <Badge variant="secondary">Deactivated</Badge>
@@ -249,16 +267,19 @@ export const AdminInvitations = ({ currentAdminUser }: AdminInvitationsProps) =>
                     </div>
                   </div>
                 </div>
-                {canInvite && invitation.is_active && invitation.role !== 'super_admin' && invitation.id !== currentAdminUser.id && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => removeInvitation(invitation.id)}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
+                {canInvite &&
+                  invitation.is_active &&
+                  invitation.role !== "super_admin" &&
+                  invitation.id !== currentAdminUser.id && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeInvitation(invitation.id)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
               </div>
             ))}
             {invitations.length === 0 && (
