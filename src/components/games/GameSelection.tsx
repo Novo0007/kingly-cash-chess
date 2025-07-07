@@ -237,8 +237,8 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
           </Card>
         </div>
 
-        {/* Main Games - Enhanced Vibrant Design */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+        {/* Main Games - Responsive Grid: 2x2 on mobile/tablet, 4x4 on PC */}
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
           {games.map((game, index) => (
             <div key={game.id} className="relative group">
               {/* Hover Glow Effect */}
@@ -398,7 +398,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
             </CardHeader>
 
             <CardContent>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                 {comingSoonGames.map((game, index) => (
                   <div key={index} className="relative group">
                     <div className="absolute -inset-1 bg-gradient-to-r from-white/20 to-white/30 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
@@ -466,7 +466,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         </div>
 
         {/* Enhanced Game Rules Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           <Card className="relative bg-gradient-to-br from-blue-500 to-purple-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20"></div>
             <CardContent className="relative p-6">
@@ -620,7 +620,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 
           <Card className="relative bg-transparent border-gray-600/30 backdrop-blur-sm">
             <CardContent className="p-6 text-center">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-8">
                 <div className="flex items-center justify-center gap-3">
                   <div className="p-2 bg-green-500/20 rounded-xl">
                     <Target className="h-5 w-5 text-green-400" />
