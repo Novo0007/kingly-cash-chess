@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +24,7 @@ import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
 import { Button as ChatButton } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import "../../styles/game-lobby.css";
 
 interface GameSelectionProps {
   onSelectGame: (
@@ -40,132 +41,168 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   const [gameFilter, setGameFilter] = React.useState<"all" | "free" | "money">(
     "all",
   );
+  const [isLoading, setIsLoading] = React.useState(true);
 
-  const games = [
-    {
-      id: "chess",
-      title: "Chess Arena",
-      description:
-        "Classic strategy game with timed matches and real money prizes",
-      icon: Crown,
-      emoji: "♛",
-      color: "amber",
-      gradient: "from-amber-700 via-orange-700 to-yellow-700",
-      lightGradient: "from-amber-100 via-orange-100 to-yellow-100",
-      features: [
-        "🏆 Tournaments",
-        "⚡ Quick Matches",
-        "💰 Real Prizes",
-        "📈 Rankings",
-      ],
-      status: "Popular",
-      players: "2.5K+ Online",
-      isMoneyGame: true,
-    },
-    {
-      id: "ludo",
-      title: "Ludo King",
-      description: "Classic board game with 2-4 players and real money prizes",
-      icon: Dice1,
-      emoji: "🎲",
-      color: "green",
-      gradient: "from-green-700 via-emerald-700 to-green-800",
-      lightGradient: "from-green-100 via-emerald-100 to-green-200",
-      features: [
-        "👥 2-4 Players",
-        "🎯 Strategy",
-        "💰 Real Prizes",
-        "⚡ Quick Games",
-      ],
-      status: "Hot",
-      players: "1.8K+ Online",
-      isMoneyGame: true,
-    },
-    {
-      id: "maze",
-      title: "Maze Challenge",
-      description:
-        "Navigate labyrinth puzzles and earn points - completely FREE!",
-      icon: Target,
-      emoji: "🧩",
-      color: "purple",
-      gradient: "from-purple-700 via-indigo-700 to-blue-700",
-      lightGradient: "from-purple-100 via-indigo-100 to-blue-100",
-      features: [
-        "🆓 Free to Play",
-        "🧠 Brain Training",
-        "🏆 Leaderboards",
-        "⚡ Multiple Levels",
-      ],
-      status: "NEW",
-      players: "500+ Playing",
-      isMoneyGame: false,
-    },
-    {
-      id: "game2048",
-      title: "2048 Puzzle",
-      description:
-        "Combine numbered tiles to reach 2048 - addictive puzzle game!",
-      icon: Gamepad2,
-      emoji: "🎯",
-      color: "cyan",
-      gradient: "from-cyan-700 via-blue-700 to-indigo-700",
-      lightGradient: "from-cyan-100 via-blue-100 to-indigo-100",
-      features: [
-        "🆓 Free to Play",
-        "🧠 Brain Training",
-        "��� Leaderboards",
-        "⚡ 3 Difficulty Modes",
-      ],
-      status: "NEW",
-      players: "300+ Playing",
-      isMoneyGame: false,
-    },
-    {
-      id: "math",
-      title: "Math: Brain Puzzles",
-      description: "Improve arithmetic skills with fun, timed math puzzles!",
-      icon: Brain,
-      emoji: "🧮",
-      color: "pink",
-      gradient: "from-pink-700 via-rose-700 to-red-700",
-      lightGradient: "from-pink-100 via-rose-100 to-red-100",
-      features: [
-        "🆓 Free to Play",
-        "🧠 6 Question Types",
-        "⏱️ 3 Difficulty Levels",
-        "🎮 Multiple Game Modes",
-      ],
-      status: "NEW",
-      players: "200+ Playing",
-      isMoneyGame: false,
-    },
-  ];
+  // Simulate initial loading for smooth appearance
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
-  // Filter games based on selected filter
-  const filteredGames = games.filter((game) => {
-    if (gameFilter === "free") return !game.isMoneyGame;
-    if (gameFilter === "money") return game.isMoneyGame;
-    return true; // "all" shows everything
-  });
+  // Memoize click handlers for better performance
+  const handleGameSelect = useCallback(
+    (gameType: "chess" | "ludo" | "maze" | "game2048" | "math") => {
+      onSelectGame(gameType);
+    },
+    [onSelectGame],
+  );
 
-  const comingSoonGames = [
-    { name: "Carrom", emoji: "🏅", progress: 85, eta: "Next Week" },
-    { name: "Snake & Ladder", emoji: "🐍", progress: 65, eta: "2 Weeks" },
-    { name: "Teen Patti", emoji: "🃏", progress: 45, eta: "1 Month" },
-    { name: "Pool", emoji: "🎱", progress: 25, eta: "2 Months" },
-  ];
+  const handleFilterChange = useCallback((filter: "all" | "free" | "money") => {
+    setGameFilter(filter);
+  }, []);
+
+  const handleChatToggle = useCallback(() => {
+    setShowGlobalChat((prev) => !prev);
+  }, []);
+
+  const handleChatClose = useCallback(() => {
+    setShowGlobalChat(false);
+  }, []);
+
+  const games = useMemo(
+    () => [
+      {
+        id: "chess",
+        title: "Chess Arena",
+        description:
+          "Classic strategy game with timed matches and real money prizes",
+        icon: Crown,
+        emoji: "♛",
+        color: "amber",
+        gradient: "from-amber-700 via-orange-700 to-yellow-700",
+        lightGradient: "from-amber-100 via-orange-100 to-yellow-100",
+        features: [
+          "🏆 Tournaments",
+          "⚡ Quick Matches",
+          "💰 Real Prizes",
+          "📈 Rankings",
+        ],
+        status: "Popular",
+        players: "2.5K+ Online",
+        isMoneyGame: true,
+      },
+      {
+        id: "ludo",
+        title: "Ludo King",
+        description:
+          "Classic board game with 2-4 players and real money prizes",
+        icon: Dice1,
+        emoji: "🎲",
+        color: "green",
+        gradient: "from-green-700 via-emerald-700 to-green-800",
+        lightGradient: "from-green-100 via-emerald-100 to-green-200",
+        features: [
+          "👥 2-4 Players",
+          "🎯 Strategy",
+          "💰 Real Prizes",
+          "⚡ Quick Games",
+        ],
+        status: "Hot",
+        players: "1.8K+ Online",
+        isMoneyGame: true,
+      },
+      {
+        id: "maze",
+        title: "Maze Challenge",
+        description:
+          "Navigate labyrinth puzzles and earn points - completely FREE!",
+        icon: Target,
+        emoji: "🧩",
+        color: "purple",
+        gradient: "from-purple-700 via-indigo-700 to-blue-700",
+        lightGradient: "from-purple-100 via-indigo-100 to-blue-100",
+        features: [
+          "🆓 Free to Play",
+          "🧠 Brain Training",
+          "🏆 Leaderboards",
+          "⚡ Multiple Levels",
+        ],
+        status: "NEW",
+        players: "500+ Playing",
+        isMoneyGame: false,
+      },
+      {
+        id: "game2048",
+        title: "2048 Puzzle",
+        description:
+          "Combine numbered tiles to reach 2048 - addictive puzzle game!",
+        icon: Gamepad2,
+        emoji: "🎯",
+        color: "cyan",
+        gradient: "from-cyan-700 via-blue-700 to-indigo-700",
+        lightGradient: "from-cyan-100 via-blue-100 to-indigo-100",
+        features: [
+          "🆓 Free to Play",
+          "🧠 Brain Training",
+          "��� Leaderboards",
+          "⚡ 3 Difficulty Modes",
+        ],
+        status: "NEW",
+        players: "300+ Playing",
+        isMoneyGame: false,
+      },
+      {
+        id: "math",
+        title: "Math: Brain Puzzles",
+        description: "Improve arithmetic skills with fun, timed math puzzles!",
+        icon: Brain,
+        emoji: "🧮",
+        color: "pink",
+        gradient: "from-pink-700 via-rose-700 to-red-700",
+        lightGradient: "from-pink-100 via-rose-100 to-red-100",
+        features: [
+          "🆓 Free to Play",
+          "🧠 6 Question Types",
+          "⏱️ 3 Difficulty Levels",
+          "🎮 Multiple Game Modes",
+        ],
+        status: "NEW",
+        players: "200+ Playing",
+        isMoneyGame: false,
+      },
+    ],
+    [],
+  );
+
+  // Filter games based on selected filter - memoized for performance
+  const filteredGames = useMemo(() => {
+    return games.filter((game) => {
+      if (gameFilter === "free") return !game.isMoneyGame;
+      if (gameFilter === "money") return game.isMoneyGame;
+      return true; // "all" shows everything
+    });
+  }, [games, gameFilter]);
+
+  const comingSoonGames = useMemo(
+    () => [
+      { name: "Carrom", emoji: "🏅", progress: 85, eta: "Next Week" },
+      { name: "Snake & Ladder", emoji: "🐍", progress: 65, eta: "2 Weeks" },
+      { name: "Teen Patti", emoji: "🃏", progress: 45, eta: "1 Month" },
+      { name: "Pool", emoji: "🎱", progress: 25, eta: "2 Months" },
+    ],
+    [],
+  );
 
   return (
     <MobileContainer maxWidth="xl">
-      <div className="space-y-4 md:space-y-6">
+      <div className="space-y-4 md:space-y-6 transform-optimized">
         {/* Global Chat Button - Only show on mobile/tablet */}
         {(isMobile || isTablet) && (
           <div className="fixed bottom-20 left-4 z-30">
             <ChatButton
-              onClick={() => setShowGlobalChat(true)}
+              onClick={handleChatToggle}
               size="lg"
-              className="w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 shadow-lg border-2 border-white"
+              className="w-14 h-14 rounded-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 shadow-xl border-2 border-white transition-all duration-300 transform hover:scale-110"
             >
               <MessageSquare className="h-6 w-6 text-white" />
             </ChatButton>
@@ -176,7 +213,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         <MobileChatSystem
           isGlobalChat={true}
           isOpen={showGlobalChat}
-          onClose={() => setShowGlobalChat(false)}
+          onClose={handleChatClose}
         />
 
         {/* Game Filter Options */}
@@ -199,12 +236,12 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 
               <div className="flex items-center gap-2 bg-white rounded-lg p-1 border border-gray-200">
                 <Button
-                  onClick={() => setGameFilter("all")}
+                  onClick={() => handleFilterChange("all")}
                   variant={gameFilter === "all" ? "default" : "ghost"}
                   size="sm"
-                  className={`flex items-center gap-2 ${
+                  className={`flex items-center gap-2 transition-all duration-300 ${
                     gameFilter === "all"
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 shadow-lg"
                       : "text-gray-600 hover:bg-gray-100"
                   }`}
                 >
@@ -213,12 +250,12 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </Button>
 
                 <Button
-                  onClick={() => setGameFilter("free")}
+                  onClick={() => handleFilterChange("free")}
                   variant={gameFilter === "free" ? "default" : "ghost"}
                   size="sm"
-                  className={`flex items-center gap-2 ${
+                  className={`flex items-center gap-2 transition-all duration-300 ${
                     gameFilter === "free"
-                      ? "bg-green-600 text-white hover:bg-green-700"
+                      ? "bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 shadow-lg"
                       : "text-gray-600 hover:bg-gray-100"
                   }`}
                 >
@@ -227,12 +264,12 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </Button>
 
                 <Button
-                  onClick={() => setGameFilter("money")}
+                  onClick={() => handleFilterChange("money")}
                   variant={gameFilter === "money" ? "default" : "ghost"}
                   size="sm"
-                  className={`flex items-center gap-2 ${
+                  className={`flex items-center gap-2 transition-all duration-300 ${
                     gameFilter === "money"
-                      ? "bg-yellow-600 text-white hover:bg-yellow-700"
+                      ? "bg-gradient-to-r from-yellow-600 to-yellow-700 text-white hover:from-yellow-700 hover:to-yellow-800 shadow-lg"
                       : "text-gray-600 hover:bg-gray-100"
                   }`}
                 >
@@ -276,18 +313,23 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 transform-optimized">
             {filteredGames.map((game, index) => (
-              <div key={game.id} className="relative group">
+              <div key={game.id} className="relative group game-card">
                 {/* Hover Glow Effect */}
                 <div
                   className={`absolute -inset-1 bg-gradient-to-r ${game.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-500`}
                 ></div>
 
-                <Card className="relative bg-amber-50/95 backdrop-blur-sm border-2 border-amber-200 rounded-xl md:rounded-2xl wood-shadow-deep transition-all duration-300 hover:scale-[1.02] hover:wood-shadow-warm overflow-hidden wood-plank h-full">
-                  {/* Background Pattern */}
+                <Card className="relative bg-gradient-to-br from-white via-gray-50/80 to-white backdrop-blur-md border border-gray-200/50 rounded-2xl md:rounded-3xl shadow-xl transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-2xl overflow-hidden h-full transform-gpu will-change-transform">
+                  {/* Animated Background Pattern */}
                   <div
-                    className={`absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br ${game.lightGradient} rounded-bl-[50px] md:rounded-bl-[100px] opacity-20`}
+                    className={`absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br ${game.lightGradient} rounded-bl-[50px] md:rounded-bl-[100px] opacity-30 animate-pulse`}
+                  ></div>
+
+                  {/* Smooth gradient overlay */}
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${game.lightGradient} opacity-5`}
                   ></div>
 
                   {/* Status Badge */}
@@ -303,15 +345,20 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   <CardHeader className="pb-3 pt-4 md:pb-4 md:pt-6 px-3 md:px-6">
                     <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 text-lg md:text-xl lg:text-2xl">
                       <div className="relative group/icon flex-shrink-0">
+                        {/* Glowing background effect */}
                         <div
-                          className={`absolute -inset-1 md:-inset-2 bg-gradient-to-r ${game.gradient} rounded-xl md:rounded-2xl blur-lg opacity-60 group-hover/icon:opacity-80 transition-all duration-300`}
+                          className={`absolute -inset-2 md:-inset-3 bg-gradient-to-r ${game.gradient} rounded-2xl md:rounded-3xl blur-xl opacity-40 group-hover/icon:opacity-70 transition-all duration-500 animate-pulse`}
                         ></div>
+
+                        {/* Main icon container with 3D effect */}
                         <div
-                          className={`relative p-2 md:p-3 bg-gradient-to-r ${game.gradient} rounded-xl md:rounded-2xl text-white shadow-lg`}
+                          className={`relative p-3 md:p-4 bg-gradient-to-br ${game.gradient} rounded-2xl md:rounded-3xl text-white shadow-2xl transform transition-all duration-300 group-hover/icon:scale-110 group-hover/icon:rotate-3 before:absolute before:inset-0 before:bg-gradient-to-t before:from-black/20 before:to-transparent before:rounded-2xl md:before:rounded-3xl`}
                         >
-                          <game.icon className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 drop-shadow-lg" />
+                          <game.icon className="h-7 w-7 md:h-9 md:w-9 lg:h-12 lg:w-12 drop-shadow-2xl relative z-10 filter brightness-110" />
                         </div>
-                        <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 text-lg md:text-2xl animate-bounce">
+
+                        {/* Floating emoji with smooth animation */}
+                        <div className="absolute -top-2 -right-2 md:-top-3 md:-right-3 text-xl md:text-3xl animate-bounce transform transition-all duration-300 group-hover/icon:scale-125">
                           {game.emoji}
                         </div>
                       </div>
@@ -355,10 +402,10 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                       ))}
                     </div>
 
-                    {/* Enhanced Play Button with Animation - Mobile Optimized */}
+                    {/* Enhanced Play Button with Smooth Animations */}
                     <Button
                       onClick={() =>
-                        onSelectGame(
+                        handleGameSelect(
                           game.id as
                             | "chess"
                             | "ludo"
@@ -367,15 +414,23 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                             | "math",
                         )
                       }
-                      className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:${game.gradient} text-white border-0 py-3 md:py-4 lg:py-5 text-sm md:text-base lg:text-lg font-bold rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] group/btn`}
+                      className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:from-opacity-90 text-white border-0 py-4 md:py-5 lg:py-6 text-sm md:text-base lg:text-lg font-bold rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 ease-out transform hover:scale-[1.03] hover:-translate-y-1 group/btn will-change-transform`}
                     >
-                      {/* Button Background Animation */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
+                      {/* Multiple layered background animations */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 transform -skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-out"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
 
-                      <div className="relative flex items-center justify-center gap-2 md:gap-3">
-                        <Play className="h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover/btn:scale-110" />
-                        <span className="font-black">PLAY NOW</span>
-                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                      {/* Pulsing glow effect */}
+                      <div
+                        className={`absolute -inset-1 bg-gradient-to-r ${game.gradient} rounded-2xl md:rounded-3xl blur-xl opacity-0 group-hover/btn:opacity-50 transition-all duration-500 animate-pulse`}
+                      ></div>
+
+                      <div className="relative flex items-center justify-center gap-2 md:gap-3 z-10">
+                        <Play className="h-4 w-4 md:h-5 md:w-5 transition-all duration-300 group-hover/btn:scale-125 group-hover/btn:rotate-12 filter drop-shadow-lg" />
+                        <span className="font-black tracking-wide drop-shadow-sm">
+                          PLAY NOW
+                        </span>
+                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-all duration-300 group-hover/btn:translate-x-2 group-hover/btn:scale-110 filter drop-shadow-lg" />
                       </div>
                     </Button>
 

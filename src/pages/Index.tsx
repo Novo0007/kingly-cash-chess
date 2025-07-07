@@ -42,14 +42,22 @@ const Index = () => {
         .single();
 
       if (error && error.code !== "PGRST116") {
-        console.error("Profile fetch error:", error);
+        console.error("Profile fetch error:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        });
         return;
       }
 
       console.log("Profile fetched successfully:", data);
       setUserProfile(data);
     } catch (error) {
-      console.error("Unexpected profile fetch error:", error);
+      console.error(
+        "Unexpected profile fetch error:",
+        error instanceof Error ? error.message : String(error),
+      );
     }
   }, []);
 
@@ -126,13 +134,21 @@ const Index = () => {
       try {
         const { data, error } = await supabase.rpc("is_admin");
         if (error) {
-          console.error("Error checking admin status:", error);
+          console.error("Error checking admin status:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code,
+          });
           setIsAdmin(false);
           return;
         }
         setIsAdmin(data || false);
       } catch (error) {
-        console.error("Unexpected error checking admin status:", error);
+        console.error(
+          "Unexpected error checking admin status:",
+          error instanceof Error ? error.message : String(error),
+        );
         setIsAdmin(false);
       }
     };

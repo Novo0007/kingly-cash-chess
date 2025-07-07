@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +42,15 @@ export const MathGameBoard: React.FC<MathGameBoardProps> = ({
   const [hintMessage, setHintMessage] = useState<string | null>(null);
   const [isAnswering, setIsAnswering] = useState(false);
 
+  // Memoize the time update callback to prevent render cycle issues
+  const updateTime = useCallback(
+    (newTime: number) => {
+      // Use setTimeout to defer the state update to the next tick
+      setTimeout(() => onTimeUpdate(newTime), 0);
+    },
+    [onTimeUpdate],
+  );
+
   // Timer effect
   useEffect(() => {
     if (gameState.gameStatus !== "playing" || !gameState.currentQuestion) {
@@ -51,13 +60,13 @@ export const MathGameBoard: React.FC<MathGameBoardProps> = ({
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         const newTime = Math.max(0, prev - 1);
-        onTimeUpdate(newTime);
+        updateTime(newTime);
         return newTime;
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameState.gameStatus, gameState.currentQuestion, onTimeUpdate]);
+  }, [gameState.gameStatus, gameState.currentQuestion, updateTime]);
 
   // Reset states when question changes
   useEffect(() => {

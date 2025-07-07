@@ -50,7 +50,7 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
         .from("math_scores")
         .select("*")
         .order("score", { ascending: false })
-        .limit(50);
+        .limit(100);
 
       if (selectedDifficulty !== "all") {
         query = query.eq("difficulty", selectedDifficulty);
@@ -80,6 +80,22 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
   const handleRefresh = () => {
     fetchLeaderboard();
     onRefresh();
+  };
+
+  // Get highest score per player
+  const getHighestScorePerPlayer = (allScores: MathGameScore[]) => {
+    const playerBestScores = new Map<string, MathGameScore>();
+
+    allScores.forEach((score) => {
+      const existingBest = playerBestScores.get(score.username);
+      if (!existingBest || score.score > existingBest.score) {
+        playerBestScores.set(score.username, score);
+      }
+    });
+
+    return Array.from(playerBestScores.values()).sort(
+      (a, b) => b.score - a.score,
+    );
   };
 
   const formatTime = (timeMs: number) => {
@@ -293,15 +309,20 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-6 w-6 text-green-600" />
-                All High Scores
+                Top 10 Players (Best Scores)
+                {selectedDifficulty !== "all" || selectedMode !== "all" ? (
+                  <Badge variant="outline" className="ml-2">
+                    Filtered Results
+                  </Badge>
+                ) : null}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {scores.length === 0 ? (
+              {getHighestScorePerPlayer(scores).length === 0 ? (
                 <div className="text-center py-8">
                   <Trophy className="h-16 w-16 mx-auto mb-4 text-gray-300" />
                   <p className="text-gray-500">
-                    No scores found for the selected filters.
+                    No players found for the selected filters.
                   </p>
                   <p className="text-sm text-gray-400 mt-2">
                     Be the first to set a record!
@@ -309,81 +330,87 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {scores.map((score, index) => (
-                    <div
-                      key={score.id}
-                      className={`flex items-center gap-4 p-4 rounded-lg border transition-all duration-200 hover:shadow-md ${
-                        index < 3
-                          ? "bg-gradient-to-r from-yellow-50 to-orange-50"
-                          : "bg-gray-50"
-                      }`}
-                    >
-                      {/* Rank */}
-                      <div className="flex items-center justify-center w-12">
-                        {getRankIcon(index + 1)}
-                      </div>
+                  {getHighestScorePerPlayer(scores)
+                    .slice(0, 10)
+                    .map((score, index) => (
+                      <div
+                        key={score.id}
+                        className={`flex items-center gap-4 p-4 rounded-lg border transition-all duration-200 hover:shadow-md ${
+                          index < 3
+                            ? "bg-gradient-to-r from-yellow-50 to-orange-50"
+                            : "bg-gray-50"
+                        }`}
+                      >
+                        {/* Rank */}
+                        <div className="flex items-center justify-center w-12">
+                          {getRankIcon(index + 1)}
+                        </div>
 
-                      {/* User Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <User className="h-4 w-4 text-gray-600" />
-                          <span className="font-semibold text-gray-800 truncate">
-                            {score.username}
-                          </span>
-                          <Badge
-                            className={getDifficultyColor(score.difficulty)}
-                          >
-                            {score.difficulty}
-                          </Badge>
-                          <Badge className={getModeColor(score.game_mode)}>
-                            {score.game_mode}
-                          </Badge>
+                        {/* User Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <User className="h-4 w-4 text-gray-600" />
+                            <span className="font-semibold text-gray-800 truncate">
+                              {score.username}
+                            </span>
+                            <Badge
+                              className={getDifficultyColor(score.difficulty)}
+                            >
+                              {score.difficulty}
+                            </Badge>
+                            <Badge className={getModeColor(score.game_mode)}>
+                              {score.game_mode}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-gray-600">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              {formatDate(score.completed_at)}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Timer className="h-3 w-3" />
+                              {formatTime(score.time_taken)}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            {formatDate(score.completed_at)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Timer className="h-3 w-3" />
-                            {formatTime(score.time_taken)}
-                          </span>
-                        </div>
-                      </div>
 
-                      {/* Stats */}
-                      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 text-center">
-                        <div>
-                          <div className="text-lg font-bold text-blue-600">
-                            {score.score}
+                        {/* Stats */}
+                        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 text-center">
+                          <div>
+                            <div className="text-lg font-bold text-blue-600">
+                              {score.score}
+                            </div>
+                            <div className="text-xs text-gray-500">Score</div>
                           </div>
-                          <div className="text-xs text-gray-500">Score</div>
-                        </div>
-                        <div>
-                          <div className="text-lg font-bold text-green-600">
-                            {calculateAccuracy(
-                              score.correct_answers,
-                              score.total_questions,
-                            )}
-                            %
+                          <div>
+                            <div className="text-lg font-bold text-green-600">
+                              {calculateAccuracy(
+                                score.correct_answers,
+                                score.total_questions,
+                              )}
+                              %
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              Accuracy
+                            </div>
                           </div>
-                          <div className="text-xs text-gray-500">Accuracy</div>
-                        </div>
-                        <div>
-                          <div className="text-lg font-bold text-purple-600">
-                            {score.max_streak}
+                          <div>
+                            <div className="text-lg font-bold text-purple-600">
+                              {score.max_streak}
+                            </div>
+                            <div className="text-xs text-gray-500">Streak</div>
                           </div>
-                          <div className="text-xs text-gray-500">Streak</div>
-                        </div>
-                        <div>
-                          <div className="text-lg font-bold text-gray-600">
-                            {score.correct_answers}/{score.total_questions}
+                          <div>
+                            <div className="text-lg font-bold text-gray-600">
+                              {score.correct_answers}/{score.total_questions}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              Questions
+                            </div>
                           </div>
-                          <div className="text-xs text-gray-500">Questions</div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               )}
             </CardContent>
@@ -481,31 +508,37 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
           <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 text-center">
             <div className="p-4 bg-white rounded-lg border">
               <div className="text-2xl font-bold text-blue-600">
-                {scores.length}
+                {getHighestScorePerPlayer(scores).length}
               </div>
-              <div className="text-sm text-gray-600">Total Scores</div>
+              <div className="text-sm text-gray-600">Total Players</div>
             </div>
             <div className="p-4 bg-white rounded-lg border">
               <div className="text-2xl font-bold text-green-600">
-                {scores.length > 0
-                  ? Math.max(...scores.map((s) => s.score)).toLocaleString()
+                {getHighestScorePerPlayer(scores).length > 0
+                  ? Math.max(
+                      ...getHighestScorePerPlayer(scores).map((s) => s.score),
+                    ).toLocaleString()
                   : 0}
               </div>
               <div className="text-sm text-gray-600">Highest Score</div>
             </div>
             <div className="p-4 bg-white rounded-lg border">
               <div className="text-2xl font-bold text-purple-600">
-                {scores.length > 0
-                  ? Math.max(...scores.map((s) => s.max_streak))
+                {getHighestScorePerPlayer(scores).length > 0
+                  ? Math.max(
+                      ...getHighestScorePerPlayer(scores).map(
+                        (s) => s.max_streak,
+                      ),
+                    )
                   : 0}
               </div>
               <div className="text-sm text-gray-600">Best Streak</div>
             </div>
             <div className="p-4 bg-white rounded-lg border">
               <div className="text-2xl font-bold text-orange-600">
-                {scores.length > 0
+                {getHighestScorePerPlayer(scores).length > 0
                   ? Math.round(
-                      scores.reduce(
+                      getHighestScorePerPlayer(scores).reduce(
                         (acc, s) =>
                           acc +
                           calculateAccuracy(
@@ -513,7 +546,7 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
                             s.total_questions,
                           ),
                         0,
-                      ) / scores.length,
+                      ) / getHighestScorePerPlayer(scores).length,
                     )
                   : 0}
                 %
