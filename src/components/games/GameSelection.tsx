@@ -16,6 +16,7 @@ import {
   ArrowRight,
   CheckCircle,
   Clock,
+  Brain,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
@@ -25,7 +26,9 @@ import { MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface GameSelectionProps {
-  onSelectGame: (gameType: "chess" | "ludo" | "maze" | "game2048") => void;
+  onSelectGame: (
+    gameType: "chess" | "ludo" | "maze" | "game2048" | "math",
+  ) => void;
 }
 
 export const GameSelection: React.FC<GameSelectionProps> = ({
@@ -34,6 +37,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   const { isMobile, isTablet } = useDeviceType();
   const navigate = useNavigate();
   const [showGlobalChat, setShowGlobalChat] = React.useState(false);
+  const [gameFilter, setGameFilter] = React.useState<"all" | "free" | "money">(
+    "all",
+  );
 
   const games = [
     {
@@ -54,6 +60,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       ],
       status: "Popular",
       players: "2.5K+ Online",
+      isMoneyGame: true,
     },
     {
       id: "ludo",
@@ -72,6 +79,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       ],
       status: "Hot",
       players: "1.8K+ Online",
+      isMoneyGame: true,
     },
     {
       id: "maze",
@@ -91,6 +99,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       ],
       status: "NEW",
       players: "500+ Playing",
+      isMoneyGame: false,
     },
     {
       id: "game2048",
@@ -105,13 +114,40 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       features: [
         "🆓 Free to Play",
         "🧠 Brain Training",
-        "🏆 Leaderboards",
+        "��� Leaderboards",
         "⚡ 3 Difficulty Modes",
       ],
       status: "NEW",
       players: "300+ Playing",
+      isMoneyGame: false,
+    },
+    {
+      id: "math",
+      title: "Math: Brain Puzzles",
+      description: "Improve arithmetic skills with fun, timed math puzzles!",
+      icon: Brain,
+      emoji: "🧮",
+      color: "pink",
+      gradient: "from-pink-700 via-rose-700 to-red-700",
+      lightGradient: "from-pink-100 via-rose-100 to-red-100",
+      features: [
+        "🆓 Free to Play",
+        "🧠 6 Question Types",
+        "⏱️ 3 Difficulty Levels",
+        "🎮 Multiple Game Modes",
+      ],
+      status: "NEW",
+      players: "200+ Playing",
+      isMoneyGame: false,
     },
   ];
+
+  // Filter games based on selected filter
+  const filteredGames = games.filter((game) => {
+    if (gameFilter === "free") return !game.isMoneyGame;
+    if (gameFilter === "money") return game.isMoneyGame;
+    return true; // "all" shows everything
+  });
 
   const comingSoonGames = [
     { name: "Carrom", emoji: "🏅", progress: 85, eta: "Next Week" },
@@ -142,201 +178,230 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
           isOpen={showGlobalChat}
           onClose={() => setShowGlobalChat(false)}
         />
-        {/* Natural Wood Header Background */}
-        <div className="relative overflow-hidden">
-          {/* Wood Background Effects */}
-          <div className="absolute inset-0 wood-gradient-dark rounded-2xl opacity-90"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-amber-700/20 via-transparent to-orange-600/20 rounded-2xl"></div>
 
-          {/* Natural Floating Elements */}
-          <div className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-r from-amber-600/30 to-orange-600/30 rounded-full blur-xl wood-glow"></div>
-          <div
-            className="absolute bottom-4 left-4 w-12 h-12 bg-gradient-to-r from-green-700/30 to-emerald-700/30 rounded-full blur-lg wood-glow"
-            style={{ animationDelay: "1s" }}
-          ></div>
-
-          <Card className="relative bg-transparent border-amber-300/20 backdrop-blur-sm wood-shadow-deep">
-            <CardHeader className="text-center pb-6 pt-8">
-              <CardTitle>
-                <div className="flex items-center justify-center gap-4 mb-4">
-                  <div className="relative group">
-                    <div className="absolute -inset-3 bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 rounded-full blur-xl opacity-60 group-hover:opacity-80 transition-all duration-500"></div>
-                    <div className="relative p-3 bg-amber-100/10 backdrop-blur-sm rounded-full border border-amber-200/20">
-                      <Gamepad2 className="h-10 w-10 md:h-12 md:w-12 text-amber-100 drop-shadow-lg" />
-                    </div>
-                    <div className="absolute -top-2 -right-2 text-2xl animate-bounce">
-                      🏡
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <span className="block text-3xl md:text-4xl lg:text-5xl font-black text-amber-100 drop-shadow-lg font-heading">
-                      CHOOSE YOUR
-                    </span>
-                    <span className="block text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-amber-200 via-orange-200 to-yellow-200 bg-clip-text text-transparent drop-shadow-lg font-heading">
-                      GAME
-                    </span>
-                  </div>
+        {/* Game Filter Options */}
+        <Card className="bg-gradient-to-r from-gray-50 to-blue-50 border-blue-200">
+          <CardContent className="p-4 md:p-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-500 rounded-lg">
+                  <Target className="h-5 w-5 text-white" />
                 </div>
-                <p className="text-amber-100/90 text-base md:text-lg font-medium max-w-2xl mx-auto drop-shadow-md font-body">
-                  🌲 Select your favorite game and join fellow players in our
-                  cozy digital lodge for real prizes!
-                </p>
-
-                {/* Stats Bar */}
-                <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-amber-200/20">
-                  <div className="text-center">
-                    <div className="text-amber-100 font-bold text-lg md:text-xl">
-                      4.2K+
-                    </div>
-                    <div className="text-amber-200/80 text-xs">
-                      Lodge Members
-                    </div>
-                  </div>
-                  <div className="w-px h-8 bg-amber-200/20"></div>
-                  <div className="text-center">
-                    <div className="text-amber-100 font-bold text-lg md:text-xl">
-                      ₹50L+
-                    </div>
-                    <div className="text-amber-200/80 text-xs">
-                      Daily Prizes
-                    </div>
-                  </div>
-                  <div className="w-px h-8 bg-amber-200/20"></div>
-                  <div className="text-center">
-                    <div className="text-amber-100 font-bold text-lg md:text-xl">
-                      24/7
-                    </div>
-                    <div className="text-amber-200/80 text-xs">
-                      Active Lodge
-                    </div>
-                  </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-800">
+                    Filter Games
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Choose your preferred game type
+                  </p>
                 </div>
-              </CardTitle>
-            </CardHeader>
-          </Card>
-        </div>
+              </div>
+
+              <div className="flex items-center gap-2 bg-white rounded-lg p-1 border border-gray-200">
+                <Button
+                  onClick={() => setGameFilter("all")}
+                  variant={gameFilter === "all" ? "default" : "ghost"}
+                  size="sm"
+                  className={`flex items-center gap-2 ${
+                    gameFilter === "all"
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <Gamepad2 className="h-4 w-4" />
+                  All Games ({games.length})
+                </Button>
+
+                <Button
+                  onClick={() => setGameFilter("free")}
+                  variant={gameFilter === "free" ? "default" : "ghost"}
+                  size="sm"
+                  className={`flex items-center gap-2 ${
+                    gameFilter === "free"
+                      ? "bg-green-600 text-white hover:bg-green-700"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <Star className="h-4 w-4" />
+                  🆓 Free Games ({games.filter((g) => !g.isMoneyGame).length})
+                </Button>
+
+                <Button
+                  onClick={() => setGameFilter("money")}
+                  variant={gameFilter === "money" ? "default" : "ghost"}
+                  size="sm"
+                  className={`flex items-center gap-2 ${
+                    gameFilter === "money"
+                      ? "bg-yellow-600 text-white hover:bg-yellow-700"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <Trophy className="h-4 w-4" />
+                  💰 Earn Money ({games.filter((g) => g.isMoneyGame).length})
+                </Button>
+              </div>
+            </div>
+
+            {/* Filter Description */}
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-sm text-blue-800">
+                {gameFilter === "all" &&
+                  "🎮 Showing all available games - both free and earning opportunities"}
+                {gameFilter === "free" &&
+                  "🆓 Showing free-to-play games - enjoy without any cost!"}
+                {gameFilter === "money" &&
+                  "💰 Showing games where you can earn real money prizes!"}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Main Games - Enhanced Vibrant Design */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-          {games.map((game, index) => (
-            <div key={game.id} className="relative group">
-              {/* Hover Glow Effect */}
-              <div
-                className={`absolute -inset-1 bg-gradient-to-r ${game.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-500`}
-              ></div>
-
-              <Card className="relative bg-amber-50/95 backdrop-blur-sm border-2 border-amber-200 rounded-2xl wood-shadow-deep transition-all duration-300 hover:scale-[1.02] hover:wood-shadow-warm overflow-hidden wood-plank">
-                {/* Background Pattern */}
+        {filteredGames.length === 0 ? (
+          <Card className="col-span-full bg-gradient-to-r from-gray-50 to-blue-50 border-gray-200">
+            <CardContent className="p-8 text-center">
+              <div className="text-6xl mb-4">🎮</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                No Games Found
+              </h3>
+              <p className="text-gray-600 mb-4">
+                No games match your current filter selection.
+              </p>
+              <Button
+                onClick={() => setGameFilter("all")}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Show All Games
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            {filteredGames.map((game, index) => (
+              <div key={game.id} className="relative group">
+                {/* Hover Glow Effect */}
                 <div
-                  className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${game.lightGradient} rounded-bl-[100px] opacity-20`}
+                  className={`absolute -inset-1 bg-gradient-to-r ${game.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-500`}
                 ></div>
 
-                {/* Status Badge */}
-                <div className="absolute top-4 right-4 z-10">
-                  <Badge
-                    className={`bg-gradient-to-r ${game.gradient} text-white border-0 font-bold px-3 py-1 text-xs`}
-                  >
-                    <Star className="h-3 w-3 mr-1" />
-                    {game.status}
-                  </Badge>
-                </div>
+                <Card className="relative bg-amber-50/95 backdrop-blur-sm border-2 border-amber-200 rounded-xl md:rounded-2xl wood-shadow-deep transition-all duration-300 hover:scale-[1.02] hover:wood-shadow-warm overflow-hidden wood-plank h-full">
+                  {/* Background Pattern */}
+                  <div
+                    className={`absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br ${game.lightGradient} rounded-bl-[50px] md:rounded-bl-[100px] opacity-20`}
+                  ></div>
 
-                <CardHeader className="pb-4 pt-6">
-                  <CardTitle className="flex items-center gap-4 text-xl md:text-2xl">
-                    <div className="relative group/icon">
-                      <div
-                        className={`absolute -inset-2 bg-gradient-to-r ${game.gradient} rounded-2xl blur-lg opacity-60 group-hover/icon:opacity-80 transition-all duration-300`}
-                      ></div>
-                      <div
-                        className={`relative p-3 bg-gradient-to-r ${game.gradient} rounded-2xl text-white shadow-lg`}
-                      >
-                        <game.icon className="h-8 w-8 md:h-10 md:w-10 drop-shadow-lg" />
+                  {/* Status Badge */}
+                  <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10">
+                    <Badge
+                      className={`bg-gradient-to-r ${game.gradient} text-white border-0 font-bold px-2 py-1 text-xs`}
+                    >
+                      <Star className="h-3 w-3 mr-1" />
+                      {game.status}
+                    </Badge>
+                  </div>
+
+                  <CardHeader className="pb-3 pt-4 md:pb-4 md:pt-6 px-3 md:px-6">
+                    <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 text-lg md:text-xl lg:text-2xl">
+                      <div className="relative group/icon flex-shrink-0">
+                        <div
+                          className={`absolute -inset-1 md:-inset-2 bg-gradient-to-r ${game.gradient} rounded-xl md:rounded-2xl blur-lg opacity-60 group-hover/icon:opacity-80 transition-all duration-300`}
+                        ></div>
+                        <div
+                          className={`relative p-2 md:p-3 bg-gradient-to-r ${game.gradient} rounded-xl md:rounded-2xl text-white shadow-lg`}
+                        >
+                          <game.icon className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 drop-shadow-lg" />
+                        </div>
+                        <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 text-lg md:text-2xl animate-bounce">
+                          {game.emoji}
+                        </div>
                       </div>
-                      <div className="absolute -top-2 -right-2 text-2xl animate-bounce">
-                        {game.emoji}
+                      <div className="flex-1 min-w-0">
+                        <div className="text-gray-800 font-black font-heading truncate">
+                          {game.title}
+                        </div>
+                        <div className="flex items-center gap-1 md:gap-2 mt-1 flex-wrap">
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span className="text-xs md:text-sm text-green-600 font-semibold">
+                              {game.players}
+                            </span>
+                          </div>
+                          <Clock className="h-3 w-3 text-gray-400" />
+                          <span className="text-xs text-gray-500">Live</span>
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <div className="text-gray-800 font-black font-heading">
-                        {game.title}
-                      </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                          <span className="text-sm text-green-600 font-semibold">
-                            {game.players}
+                    </CardTitle>
+                  </CardHeader>
+
+                  <CardContent className="space-y-4 md:space-y-6 px-3 md:px-6">
+                    <p className="text-gray-600 text-sm md:text-base font-medium leading-relaxed line-clamp-2">
+                      {game.description}
+                    </p>
+
+                    {/* Enhanced Features Grid - Mobile Optimized */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
+                      {game.features.map((feature, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center gap-2 p-2 md:p-3 bg-gray-50 rounded-lg md:rounded-xl border border-gray-100 hover:bg-gray-100 transition-all duration-200"
+                        >
+                          <CheckCircle
+                            className={`h-3 w-3 md:h-4 md:w-4 text-${game.color}-500 flex-shrink-0`}
+                          />
+                          <span className="text-xs md:text-sm font-semibold text-gray-700 truncate">
+                            {feature}
                           </span>
                         </div>
-                        <Clock className="h-3 w-3 text-gray-400" />
-                        <span className="text-xs text-gray-500">Live</span>
-                      </div>
+                      ))}
                     </div>
-                  </CardTitle>
-                </CardHeader>
 
-                <CardContent className="space-y-6">
-                  <p className="text-gray-600 text-base font-medium leading-relaxed">
-                    {game.description}
-                  </p>
+                    {/* Enhanced Play Button with Animation - Mobile Optimized */}
+                    <Button
+                      onClick={() =>
+                        onSelectGame(
+                          game.id as
+                            | "chess"
+                            | "ludo"
+                            | "maze"
+                            | "game2048"
+                            | "math",
+                        )
+                      }
+                      className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:${game.gradient} text-white border-0 py-3 md:py-4 lg:py-5 text-sm md:text-base lg:text-lg font-bold rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] group/btn`}
+                    >
+                      {/* Button Background Animation */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
 
-                  {/* Enhanced Features Grid */}
-                  <div className="grid grid-cols-2 gap-3">
-                    {game.features.map((feature, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-gray-100 transition-all duration-200"
-                      >
-                        <CheckCircle
-                          className={`h-4 w-4 text-${game.color}-500 flex-shrink-0`}
-                        />
-                        <span className="text-sm font-semibold text-gray-700">
-                          {feature}
+                      <div className="relative flex items-center justify-center gap-2 md:gap-3">
+                        <Play className="h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover/btn:scale-110" />
+                        <span className="font-black">PLAY NOW</span>
+                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                      </div>
+                    </Button>
+
+                    {/* Quick Stats - Mobile Optimized */}
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                      <div className="flex items-center gap-1">
+                        <Trophy className="h-3 w-3 md:h-4 md:w-4 text-yellow-500" />
+                        <span className="text-xs md:text-sm font-semibold text-gray-600">
+                          Prize Pool
                         </span>
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Enhanced Play Button with Animation */}
-                  <Button
-                    onClick={() =>
-                      onSelectGame(
-                        game.id as "chess" | "ludo" | "maze" | "game2048",
-                      )
-                    }
-                    className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:${game.gradient} text-white border-0 py-4 md:py-5 text-base md:text-lg font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] group/btn`}
-                  >
-                    {/* Button Background Animation */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
-
-                    <div className="relative flex items-center justify-center gap-3">
-                      <Play className="h-5 w-5 transition-transform duration-300 group-hover/btn:scale-110" />
-                      <span className="font-black">PLAY NOW</span>
-                      <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm md:text-lg font-black text-green-600">
+                          {game.isMoneyGame
+                            ? `₹${game.id === "chess" ? "2,50,000" : "1,80,000"}`
+                            : "FREE"}
+                        </span>
+                        <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-yellow-500" />
+                      </div>
                     </div>
-                  </Button>
-
-                  {/* Quick Stats */}
-                  <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                    <div className="flex items-center gap-1">
-                      <Trophy className="h-4 w-4 text-yellow-500" />
-                      <span className="text-sm font-semibold text-gray-600">
-                        Prize Pool
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-lg font-black text-green-600">
-                        {game.id === "maze"
-                          ? "FREE"
-                          : `₹${index === 0 ? "2,50,000" : "1,80,000"}`}
-                      </span>
-                      <Sparkles className="h-4 w-4 text-yellow-500" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ))}
-        </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Enhanced Coming Soon Section */}
         <div className="relative overflow-hidden">
@@ -377,7 +442,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
             </CardHeader>
 
             <CardContent>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                 {comingSoonGames.map((game, index) => (
                   <div key={index} className="relative group">
                     <div className="absolute -inset-1 bg-gradient-to-r from-white/20 to-white/30 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
@@ -445,7 +510,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         </div>
 
         {/* Enhanced Game Rules Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           <Card className="relative bg-gradient-to-br from-blue-500 to-purple-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20"></div>
             <CardContent className="relative p-6">
@@ -561,6 +626,35 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
               </div>
             </CardContent>
           </Card>
+
+          <Card className="relative bg-gradient-to-br from-pink-500 to-rose-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-rose-400/20"></div>
+            <CardContent className="relative p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <Brain className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-lg font-heading">
+                      Math Rules Guide
+                    </h4>
+                    <p className="text-white/90 text-sm font-medium">
+                      Learn arithmetic puzzle strategies and tips
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => navigate("/math-rules")}
+                  variant="secondary"
+                  className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
+                >
+                  Learn
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Enhanced Footer with Trust Badges */}
@@ -570,7 +664,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 
           <Card className="relative bg-transparent border-gray-600/30 backdrop-blur-sm">
             <CardContent className="p-6 text-center">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-8">
                 <div className="flex items-center justify-center gap-3">
                   <div className="p-2 bg-green-500/20 rounded-xl">
                     <Target className="h-5 w-5 text-green-400" />

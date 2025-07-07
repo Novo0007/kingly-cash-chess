@@ -140,7 +140,7 @@ export const MazeLobby: React.FC<MazeLobbyProps> = ({
       </Card>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <Card className="relative bg-gradient-to-br from-blue-500 to-cyan-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-cyan-400/20"></div>
           <CardContent className="relative p-6">
@@ -214,7 +214,7 @@ export const MazeLobby: React.FC<MazeLobbyProps> = ({
 
         <CardContent className="space-y-6">
           {/* Difficulty Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
             {difficulties.map((difficulty) => (
               <div
                 key={difficulty.id}
@@ -359,7 +359,7 @@ export const MazeLobby: React.FC<MazeLobbyProps> = ({
           </div>
 
           {/* Features Highlight */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-200">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 pt-4 border-t border-gray-200">
             <div className="text-center">
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <Zap className="h-6 w-6 text-green-600" />
