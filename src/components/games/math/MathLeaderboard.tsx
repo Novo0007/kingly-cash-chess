@@ -508,9 +508,9 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
           <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 text-center">
             <div className="p-4 bg-white rounded-lg border">
               <div className="text-2xl font-bold text-blue-600">
-                {scores.length}
+                {getHighestScorePerPlayer(scores).length}
               </div>
-              <div className="text-sm text-gray-600">Total Scores</div>
+              <div className="text-sm text-gray-600">Total Players</div>
             </div>
             <div className="p-4 bg-white rounded-lg border">
               <div className="text-2xl font-bold text-green-600">
