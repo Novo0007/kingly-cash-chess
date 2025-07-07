@@ -188,7 +188,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 
   return (
     <MobileContainer maxWidth="xl">
-      <div className="space-y-4 md:space-y-6">
+      <div className="space-y-4 md:space-y-6 transform-optimized">
         {/* Global Chat Button - Only show on mobile/tablet */}
         {(isMobile || isTablet) && (
           <div className="fixed bottom-20 left-4 z-30">
