@@ -41,6 +41,26 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
     "all",
   );
 
+  // Memoize click handlers for better performance
+  const handleGameSelect = useCallback(
+    (gameType: "chess" | "ludo" | "maze" | "game2048" | "math") => {
+      onSelectGame(gameType);
+    },
+    [onSelectGame],
+  );
+
+  const handleFilterChange = useCallback((filter: "all" | "free" | "money") => {
+    setGameFilter(filter);
+  }, []);
+
+  const handleChatToggle = useCallback(() => {
+    setShowGlobalChat((prev) => !prev);
+  }, []);
+
+  const handleChatClose = useCallback(() => {
+    setShowGlobalChat(false);
+  }, []);
+
   const games = useMemo(
     () => [
       {
