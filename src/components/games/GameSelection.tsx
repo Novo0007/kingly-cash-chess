@@ -313,10 +313,15 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   className={`absolute -inset-1 bg-gradient-to-r ${game.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-500`}
                 ></div>
 
-                <Card className="relative bg-amber-50/95 backdrop-blur-sm border-2 border-amber-200 rounded-xl md:rounded-2xl wood-shadow-deep transition-all duration-300 hover:scale-[1.02] hover:wood-shadow-warm overflow-hidden wood-plank h-full">
-                  {/* Background Pattern */}
+                <Card className="relative bg-gradient-to-br from-white via-gray-50/80 to-white backdrop-blur-md border border-gray-200/50 rounded-2xl md:rounded-3xl shadow-xl transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-2xl overflow-hidden h-full transform-gpu will-change-transform">
+                  {/* Animated Background Pattern */}
                   <div
-                    className={`absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br ${game.lightGradient} rounded-bl-[50px] md:rounded-bl-[100px] opacity-20`}
+                    className={`absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br ${game.lightGradient} rounded-bl-[50px] md:rounded-bl-[100px] opacity-30 animate-pulse`}
+                  ></div>
+
+                  {/* Smooth gradient overlay */}
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${game.lightGradient} opacity-5`}
                   ></div>
 
                   {/* Status Badge */}
