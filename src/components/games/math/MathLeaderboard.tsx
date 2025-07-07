@@ -243,7 +243,7 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
           <CardTitle className="text-xl">🔍 Filter Results</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="text-sm font-medium text-gray-700 mb-2 block">
                 Difficulty
@@ -405,7 +405,7 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
                   <p className="text-gray-500">No records found.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {getTopScores().map((score, index) => (
                     <div
                       key={score.id}
