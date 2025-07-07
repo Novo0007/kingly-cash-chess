@@ -75,7 +75,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         lightGradient: "from-amber-100 via-orange-100 to-yellow-100",
         features: [
           "🏆 Tournaments",
-          "⚡ Quick Matches",
+          "��� Quick Matches",
           "💰 Real Prizes",
           "📈 Rankings",
         ],
@@ -192,9 +192,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         {(isMobile || isTablet) && (
           <div className="fixed bottom-20 left-4 z-30">
             <ChatButton
-              onClick={() => setShowGlobalChat(true)}
+              onClick={handleChatToggle}
               size="lg"
-              className="w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 shadow-lg border-2 border-white"
+              className="w-14 h-14 rounded-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 shadow-xl border-2 border-white transition-all duration-300 transform hover:scale-110"
             >
               <MessageSquare className="h-6 w-6 text-white" />
             </ChatButton>
