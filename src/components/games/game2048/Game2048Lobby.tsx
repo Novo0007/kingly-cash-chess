@@ -121,7 +121,7 @@ export const Game2048Lobby: React.FC<Game2048LobbyProps> = ({
         </CardHeader>
 
         <CardContent className="relative">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-6">
             <div className="text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Brain className="h-5 w-5" />
@@ -171,7 +171,7 @@ export const Game2048Lobby: React.FC<Game2048LobbyProps> = ({
       </Card>
 
       {/* Game Modes */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
         {difficulties.map((mode, index) => (
           <Card
             key={mode.id}
@@ -212,7 +212,7 @@ export const Game2048Lobby: React.FC<Game2048LobbyProps> = ({
 
             <CardContent className="space-y-4">
               {/* Game Info */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
                 <div className="bg-gray-50 rounded-lg p-3 text-center">
                   <Target className="h-4 w-4 mx-auto mb-1 text-gray-600" />
                   <div className="text-sm font-semibold text-gray-800">
@@ -264,7 +264,7 @@ export const Game2048Lobby: React.FC<Game2048LobbyProps> = ({
       {/* Quick Stats */}
       <Card className="bg-gradient-to-r from-gray-800 to-gray-900 text-white border-0">
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 text-center">
             <div>
               <div className="text-2xl font-bold mb-1">🆓</div>
               <div className="text-sm text-gray-300">Completely Free</div>
