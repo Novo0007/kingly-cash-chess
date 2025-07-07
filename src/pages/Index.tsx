@@ -42,14 +42,22 @@ const Index = () => {
         .single();
 
       if (error && error.code !== "PGRST116") {
-        console.error("Profile fetch error:", error);
+        console.error("Profile fetch error:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        });
         return;
       }
 
       console.log("Profile fetched successfully:", data);
       setUserProfile(data);
     } catch (error) {
-      console.error("Unexpected profile fetch error:", error);
+      console.error(
+        "Unexpected profile fetch error:",
+        error instanceof Error ? error.message : String(error),
+      );
     }
   }, []);
 
