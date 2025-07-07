@@ -524,8 +524,12 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
             </div>
             <div className="p-4 bg-white rounded-lg border">
               <div className="text-2xl font-bold text-purple-600">
-                {scores.length > 0
-                  ? Math.max(...scores.map((s) => s.max_streak))
+                {getHighestScorePerPlayer(scores).length > 0
+                  ? Math.max(
+                      ...getHighestScorePerPlayer(scores).map(
+                        (s) => s.max_streak,
+                      ),
+                    )
                   : 0}
               </div>
               <div className="text-sm text-gray-600">Best Streak</div>
