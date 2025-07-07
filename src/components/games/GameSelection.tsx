@@ -134,7 +134,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         lightGradient: "from-pink-100 via-rose-100 to-red-100",
         features: [
           "🆓 Free to Play",
-          "��� 6 Question Types",
+          "🧠 6 Question Types",
           "⏱️ 3 Difficulty Levels",
           "🎮 Multiple Game Modes",
         ],
@@ -146,12 +146,14 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
     [],
   );
 
-  // Filter games based on selected filter
-  const filteredGames = games.filter((game) => {
-    if (gameFilter === "free") return !game.isMoneyGame;
-    if (gameFilter === "money") return game.isMoneyGame;
-    return true; // "all" shows everything
-  });
+  // Filter games based on selected filter - memoized for performance
+  const filteredGames = useMemo(() => {
+    return games.filter((game) => {
+      if (gameFilter === "free") return !game.isMoneyGame;
+      if (gameFilter === "money") return game.isMoneyGame;
+      return true; // "all" shows everything
+    });
+  }, [games, gameFilter]);
 
   const comingSoonGames = [
     { name: "Carrom", emoji: "🏅", progress: 85, eta: "Next Week" },
