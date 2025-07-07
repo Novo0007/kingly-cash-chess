@@ -355,40 +355,45 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                       ))}
                     </div>
 
-                    {/* Enhanced Play Button with Animation */}
+                    {/* Enhanced Play Button with Animation - Mobile Optimized */}
                     <Button
                       onClick={() =>
                         onSelectGame(
-                          game.id as "chess" | "ludo" | "maze" | "game2048",
+                          game.id as
+                            | "chess"
+                            | "ludo"
+                            | "maze"
+                            | "game2048"
+                            | "math",
                         )
                       }
-                      className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:${game.gradient} text-white border-0 py-4 md:py-5 text-base md:text-lg font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] group/btn`}
+                      className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:${game.gradient} text-white border-0 py-3 md:py-4 lg:py-5 text-sm md:text-base lg:text-lg font-bold rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] group/btn`}
                     >
                       {/* Button Background Animation */}
                       <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
 
-                      <div className="relative flex items-center justify-center gap-3">
-                        <Play className="h-5 w-5 transition-transform duration-300 group-hover/btn:scale-110" />
+                      <div className="relative flex items-center justify-center gap-2 md:gap-3">
+                        <Play className="h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover/btn:scale-110" />
                         <span className="font-black">PLAY NOW</span>
-                        <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
                       </div>
                     </Button>
 
-                    {/* Quick Stats */}
+                    {/* Quick Stats - Mobile Optimized */}
                     <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                       <div className="flex items-center gap-1">
-                        <Trophy className="h-4 w-4 text-yellow-500" />
-                        <span className="text-sm font-semibold text-gray-600">
+                        <Trophy className="h-3 w-3 md:h-4 md:w-4 text-yellow-500" />
+                        <span className="text-xs md:text-sm font-semibold text-gray-600">
                           Prize Pool
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="text-lg font-black text-green-600">
-                          {game.id === "maze"
-                            ? "FREE"
-                            : `₹${index === 0 ? "2,50,000" : "1,80,000"}`}
+                        <span className="text-sm md:text-lg font-black text-green-600">
+                          {game.isMoneyGame
+                            ? `₹${game.id === "chess" ? "2,50,000" : "1,80,000"}`
+                            : "FREE"}
                         </span>
-                        <Sparkles className="h-4 w-4 text-yellow-500" />
+                        <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-yellow-500" />
                       </div>
                     </div>
                   </CardContent>
