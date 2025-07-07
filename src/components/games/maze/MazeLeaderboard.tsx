@@ -51,35 +51,65 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
   const fetchLeaderboards = async () => {
     setLoading(true);
     try {
-      // Fetch scores for each difficulty
-      const difficulties = ["easy", "medium", "hard"];
-      const leaderboardPromises = difficulties.map(async (difficulty) => {
+      // Helper function to get top scores per user for a specific difficulty
+      const getTopScoresByDifficulty = async (difficulty: string) => {
         const { data, error } = await supabase
           .from("maze_scores")
           .select("*")
           .eq("difficulty", difficulty)
-          .order("score", { ascending: false })
-          .limit(10);
+          .order("score", { ascending: false });
 
         if (error) throw error;
-        return { difficulty, scores: data || [] };
+
+        // Group by username and get highest score for each user
+        const userBestScores = new Map<string, MazeScore>();
+        (data || []).forEach((score) => {
+          const existing = userBestScores.get(score.username);
+          if (!existing || score.score > existing.score) {
+            userBestScores.set(score.username, score);
+          }
+        });
+
+        // Convert to array and sort by score, then limit to top 10
+        return Array.from(userBestScores.values())
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 10);
+      };
+
+      // Fetch scores for each difficulty
+      const difficulties = ["easy", "medium", "hard"];
+      const leaderboardPromises = difficulties.map(async (difficulty) => {
+        const scores = await getTopScoresByDifficulty(difficulty);
+        return { difficulty, scores };
       });
 
-      // Fetch overall leaderboard
+      // Fetch overall leaderboard (highest score per user across all difficulties)
       const { data: overallData, error: overallError } = await supabase
         .from("maze_scores")
         .select("*")
-        .order("score", { ascending: false })
-        .limit(20);
+        .order("score", { ascending: false });
 
       if (overallError) throw overallError;
+
+      // Group by username and get highest score for each user across all difficulties
+      const userBestOverallScores = new Map<string, MazeScore>();
+      (overallData || []).forEach((score) => {
+        const existing = userBestOverallScores.get(score.username);
+        if (!existing || score.score > existing.score) {
+          userBestOverallScores.set(score.username, score);
+        }
+      });
+
+      const overallTopScores = Array.from(userBestOverallScores.values())
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10);
 
       const results = await Promise.all(leaderboardPromises);
       const newLeaderboards = {
         easy: [],
         medium: [],
         hard: [],
-        overall: overallData || [],
+        overall: overallTopScores,
       } as any;
 
       results.forEach(({ difficulty, scores }) => {
