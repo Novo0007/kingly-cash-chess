@@ -155,12 +155,15 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
     });
   }, [games, gameFilter]);
 
-  const comingSoonGames = [
-    { name: "Carrom", emoji: "🏅", progress: 85, eta: "Next Week" },
-    { name: "Snake & Ladder", emoji: "🐍", progress: 65, eta: "2 Weeks" },
-    { name: "Teen Patti", emoji: "🃏", progress: 45, eta: "1 Month" },
-    { name: "Pool", emoji: "🎱", progress: 25, eta: "2 Months" },
-  ];
+  const comingSoonGames = useMemo(
+    () => [
+      { name: "Carrom", emoji: "🏅", progress: 85, eta: "Next Week" },
+      { name: "Snake & Ladder", emoji: "🐍", progress: 65, eta: "2 Weeks" },
+      { name: "Teen Patti", emoji: "🃏", progress: 45, eta: "1 Month" },
+      { name: "Pool", emoji: "🎱", progress: 25, eta: "2 Months" },
+    ],
+    [],
+  );
 
   return (
     <MobileContainer maxWidth="xl">
