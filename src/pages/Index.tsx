@@ -10,6 +10,7 @@ import { GameSelection } from "@/components/games/GameSelection";
 import { LudoLobby } from "@/components/games/ludo/LudoLobby";
 import { LudoGame } from "@/components/games/ludo/LudoGame";
 import { MazeGame } from "@/components/games/maze/MazeGame";
+import { Game2048 } from "@/components/games/game2048/Game2048";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -25,7 +26,7 @@ const Index = () => {
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
   const [selectedGameType, setSelectedGameType] = useState<
-    "chess" | "ludo" | "maze" | null
+    "chess" | "ludo" | "maze" | "game2048" | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
