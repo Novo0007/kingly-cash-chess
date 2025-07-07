@@ -126,13 +126,21 @@ const Index = () => {
       try {
         const { data, error } = await supabase.rpc("is_admin");
         if (error) {
-          console.error("Error checking admin status:", error);
+          console.error("Error checking admin status:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code,
+          });
           setIsAdmin(false);
           return;
         }
         setIsAdmin(data || false);
       } catch (error) {
-        console.error("Unexpected error checking admin status:", error);
+        console.error(
+          "Unexpected error checking admin status:",
+          error instanceof Error ? error.message : String(error),
+        );
         setIsAdmin(false);
       }
     };
