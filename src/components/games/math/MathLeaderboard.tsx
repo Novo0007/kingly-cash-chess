@@ -203,7 +203,7 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600">
                   {currentUserScore.score}
@@ -352,7 +352,7 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
                       </div>
 
                       {/* Stats */}
-                      <div className="grid grid-cols-4 gap-4 text-center">
+                      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 text-center">
                         <div>
                           <div className="text-lg font-bold text-blue-600">
                             {score.score}
@@ -436,7 +436,7 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-center text-sm">
                         <div>
                           <div className="font-semibold text-green-600">
                             {calculateAccuracy(
@@ -478,7 +478,7 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 text-center">
             <div className="p-4 bg-white rounded-lg border">
               <div className="text-2xl font-bold text-blue-600">
                 {scores.length}
