@@ -82,7 +82,7 @@ export const MathLobby: React.FC<MathLobbyProps> = ({
       borderColor: "border-purple-200",
       features: [
         "🧮 All operations",
-        "�� Number patterns",
+        "🔁 Number patterns",
         "📈 Large numbers",
         "⏱️ 8 seconds per question",
         "💡 1 hint only",
@@ -313,7 +313,7 @@ export const MathLobby: React.FC<MathLobbyProps> = ({
           <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
             🌟 Game Features
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
             <div className="text-center">
               <div className="text-3xl mb-2">➕</div>
               <div className="text-sm font-semibold text-gray-700">
