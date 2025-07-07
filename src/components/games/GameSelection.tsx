@@ -337,15 +337,20 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   <CardHeader className="pb-3 pt-4 md:pb-4 md:pt-6 px-3 md:px-6">
                     <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 text-lg md:text-xl lg:text-2xl">
                       <div className="relative group/icon flex-shrink-0">
+                        {/* Glowing background effect */}
                         <div
-                          className={`absolute -inset-1 md:-inset-2 bg-gradient-to-r ${game.gradient} rounded-xl md:rounded-2xl blur-lg opacity-60 group-hover/icon:opacity-80 transition-all duration-300`}
+                          className={`absolute -inset-2 md:-inset-3 bg-gradient-to-r ${game.gradient} rounded-2xl md:rounded-3xl blur-xl opacity-40 group-hover/icon:opacity-70 transition-all duration-500 animate-pulse`}
                         ></div>
+
+                        {/* Main icon container with 3D effect */}
                         <div
-                          className={`relative p-2 md:p-3 bg-gradient-to-r ${game.gradient} rounded-xl md:rounded-2xl text-white shadow-lg`}
+                          className={`relative p-3 md:p-4 bg-gradient-to-br ${game.gradient} rounded-2xl md:rounded-3xl text-white shadow-2xl transform transition-all duration-300 group-hover/icon:scale-110 group-hover/icon:rotate-3 before:absolute before:inset-0 before:bg-gradient-to-t before:from-black/20 before:to-transparent before:rounded-2xl md:before:rounded-3xl`}
                         >
-                          <game.icon className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 drop-shadow-lg" />
+                          <game.icon className="h-7 w-7 md:h-9 md:w-9 lg:h-12 lg:w-12 drop-shadow-2xl relative z-10 filter brightness-110" />
                         </div>
-                        <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 text-lg md:text-2xl animate-bounce">
+
+                        {/* Floating emoji with smooth animation */}
+                        <div className="absolute -top-2 -right-2 md:-top-3 md:-right-3 text-xl md:text-3xl animate-bounce transform transition-all duration-300 group-hover/icon:scale-125">
                           {game.emoji}
                         </div>
                       </div>
