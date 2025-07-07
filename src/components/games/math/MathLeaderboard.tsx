@@ -314,7 +314,7 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {scores.map((score, index) => (
+                  {scores.slice(0, 10).map((score, index) => (
                     <div
                       key={score.id}
                       className={`flex items-center gap-4 p-4 rounded-lg border transition-all duration-200 hover:shadow-md ${
