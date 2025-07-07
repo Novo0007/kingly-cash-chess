@@ -11,6 +11,7 @@ import { ChessRulesPage } from "./pages/ChessRulesPage";
 import { LudoRulesPage } from "./pages/LudoRulesPage";
 import MazeRulesPage from "./pages/MazeRulesPage";
 import { Game2048RulesPage } from "./pages/Game2048RulesPage";
+import { MathRulesPage } from "./pages/MathRulesPage";
 import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { DraggableMusicControl } from "@/components/music/DraggableMusicControl";
 
@@ -179,6 +180,7 @@ const App = () => {
               <Route path="/ludo-rules" element={<LudoRulesPage />} />
               <Route path="/maze-rules" element={<MazeRulesPage />} />
               <Route path="/game2048-rules" element={<Game2048RulesPage />} />
+              <Route path="/math-rules" element={<MathRulesPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
