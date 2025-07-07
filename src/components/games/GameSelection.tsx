@@ -24,6 +24,7 @@ import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
 import { Button as ChatButton } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import "../../styles/game-lobby.css";
 
 interface GameSelectionProps {
   onSelectGame: (
