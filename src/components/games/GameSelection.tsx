@@ -41,6 +41,13 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   const [gameFilter, setGameFilter] = React.useState<"all" | "free" | "money">(
     "all",
   );
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  // Simulate initial loading for smooth appearance
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Memoize click handlers for better performance
   const handleGameSelect = useCallback(
