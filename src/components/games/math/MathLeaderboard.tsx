@@ -82,6 +82,22 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
     onRefresh();
   };
 
+  // Get highest score per player
+  const getHighestScorePerPlayer = (allScores: MathGameScore[]) => {
+    const playerBestScores = new Map<string, MathGameScore>();
+
+    allScores.forEach((score) => {
+      const existingBest = playerBestScores.get(score.username);
+      if (!existingBest || score.score > existingBest.score) {
+        playerBestScores.set(score.username, score);
+      }
+    });
+
+    return Array.from(playerBestScores.values()).sort(
+      (a, b) => b.score - a.score,
+    );
+  };
+
   const formatTime = (timeMs: number) => {
     const seconds = Math.floor(timeMs / 1000);
     const minutes = Math.floor(seconds / 60);
