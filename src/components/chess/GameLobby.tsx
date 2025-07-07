@@ -383,12 +383,14 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
         console.error("Transaction record error:", transactionError);
       }
 
-      // Update game to add black player and set status to active
+      // Update game to add black player and set status to active with 60 seconds per player
       const { error: gameError } = await supabase
         .from("chess_games")
         .update({
           black_player_id: user.id,
           game_status: "active",
+          white_time_remaining: 60,
+          black_time_remaining: 60,
           updated_at: new Date().toISOString(),
         })
         .eq("id", gameId);
@@ -488,7 +490,6 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
-        
         {/* Mobile Chat Button - Only show on mobile/tablet */}
         {(isMobile || isTablet) && (
           <div className="fixed bottom-20 right-4 z-30">
