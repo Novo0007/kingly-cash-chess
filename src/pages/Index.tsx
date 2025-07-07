@@ -11,6 +11,7 @@ import { LudoLobby } from "@/components/games/ludo/LudoLobby";
 import { LudoGame } from "@/components/games/ludo/LudoGame";
 import { MazeGame } from "@/components/games/maze/MazeGame";
 import { Game2048 } from "@/components/games/game2048/Game2048";
+import { MathGame } from "@/components/games/math/MathGame";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -26,7 +27,7 @@ const Index = () => {
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
   const [selectedGameType, setSelectedGameType] = useState<
-    "chess" | "ludo" | "maze" | "game2048" | null
+    "chess" | "ludo" | "maze" | "game2048" | "math" | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -140,7 +141,7 @@ const Index = () => {
   }, [user?.email]);
 
   const handleSelectGame = (
-    gameType: "chess" | "ludo" | "maze" | "game2048",
+    gameType: "chess" | "ludo" | "maze" | "game2048" | "math",
   ) => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
@@ -151,6 +152,8 @@ const Index = () => {
       setCurrentView("maze-game");
     } else if (gameType === "game2048") {
       setCurrentView("game2048");
+    } else if (gameType === "math") {
+      setCurrentView("math-game");
     }
   };
 
@@ -164,6 +167,8 @@ const Index = () => {
       setCurrentView("maze-game");
     } else if (selectedGameType === "game2048") {
       setCurrentView("game2048");
+    } else if (selectedGameType === "math") {
+      setCurrentView("math-game");
     }
   };
 
@@ -177,6 +182,8 @@ const Index = () => {
       setCurrentView("maze-game");
     } else if (selectedGameType === "game2048") {
       setCurrentView("game2048");
+    } else if (selectedGameType === "math") {
+      setCurrentView("math-game");
     }
   };
 
@@ -286,6 +293,8 @@ const Index = () => {
         return <MazeGame onBack={handleBackToGameSelection} user={user} />;
       case "game2048":
         return <Game2048 onBack={handleBackToGameSelection} user={user} />;
+      case "math-game":
+        return <MathGame onBack={handleBackToGameSelection} user={user} />;
       case "wallet":
         return <WalletManager />;
       case "friends":
