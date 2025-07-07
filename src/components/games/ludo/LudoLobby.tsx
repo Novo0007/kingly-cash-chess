@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -410,12 +409,12 @@ export const LudoLobby = ({
       }
 
       toast.success(`Joined game successfully! (${newPlayerCount}/4 players)`);
-      
+
       // Show auto-start message if we now have 2+ players
       if (newPlayerCount >= 2) {
         toast.info("Game will start automatically soon!");
       }
-      
+
       fetchWallet();
       fetchGames();
 
@@ -437,7 +436,6 @@ export const LudoLobby = ({
   return (
     <MobileContainer>
       <div className="space-y-4 pb-20 px-1 sm:px-2">
-        
         {/* Mobile Chat Button - Only show on mobile/tablet */}
         {(isMobile || isTablet) && (
           <div className="fixed bottom-20 right-4 z-30">
@@ -600,16 +598,17 @@ export const LudoLobby = ({
                         >
                           {game.game_status}
                         </Badge>
-                        {game.current_players >= 2 && game.game_status === "waiting" && (
-                          <Badge className="bg-green-600 text-white text-xs px-1 py-0">
-                            Auto-starting...
-                          </Badge>
-                        )}
+                        {game.current_players >= 2 &&
+                          game.game_status === "waiting" && (
+                            <Badge className="bg-green-600 text-white text-xs px-1 py-0">
+                              Auto-starting...
+                            </Badge>
+                          )}
                       </div>
                     </div>
 
                     {/* Players */}
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
                       {[
                         { player: game.player1, color: "bg-red-500" },
                         { player: game.player2, color: "bg-blue-500" },
@@ -632,7 +631,7 @@ export const LudoLobby = ({
                     </div>
 
                     {/* Game Stats */}
-                    <div className="grid grid-cols-3 gap-3 text-center">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center">
                       <div className="bg-blue-800/30 p-2 rounded border border-blue-400">
                         <p className="text-blue-300 text-xs">Entry Fee</p>
                         <p className="text-white font-bold">
