@@ -318,11 +318,11 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {scores.length === 0 ? (
+              {getHighestScorePerPlayer(scores).length === 0 ? (
                 <div className="text-center py-8">
                   <Trophy className="h-16 w-16 mx-auto mb-4 text-gray-300" />
                   <p className="text-gray-500">
-                    No scores found for the selected filters.
+                    No players found for the selected filters.
                   </p>
                   <p className="text-sm text-gray-400 mt-2">
                     Be the first to set a record!
