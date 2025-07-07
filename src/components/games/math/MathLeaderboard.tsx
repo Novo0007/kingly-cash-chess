@@ -50,7 +50,7 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
         .from("math_scores")
         .select("*")
         .order("score", { ascending: false })
-        .limit(50);
+        .limit(100);
 
       if (selectedDifficulty !== "all") {
         query = query.eq("difficulty", selectedDifficulty);
