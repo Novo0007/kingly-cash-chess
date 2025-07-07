@@ -284,6 +284,8 @@ const Index = () => {
         );
       case "maze-game":
         return <MazeGame onBack={handleBackToGameSelection} user={user} />;
+      case "game2048":
+        return <Game2048 onBack={handleBackToGameSelection} user={user} />;
       case "wallet":
         return <WalletManager />;
       case "friends":
