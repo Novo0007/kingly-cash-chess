@@ -558,150 +558,127 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
 
   if (currentView === "game" && gameState) {
     return (
-      <div className="space-y-4 max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-4">
+      <div className="space-y-2 sm:space-y-4 w-full min-h-screen">
+        {/* Header - Mobile Optimized */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 mb-4 sm:mb-6 px-2 sm:px-0">
+          <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
             <Button
               onClick={() => setCurrentView("lobby")}
               variant="outline"
               size="sm"
+              className="text-xs sm:text-sm"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Lobby
+              <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Back to </span>Lobby
             </Button>
-            <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+            <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs">
               {gameState.difficulty} • {gameState.gameMode}
             </Badge>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 w-full sm:w-auto justify-end">
             {gameState.gameStatus === "finished" && (
-              <Badge className="bg-green-100 text-green-800 border-green-200">
+              <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
                 <Crown className="h-3 w-3 mr-1" />
                 Finished!
               </Badge>
             )}
             {gameState.gameStatus === "paused" && (
-              <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+              <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 text-xs">
                 Paused
               </Badge>
             )}
             {isSubmittingScore && (
-              <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+              <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs">
                 Saving...
               </Badge>
             )}
           </div>
         </div>
 
-        {/* Game Stats */}
-        {renderGameStats()}
+        {/* Game Stats - Mobile Hidden to save space */}
+        <div className="hidden lg:block">{renderGameStats()}</div>
 
-        {/* Game Board */}
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
-          <div className="flex-1 flex justify-center">
-            <MathGameBoard
-              gameState={gameState}
-              onAnswer={handleAnswer}
-              onUseHint={handleUseHint}
-              onSkipQuestion={handleSkipQuestion}
-              onTimeUpdate={handleTimeUpdate}
-              className={
-                gameState.gameStatus === "paused"
-                  ? "opacity-50 pointer-events-none"
-                  : ""
-              }
-            />
-          </div>
-
-          {/* Side Panel */}
-          <div className="w-full lg:w-80 space-y-4">
-            {/* Game Info */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Game Info</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Difficulty:</span>
-                  <Badge className="text-xs">{gameState.difficulty}</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Mode:</span>
-                  <span className="text-sm font-semibold">
-                    {gameState.gameMode}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Progress:</span>
-                  <span className="text-sm font-semibold">
-                    {gameState.questionIndex}/
-                    {gameState.gameMode === "endless"
-                      ? "∞"
-                      : gameState.totalQuestions}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Accuracy:</span>
-                  <span className="text-sm font-semibold">
-                    {gameState.questionIndex > 1
-                      ? Math.round(
-                          (gameState.correctAnswers /
-                            (gameState.questionIndex - 1)) *
-                            100,
-                        )
-                      : 0}
-                    %
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button
-                  onClick={() => setCurrentView("leaderboard")}
-                  variant="outline"
-                  size="sm"
-                  className="w-full flex items-center gap-2"
-                >
-                  <Trophy className="h-4 w-4" />
-                  View Leaderboard
-                </Button>
-                <Button
-                  onClick={() => setCurrentView("rules")}
-                  variant="outline"
-                  size="sm"
-                  className="w-full flex items-center gap-2"
-                >
-                  <Star className="h-4 w-4" />
-                  Game Rules
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+        {/* Game Board - Full Width */}
+        <div className="w-full">
+          <MathGameBoard
+            gameState={gameState}
+            onAnswer={handleAnswer}
+            onUseHint={handleUseHint}
+            onSkipQuestion={handleSkipQuestion}
+            onTimeUpdate={handleTimeUpdate}
+            className={
+              gameState.gameStatus === "paused"
+                ? "opacity-50 pointer-events-none"
+                : ""
+            }
+          />
         </div>
 
-        {/* Game Controls */}
-        {renderGameControls()}
+        {/* Game Controls - Mobile Optimized */}
+        <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2 mt-4 px-2 sm:px-0">
+          <Button
+            onClick={handleRestartGame}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+          >
+            <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">New </span>Game
+          </Button>
 
-        {/* Pause Overlay */}
+          <Button
+            onClick={handlePauseGame}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+          >
+            {gameState.gameStatus === "paused" ? (
+              <>
+                <Play className="h-3 w-3 sm:h-4 sm:w-4" />
+                Resume
+              </>
+            ) : (
+              <>
+                <Pause className="h-3 w-3 sm:h-4 sm:w-4" />
+                Pause
+              </>
+            )}
+          </Button>
+
+          <Button
+            onClick={() => setCurrentView("lobby")}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+          >
+            <Home className="h-3 w-3 sm:h-4 sm:w-4" />
+            Lobby
+          </Button>
+
+          <Button
+            onClick={() => setCurrentView("leaderboard")}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+          >
+            <Trophy className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Leader</span>board
+          </Button>
+        </div>
+
+        {/* Pause Overlay - Mobile Optimized */}
         {gameState.gameStatus === "paused" && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-            <Card className="w-80 max-w-[90vw]">
-              <CardHeader className="text-center">
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <Card className="w-full max-w-sm">
+              <CardHeader className="text-center pb-4">
                 <CardTitle className="flex items-center justify-center gap-2">
-                  <Pause className="h-6 w-6" />
+                  <Pause className="h-5 w-5 sm:h-6 sm:w-6" />
                   Game Paused
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-center space-y-4">
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm sm:text-base">
                   Your game is paused. Click resume to continue playing.
                 </p>
                 <Button onClick={handlePauseGame} className="w-full">

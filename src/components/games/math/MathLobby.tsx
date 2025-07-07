@@ -82,7 +82,7 @@ export const MathLobby: React.FC<MathLobbyProps> = ({
       borderColor: "border-purple-200",
       features: [
         "🧮 All operations",
-        "🔁 Number patterns",
+        "�� Number patterns",
         "📈 Large numbers",
         "⏱️ 8 seconds per question",
         "💡 1 hint only",
@@ -123,52 +123,58 @@ export const MathLobby: React.FC<MathLobbyProps> = ({
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="text-center space-y-4">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl">
-            <Brain className="h-10 w-10 text-white" />
+    <div className="w-full space-y-6 sm:space-y-8 px-2 sm:px-4">
+      {/* Header - Mobile Optimized */}
+      <div className="text-center space-y-3 sm:space-y-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-3 sm:mb-4">
+          <div className="p-2 sm:p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl sm:rounded-2xl">
+            <Brain className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
           </div>
-          <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800">
+          <div className="text-center sm:text-left">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800">
               Math: Brain Puzzles
             </h1>
-            <p className="text-lg text-gray-600 mt-2">
+            <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-1 sm:mt-2">
               🧠 Improve your arithmetic skills with fun, timed puzzles!
             </p>
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
-          <div className="bg-blue-50 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-blue-600">🆓</div>
-            <div className="text-sm text-blue-800 font-semibold">
+        {/* Quick Stats - Mobile Optimized */}
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 max-w-md mx-auto">
+          <div className="bg-blue-50 rounded-lg p-2 sm:p-3 text-center">
+            <div className="text-lg sm:text-2xl font-bold text-blue-600">
+              🆓
+            </div>
+            <div className="text-xs sm:text-sm text-blue-800 font-semibold">
               Free to Play
             </div>
           </div>
-          <div className="bg-green-50 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-green-600">🧮</div>
-            <div className="text-sm text-green-800 font-semibold">
+          <div className="bg-green-50 rounded-lg p-2 sm:p-3 text-center">
+            <div className="text-lg sm:text-2xl font-bold text-green-600">
+              🧮
+            </div>
+            <div className="text-xs sm:text-sm text-green-800 font-semibold">
               6 Question Types
             </div>
           </div>
-          <div className="bg-purple-50 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-purple-600">⚡</div>
-            <div className="text-sm text-purple-800 font-semibold">
+          <div className="bg-purple-50 rounded-lg p-2 sm:p-3 text-center">
+            <div className="text-lg sm:text-2xl font-bold text-purple-600">
+              ⚡
+            </div>
+            <div className="text-xs sm:text-sm text-purple-800 font-semibold">
               Quick Games
             </div>
           </div>
         </div>
       </div>
 
-      {/* Game Modes */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
+      {/* Game Modes - Mobile Optimized */}
+      <div className="space-y-3 sm:space-y-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center mb-4 sm:mb-6">
           🎮 Choose Your Game Mode
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6">
           {gameModes.map((mode) => (
             <Card
               key={mode.id}
@@ -207,13 +213,13 @@ export const MathLobby: React.FC<MathLobbyProps> = ({
         </div>
       </div>
 
-      {/* Difficulty Selection */}
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-gray-800 text-center">
+      {/* Difficulty Selection - Mobile Optimized */}
+      <div className="space-y-4 sm:space-y-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">
           🎯 Select Difficulty Level
         </h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6">
           {difficulties.map((diff) => (
             <Card
               key={diff.id}
@@ -278,15 +284,15 @@ export const MathLobby: React.FC<MathLobbyProps> = ({
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+      {/* Action Buttons - Mobile Full Width */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
         <Button
           onClick={onShowRules}
           variant="outline"
           size="lg"
-          className="h-16 text-base font-semibold border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200"
+          className="h-12 sm:h-16 text-sm sm:text-base font-semibold border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 w-full"
         >
-          <BookOpen className="h-5 w-5 mr-2" />
+          <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
           📚 Game Rules & Tips
         </Button>
 
@@ -294,9 +300,9 @@ export const MathLobby: React.FC<MathLobbyProps> = ({
           onClick={onShowLeaderboard}
           variant="outline"
           size="lg"
-          className="h-16 text-base font-semibold border-2 border-purple-200 hover:border-purple-300 hover:bg-purple-50 transition-all duration-200"
+          className="h-12 sm:h-16 text-sm sm:text-base font-semibold border-2 border-purple-200 hover:border-purple-300 hover:bg-purple-50 transition-all duration-200 w-full"
         >
-          <Trophy className="h-5 w-5 mr-2" />
+          <Trophy className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
           🏆 View Leaderboard
         </Button>
       </div>
