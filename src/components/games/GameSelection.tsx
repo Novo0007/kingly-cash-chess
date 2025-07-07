@@ -349,7 +349,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
             {filteredGames.map((game, index) => (
               <div key={game.id} className="relative group">
                 {/* Hover Glow Effect */}
