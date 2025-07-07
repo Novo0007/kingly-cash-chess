@@ -41,7 +41,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
     "all",
   );
 
-  const games = [
+  const games = useMemo(() => [
     {
       id: "chess",
       title: "Chess Arena",
