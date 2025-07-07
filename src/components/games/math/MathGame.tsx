@@ -1,0 +1,720 @@
+import React, { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { MathGameBoard } from "./MathGameBoard";
+import { MathLobby } from "./MathLobby";
+import { MathRules } from "./MathRules";
+import { MathLeaderboard } from "./MathLeaderboard";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  ArrowLeft,
+  Trophy,
+  Star,
+  Timer,
+  Target,
+  Crown,
+  Sparkles,
+  RotateCcw,
+  Play,
+  Pause,
+  Home,
+  Brain,
+  TrendingUp,
+} from "lucide-react";
+import { MathGameLogic, MathGameState, MathGameScore } from "./MathGameLogic";
+import { toast } from "sonner";
+import { useDeviceType } from "@/hooks/use-mobile";
+
+interface MathGameProps {
+  onBack: () => void;
+  user: any;
+}
+
+type GameView = "lobby" | "game" | "rules" | "leaderboard" | "gameComplete";
+
+// UUID validation function
+const isValidUUID = (uuid: string): boolean => {
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+};
+
+export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
+  const { isMobile } = useDeviceType();
+  const [currentView, setCurrentView] = useState<GameView>("lobby");
+  const [gameLogic, setGameLogic] = useState<MathGameLogic | null>(null);
+  const [gameState, setGameState] = useState<MathGameState | null>(null);
+  const [currentScore, setCurrentScore] = useState<MathGameScore | null>(null);
+  const [isSubmittingScore, setIsSubmittingScore] = useState(false);
+  const [gameTimer, setGameTimer] = useState(0);
+
+  // Initialize math_scores table if it doesn't exist
+  useEffect(() => {
+    const initializeMathTable = async () => {
+      try {
+        // Check if math_scores table exists by trying a simple query
+        const { error } = await supabase
+          .from("math_scores")
+          .select("id")
+          .limit(1);
+
+        if (error && error.message.includes("does not exist")) {
+          console.log("math_scores table doesn't exist. Please run migration.");
+          toast.error("Database setup required. Please contact support.");
+        }
+      } catch (error) {
+        console.error("Error checking math_scores table:", error);
+      }
+    };
+
+    initializeMathTable();
+  }, []);
+
+  // Game timer
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (
+      gameState &&
+      currentView === "game" &&
+      gameState.gameStatus === "playing"
+    ) {
+      interval = setInterval(() => {
+        setGameTimer(Date.now() - gameState.startTime);
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [gameState, currentView]);
+
+  const formatTime = (timeMs: number) => {
+    const seconds = Math.floor(timeMs / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
+
+  const handleStartGame = useCallback(
+    (
+      difficulty: "easy" | "medium" | "hard",
+      gameMode: "practice" | "timed" | "endless",
+    ) => {
+      const logic = new MathGameLogic(difficulty, gameMode);
+      setGameLogic(logic);
+      setGameState(logic.getState());
+      setCurrentView("game");
+      setGameTimer(0);
+      logic.startGame();
+      setGameState(logic.getState());
+      toast.success(`Started ${difficulty} ${gameMode} mode! Good luck! 🧠`);
+    },
+    [],
+  );
+
+  const handleAnswer = useCallback(
+    (answer: number) => {
+      if (!gameLogic || !gameState) return false;
+
+      const isCorrect = gameLogic.answerQuestion(answer);
+      const newState = gameLogic.getState();
+      setGameState(newState);
+
+      if (isCorrect) {
+        toast.success("Correct! 🎉");
+      } else {
+        toast.error(
+          `Wrong! The answer was ${gameState.currentQuestion?.correctAnswer}`,
+        );
+      }
+
+      // Check for game end
+      if (newState.gameStatus === "finished") {
+        handleGameEnd(newState);
+      } else {
+        // Move to next question after a delay
+        setTimeout(() => {
+          gameLogic.nextQuestion();
+          setGameState(gameLogic.getState());
+        }, 1500);
+      }
+
+      return isCorrect;
+    },
+    [gameLogic, gameState],
+  );
+
+  const handleUseHint = useCallback((): string | null => {
+    if (!gameLogic) return null;
+    return gameLogic.useHint();
+  }, [gameLogic]);
+
+  const handleSkipQuestion = useCallback((): boolean => {
+    if (!gameLogic) return false;
+    const skipped = gameLogic.skipQuestion();
+    if (skipped) {
+      setGameState(gameLogic.getState());
+      toast.info("Question skipped! ⏭️");
+    }
+    return skipped;
+  }, [gameLogic]);
+
+  const handleTimeUpdate = useCallback(
+    (timeRemaining: number) => {
+      if (!gameLogic) return;
+      gameLogic.updateTime(timeRemaining);
+      const newState = gameLogic.getState();
+      setGameState(newState);
+
+      if (newState.gameStatus === "finished") {
+        handleGameEnd(newState);
+      }
+    },
+    [gameLogic],
+  );
+
+  const handleGameEnd = async (finalState: MathGameState) => {
+    // Validate user and user ID
+    if (!user) {
+      toast.error("Please sign in to save your score!");
+      return;
+    }
+
+    if (!user.id || !isValidUUID(user.id)) {
+      console.error("Invalid user ID:", user.id);
+      toast.error("Invalid user session. Please sign in again.");
+      return;
+    }
+
+    setIsSubmittingScore(true);
+    try {
+      const scoreData = gameLogic!.calculateFinalScore();
+
+      // Create a new object with only the database-relevant properties
+      const dbScoreData = {
+        user_id: user.id,
+        username:
+          user.user_metadata?.username ||
+          user.email?.split("@")[0] ||
+          "Anonymous",
+        score: scoreData.score,
+        correct_answers: scoreData.correct_answers,
+        total_questions: scoreData.total_questions,
+        time_taken: scoreData.time_taken,
+        difficulty: scoreData.difficulty,
+        game_mode: scoreData.game_mode,
+        max_streak: scoreData.max_streak,
+        hints_used: scoreData.hints_used,
+        skips_used: scoreData.skips_used,
+        completed_at: scoreData.completed_at,
+      };
+
+      console.log("Saving math score data:", dbScoreData);
+
+      const { data, error } = await supabase
+        .from("math_scores")
+        .insert([dbScoreData])
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error saving math score:", error);
+        if (error.message.includes("invalid input syntax for type uuid")) {
+          toast.error(
+            "Invalid user session. Please sign out and sign in again.",
+          );
+        } else {
+          toast.error("Failed to save score. Please try again.");
+        }
+      } else {
+        setCurrentScore(data);
+        toast.success("Score saved successfully! 🏆");
+      }
+    } catch (error) {
+      console.error("Error saving math score:", error);
+      toast.error("Failed to save score. Please try again.");
+    } finally {
+      setIsSubmittingScore(false);
+      setCurrentView("gameComplete");
+    }
+  };
+
+  const handleRestartGame = useCallback(() => {
+    if (!gameLogic) return;
+
+    const newState = gameLogic.restartGame();
+    setGameState(newState);
+    setGameTimer(0);
+    gameLogic.startGame();
+    setGameState(gameLogic.getState());
+    toast.success("Game restarted! 🎮");
+  }, [gameLogic]);
+
+  const handlePauseGame = useCallback(() => {
+    if (!gameLogic) return;
+
+    if (gameState?.gameStatus === "playing") {
+      gameLogic.pauseGame();
+      toast.info("Game paused! ⏸️");
+    } else if (gameState?.gameStatus === "paused") {
+      gameLogic.resumeGame();
+      toast.info("Game resumed! ▶️");
+    }
+
+    setGameState(gameLogic.getState());
+  }, [gameLogic, gameState]);
+
+  const renderGameStats = () => {
+    if (!gameState) return null;
+
+    return (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
+          <CardContent className="p-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <Trophy className="h-4 w-4" />
+              <span className="text-sm font-semibold">Score</span>
+            </div>
+            <div className="text-xl font-bold">
+              {gameState.score.toLocaleString()}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0">
+          <CardContent className="p-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <Target className="h-4 w-4" />
+              <span className="text-sm font-semibold">Correct</span>
+            </div>
+            <div className="text-xl font-bold">
+              {gameState.correctAnswers}/{gameState.questionIndex - 1}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0">
+          <CardContent className="p-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <Crown className="h-4 w-4" />
+              <span className="text-sm font-semibold">Streak</span>
+            </div>
+            <div className="text-xl font-bold">{gameState.maxStreak}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white border-0">
+          <CardContent className="p-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <Timer className="h-4 w-4" />
+              <span className="text-sm font-semibold">Time</span>
+            </div>
+            <div className="text-xl font-bold">{formatTime(gameTimer)}</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderGameControls = () => {
+    if (!gameState) return null;
+
+    return (
+      <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+        <Button
+          onClick={handleRestartGame}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2"
+        >
+          <RotateCcw className="h-4 w-4" />
+          New Game
+        </Button>
+
+        <Button
+          onClick={handlePauseGame}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2"
+        >
+          {gameState.gameStatus === "paused" ? (
+            <>
+              <Play className="h-4 w-4" />
+              Resume
+            </>
+          ) : (
+            <>
+              <Pause className="h-4 w-4" />
+              Pause
+            </>
+          )}
+        </Button>
+
+        <Button
+          onClick={() => setCurrentView("lobby")}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2"
+        >
+          <Home className="h-4 w-4" />
+          Lobby
+        </Button>
+      </div>
+    );
+  };
+
+  // Early validation - show error if user is invalid
+  if (!user || !user.id || !isValidUUID(user.id)) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-4 mb-6">
+          <Button onClick={onBack} variant="outline" size="sm">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Games
+          </Button>
+        </div>
+
+        <Card className="max-w-md mx-auto">
+          <CardHeader>
+            <CardTitle className="text-center text-red-600">
+              Authentication Required
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-gray-600">
+              You need to be signed in with a valid account to play Math Puzzles
+              and save your scores.
+            </p>
+            <p className="text-sm text-gray-500">
+              Please sign out and sign in again if you continue to see this
+              message.
+            </p>
+            <Button onClick={onBack} className="w-full">
+              Back to Games
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (currentView === "lobby") {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-4 mb-6">
+          <Button onClick={onBack} variant="outline" size="sm">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Games
+          </Button>
+          <Badge className="bg-green-100 text-green-800 border-green-200">
+            🆓 Free to Play
+          </Badge>
+        </div>
+
+        <MathLobby
+          onStartGame={handleStartGame}
+          onShowRules={() => setCurrentView("rules")}
+          onShowLeaderboard={() => setCurrentView("leaderboard")}
+        />
+      </div>
+    );
+  }
+
+  if (currentView === "rules") {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            onClick={() => setCurrentView("lobby")}
+            variant="outline"
+            size="sm"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Lobby
+          </Button>
+        </div>
+
+        <MathRules />
+      </div>
+    );
+  }
+
+  if (currentView === "leaderboard") {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            onClick={() => setCurrentView("lobby")}
+            variant="outline"
+            size="sm"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Lobby
+          </Button>
+        </div>
+
+        <MathLeaderboard
+          currentUserScore={currentScore}
+          onRefresh={() => {
+            toast.success("Leaderboard refreshed! 📊");
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (currentView === "gameComplete" && currentScore) {
+    return (
+      <div className="space-y-6 max-w-2xl mx-auto">
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            onClick={() => setCurrentView("lobby")}
+            variant="outline"
+            size="sm"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Lobby
+          </Button>
+        </div>
+
+        <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200">
+          <CardHeader className="text-center pb-4">
+            <div className="text-6xl mb-4">🎉</div>
+            <CardTitle className="text-3xl text-gray-800 mb-2">
+              Game Complete!
+            </CardTitle>
+            <p className="text-gray-600">
+              Great job! Here's how you performed:
+            </p>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            {/* Score Summary */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center p-4 bg-white rounded-lg border">
+                <div className="text-2xl font-bold text-blue-600">
+                  {currentScore.score}
+                </div>
+                <div className="text-sm text-gray-600">Final Score</div>
+              </div>
+              <div className="text-center p-4 bg-white rounded-lg border">
+                <div className="text-2xl font-bold text-green-600">
+                  {currentScore.correct_answers}/{currentScore.total_questions}
+                </div>
+                <div className="text-sm text-gray-600">Correct Answers</div>
+              </div>
+              <div className="text-center p-4 bg-white rounded-lg border">
+                <div className="text-2xl font-bold text-purple-600">
+                  {currentScore.max_streak}
+                </div>
+                <div className="text-sm text-gray-600">Best Streak</div>
+              </div>
+              <div className="text-center p-4 bg-white rounded-lg border">
+                <div className="text-2xl font-bold text-orange-600">
+                  {formatTime(currentScore.time_taken)}
+                </div>
+                <div className="text-sm text-gray-600">Time Taken</div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <Button
+                onClick={() => {
+                  setCurrentView("lobby");
+                  setCurrentScore(null);
+                }}
+                className="flex items-center gap-2"
+              >
+                <Play className="h-4 w-4" />
+                Play Again
+              </Button>
+
+              <Button
+                onClick={() => setCurrentView("leaderboard")}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Trophy className="h-4 w-4" />
+                Leaderboard
+              </Button>
+
+              <Button
+                onClick={onBack}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Home className="h-4 w-4" />
+                All Games
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (currentView === "game" && gameState) {
+    return (
+      <div className="space-y-4 max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={() => setCurrentView("lobby")}
+              variant="outline"
+              size="sm"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Lobby
+            </Button>
+            <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+              {gameState.difficulty} • {gameState.gameMode}
+            </Badge>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {gameState.gameStatus === "finished" && (
+              <Badge className="bg-green-100 text-green-800 border-green-200">
+                <Crown className="h-3 w-3 mr-1" />
+                Finished!
+              </Badge>
+            )}
+            {gameState.gameStatus === "paused" && (
+              <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                Paused
+              </Badge>
+            )}
+            {isSubmittingScore && (
+              <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                Saving...
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        {/* Game Stats */}
+        {renderGameStats()}
+
+        {/* Game Board */}
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+          <div className="flex-1 flex justify-center">
+            <MathGameBoard
+              gameState={gameState}
+              onAnswer={handleAnswer}
+              onUseHint={handleUseHint}
+              onSkipQuestion={handleSkipQuestion}
+              onTimeUpdate={handleTimeUpdate}
+              className={
+                gameState.gameStatus === "paused"
+                  ? "opacity-50 pointer-events-none"
+                  : ""
+              }
+            />
+          </div>
+
+          {/* Side Panel */}
+          <div className="w-full lg:w-80 space-y-4">
+            {/* Game Info */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Game Info</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Difficulty:</span>
+                  <Badge className="text-xs">{gameState.difficulty}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Mode:</span>
+                  <span className="text-sm font-semibold">
+                    {gameState.gameMode}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Progress:</span>
+                  <span className="text-sm font-semibold">
+                    {gameState.questionIndex}/
+                    {gameState.gameMode === "endless"
+                      ? "∞"
+                      : gameState.totalQuestions}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Accuracy:</span>
+                  <span className="text-sm font-semibold">
+                    {gameState.questionIndex > 1
+                      ? Math.round(
+                          (gameState.correctAnswers /
+                            (gameState.questionIndex - 1)) *
+                            100,
+                        )
+                      : 0}
+                    %
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Quick Actions */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button
+                  onClick={() => setCurrentView("leaderboard")}
+                  variant="outline"
+                  size="sm"
+                  className="w-full flex items-center gap-2"
+                >
+                  <Trophy className="h-4 w-4" />
+                  View Leaderboard
+                </Button>
+                <Button
+                  onClick={() => setCurrentView("rules")}
+                  variant="outline"
+                  size="sm"
+                  className="w-full flex items-center gap-2"
+                >
+                  <Star className="h-4 w-4" />
+                  Game Rules
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Game Controls */}
+        {renderGameControls()}
+
+        {/* Pause Overlay */}
+        {gameState.gameStatus === "paused" && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+            <Card className="w-80 max-w-[90vw]">
+              <CardHeader className="text-center">
+                <CardTitle className="flex items-center justify-center gap-2">
+                  <Pause className="h-6 w-6" />
+                  Game Paused
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-center space-y-4">
+                <p className="text-gray-600">
+                  Your game is paused. Click resume to continue playing.
+                </p>
+                <Button onClick={handlePauseGame} className="w-full">
+                  <Play className="h-4 w-4 mr-2" />
+                  Resume Game
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return null;
+};
