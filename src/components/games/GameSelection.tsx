@@ -114,7 +114,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       features: [
         "🆓 Free to Play",
         "🧠 Brain Training",
-        "🏆 Leaderboards",
+        "��� Leaderboards",
         "⚡ 3 Difficulty Modes",
       ],
       status: "NEW",
@@ -284,45 +284,45 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   className={`absolute -inset-1 bg-gradient-to-r ${game.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-500`}
                 ></div>
 
-                <Card className="relative bg-amber-50/95 backdrop-blur-sm border-2 border-amber-200 rounded-2xl wood-shadow-deep transition-all duration-300 hover:scale-[1.02] hover:wood-shadow-warm overflow-hidden wood-plank">
+                <Card className="relative bg-amber-50/95 backdrop-blur-sm border-2 border-amber-200 rounded-xl md:rounded-2xl wood-shadow-deep transition-all duration-300 hover:scale-[1.02] hover:wood-shadow-warm overflow-hidden wood-plank h-full">
                   {/* Background Pattern */}
                   <div
-                    className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${game.lightGradient} rounded-bl-[100px] opacity-20`}
+                    className={`absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br ${game.lightGradient} rounded-bl-[50px] md:rounded-bl-[100px] opacity-20`}
                   ></div>
 
                   {/* Status Badge */}
-                  <div className="absolute top-4 right-4 z-10">
+                  <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10">
                     <Badge
-                      className={`bg-gradient-to-r ${game.gradient} text-white border-0 font-bold px-3 py-1 text-xs`}
+                      className={`bg-gradient-to-r ${game.gradient} text-white border-0 font-bold px-2 py-1 text-xs`}
                     >
                       <Star className="h-3 w-3 mr-1" />
                       {game.status}
                     </Badge>
                   </div>
 
-                  <CardHeader className="pb-4 pt-6">
-                    <CardTitle className="flex items-center gap-4 text-xl md:text-2xl">
-                      <div className="relative group/icon">
+                  <CardHeader className="pb-3 pt-4 md:pb-4 md:pt-6 px-3 md:px-6">
+                    <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 text-lg md:text-xl lg:text-2xl">
+                      <div className="relative group/icon flex-shrink-0">
                         <div
-                          className={`absolute -inset-2 bg-gradient-to-r ${game.gradient} rounded-2xl blur-lg opacity-60 group-hover/icon:opacity-80 transition-all duration-300`}
+                          className={`absolute -inset-1 md:-inset-2 bg-gradient-to-r ${game.gradient} rounded-xl md:rounded-2xl blur-lg opacity-60 group-hover/icon:opacity-80 transition-all duration-300`}
                         ></div>
                         <div
-                          className={`relative p-3 bg-gradient-to-r ${game.gradient} rounded-2xl text-white shadow-lg`}
+                          className={`relative p-2 md:p-3 bg-gradient-to-r ${game.gradient} rounded-xl md:rounded-2xl text-white shadow-lg`}
                         >
-                          <game.icon className="h-8 w-8 md:h-10 md:w-10 drop-shadow-lg" />
+                          <game.icon className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 drop-shadow-lg" />
                         </div>
-                        <div className="absolute -top-2 -right-2 text-2xl animate-bounce">
+                        <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 text-lg md:text-2xl animate-bounce">
                           {game.emoji}
                         </div>
                       </div>
-                      <div>
-                        <div className="text-gray-800 font-black font-heading">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-gray-800 font-black font-heading truncate">
                           {game.title}
                         </div>
-                        <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center gap-1 md:gap-2 mt-1 flex-wrap">
                           <div className="flex items-center gap-1">
                             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                            <span className="text-sm text-green-600 font-semibold">
+                            <span className="text-xs md:text-sm text-green-600 font-semibold">
                               {game.players}
                             </span>
                           </div>
@@ -333,22 +333,22 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                     </CardTitle>
                   </CardHeader>
 
-                  <CardContent className="space-y-6">
-                    <p className="text-gray-600 text-base font-medium leading-relaxed">
+                  <CardContent className="space-y-4 md:space-y-6 px-3 md:px-6">
+                    <p className="text-gray-600 text-sm md:text-base font-medium leading-relaxed line-clamp-2">
                       {game.description}
                     </p>
 
-                    {/* Enhanced Features Grid */}
-                    <div className="grid grid-cols-2 gap-3">
+                    {/* Enhanced Features Grid - Mobile Optimized */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
                       {game.features.map((feature, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-gray-100 transition-all duration-200"
+                          className="flex items-center gap-2 p-2 md:p-3 bg-gray-50 rounded-lg md:rounded-xl border border-gray-100 hover:bg-gray-100 transition-all duration-200"
                         >
                           <CheckCircle
-                            className={`h-4 w-4 text-${game.color}-500 flex-shrink-0`}
+                            className={`h-3 w-3 md:h-4 md:w-4 text-${game.color}-500 flex-shrink-0`}
                           />
-                          <span className="text-sm font-semibold text-gray-700">
+                          <span className="text-xs md:text-sm font-semibold text-gray-700 truncate">
                             {feature}
                           </span>
                         </div>
