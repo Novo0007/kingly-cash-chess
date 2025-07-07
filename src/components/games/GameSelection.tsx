@@ -69,7 +69,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         description:
           "Classic strategy game with timed matches and real money prizes",
         icon: Crown,
-        emoji: "♛",
+        emoji: "���",
         color: "amber",
         gradient: "from-amber-700 via-orange-700 to-yellow-700",
         lightGradient: "from-amber-100 via-orange-100 to-yellow-100",
@@ -394,10 +394,10 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                       ))}
                     </div>
 
-                    {/* Enhanced Play Button with Animation - Mobile Optimized */}
+                    {/* Enhanced Play Button with Smooth Animations */}
                     <Button
                       onClick={() =>
-                        onSelectGame(
+                        handleGameSelect(
                           game.id as
                             | "chess"
                             | "ludo"
@@ -406,15 +406,23 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                             | "math",
                         )
                       }
-                      className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:${game.gradient} text-white border-0 py-3 md:py-4 lg:py-5 text-sm md:text-base lg:text-lg font-bold rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] group/btn`}
+                      className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:from-opacity-90 text-white border-0 py-4 md:py-5 lg:py-6 text-sm md:text-base lg:text-lg font-bold rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 ease-out transform hover:scale-[1.03] hover:-translate-y-1 group/btn will-change-transform`}
                     >
-                      {/* Button Background Animation */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
+                      {/* Multiple layered background animations */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 transform -skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-out"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
 
-                      <div className="relative flex items-center justify-center gap-2 md:gap-3">
-                        <Play className="h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover/btn:scale-110" />
-                        <span className="font-black">PLAY NOW</span>
-                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                      {/* Pulsing glow effect */}
+                      <div
+                        className={`absolute -inset-1 bg-gradient-to-r ${game.gradient} rounded-2xl md:rounded-3xl blur-xl opacity-0 group-hover/btn:opacity-50 transition-all duration-500 animate-pulse`}
+                      ></div>
+
+                      <div className="relative flex items-center justify-center gap-2 md:gap-3 z-10">
+                        <Play className="h-4 w-4 md:h-5 md:w-5 transition-all duration-300 group-hover/btn:scale-125 group-hover/btn:rotate-12 filter drop-shadow-lg" />
+                        <span className="font-black tracking-wide drop-shadow-sm">
+                          PLAY NOW
+                        </span>
+                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5 transition-all duration-300 group-hover/btn:translate-x-2 group-hover/btn:scale-110 filter drop-shadow-lg" />
                       </div>
                     </Button>
 
