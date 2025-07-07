@@ -309,7 +309,7 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-6 w-6 text-green-600" />
-                Top 10 High Scores
+                Top 10 Players (Best Scores)
                 {selectedDifficulty !== "all" || selectedMode !== "all" ? (
                   <Badge variant="outline" className="ml-2">
                     Filtered Results
