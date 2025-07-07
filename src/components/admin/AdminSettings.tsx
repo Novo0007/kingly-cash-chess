@@ -101,7 +101,10 @@ export const AdminSettings = ({ adminUser }: AdminSettingsProps) => {
       );
       fetchAdminUsers();
     } catch (error) {
-      console.error("Error updating admin status:", error);
+      console.error(
+        "Error updating admin status:",
+        error instanceof Error ? error.message : String(error),
+      );
       toast.error("Failed to update admin status");
     }
   };
