@@ -366,7 +366,7 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
   };
 
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full flex justify-center word-search-container">
       <div
         ref={boardRef}
         className="word-search-board"
