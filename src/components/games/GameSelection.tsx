@@ -51,7 +51,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 
   // Memoize click handlers for better performance
   const handleGameSelect = useCallback(
-    (gameType: "chess" | "ludo" | "maze" | "game2048" | "math") => {
+    (
+      gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
+    ) => {
       onSelectGame(gameType);
     },
     [onSelectGame],
@@ -82,7 +84,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         gradient: "from-amber-700 via-orange-700 to-yellow-700",
         lightGradient: "from-amber-100 via-orange-100 to-yellow-100",
         features: [
-          "🏆 Tournaments",
+          "��� Tournaments",
           "⚡ Quick Matches",
           "💰 Real Prizes",
           "📈 Rankings",
