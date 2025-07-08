@@ -328,6 +328,10 @@ const Index = () => {
     }
   };
 
+  if (useNealFunStyle && currentView === "games") {
+    return <NealFunGameLobby onSelectGame={handleSelectGame} />;
+  }
+
   return (
     <MobileOptimized className="wood-bg">
       {/* Natural Wood Background */}
