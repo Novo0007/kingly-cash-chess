@@ -65,9 +65,17 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
 
   // Fetch user's coin balance
   const fetchCoinBalance = useCallback(async () => {
-    const result = await getUserCoinBalance(user.id);
-    if (result.success) {
-      setCoinBalance(result.balance || 0);
+    try {
+      const result = await getUserCoinBalance(user.id);
+      if (result.success) {
+        setCoinBalance(result.balance || 100); // Default starting balance
+      } else {
+        console.warn("Could not fetch coin balance:", result.error);
+        setCoinBalance(100); // Default fallback balance
+      }
+    } catch (error) {
+      console.warn("Error fetching coin balance:", error);
+      setCoinBalance(100); // Default fallback balance
     }
   }, [user.id]);
 
