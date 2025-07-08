@@ -243,6 +243,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
           entryCost: entryFee,
           maxPlayers,
           isPrivate,
+          isSinglePlayer,
         });
 
         // Add current user to the game
