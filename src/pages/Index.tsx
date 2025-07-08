@@ -31,6 +31,7 @@ const Index = () => {
     "chess" | "ludo" | "maze" | "game2048" | "math" | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [useNealFunStyle, setUseNealFunStyle] = useState(true);
 
   // Optimized profile fetching with caching
   const fetchUserProfile = useCallback(async (userId: string) => {
