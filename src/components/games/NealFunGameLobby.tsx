@@ -319,7 +319,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
         <div className="mt-16 pt-8 border-t border-gray-200">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-3xl font-light text-black mb-2">5+</div>
+              <div className="text-3xl font-light text-black mb-2">5</div>
               <div className="text-sm text-gray-600">Games Available</div>
             </div>
             <div>
