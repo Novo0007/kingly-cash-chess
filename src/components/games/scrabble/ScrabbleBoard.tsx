@@ -10,6 +10,7 @@ import {
 } from "./ScrabbleGameLogic";
 import { cn } from "@/lib/utils";
 import { Trash2, RotateCcw, CheckCircle, X } from "lucide-react";
+import "./scrabble.css";
 
 interface ScrabbleBoardProps {
   gameState: ScrabbleGameState;
