@@ -585,8 +585,9 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
             </div>
           ))}
 
-          {/* Waiting for more players */}
+          {/* Waiting for more players - only show for multiplayer games */}
           {gameState.gameStatus === "waiting" &&
+            !gameState.gameSettings.isSinglePlayer &&
             gameState.players.length < gameState.gameSettings.maxPlayers && (
               <div className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg">
                 <div className="text-center text-gray-500">
