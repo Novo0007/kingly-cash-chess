@@ -207,6 +207,8 @@ const Index = () => {
       setCurrentView("game2048");
     } else if (selectedGameType === "math") {
       setCurrentView("math-game");
+    } else if (selectedGameType === "wordsearch") {
+      setCurrentView("wordsearch-game");
     }
   };
 
