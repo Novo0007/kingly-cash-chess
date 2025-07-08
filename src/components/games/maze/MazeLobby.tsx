@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { MazeGameLogic } from "./MazeGameLogic";
 import { useDeviceType } from "@/hooks/use-mobile";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface MazeLobbyProps {
   onStartGame: (difficulty: "easy" | "medium" | "hard") => void;
@@ -30,6 +31,7 @@ export const MazeLobby: React.FC<MazeLobbyProps> = ({
   onShowLeaderboard,
 }) => {
   const { isMobile } = useDeviceType();
+  const { currentTheme } = useTheme();
   const [selectedDifficulty, setSelectedDifficulty] = useState<
     "easy" | "medium" | "hard"
   >("easy");
