@@ -225,7 +225,10 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
 
         setCoinBalance(Math.max(0, coinBalance - hintCost)); // Local fallback
       } catch (error) {
-        console.warn("Error processing hint purchase:", error);
+        console.warn(
+          "Error processing hint purchase:",
+          error instanceof Error ? error.message : String(error),
+        );
         // Continue with hint anyway for demo purposes
         setCoinBalance(Math.max(0, coinBalance - hintCost));
       }
