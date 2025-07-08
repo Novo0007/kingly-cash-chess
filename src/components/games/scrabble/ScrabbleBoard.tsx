@@ -288,36 +288,66 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
       position?: { row: number; col: number },
     ) => {
       const isSelected = selectedTilesForExchange.has(tile.id);
+      const isSelectedForPlacement = selectedTile?.id === tile.id;
 
       return (
         <div
           key={tile.id}
-          draggable={isCurrentPlayerTurn && !isExchangeMode}
+          draggable={!isMobile && isCurrentPlayerTurn && !isExchangeMode}
           onDragStart={(e) => {
-            if (isExchangeMode) {
+            if (isMobile || isExchangeMode) {
               e.preventDefault();
               return;
             }
             handleDragStart(tile, isPlaced ? "board" : "rack", position);
           }}
           onClick={() => {
-            if (isExchangeMode && !isPlaced) {
-              handleTileClickForExchange(tile);
-            } else if (isPlaced) {
-              handleReturnToRack(tile.id);
+            if (isMobile) {
+              handleTileSelect(tile, isPlaced ? "board" : "rack");
+            } else {
+              if (isExchangeMode && !isPlaced) {
+                handleTileClickForExchange(tile);
+              } else if (isPlaced) {
+                handleReturnToRack(tile.id);
+              }
+            }
+          }}
+          onTouchStart={(e) => {
+            // Prevent default to avoid scroll
+            if (isCurrentPlayerTurn) {
+              e.preventDefault();
             }
           }}
           className={cn(
-            "relative w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-amber-100 to-amber-200 border-2 border-amber-400 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg",
-            isCurrentPlayerTurn && "cursor-grab active:cursor-grabbing",
+            "relative w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-amber-100 to-amber-200 border-2 border-amber-400 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200",
+            isCurrentPlayerTurn &&
+              !isMobile &&
+              "cursor-grab active:cursor-grabbing",
+            isCurrentPlayerTurn &&
+              isMobile &&
+              "hover:scale-105 active:scale-95",
+            !isMobile && "hover:scale-105 hover:shadow-lg",
             isSelected && "ring-2 ring-blue-500 bg-blue-100",
+            isSelectedForPlacement && "ring-2 ring-purple-500 bg-purple-100",
             isPlaced && "ring-2 ring-green-500",
+            // Larger touch targets on mobile
+            isMobile && "w-10 h-10 md:w-12 md:h-12 text-sm md:text-base",
           )}
         >
-          <span className="text-xs md:text-sm font-bold text-amber-900">
+          <span
+            className={cn(
+              "font-bold text-amber-900",
+              isMobile ? "text-sm md:text-base" : "text-xs md:text-sm",
+            )}
+          >
             {tile.letter || "?"}
           </span>
-          <span className="absolute bottom-0 right-0 text-[8px] md:text-[10px] font-bold text-amber-800">
+          <span
+            className={cn(
+              "absolute bottom-0 right-0 font-bold text-amber-800",
+              isMobile ? "text-[10px] md:text-xs" : "text-[8px] md:text-[10px]",
+            )}
+          >
             {tile.value}
           </span>
           {isPlaced && (
@@ -326,21 +356,34 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
                 e.stopPropagation();
                 handleReturnToRack(tile.id);
               }}
-              className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] hover:bg-red-600"
+              className={cn(
+                "absolute bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600",
+                isMobile
+                  ? "-top-1 -right-1 w-5 h-5 text-xs"
+                  : "-top-1 -right-1 w-4 h-4 text-[10px]",
+              )}
             >
-              <X className="w-2 h-2" />
+              <X className={isMobile ? "w-3 h-3" : "w-2 h-2"} />
             </button>
+          )}
+          {isSelectedForPlacement && isMobile && (
+            <div className="absolute -top-1 -left-1 w-4 h-4 bg-purple-500 text-white rounded-full flex items-center justify-center text-[8px]">
+              ✓
+            </div>
           )}
         </div>
       );
     },
     [
+      isMobile,
       isCurrentPlayerTurn,
       isExchangeMode,
       selectedTilesForExchange,
+      selectedTile,
       handleTileClickForExchange,
       handleReturnToRack,
       handleDragStart,
+      handleTileSelect,
     ],
   );
 
