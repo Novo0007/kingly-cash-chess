@@ -541,28 +541,31 @@ export const hasClaimedFreeCoins = async (
 export const purchaseCoins = async (
   userId: string,
   coinPackage: { coins: number; price: number; bonus?: number },
+  paymentId?: string,
 ): Promise<{ success: boolean; newBalance?: number; error?: string }> => {
   try {
     const totalCoins = coinPackage.coins + (coinPackage.bonus || 0);
-
-    // In a real app, you would integrate with a payment gateway here
-    // For now, we'll just add the coins directly
 
     const result = await updateUserCoins(userId, totalCoins, "purchase");
     if (!result.success) {
       return result;
     }
 
-    // Log the purchase transaction
-    await supabase.from("coin_transactions").insert([
-      {
-        user_id: userId,
-        amount: totalCoins,
-        transaction_type: "purchase",
-        description: `Purchased ${coinPackage.coins} coins${coinPackage.bonus ? ` (+${coinPackage.bonus} bonus)` : ""} for ₹${coinPackage.price}`,
-        balance_after: result.newBalance,
-      },
-    ]);
+    // Log the purchase transaction with Razorpay payment ID
+    const transactionData: any = {
+      user_id: userId,
+      amount: totalCoins,
+      transaction_type: "purchase",
+      description: `Purchased ${coinPackage.coins} coins${coinPackage.bonus ? ` (+${coinPackage.bonus} bonus)` : ""} for ₹${coinPackage.price}${paymentId ? ` (Payment ID: ${paymentId})` : ""}`,
+      balance_after: result.newBalance,
+    };
+
+    // Add Razorpay payment ID if available
+    if (paymentId) {
+      transactionData.razorpay_payment_id = paymentId;
+    }
+
+    await supabase.from("coin_transactions").insert([transactionData]);
 
     return result;
   } catch (error) {
