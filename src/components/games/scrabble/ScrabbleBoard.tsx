@@ -63,6 +63,13 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
   const isCurrentPlayerTurn =
     gameState.players[gameState.currentPlayerIndex]?.id === currentPlayerId;
 
+  // Auto-detect touch mode on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setTouchMode("select");
+    }
+  }, [isMobile]);
+
   const getCellMultiplierDisplay = useCallback((row: number, col: number) => {
     const key = `${row},${col}`;
     const multiplier = BOARD_MULTIPLIERS[key];
