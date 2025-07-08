@@ -31,19 +31,50 @@ const LoadingScreen = ({ loadingProgress }: { loadingProgress: number }) => {
       <div
         className={`absolute inset-0 bg-gradient-to-br ${currentTheme.gradients.primary}/10 via-background to-${currentTheme.gradients.secondary}/10`}
       >
-        {/* Floating Particles */}
+        {/* Theme-specific Particles */}
         <div className="absolute inset-0 overflow-hidden">
-          {[...Array(15)].map((_, i) => (
-            <div
-              key={i}
-              className={`absolute w-1 h-1 sm:w-2 sm:h-2 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full opacity-30 particle-animation`}
-              style={{
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 8}s`,
-                animationDuration: `${6 + Math.random() * 4}s`,
-              }}
-            />
-          ))}
+          {currentTheme.id === "hackermatrix"
+            ? // Matrix rain effect
+              [...Array(20)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute text-green-400 text-xs opacity-70 font-mono"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    animation: `matrix-rain ${8 + Math.random() * 4}s linear infinite`,
+                    animationDelay: `${Math.random() * 8}s`,
+                  }}
+                >
+                  {String.fromCharCode(0x30a0 + Math.random() * 96)}
+                </div>
+              ))
+            : currentTheme.id === "glitchcyber"
+              ? // Glitch particles
+                [...Array(12)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-2 h-2 bg-gradient-to-r from-fuchsia-400 to-cyan-400 opacity-40"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                      animation: `glitch-horizontal ${2 + Math.random() * 2}s ease-in-out infinite`,
+                      animationDelay: `${Math.random() * 4}s`,
+                      clipPath: "polygon(0 0, 100% 0, 80% 100%, 20% 100%)",
+                    }}
+                  />
+                ))
+              : // Default floating particles
+                [...Array(15)].map((_, i) => (
+                  <div
+                    key={i}
+                    className={`absolute w-1 h-1 sm:w-2 sm:h-2 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full opacity-30 particle-animation`}
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      animationDelay: `${Math.random() * 8}s`,
+                      animationDuration: `${6 + Math.random() * 4}s`,
+                    }}
+                  />
+                ))}
         </div>
       </div>
 
@@ -59,9 +90,15 @@ const LoadingScreen = ({ loadingProgress }: { loadingProgress: number }) => {
               className={`relative bg-gradient-to-br ${currentTheme.gradients.secondary}/20 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-primary/20 shadow-2xl loading-float`}
             >
               <div
-                className={`w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto bg-gradient-to-br ${currentTheme.gradients.primary} rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl transform transition-all duration-500 hover:scale-110 hover:rotate-12`}
+                className={`w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto bg-gradient-to-br ${currentTheme.gradients.primary} rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl transform transition-all duration-500 hover:scale-110 hover:rotate-12 ${
+                  currentTheme.id === "hackermatrix" ? "matrix-text" : ""
+                } ${currentTheme.id === "glitchcyber" ? "glitch-element" : ""}`}
               >
-                <div className="text-2xl sm:text-3xl md:text-4xl animate-bounce">
+                <div
+                  className={`text-2xl sm:text-3xl md:text-4xl animate-bounce ${
+                    currentTheme.id === "glitchcyber" ? "glitch-color" : ""
+                  }`}
+                >
                   {currentTheme.preview}
                 </div>
               </div>
@@ -71,7 +108,11 @@ const LoadingScreen = ({ loadingProgress }: { loadingProgress: number }) => {
           {/* Themed Typography */}
           <div className="space-y-2 sm:space-y-3 md:space-y-4 animate-fadeInUp delay-200">
             <h1
-              className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent loading-shimmer relative`}
+              className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent loading-shimmer relative ${
+                currentTheme.id === "hackermatrix"
+                  ? "matrix-text font-mono"
+                  : ""
+              } ${currentTheme.id === "glitchcyber" ? "glitch-text" : ""}`}
             >
               <span className="relative z-10">
                 {currentTheme.name} GAME HUB
