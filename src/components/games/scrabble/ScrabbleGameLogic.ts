@@ -266,6 +266,7 @@ export class ScrabbleGameLogic {
         prizePot: 0,
         maxPlayers: settings.maxPlayers,
         isPrivate: settings.isPrivate,
+        isSinglePlayer: this.isSinglePlayer,
       },
     };
   }
