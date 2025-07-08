@@ -235,6 +235,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         maxPlayers,
         entryFee,
         isPrivate,
+        isSinglePlayer,
       );
 
       if (result.success && result.gameId) {
