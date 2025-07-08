@@ -104,7 +104,13 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
       return;
     }
 
-    await onCreateGame(gameName.trim(), maxPlayers, entryFee, isPrivate);
+    await onCreateGame(
+      gameName.trim(),
+      maxPlayers,
+      entryFee,
+      isPrivate,
+      isSinglePlayer,
+    );
     setCreateDialogOpen(false);
 
     // Reset form
@@ -112,6 +118,7 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
     setMaxPlayers(2);
     setEntryFee(0);
     setIsPrivate(false);
+    setIsSinglePlayer(false);
   };
 
   const formatTimeAgo = (dateString: string) => {
