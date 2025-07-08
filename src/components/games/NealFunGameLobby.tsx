@@ -346,18 +346,18 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
         )}
 
         {/* Coming Soon Section */}
-        <div className="mt-16 pt-8 border-t border-gray-200">
-          <h2 className="text-2xl font-light text-black mb-8 text-center">
-            Coming Soon
+        <div className="mt-16 pt-8 border-t border-border">
+          <h2 className="text-2xl font-light text-foreground mb-8 text-center">
+            Coming Soon - {currentTheme.name} Themed
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {comingSoon.map((game, index) => (
               <div
                 key={index}
-                className="text-center p-4 border border-gray-200 rounded-lg bg-gray-50 cursor-not-allowed opacity-60"
+                className={`text-center p-4 border border-border rounded-lg bg-gradient-to-r ${currentTheme.gradients.secondary}/10 cursor-not-allowed opacity-60 hover:opacity-80 transition-opacity`}
               >
                 <div className="text-2xl mb-2">{game.emoji}</div>
-                <div className="text-sm font-medium text-gray-700">
+                <div className="text-sm font-medium text-foreground">
                   {game.name}
                 </div>
               </div>
@@ -366,60 +366,75 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
         </div>
 
         {/* Stats */}
-        <div className="mt-16 pt-8 border-t border-gray-200">
+        <div className="mt-16 pt-8 border-t border-border">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="text-3xl font-light text-black mb-2">6</div>
-              <div className="text-sm text-gray-600">Games Available</div>
+            <div
+              className={`p-6 rounded-lg bg-gradient-to-r ${currentTheme.gradients.primary}/10 border border-primary/20`}
+            >
+              <div className="text-3xl font-light text-foreground mb-2">6</div>
+              <div className="text-sm text-muted-foreground">
+                Games Available
+              </div>
             </div>
-            <div>
-              <div className="text-3xl font-light text-black mb-2">5K+</div>
-              <div className="text-sm text-gray-600">Active Players</div>
+            <div
+              className={`p-6 rounded-lg bg-gradient-to-r ${currentTheme.gradients.secondary}/10 border border-primary/20`}
+            >
+              <div className="text-3xl font-light text-foreground mb-2">
+                5K+
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Active Players
+              </div>
             </div>
-            <div>
-              <div className="text-3xl font-light text-black mb-2">24/7</div>
-              <div className="text-sm text-gray-600">Support</div>
+            <div
+              className={`p-6 rounded-lg bg-gradient-to-r ${currentTheme.gradients.accent}/10 border border-primary/20`}
+            >
+              <div className="text-3xl font-light text-foreground mb-2">
+                24/7
+              </div>
+              <div className="text-sm text-muted-foreground">Support</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-12 px-6">
+      <footer className="bg-card border-t border-border py-12 px-6">
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-gray-600 font-light text-lg mb-6">
-            Hi! This is where we make games on the web. Obligatory links:
+          <p className="text-muted-foreground font-light text-lg mb-6">
+            Hi! This is where we make {currentTheme.name} themed games on the
+            web. Obligatory links:
           </p>
 
           <div className="flex justify-center gap-4 mb-6">
             <Button
               variant="outline"
               size="sm"
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              className={`border-primary/30 text-foreground hover:bg-gradient-to-r hover:${currentTheme.gradients.primary}/10`}
             >
               📧 Newsletter
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              className={`border-primary/30 text-foreground hover:bg-gradient-to-r hover:${currentTheme.gradients.secondary}/10`}
             >
               🐦 Twitter
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              className={`border-primary/30 text-foreground hover:bg-gradient-to-r hover:${currentTheme.gradients.accent}/10`}
             >
               ☕ Support
             </Button>
           </div>
 
-          <p className="text-gray-600 text-sm mb-2">
-            Say hello: <span className="text-blue-600">hi@nncgames.com</span>
+          <p className="text-muted-foreground text-sm mb-2">
+            Say hello: <span className="text-primary">hi@nncgames.com</span>
           </p>
 
-          <p className="text-gray-500 text-sm opacity-50">
+          <p className="text-muted-foreground text-sm opacity-50">
             <a href="#" className="hover:underline">
               Privacy policy
             </a>
