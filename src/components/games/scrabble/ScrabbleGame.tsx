@@ -304,11 +304,18 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         return;
       }
 
+      // Detect if this is a single player game (max_players is 2 but created as single player)
+      const isSinglePlayerGame =
+        game.max_players === 2 &&
+        game.is_friend_challenge &&
+        game.current_players === 1;
+
       // Create fresh game logic and add all players
       const logic = new ScrabbleGameLogic(gameId, {
         entryCost: game.entry_fee,
-        maxPlayers: game.max_players,
+        maxPlayers: isSinglePlayerGame ? 1 : game.max_players,
         isPrivate: game.is_friend_challenge,
+        isSinglePlayer: isSinglePlayerGame,
       });
 
       // Add all existing players to the game logic
