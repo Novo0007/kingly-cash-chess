@@ -148,22 +148,32 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
 
   const quickGameOptions = [
     {
+      name: "Single Player",
+      players: 1,
+      fee: 0,
+      description: "Practice mode - play alone",
+      isSinglePlayer: true,
+    },
+    {
       name: "Quick Match",
       players: 2,
       fee: 0,
       description: "Free 2-player game",
+      isSinglePlayer: false,
     },
     {
       name: "Casual Game",
       players: 4,
       fee: 10,
       description: "4-player game, small stakes",
+      isSinglePlayer: false,
     },
     {
       name: "Championship",
       players: 4,
       fee: 50,
       description: "High stakes tournament",
+      isSinglePlayer: false,
     },
   ];
 
