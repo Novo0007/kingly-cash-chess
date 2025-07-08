@@ -31,6 +31,10 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
 }) => {
   const { isMobile } = useDeviceType();
   const [hoveredGame, setHoveredGame] = useState<string | null>(null);
+  const [showGlobalChat, setShowGlobalChat] = useState(false);
+  const [gameFilter, setGameFilter] = useState<"all" | "free" | "earning">(
+    "all",
+  );
 
   const games = [
     {
