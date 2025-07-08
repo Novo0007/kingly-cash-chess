@@ -13,10 +13,12 @@ import {
   Crown,
   Sparkles,
   History,
+  MapPin,
 } from "lucide-react";
 import { addCoins, getUserCoinBalance } from "@/utils/wordsearchDbHelper";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
+import { useRazorpay, convertUSDToINR, formatINR } from "@/hooks/useRazorpay";
 import type { User } from "@supabase/supabase-js";
 
 interface CoinShopProps {
