@@ -587,13 +587,15 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
 
           {/* Action Buttons */}
           {isCurrentPlayerTurn && (
-            <div className="flex flex-wrap gap-2">
+            <div
+              className={`flex flex-wrap gap-2 ${isMobile ? "justify-center" : ""}`}
+            >
               {isExchangeMode ? (
                 <>
                   <Button
                     onClick={handleConfirmExchange}
                     disabled={selectedTilesForExchange.size === 0}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className={`bg-blue-600 hover:bg-blue-700 ${isMobile ? "flex-1 min-w-[120px]" : ""}`}
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
                     Exchange {selectedTilesForExchange.size} Tiles
@@ -604,6 +606,7 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
                       setSelectedTilesForExchange(new Set());
                     }}
                     variant="outline"
+                    className={isMobile ? "flex-1" : ""}
                   >
                     Cancel
                   </Button>
@@ -613,15 +616,16 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
                   <Button
                     onClick={handleConfirmMove}
                     disabled={placedTiles.length === 0}
-                    className="bg-green-600 hover:bg-green-700"
+                    className={`bg-green-600 hover:bg-green-700 ${isMobile ? "flex-1 min-w-[100px]" : ""}`}
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    Play Word
+                    {isMobile ? "Play" : "Play Word"}
                   </Button>
                   <Button
                     onClick={handleClearBoard}
                     disabled={placedTiles.length === 0}
                     variant="outline"
+                    className={isMobile ? "flex-1" : ""}
                   >
                     <RotateCcw className="w-4 h-4 mr-2" />
                     Clear
@@ -630,15 +634,34 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
                     onClick={() => setIsExchangeMode(true)}
                     disabled={gameState.tileBag.length < 7}
                     variant="outline"
+                    className={isMobile ? "flex-1" : ""}
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Exchange
+                    {isMobile ? "Swap" : "Exchange"}
                   </Button>
-                  <Button onClick={onPass} variant="outline">
-                    Pass Turn
+                  <Button
+                    onClick={onPass}
+                    variant="outline"
+                    className={isMobile ? "flex-1" : ""}
+                  >
+                    Pass
                   </Button>
                 </>
               )}
+            </div>
+          )}
+
+          {/* Clear selection button for mobile */}
+          {isMobile && selectedTile && (
+            <div className="mt-2">
+              <Button
+                onClick={() => setSelectedTile(null)}
+                variant="outline"
+                size="sm"
+                className="w-full"
+              >
+                Clear Selection ({selectedTile.letter || "?"})
+              </Button>
             </div>
           )}
 
