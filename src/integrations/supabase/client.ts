@@ -5,19 +5,20 @@ import type { Database } from "./types";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Use fallback values if environment variables are missing
+const finalUrl = supabaseUrl || "https://placeholder.supabase.co";
+const finalKey = supabaseAnonKey || "placeholder_key";
+
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn(
     "Missing Supabase environment variables. Using fallback configuration.",
   );
-  // Provide fallback values for development
-  const fallbackUrl = "https://placeholder.supabase.co";
-  const fallbackKey = "placeholder_key";
 }
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient<Database>(finalUrl, finalKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
