@@ -69,6 +69,7 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
   const [maxPlayers, setMaxPlayers] = useState<number>(2);
   const [entryFee, setEntryFee] = useState<number>(0);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [isSinglePlayer, setIsSinglePlayer] = useState(false);
 
   // Load available games
   useEffect(() => {
