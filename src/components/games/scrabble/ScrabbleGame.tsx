@@ -502,6 +502,13 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
             />
           </TabsContent>
 
+          <TabsContent value="leaderboard">
+            <ScrabbleLeaderboard
+              currentUserId={user.id}
+              onRefresh={loadUserCoins}
+            />
+          </TabsContent>
+
           <TabsContent value="rules">
             <ScrabbleRules />
           </TabsContent>
@@ -535,7 +542,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200">
           <CardHeader className="text-center pb-4">
             <div className="text-6xl mb-4">
-              {gameResult.winner.id === user.id ? "����" : "🎉"}
+              {gameResult.winner.id === user.id ? "🏆" : "🎉"}
             </div>
             <CardTitle className="text-3xl text-gray-800 mb-2">
               Game Complete!
