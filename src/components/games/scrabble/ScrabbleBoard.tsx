@@ -214,6 +214,23 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
     ],
   );
 
+  const handleTileClickForExchange = useCallback(
+    (tile: ScrabbleTile) => {
+      if (!isExchangeMode || !isCurrentPlayerTurn) return;
+
+      setSelectedTilesForExchange((prev) => {
+        const newSet = new Set(prev);
+        if (newSet.has(tile.id)) {
+          newSet.delete(tile.id);
+        } else {
+          newSet.add(tile.id);
+        }
+        return newSet;
+      });
+    },
+    [isExchangeMode, isCurrentPlayerTurn],
+  );
+
   // Handle tile selection for mobile
   const handleTileSelect = useCallback(
     (tile: ScrabbleTile, source: "rack" | "board") => {
@@ -251,23 +268,6 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
     onPlaceTiles(placedTiles);
     setPlacedTiles([]);
   }, [placedTiles, onPlaceTiles]);
-
-  const handleTileClickForExchange = useCallback(
-    (tile: ScrabbleTile) => {
-      if (!isExchangeMode || !isCurrentPlayerTurn) return;
-
-      setSelectedTilesForExchange((prev) => {
-        const newSet = new Set(prev);
-        if (newSet.has(tile.id)) {
-          newSet.delete(tile.id);
-        } else {
-          newSet.add(tile.id);
-        }
-        return newSet;
-      });
-    },
-    [isExchangeMode, isCurrentPlayerTurn],
-  );
 
   const handleConfirmExchange = useCallback(() => {
     if (selectedTilesForExchange.size === 0 || !currentPlayer) return;
