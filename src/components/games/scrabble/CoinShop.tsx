@@ -12,6 +12,8 @@ import {
   Wallet,
   Crown,
   Zap,
+  Sparkles,
+  CheckCircle,
 } from "lucide-react";
 import {
   purchaseCoins,
