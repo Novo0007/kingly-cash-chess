@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,26 @@ import { toast } from "sonner";
 import { Crown, Zap } from "lucide-react";
 
 export const AuthPage = () => {
+  useEffect(() => {
+    // Clear any invalid session data on component mount
+    const clearInvalidSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (error && (error.message.includes('refresh_token_not_found') || 
+                     error.message.includes('Invalid Refresh Token'))) {
+          await supabase.auth.signOut()
+          localStorage.removeItem('supabase.auth.token')
+          sessionStorage.clear()
+          console.log('Cleared invalid session data')
+        }
+      } catch (err) {
+        console.log('Session cleanup completed')
+      }
+    }
+    
+    clearInvalidSession()
+  }, [])
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
