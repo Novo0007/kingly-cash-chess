@@ -242,8 +242,33 @@ export const WordSearchLobby: React.FC<WordSearchLobbyProps> = ({
   return (
     <MobileContainer>
       <div className="space-y-6">
+        {/* Themed Header */}
+        <div className="relative">
+          <div
+            className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-2xl blur-xl animate-pulse`}
+          ></div>
+          <div className="relative flex items-center gap-4 mb-6 md:mb-8 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div
+                  className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
+                ></div>
+                <div
+                  className={`relative w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center`}
+                >
+                  🔍
+                </div>
+              </div>
+              <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
+                {currentTheme.preview} Word Search
+              </h1>
+            </div>
+          </div>
+        </div>
         {/* Header */}
-        <Card className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+        <Card
+          className={`bg-gradient-to-r ${currentTheme.gradients.primary} text-white`}
+        >
           <CardHeader>
             <div className="flex items-center justify-between">
               <Button
@@ -277,9 +302,11 @@ export const WordSearchLobby: React.FC<WordSearchLobbyProps> = ({
             </div>
 
             <div className="text-center">
-              <CardTitle className="text-2xl mb-2">Word Search Lobby</CardTitle>
-              <p className="text-purple-100">
-                Join or create multiplayer games
+              <CardTitle className="text-2xl mb-2">
+                {currentTheme.name} Word Search
+              </CardTitle>
+              <p className="text-white/80">
+                Join or create games with {currentTheme.name} theme
               </p>
             </div>
           </CardHeader>
