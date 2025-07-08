@@ -28,7 +28,7 @@ import "../../styles/game-lobby.css";
 
 interface GameSelectionProps {
   onSelectGame: (
-    gameType: "chess" | "ludo" | "maze" | "game2048" | "math",
+    gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
   ) => void;
 }
 
