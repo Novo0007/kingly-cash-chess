@@ -87,23 +87,52 @@ export const MazeLobby: React.FC<MazeLobbyProps> = ({
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Themed Header */}
+      <div className="relative">
+        <div
+          className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-2xl blur-xl animate-pulse`}
+        ></div>
+        <div className="relative flex items-center gap-4 mb-6 md:mb-8 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div
+                className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
+              ></div>
+              <div
+                className={`relative w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center`}
+              >
+                🧩
+              </div>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
+              {currentTheme.preview} Maze Challenge
+            </h1>
+          </div>
+        </div>
+      </div>
       {/* Header */}
-      <Card className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 border-0 shadow-2xl">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20"></div>
+      <Card
+        className={`relative overflow-hidden bg-gradient-to-br ${currentTheme.gradients.primary} border-0 shadow-2xl`}
+      >
+        <div
+          className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.secondary}/20`}
+        ></div>
         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/10 to-transparent rounded-bl-full"></div>
 
         <CardHeader className="relative text-center pb-6 pt-8">
           <CardTitle>
             <div className="flex items-center justify-center gap-4 mb-4">
               <div className="relative">
-                <div className="absolute -inset-3 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 rounded-full blur-xl opacity-60 animate-pulse"></div>
+                <div
+                  className={`absolute -inset-3 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-xl opacity-60 animate-pulse`}
+                ></div>
                 <div className="relative p-4 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
                   <Target className="h-10 w-10 md:h-12 md:w-12 text-white" />
                 </div>
               </div>
               <div className="text-center">
                 <span className="block text-3xl md:text-4xl lg:text-5xl font-black text-white drop-shadow-lg">
-                  🧩 MAZE CHALLENGE
+                  {currentTheme.name} MAZE
                 </span>
                 <span className="block text-lg md:text-xl text-white/90 font-medium mt-2">
                   Navigate • Explore • Conquer • Earn Points!
