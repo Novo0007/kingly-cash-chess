@@ -1,5 +1,41 @@
 # Welcome to your Lovable project
 
+## 🎨 Theme System
+
+This project includes a comprehensive theme system with multiple beautiful themes:
+
+### Available Themes:
+
+- **Default**: Clean and minimal design
+- **PixelNova** 🌟: Retro pixel-inspired with vibrant neon colors
+- **MindMaze UI** 🧠: Professional dark theme with blue accents for focus
+- **GlowyFun** ✨: Bright and playful theme with glowing elements
+- **DreamPixels** 🌙: Soft pastel theme with dreamy gradient colors
+
+### Features:
+
+- ✅ Real-time theme switching
+- ✅ Automatic localStorage persistence
+- ✅ Mobile-friendly theme selector
+- ✅ CSS custom properties for dynamic styling
+- ✅ Applied across all game lobbies and components
+- ✅ Theme-specific animations and effects
+
+### How to Use:
+
+1. Go to Profile → Settings → 🎨 Theme
+2. Browse available themes with live previews
+3. Click any theme to instantly apply it
+4. Your preference is automatically saved
+
+### For Developers:
+
+- Themes are defined in `src/types/themes.ts`
+- Context provider in `src/contexts/ThemeContext.tsx`
+- Theme selector component in `src/components/profile/ThemeSelector.tsx`
+- CSS variables automatically updated on theme change
+- Use `useTheme()` hook to access current theme in components
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/9412019b-409b-4e66-8b4c-8a670b35046d
