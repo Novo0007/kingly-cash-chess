@@ -260,7 +260,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         // Create game logic
         const logic = new ScrabbleGameLogic(result.gameId, {
           entryCost: entryFee,
-          maxPlayers,
+          maxPlayers: isSinglePlayer ? 1 : maxPlayers,
           isPrivate,
           isSinglePlayer,
         });
