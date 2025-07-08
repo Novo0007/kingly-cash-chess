@@ -32,9 +32,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
   const { isMobile } = useDeviceType();
   const [hoveredGame, setHoveredGame] = useState<string | null>(null);
   const [showGlobalChat, setShowGlobalChat] = useState(false);
-  const [gameFilter, setGameFilter] = useState<"all" | "free" | "earning">(
-    "all",
-  );
+  const [gameFilter, setGameFilter] = useState<"all" | "free" | "earning">("all");
 
   const games = [
     {
@@ -142,7 +140,9 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
       {/* Header */}
       <div className="text-center py-16 px-6">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-6xl font-light text-black mb-4">NNC Games</h1>
+          <h1 className="text-6xl font-light text-black mb-4">
+            NNC Games
+          </h1>
           <p className="text-xl text-black opacity-70 font-light">
             Games and other stuff
           </p>
@@ -206,16 +206,32 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
           <p className="text-sm text-gray-600">
             {gameFilter === "all" && "Showing all available games"}
             {gameFilter === "free" && "🆓 Free games - play without any cost!"}
-            {gameFilter === "earning" &&
-              "💰 Earning games - compete for real money prizes!"}
+            {gameFilter === "earning" && "💰 Earning games - compete for real money prizes!"}
           </p>
         </div>
       </div>
 
       {/* Main Games Grid */}
       <div className="max-w-5xl mx-auto px-6 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {games.map((game) => (
+        {filteredGames.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">🎮</div>
+            <h3 className="text-2xl font-light text-black mb-2">
+              No games found
+            </h3>
+            <p className="text-gray-600 mb-6">
+              No games match your current filter selection.
+            </p>
+            <Button
+              onClick={() => setGameFilter("all")}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Show All Games
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredGames.map((game) => (
             <div
               key={game.id}
               className="group cursor-pointer"
@@ -349,9 +365,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
           </p>
 
           <p className="text-gray-500 text-sm opacity-50">
-            <a href="#" className="hover:underline">
-              Privacy policy
-            </a>
+            <a href="#" className="hover:underline">Privacy policy</a>
           </p>
         </div>
       </footer>
