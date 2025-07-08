@@ -135,30 +135,100 @@ export const CoinShop: React.FC<CoinShopProps> = ({
     setIsLoading(packageData.id);
 
     try {
-      // In a real app, you would integrate with a payment gateway here
-      // For demo purposes, we'll simulate a successful purchase
+      console.log("Initiating coin purchase:", packageData);
 
-      // Simulate payment processing delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Initialize Razorpay
+      const options = {
+        key: "rzp_live_uEV76dlTQYpxEl", // Use same key as wallet
+        amount: packageData.price * 100, // Convert to paise
+        currency: "INR",
+        name: "Scrabble Coin Shop",
+        description: `Purchase ${packageData.coins + packageData.bonus} coins`,
+        image: "/favicon.ico",
+        handler: async function (response: any) {
+          try {
+            console.log("Payment successful:", response.razorpay_payment_id);
 
-      const result = await purchaseCoins(userId, {
-        coins: packageData.coins,
-        price: packageData.price,
-        bonus: packageData.bonus,
+            // Process coin purchase after successful payment
+            const result = await purchaseCoins(userId, {
+              coins: packageData.coins,
+              price: packageData.price,
+              bonus: packageData.bonus,
+            });
+
+            if (result.success) {
+              // Log the transaction with Razorpay payment ID
+              await fetch("/api/log-coin-purchase", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  userId,
+                  packageData,
+                  paymentId: response.razorpay_payment_id,
+                  amount: packageData.price,
+                }),
+              }).catch(() => {}); // Ignore logging errors
+
+              toast.success(
+                `🎉 Successfully purchased ${packageData.coins + packageData.bonus} coins!`,
+              );
+              onPurchaseComplete();
+            } else {
+              toast.error(result.error || "Coin credit failed");
+            }
+          } catch (error) {
+            console.error("Payment confirmation error:", error);
+            toast.error(
+              "Payment confirmed but coin credit failed. Please contact support.",
+            );
+          } finally {
+            setIsLoading(null);
+          }
+        },
+        prefill: {
+          name: "Scrabble Player",
+          email: "player@scrabble.com",
+        },
+        theme: {
+          color: "#9333EA", // Purple theme for Scrabble
+        },
+        modal: {
+          ondismiss: function () {
+            console.log("Payment cancelled by user");
+            setIsLoading(null);
+          },
+        },
+      };
+
+      // @ts-ignore - Razorpay is loaded via script tag
+      if (typeof window.Razorpay === "undefined") {
+        toast.error("Payment system not loaded. Please refresh the page.");
+        setIsLoading(null);
+        return;
+      }
+
+      // @ts-ignore
+      const rzp = new window.Razorpay(options);
+
+      rzp.on("payment.failed", function (response: any) {
+        console.error("Payment failed:", response.error);
+
+        // Handle specific error cases
+        if (response.error && response.error.code === "BAD_REQUEST_ERROR") {
+          toast.error("Payment request invalid. Please try again.");
+        } else if (response.error && response.error.description) {
+          toast.error(`Payment failed: ${response.error.description}`);
+        } else {
+          toast.error("Payment failed. Please try again.");
+        }
+
+        setIsLoading(null);
       });
 
-      if (result.success) {
-        toast.success(
-          `Successfully purchased ${packageData.coins + packageData.bonus} coins!`,
-        );
-        onPurchaseComplete();
-      } else {
-        toast.error(result.error || "Purchase failed");
-      }
+      rzp.open();
     } catch (error) {
-      console.error("Purchase error:", error);
-      toast.error("Purchase failed. Please try again.");
-    } finally {
+      console.error("Razorpay initialization error:", error);
+      toast.error("Failed to initialize payment. Please try again.");
       setIsLoading(null);
     }
   };
