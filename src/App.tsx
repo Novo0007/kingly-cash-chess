@@ -29,7 +29,9 @@ const LoadingScreen = ({ loadingProgress }: { loadingProgress: number }) => {
     <div className="fixed inset-0 overflow-hidden">
       {/* Dynamic Animated Background */}
       <div
-        className={`absolute inset-0 bg-gradient-to-br ${currentTheme.gradients.primary}/10 via-background to-${currentTheme.gradients.secondary}/10`}
+        className={`absolute inset-0 bg-gradient-to-br ${currentTheme.gradients.primary}/10 via-background to-${currentTheme.gradients.secondary}/10 ${
+          currentTheme.id === "hackermatrix" ? "matrix-bg" : ""
+        } ${currentTheme.id === "glitchcyber" ? "glitch-bg" : ""}`}
       >
         {/* Theme-specific Particles */}
         <div className="absolute inset-0 overflow-hidden">
