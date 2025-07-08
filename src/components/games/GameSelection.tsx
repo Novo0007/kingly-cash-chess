@@ -25,6 +25,7 @@ import { Button as ChatButton } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/game-lobby.css";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface GameSelectionProps {
   onSelectGame: (
@@ -36,6 +37,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   onSelectGame,
 }) => {
   const { isMobile, isTablet } = useDeviceType();
+  const { currentTheme } = useTheme();
   const navigate = useNavigate();
   const [showGlobalChat, setShowGlobalChat] = React.useState(false);
   const [gameFilter, setGameFilter] = React.useState<"all" | "free" | "money">(
