@@ -241,13 +241,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
                 onMouseLeave={() => setHoveredGame(null)}
                 onClick={() =>
                   handleGameSelect(
-                    game.id as
-                      | "chess"
-                      | "ludo"
-                      | "maze"
-                      | "game2048"
-                      | "math"
-                      | "scrabble",
+                    game.id as "chess" | "ludo" | "maze" | "game2048" | "math",
                   )
                 }
               >
