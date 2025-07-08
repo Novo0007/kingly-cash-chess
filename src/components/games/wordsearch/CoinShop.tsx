@@ -271,9 +271,30 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                 Back
               </Button>
 
-              <div className="flex items-center gap-2">
-                <Coins className="h-5 w-5" />
-                <span className="font-bold text-lg">{currentBalance}</span>
+              <div className="flex items-center gap-4">
+                {/* Region Selector */}
+                <div className="flex items-center gap-2 bg-white/20 rounded-lg px-3 py-1">
+                  <MapPin className="h-4 w-4" />
+                  <select
+                    value={paymentRegion}
+                    onChange={(e) =>
+                      setPaymentRegion(e.target.value as "US" | "IN")
+                    }
+                    className="bg-transparent text-white text-sm border-none outline-none cursor-pointer"
+                  >
+                    <option value="IN" className="text-black">
+                      🇮🇳 India (INR)
+                    </option>
+                    <option value="US" className="text-black">
+                      🇺🇸 International (USD)
+                    </option>
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Coins className="h-5 w-5" />
+                  <span className="font-bold text-lg">{currentBalance}</span>
+                </div>
               </div>
             </div>
 
@@ -282,6 +303,11 @@ export const CoinShop: React.FC<CoinShopProps> = ({
               <p className="text-green-100">
                 Get coins to play multiplayer games and buy hints
               </p>
+              {paymentRegion === "IN" && (
+                <p className="text-green-200 text-sm mt-1">
+                  💳 Secure payments powered by Razorpay
+                </p>
+              )}
             </div>
           </CardHeader>
         </Card>
