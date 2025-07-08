@@ -157,18 +157,6 @@ export const CoinShop: React.FC<CoinShopProps> = ({
             });
 
             if (result.success) {
-              // Log the transaction with Razorpay payment ID
-              await fetch("/api/log-coin-purchase", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  userId,
-                  packageData,
-                  paymentId: response.razorpay_payment_id,
-                  amount: packageData.price,
-                }),
-              }).catch(() => {}); // Ignore logging errors
-
               toast.success(
                 `🎉 Successfully purchased ${packageData.coins + packageData.bonus} coins!`,
               );
