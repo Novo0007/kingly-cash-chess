@@ -105,6 +105,21 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
     [onSelectGame],
   );
 
+  const handleChatToggle = useCallback(() => {
+    setShowGlobalChat((prev) => !prev);
+  }, []);
+
+  const handleChatClose = useCallback(() => {
+    setShowGlobalChat(false);
+  }, []);
+
+  // Filter games based on selected filter
+  const filteredGames = games.filter((game) => {
+    if (gameFilter === "free") return !game.isPaid;
+    if (gameFilter === "earning") return game.isPaid;
+    return true; // "all" shows everything
+  });
+
   return (
     <div className="min-h-screen bg-white font-sans">
       {/* Header */}
