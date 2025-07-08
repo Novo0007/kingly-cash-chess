@@ -327,15 +327,16 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
       // Enhanced mobile touch targets
       className += " active:scale-95 active:bg-blue-100";
 
-      // Base styling
+      // Base styling with proper CSS classes for mobile
       if (cell.isFound) {
-        className += " bg-green-200 text-green-800 border-green-400 shadow-sm";
+        className +=
+          " bg-green-200 text-green-800 border-green-400 shadow-sm found";
       } else if (cell.hintHighlight) {
         className +=
-          " bg-yellow-200 text-yellow-800 border-yellow-400 animate-pulse shadow-md";
+          " bg-yellow-200 text-yellow-800 border-yellow-400 hint-highlight shadow-md";
       } else if (isCellSelected(row, col)) {
         className +=
-          " bg-blue-200 text-blue-800 border-blue-400 shadow-sm ring-2 ring-blue-300";
+          " bg-blue-200 text-blue-800 border-blue-400 shadow-sm selected ring-2 ring-blue-300";
       } else {
         className +=
           " bg-white text-gray-800 hover:bg-gray-50 active:bg-blue-50";
