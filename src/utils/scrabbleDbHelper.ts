@@ -441,6 +441,101 @@ export const updateUserCoins = async (
 };
 
 /**
+ * Claim free coins (one-time offer)
+ */
+export const claimFreeCoins = async (
+  userId: string,
+): Promise<{
+  success: boolean;
+  newBalance?: number;
+  error?: string;
+  alreadyClaimed?: boolean;
+}> => {
+  try {
+    // Check if user has already claimed free coins
+    const { data: existingClaim, error: checkError } = await supabase
+      .from("coin_transactions")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("transaction_type", "reward")
+      .eq("description", "One-time free coin claim - 300 bonus coins!")
+      .single();
+
+    if (checkError && checkError.code !== "PGRST116") {
+      console.error("Error checking free coin claim:", checkError);
+      return { success: false, error: checkError.message };
+    }
+
+    if (existingClaim) {
+      return {
+        success: false,
+        alreadyClaimed: true,
+        error: "You have already claimed your free coins!",
+      };
+    }
+
+    // Grant 300 free coins
+    const freeCoinsAmount = 300;
+    const result = await updateUserCoins(userId, freeCoinsAmount, "reward");
+
+    if (!result.success) {
+      return result;
+    }
+
+    // Log the free coin claim transaction
+    await supabase.from("coin_transactions").insert([
+      {
+        user_id: userId,
+        amount: freeCoinsAmount,
+        transaction_type: "reward",
+        description: "One-time free coin claim - 300 bonus coins!",
+        balance_after: result.newBalance,
+      },
+    ]);
+
+    return { success: true, newBalance: result.newBalance };
+  } catch (error) {
+    console.error("Unexpected error claiming free coins:", error);
+    return { success: false, error: "Failed to claim free coins" };
+  }
+};
+
+/**
+ * Check if user has already claimed free coins
+ */
+export const hasClaimedFreeCoins = async (
+  userId: string,
+): Promise<{
+  success: boolean;
+  hasClaimed: boolean;
+  error?: string;
+}> => {
+  try {
+    const { data, error } = await supabase
+      .from("coin_transactions")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("transaction_type", "reward")
+      .eq("description", "One-time free coin claim - 300 bonus coins!")
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("Error checking free coin claim status:", error);
+      return { success: false, hasClaimed: false, error: error.message };
+    }
+
+    return { success: true, hasClaimed: !!data };
+  } catch (error) {
+    console.error("Unexpected error checking free coin claim status:", error);
+    return {
+      success: false,
+      hasClaimed: false,
+      error: "Failed to check claim status",
+    };
+  }
+};
+
+/**
  * Purchase coins (top-up system)
  */
 export const purchaseCoins = async (
