@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +10,15 @@ import {
   BOARD_MULTIPLIERS,
 } from "./ScrabbleGameLogic";
 import { cn } from "@/lib/utils";
-import { Trash2, RotateCcw, CheckCircle, X } from "lucide-react";
+import {
+  Trash2,
+  RotateCcw,
+  CheckCircle,
+  X,
+  Smartphone,
+  Mouse,
+} from "lucide-react";
+import { useDeviceType } from "@/hooks/use-mobile";
 import "./scrabble.css";
 
 interface ScrabbleBoardProps {
