@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface NealFunGameLobbyProps {
   onSelectGame: (
@@ -31,6 +32,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
   onSelectGame,
 }) => {
   const { isMobile } = useDeviceType();
+  const { currentTheme } = useTheme();
   const [hoveredGame, setHoveredGame] = useState<string | null>(null);
   const [showGlobalChat, setShowGlobalChat] = useState(false);
   const [gameFilter, setGameFilter] = useState<"all" | "free" | "earning">(
@@ -134,7 +136,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
   });
 
   return (
-    <div className="min-h-screen bg-white font-sans pb-20 md:pb-0">
+    <div className="min-h-screen bg-background font-sans pb-20 md:pb-0">
       {/* Global Chat System */}
       <MobileChatSystem
         isGlobalChat={true}
@@ -146,19 +148,38 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={handleChatToggle}
-          className="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          className={`w-14 h-14 rounded-full bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105`}
         >
           <MessageSquare className="h-6 w-6" />
         </Button>
       </div>
 
-      {/* Header */}
-      <div className="text-center py-16 px-6">
-        <div className="max-w-2xl mx-auto">
-          <h1 className="text-6xl font-light text-black mb-4">NNC Games</h1>
-          <p className="text-xl text-black opacity-70 font-light">
-            Games and other stuff
-          </p>
+      {/* Themed Header */}
+      <div className="relative">
+        <div
+          className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-2xl blur-xl animate-pulse`}
+        ></div>
+        <div className="relative flex items-center justify-center gap-4 py-16 px-6">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div
+                className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
+              ></div>
+              <div
+                className={`relative w-16 h-16 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center`}
+              >
+                🎮
+              </div>
+            </div>
+            <div className="text-center">
+              <h1 className="text-6xl font-light bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent mb-4">
+                {currentTheme.preview} NNC Games
+              </h1>
+              <p className="text-xl text-muted-foreground font-light">
+                Games with {currentTheme.name} theme and other stuff
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
