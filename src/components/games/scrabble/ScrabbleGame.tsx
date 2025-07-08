@@ -195,6 +195,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
             // Load player profiles if we have new players
             if (newGameState.players.length > 0) {
               const playerIds = newGameState.players.map((p) => p.id);
+              // Always reload profiles to ensure we have latest data
               loadPlayerProfiles(playerIds);
 
               // Notify when a new player joins (but not for the first update)
