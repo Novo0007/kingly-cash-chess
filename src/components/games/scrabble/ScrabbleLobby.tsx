@@ -286,6 +286,7 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
                                   option.players,
                                   option.fee,
                                   false,
+                                  option.isSinglePlayer,
                                 );
                               }}
                               className="w-full"
