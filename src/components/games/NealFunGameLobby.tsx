@@ -122,12 +122,92 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
 
   return (
     <div className="min-h-screen bg-white font-sans">
+      {/* Global Chat System */}
+      <MobileChatSystem
+        isGlobalChat={true}
+        isOpen={showGlobalChat}
+        onClose={handleChatClose}
+      />
+
+      {/* Floating Chat Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Button
+          onClick={handleChatToggle}
+          className="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+        >
+          <MessageSquare className="h-6 w-6" />
+        </Button>
+      </div>
+
       {/* Header */}
       <div className="text-center py-16 px-6">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-6xl font-light text-black mb-4">NNC Games</h1>
           <p className="text-xl text-black opacity-70 font-light">
             Games and other stuff
+          </p>
+        </div>
+      </div>
+
+      {/* Game Filter Section */}
+      <div className="max-w-5xl mx-auto px-6 mb-8">
+        <div className="flex items-center justify-center gap-4 pb-8 border-b border-gray-200">
+          <div className="flex items-center gap-2 text-gray-600">
+            <Filter className="w-4 h-4" />
+            <span className="text-sm font-medium">Filter games:</span>
+          </div>
+
+          <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+            <Button
+              onClick={() => setGameFilter("all")}
+              variant={gameFilter === "all" ? "default" : "ghost"}
+              size="sm"
+              className={`transition-all duration-200 ${
+                gameFilter === "all"
+                  ? "bg-white text-black shadow-sm"
+                  : "text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              All Games ({games.length})
+            </Button>
+
+            <Button
+              onClick={() => setGameFilter("free")}
+              variant={gameFilter === "free" ? "default" : "ghost"}
+              size="sm"
+              className={`flex items-center gap-1 transition-all duration-200 ${
+                gameFilter === "free"
+                  ? "bg-green-600 text-white hover:bg-green-700"
+                  : "text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              <Gift className="w-3 h-3" />
+              Free ({games.filter((g) => !g.isPaid).length})
+            </Button>
+
+            <Button
+              onClick={() => setGameFilter("earning")}
+              variant={gameFilter === "earning" ? "default" : "ghost"}
+              size="sm"
+              className={`flex items-center gap-1 transition-all duration-200 ${
+                gameFilter === "earning"
+                  ? "bg-yellow-600 text-white hover:bg-yellow-700"
+                  : "text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              <DollarSign className="w-3 h-3" />
+              Earning ({games.filter((g) => g.isPaid).length})
+            </Button>
+          </div>
+        </div>
+
+        {/* Filter Description */}
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">
+            {gameFilter === "all" && "Showing all available games"}
+            {gameFilter === "free" && "🆓 Free games - play without any cost!"}
+            {gameFilter === "earning" &&
+              "💰 Earning games - compete for real money prizes!"}
           </p>
         </div>
       </div>
