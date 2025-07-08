@@ -302,22 +302,27 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
     }
 
     // Save score
-    await saveWordSearchScore({
-      user_id: user.id,
-      username: player.username,
-      game_id: currentGameId,
-      score: player.score,
-      words_found: player.wordsFound.length,
-      total_words: gameState.words.length,
-      time_taken: timeTaken,
-      hints_used: player.hintsUsed,
-      coins_spent: coinsSpent,
-      coins_won: coinsWon,
-      difficulty: gameState.difficulty,
-      game_mode: gameState.isMultiplayer ? "multiplayer" : "solo",
-      grid_size: gameState.gridSize,
-      is_solo_game: !gameState.isMultiplayer,
-    });
+    try {
+      await saveWordSearchScore({
+        user_id: user.id,
+        username: player.username,
+        game_id: currentGameId,
+        score: player.score,
+        words_found: player.wordsFound.length,
+        total_words: gameState.words.length,
+        time_taken: timeTaken,
+        hints_used: player.hintsUsed,
+        coins_spent: coinsSpent,
+        coins_won: coinsWon,
+        difficulty: gameState.difficulty,
+        game_mode: gameState.isMultiplayer ? "multiplayer" : "solo",
+        grid_size: gameState.gridSize,
+        is_solo_game: !gameState.isMultiplayer,
+      });
+    } catch (error) {
+      console.warn("Could not save score to database:", error);
+      // Continue with game completion despite database error
+    }
 
     // Complete multiplayer game
     if (currentGameId && gameState.isMultiplayer) {
