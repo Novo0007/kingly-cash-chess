@@ -25,6 +25,7 @@ import { Button as ChatButton } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/game-lobby.css";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface GameSelectionProps {
   onSelectGame: (
@@ -36,6 +37,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   onSelectGame,
 }) => {
   const { isMobile, isTablet } = useDeviceType();
+  const { currentTheme } = useTheme();
   const navigate = useNavigate();
   const [showGlobalChat, setShowGlobalChat] = React.useState(false);
   const [gameFilter, setGameFilter] = React.useState<"all" | "free" | "money">(
@@ -218,6 +220,29 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6 transform-optimized">
+        {/* Themed Header */}
+        <div className="relative">
+          <div
+            className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-2xl blur-xl animate-pulse`}
+          ></div>
+          <div className="relative flex items-center gap-4 mb-6 md:mb-8 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div
+                  className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
+                ></div>
+                <div
+                  className={`relative w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center`}
+                >
+                  🎮
+                </div>
+              </div>
+              <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
+                {currentTheme.preview} Game Hub
+              </h1>
+            </div>
+          </div>
+        </div>
         {/* Global Chat Button - Only show on mobile/tablet */}
         {(isMobile || isTablet) && (
           <div className="fixed bottom-20 left-4 z-30">

@@ -20,6 +20,7 @@ import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
 import { Button as ChatButton } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type Profile = Tables<"profiles">;
 type ChessGame = Tables<"chess_games"> & {
@@ -32,6 +33,7 @@ interface GameLobbyProps {
 }
 
 export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
+  const { currentTheme } = useTheme();
   const [games, setGames] = useState<ChessGame[]>([]);
   const [entryFee, setEntryFee] = useState("10");
   const [gameName, setGameName] = useState("");
@@ -490,6 +492,29 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
   return (
     <MobileContainer maxWidth="xl">
       <div className="space-y-4 md:space-y-6">
+        {/* Themed Header */}
+        <div className="relative">
+          <div
+            className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-2xl blur-xl animate-pulse`}
+          ></div>
+          <div className="relative flex items-center gap-4 mb-6 md:mb-8 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div
+                  className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
+                ></div>
+                <div
+                  className={`relative w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center`}
+                >
+                  ♔
+                </div>
+              </div>
+              <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
+                {currentTheme.preview} Chess Arena
+              </h1>
+            </div>
+          </div>
+        </div>
         {/* Mobile Chat Button - Only show on mobile/tablet */}
         {(isMobile || isTablet) && (
           <div className="fixed bottom-20 right-4 z-30">
@@ -508,8 +533,10 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           isOpen={showMobileChat}
           onClose={() => setShowMobileChat(false)}
         />
-        {/* Header with Wallet Balance - Wood Style */}
-        <Card className="wood-card wood-plank border-amber-700/50">
+        {/* Header with Wallet Balance - Theme Style */}
+        <Card
+          className={`relative backdrop-blur-xl bg-gradient-to-r ${currentTheme.gradients.secondary.replace(/from-(\w+)-(\d+)/, "from-$1-$2/80").replace(/to-(\w+)-(\d+)/, "to-$1-$2/80")} border-2 border-primary/50 shadow-2xl rounded-2xl overflow-hidden`}
+        >
           <CardContent className="p-3 md:p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -538,8 +565,10 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           </CardContent>
         </Card>
 
-        {/* Chess Rules Quick Access - Wood Style */}
-        <Card className="wood-card wood-plank border-green-700/50">
+        {/* Chess Rules Quick Access - Theme Style */}
+        <Card
+          className={`relative backdrop-blur-xl bg-gradient-to-r ${currentTheme.gradients.accent.replace(/from-(\w+)-(\d+)/, "from-$1-$2/80").replace(/to-(\w+)-(\d+)/, "to-$1-$2/80")} border-2 border-primary/50 shadow-2xl rounded-2xl overflow-hidden`}
+        >
           <CardContent className="p-3 md:p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

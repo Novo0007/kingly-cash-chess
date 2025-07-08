@@ -14,6 +14,7 @@ import {
   Timer,
   Grid3x3,
 } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface Game2048LobbyProps {
   onStartGame: (difficulty: "classic" | "challenge" | "expert") => void;
@@ -26,6 +27,7 @@ export const Game2048Lobby: React.FC<Game2048LobbyProps> = ({
   onShowRules,
   onShowLeaderboard,
 }) => {
+  const { currentTheme } = useTheme();
   const difficulties = [
     {
       id: "classic" as const,
@@ -91,9 +93,36 @@ export const Game2048Lobby: React.FC<Game2048LobbyProps> = ({
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
+      {/* Themed Header */}
+      <div className="relative">
+        <div
+          className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-2xl blur-xl animate-pulse`}
+        ></div>
+        <div className="relative flex items-center gap-4 mb-6 md:mb-8 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div
+                className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
+              ></div>
+              <div
+                className={`relative w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center`}
+              >
+                🎯
+              </div>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
+              {currentTheme.preview} 2048 Puzzle
+            </h1>
+          </div>
+        </div>
+      </div>
       {/* Header */}
-      <Card className="bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 border-0 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-indigo-500/20"></div>
+      <Card
+        className={`bg-gradient-to-br ${currentTheme.gradients.primary} border-0 text-white overflow-hidden`}
+      >
+        <div
+          className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.secondary}/20`}
+        ></div>
         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/10 to-transparent rounded-bl-full"></div>
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-white/10 to-transparent rounded-tr-full"></div>
 
@@ -105,15 +134,16 @@ export const Game2048Lobby: React.FC<Game2048LobbyProps> = ({
                   <Grid3x3 className="h-12 w-12" />
                 </div>
                 <div className="absolute -top-2 -right-2 text-3xl animate-bounce">
-                  🎯
+                  {currentTheme.preview}
                 </div>
               </div>
               <div>
                 <h1 className="text-4xl md:text-5xl font-black mb-2">
-                  2048 PUZZLE
+                  {currentTheme.name} 2048
                 </h1>
                 <p className="text-lg font-medium text-white/90">
-                  🧩 Combine tiles to reach the target number - completely FREE!
+                  🧩 Combine tiles with {currentTheme.name} theme - completely
+                  FREE!
                 </p>
               </div>
             </div>

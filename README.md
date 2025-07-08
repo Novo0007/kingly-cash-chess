@@ -1,5 +1,63 @@
 # Welcome to your Lovable project
 
+## 🎨 Theme System
+
+This project includes a comprehensive theme system with multiple beautiful themes:
+
+### Available Themes:
+
+- **Default**: Clean and minimal design
+- **PixelNova** 🌟: Retro pixel-inspired with vibrant neon colors
+- **MindMaze UI** 🧠: Professional dark theme with blue accents for focus
+- **GlowyFun** ✨: Bright and playful theme with glowing elements
+- **DreamPixels** 🌙: Soft pastel theme with dreamy gradient colors
+- **Hacker Matrix** 🔰: Dark terminal-inspired theme with green matrix effects
+- **Glitch Cyber** ⚡: Futuristic cyberpunk theme with neon glitch effects
+
+### Features:
+
+- ✅ Real-time theme switching
+- ✅ Automatic localStorage persistence
+- ✅ Mobile-friendly theme selector
+- ✅ CSS custom properties for dynamic styling
+- ✅ Applied across all game lobbies and components
+- ✅ Theme-specific animations and effects
+- ✅ **Beautiful themed loading screen** with smooth animations
+- ✅ **Mobile-optimized** loading experience
+- ✅ **Floating particles** and dynamic backgrounds
+- ✅ **Special effects** for Hacker Matrix and Glitch Cyber themes
+- ✅ **Matrix rain** and **glitch animations** for immersive experience
+
+### How to Use:
+
+1. Go to Profile → Settings → 🎨 Theme
+2. Browse available themes with live previews
+3. Click any theme to instantly apply it
+4. Your preference is automatically saved
+
+### 🌟 Loading Screen:
+
+The app features a stunning theme-aware loading screen with:
+
+- **Dynamic backgrounds** that match the selected theme
+- **Floating particle animations** for visual appeal
+- **Smooth progress animations** with shimmer effects
+- **Responsive design** optimized for mobile devices
+- **Theme-specific colors** and gradients throughout
+- **Staggered entrance animations** for smooth loading
+- **Matrix rain effect** for Hacker Matrix theme
+- **Glitch particles** for Glitch Cyber theme
+- **Interactive hover effects** with theme-specific animations
+
+### For Developers:
+
+- Themes are defined in `src/types/themes.ts`
+- Context provider in `src/contexts/ThemeContext.tsx`
+- Theme selector component in `src/components/profile/ThemeSelector.tsx`
+- Loading screen component in `src/App.tsx` (LoadingScreen component)
+- CSS variables automatically updated on theme change
+- Use `useTheme()` hook to access current theme in components
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/9412019b-409b-4e66-8b4c-8a670b35046d

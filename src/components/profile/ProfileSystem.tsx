@@ -15,6 +15,7 @@ import { ContactSection } from "./ContactSection";
 import { PrivacyPolicySection } from "./PrivacyPolicySection";
 import { UserGuideSection } from "./UserGuideSection";
 import { MoreGamesSection } from "./MoreGamesSection";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
   User,
   Settings,
@@ -39,6 +40,7 @@ import type { Tables } from "@/integrations/supabase/types";
 type Profile = Tables<"profiles">;
 
 export const ProfileSystem = () => {
+  const { currentTheme } = useTheme();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -255,6 +257,9 @@ export const ProfileSystem = () => {
                       <Calendar className="h-3 w-3 mr-1" />
                       Member since{" "}
                       {new Date(profile.created_at || "").getFullYear()}
+                    </Badge>
+                    <Badge className="bg-gradient-to-r from-purple-500 to-cyan-500 text-white rounded-full">
+                      {currentTheme.preview} {currentTheme.name}
                     </Badge>
                   </div>
                 </div>

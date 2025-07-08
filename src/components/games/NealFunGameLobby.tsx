@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface NealFunGameLobbyProps {
   onSelectGame: (
@@ -31,6 +32,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
   onSelectGame,
 }) => {
   const { isMobile } = useDeviceType();
+  const { currentTheme } = useTheme();
   const [hoveredGame, setHoveredGame] = useState<string | null>(null);
   const [showGlobalChat, setShowGlobalChat] = useState(false);
   const [gameFilter, setGameFilter] = useState<"all" | "free" | "earning">(
@@ -134,7 +136,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
   });
 
   return (
-    <div className="min-h-screen bg-white font-sans pb-20 md:pb-0">
+    <div className="min-h-screen bg-background font-sans pb-20 md:pb-0">
       {/* Global Chat System */}
       <MobileChatSystem
         isGlobalChat={true}
@@ -146,39 +148,58 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={handleChatToggle}
-          className="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          className={`w-14 h-14 rounded-full bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105`}
         >
           <MessageSquare className="h-6 w-6" />
         </Button>
       </div>
 
-      {/* Header */}
-      <div className="text-center py-16 px-6">
-        <div className="max-w-2xl mx-auto">
-          <h1 className="text-6xl font-light text-black mb-4">NNC Games</h1>
-          <p className="text-xl text-black opacity-70 font-light">
-            Games and other stuff
-          </p>
+      {/* Themed Header */}
+      <div className="relative">
+        <div
+          className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-2xl blur-xl animate-pulse`}
+        ></div>
+        <div className="relative flex items-center justify-center gap-4 py-16 px-6">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div
+                className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
+              ></div>
+              <div
+                className={`relative w-16 h-16 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center`}
+              >
+                🎮
+              </div>
+            </div>
+            <div className="text-center">
+              <h1 className="text-6xl font-light bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent mb-4">
+                {currentTheme.preview} NNC Games
+              </h1>
+              <p className="text-xl text-muted-foreground font-light">
+                Games with {currentTheme.name} theme and other stuff
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Game Filter Section */}
       <div className="max-w-5xl mx-auto px-6 mb-8">
-        <div className="flex items-center justify-center gap-4 pb-8 border-b border-gray-200">
-          <div className="flex items-center gap-2 text-gray-600">
+        <div className="flex items-center justify-center gap-4 pb-8 border-b border-border">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Filter className="w-4 h-4" />
             <span className="text-sm font-medium">Filter games:</span>
           </div>
 
-          <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+          <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
             <Button
               onClick={() => setGameFilter("all")}
               variant={gameFilter === "all" ? "default" : "ghost"}
               size="sm"
               className={`transition-all duration-200 ${
                 gameFilter === "all"
-                  ? "bg-white text-black shadow-sm"
-                  : "text-gray-600 hover:bg-gray-200"
+                  ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-sm`
+                  : "text-muted-foreground hover:bg-muted"
               }`}
             >
               All Games ({games.length})
@@ -190,8 +211,8 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
               size="sm"
               className={`flex items-center gap-1 transition-all duration-200 ${
                 gameFilter === "free"
-                  ? "bg-green-600 text-white hover:bg-green-700"
-                  : "text-gray-600 hover:bg-gray-200"
+                  ? `bg-gradient-to-r ${currentTheme.gradients.secondary} text-white`
+                  : "text-muted-foreground hover:bg-muted"
               }`}
             >
               <Gift className="w-3 h-3" />
@@ -204,8 +225,8 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
               size="sm"
               className={`flex items-center gap-1 transition-all duration-200 ${
                 gameFilter === "earning"
-                  ? "bg-yellow-600 text-white hover:bg-yellow-700"
-                  : "text-gray-600 hover:bg-gray-200"
+                  ? `bg-gradient-to-r ${currentTheme.gradients.accent} text-white`
+                  : "text-muted-foreground hover:bg-muted"
               }`}
             >
               <DollarSign className="w-3 h-3" />
@@ -216,11 +237,13 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
 
         {/* Filter Description */}
         <div className="text-center mt-4">
-          <p className="text-sm text-gray-600">
-            {gameFilter === "all" && "Showing all available games"}
-            {gameFilter === "free" && "🆓 Free games - play without any cost!"}
+          <p className="text-sm text-muted-foreground">
+            {gameFilter === "all" &&
+              `Showing all ${currentTheme.name} themed games`}
+            {gameFilter === "free" &&
+              `🆓 Free ${currentTheme.name} games - play without any cost!`}
             {gameFilter === "earning" &&
-              "💰 Earning games - compete for real money prizes!"}
+              `💰 Earning ${currentTheme.name} games - compete for real money prizes!`}
           </p>
         </div>
       </div>
@@ -229,16 +252,16 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
       <div className="max-w-5xl mx-auto px-6 pb-16">
         {filteredGames.length === 0 ? (
           <div className="text-center py-16">
-            <div className="text-6xl mb-4">🎮</div>
-            <h3 className="text-2xl font-light text-black mb-2">
+            <div className="text-6xl mb-4">{currentTheme.preview}</div>
+            <h3 className="text-2xl font-light text-foreground mb-2">
               No games found
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               No games match your current filter selection.
             </p>
             <Button
               onClick={() => setGameFilter("all")}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className={`bg-gradient-to-r ${currentTheme.gradients.primary} text-white`}
             >
               Show All Games
             </Button>
@@ -263,29 +286,38 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
                   )
                 }
               >
-                <Card className="bg-white border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-lg h-full">
-                  <CardContent className="p-6">
+                <Card
+                  className={`bg-card border border-border hover:border-primary/50 transition-all duration-200 hover:shadow-lg h-full relative overflow-hidden`}
+                >
+                  <div
+                    className={`absolute -inset-1 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-lg blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300`}
+                  ></div>
+                  <CardContent className="p-6 relative z-10">
                     <div className="flex items-start gap-4 mb-4">
                       <div className="flex-shrink-0">
-                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors duration-200">
-                          <game.icon className="w-6 h-6 text-gray-700" />
+                        <div
+                          className={`w-12 h-12 bg-gradient-to-r ${currentTheme.gradients.secondary}/20 rounded-lg flex items-center justify-center group-hover:bg-gradient-to-r group-hover:${currentTheme.gradients.secondary}/40 transition-all duration-200`}
+                        >
+                          <game.icon className="w-6 h-6 text-foreground" />
                         </div>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-lg font-medium text-black truncate">
+                          <h3 className="text-lg font-medium text-foreground truncate">
                             {game.title}
                           </h3>
                           {game.isPopular && (
-                            <Badge className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5">
+                            <Badge
+                              className={`bg-gradient-to-r ${currentTheme.gradients.accent}/20 text-primary text-xs px-2 py-0.5 border border-primary/20`}
+                            >
                               Popular
                             </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
                           {game.description}
                         </p>
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <Users className="w-3 h-3" />
                           <span>{game.players}</span>
                           {game.isPaid && (
@@ -302,7 +334,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
                     </div>
 
                     <div className="text-right">
-                      <span className="text-blue-600 text-sm font-medium group-hover:underline">
+                      <span className="text-primary text-sm font-medium group-hover:underline">
                         Play Now →
                       </span>
                     </div>
@@ -314,18 +346,18 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
         )}
 
         {/* Coming Soon Section */}
-        <div className="mt-16 pt-8 border-t border-gray-200">
-          <h2 className="text-2xl font-light text-black mb-8 text-center">
-            Coming Soon
+        <div className="mt-16 pt-8 border-t border-border">
+          <h2 className="text-2xl font-light text-foreground mb-8 text-center">
+            Coming Soon - {currentTheme.name} Themed
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {comingSoon.map((game, index) => (
               <div
                 key={index}
-                className="text-center p-4 border border-gray-200 rounded-lg bg-gray-50 cursor-not-allowed opacity-60"
+                className={`text-center p-4 border border-border rounded-lg bg-gradient-to-r ${currentTheme.gradients.secondary}/10 cursor-not-allowed opacity-60 hover:opacity-80 transition-opacity`}
               >
                 <div className="text-2xl mb-2">{game.emoji}</div>
-                <div className="text-sm font-medium text-gray-700">
+                <div className="text-sm font-medium text-foreground">
                   {game.name}
                 </div>
               </div>
@@ -334,60 +366,75 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
         </div>
 
         {/* Stats */}
-        <div className="mt-16 pt-8 border-t border-gray-200">
+        <div className="mt-16 pt-8 border-t border-border">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="text-3xl font-light text-black mb-2">6</div>
-              <div className="text-sm text-gray-600">Games Available</div>
+            <div
+              className={`p-6 rounded-lg bg-gradient-to-r ${currentTheme.gradients.primary}/10 border border-primary/20`}
+            >
+              <div className="text-3xl font-light text-foreground mb-2">6</div>
+              <div className="text-sm text-muted-foreground">
+                Games Available
+              </div>
             </div>
-            <div>
-              <div className="text-3xl font-light text-black mb-2">5K+</div>
-              <div className="text-sm text-gray-600">Active Players</div>
+            <div
+              className={`p-6 rounded-lg bg-gradient-to-r ${currentTheme.gradients.secondary}/10 border border-primary/20`}
+            >
+              <div className="text-3xl font-light text-foreground mb-2">
+                5K+
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Active Players
+              </div>
             </div>
-            <div>
-              <div className="text-3xl font-light text-black mb-2">24/7</div>
-              <div className="text-sm text-gray-600">Support</div>
+            <div
+              className={`p-6 rounded-lg bg-gradient-to-r ${currentTheme.gradients.accent}/10 border border-primary/20`}
+            >
+              <div className="text-3xl font-light text-foreground mb-2">
+                24/7
+              </div>
+              <div className="text-sm text-muted-foreground">Support</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-12 px-6">
+      <footer className="bg-card border-t border-border py-12 px-6">
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-gray-600 font-light text-lg mb-6">
-            Hi! This is where we make games on the web. Obligatory links:
+          <p className="text-muted-foreground font-light text-lg mb-6">
+            Hi! This is where we make {currentTheme.name} themed games on the
+            web. Obligatory links:
           </p>
 
           <div className="flex justify-center gap-4 mb-6">
             <Button
               variant="outline"
               size="sm"
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              className={`border-primary/30 text-foreground hover:bg-gradient-to-r hover:${currentTheme.gradients.primary}/10`}
             >
               📧 Newsletter
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              className={`border-primary/30 text-foreground hover:bg-gradient-to-r hover:${currentTheme.gradients.secondary}/10`}
             >
               🐦 Twitter
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              className={`border-primary/30 text-foreground hover:bg-gradient-to-r hover:${currentTheme.gradients.accent}/10`}
             >
               ☕ Support
             </Button>
           </div>
 
-          <p className="text-gray-600 text-sm mb-2">
-            Say hello: <span className="text-blue-600">hi@nncgames.com</span>
+          <p className="text-muted-foreground text-sm mb-2">
+            Say hello: <span className="text-primary">hi@nncgames.com</span>
           </p>
 
-          <p className="text-gray-500 text-sm opacity-50">
+          <p className="text-muted-foreground text-sm opacity-50">
             <a href="#" className="hover:underline">
               Privacy policy
             </a>

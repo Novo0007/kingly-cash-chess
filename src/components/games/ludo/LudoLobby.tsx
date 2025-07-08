@@ -24,6 +24,7 @@ import { Button as ChatButton } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { checkLudoTablesExist } from "@/utils/ludoDbHelper";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type Profile = Tables<"profiles">;
 type LudoGame = {
@@ -59,6 +60,7 @@ export const LudoLobby = ({
   onJoinGame,
   onBackToGameSelection,
 }: LudoLobbyProps) => {
+  const { currentTheme } = useTheme();
   const [games, setGames] = useState<LudoGame[]>([]);
   const [entryFee, setEntryFee] = useState("10");
   const [gameName, setGameName] = useState("");
@@ -436,6 +438,29 @@ export const LudoLobby = ({
   return (
     <MobileContainer>
       <div className="space-y-4 pb-20 px-1 sm:px-2">
+        {/* Themed Header */}
+        <div className="relative">
+          <div
+            className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-2xl blur-xl animate-pulse`}
+          ></div>
+          <div className="relative flex items-center gap-4 mb-6 md:mb-8 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div
+                  className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
+                ></div>
+                <div
+                  className={`relative w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center`}
+                >
+                  🎲
+                </div>
+              </div>
+              <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
+                {currentTheme.preview} Ludo Arena
+              </h1>
+            </div>
+          </div>
+        </div>
         {/* Mobile Chat Button - Only show on mobile/tablet */}
         {(isMobile || isTablet) && (
           <div className="fixed bottom-20 right-4 z-30">
@@ -455,18 +480,22 @@ export const LudoLobby = ({
           isOpen={showMobileChat}
           onClose={() => setShowMobileChat(false)}
         />
-        {/* Header */}
-        <Card className="bg-gradient-to-br from-blue-900 to-purple-900 border-2 border-blue-400 shadow-2xl">
+        {/* Theme Info Card */}
+        <Card
+          className={`relative backdrop-blur-xl bg-gradient-to-r ${currentTheme.gradients.secondary.replace(/from-(\w+)-(\d+)/, "from-$1-$2/80").replace(/to-(\w+)-(\d+)/, "to-$1-$2/80")} border-2 border-primary/50 shadow-2xl rounded-2xl overflow-hidden`}
+        >
           <CardHeader className="text-center pb-3">
             <CardTitle className="flex items-center justify-center gap-3 text-white text-2xl font-bold">
-              <Dice1 className="h-8 w-8 text-blue-400" />
-              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Ludo Arena
+              <Dice1 className="h-8 w-8 text-primary" />
+              <span
+                className={`bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent`}
+              >
+                Classic Board Game
               </span>
               <Trophy className="h-8 w-8 text-yellow-400" />
             </CardTitle>
-            <p className="text-blue-200 text-sm">
-              Classic board game with real money prizes!
+            <p className="text-white/80 text-sm">
+              Real money prizes with {currentTheme.name} theme!
             </p>
           </CardHeader>
         </Card>

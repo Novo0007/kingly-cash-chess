@@ -17,6 +17,7 @@ import {
   Award,
   Infinity,
 } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface MathLobbyProps {
   onStartGame: (
@@ -32,6 +33,7 @@ export const MathLobby: React.FC<MathLobbyProps> = ({
   onShowRules,
   onShowLeaderboard,
 }) => {
+  const { currentTheme } = useTheme();
   const difficulties = [
     {
       id: "easy" as const,
@@ -88,7 +90,7 @@ export const MathLobby: React.FC<MathLobbyProps> = ({
         "💡 1 hint only",
       ],
       timeLimit: "8s per question",
-      difficulty: "★★★",
+      difficulty: "★★���",
     },
   ];
 
@@ -124,18 +126,43 @@ export const MathLobby: React.FC<MathLobbyProps> = ({
 
   return (
     <div className="w-full space-y-6 sm:space-y-8 px-2 sm:px-4">
+      {/* Themed Header */}
+      <div className="relative">
+        <div
+          className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-2xl blur-xl animate-pulse`}
+        ></div>
+        <div className="relative flex items-center gap-4 mb-6 md:mb-8 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div
+                className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
+              ></div>
+              <div
+                className={`relative w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center`}
+              >
+                🧠
+              </div>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
+              {currentTheme.preview} Math Puzzles
+            </h1>
+          </div>
+        </div>
+      </div>
       {/* Header - Mobile Optimized */}
       <div className="text-center space-y-3 sm:space-y-4">
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-3 sm:mb-4">
-          <div className="p-2 sm:p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl sm:rounded-2xl">
+          <div
+            className={`p-2 sm:p-3 bg-gradient-to-r ${currentTheme.gradients.secondary} rounded-xl sm:rounded-2xl`}
+          >
             <Brain className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
           </div>
           <div className="text-center sm:text-left">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800">
-              Math: Brain Puzzles
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
+              Brain Puzzles
             </h1>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-1 sm:mt-2">
-              🧠 Improve your arithmetic skills with fun, timed puzzles!
+            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground mt-1 sm:mt-2">
+              🧠 Improve your arithmetic skills with {currentTheme.name} theme!
             </p>
           </div>
         </div>
