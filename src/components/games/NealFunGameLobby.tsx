@@ -12,8 +12,13 @@ import {
   Clock,
   Users,
   Sparkles,
+  MessageSquare,
+  Filter,
+  DollarSign,
+  Gift,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
+import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
 
 interface NealFunGameLobbyProps {
   onSelectGame: (
