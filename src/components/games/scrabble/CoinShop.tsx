@@ -150,11 +150,15 @@ export const CoinShop: React.FC<CoinShopProps> = ({
             console.log("Payment successful:", response.razorpay_payment_id);
 
             // Process coin purchase after successful payment
-            const result = await purchaseCoins(userId, {
-              coins: packageData.coins,
-              price: packageData.price,
-              bonus: packageData.bonus,
-            });
+            const result = await purchaseCoins(
+              userId,
+              {
+                coins: packageData.coins,
+                price: packageData.price,
+                bonus: packageData.bonus,
+              },
+              response.razorpay_payment_id,
+            );
 
             if (result.success) {
               toast.success(
@@ -519,7 +523,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-bold text-purple-800 mb-3">
-                🎮 Premium Games
+                ��� Premium Games
               </h3>
               <ul className="space-y-2 text-purple-700 text-sm">
                 {!hasClaimedFree && (
