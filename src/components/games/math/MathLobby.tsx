@@ -17,6 +17,7 @@ import {
   Award,
   Infinity,
 } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface MathLobbyProps {
   onStartGame: (
@@ -32,6 +33,7 @@ export const MathLobby: React.FC<MathLobbyProps> = ({
   onShowRules,
   onShowLeaderboard,
 }) => {
+  const { currentTheme } = useTheme();
   const difficulties = [
     {
       id: "easy" as const,
