@@ -185,21 +185,21 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
 
       {/* Game Filter Section */}
       <div className="max-w-5xl mx-auto px-6 mb-8">
-        <div className="flex items-center justify-center gap-4 pb-8 border-b border-gray-200">
-          <div className="flex items-center gap-2 text-gray-600">
+        <div className="flex items-center justify-center gap-4 pb-8 border-b border-border">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Filter className="w-4 h-4" />
             <span className="text-sm font-medium">Filter games:</span>
           </div>
 
-          <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+          <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
             <Button
               onClick={() => setGameFilter("all")}
               variant={gameFilter === "all" ? "default" : "ghost"}
               size="sm"
               className={`transition-all duration-200 ${
                 gameFilter === "all"
-                  ? "bg-white text-black shadow-sm"
-                  : "text-gray-600 hover:bg-gray-200"
+                  ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-sm`
+                  : "text-muted-foreground hover:bg-muted"
               }`}
             >
               All Games ({games.length})
@@ -211,8 +211,8 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
               size="sm"
               className={`flex items-center gap-1 transition-all duration-200 ${
                 gameFilter === "free"
-                  ? "bg-green-600 text-white hover:bg-green-700"
-                  : "text-gray-600 hover:bg-gray-200"
+                  ? `bg-gradient-to-r ${currentTheme.gradients.secondary} text-white`
+                  : "text-muted-foreground hover:bg-muted"
               }`}
             >
               <Gift className="w-3 h-3" />
@@ -225,8 +225,8 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
               size="sm"
               className={`flex items-center gap-1 transition-all duration-200 ${
                 gameFilter === "earning"
-                  ? "bg-yellow-600 text-white hover:bg-yellow-700"
-                  : "text-gray-600 hover:bg-gray-200"
+                  ? `bg-gradient-to-r ${currentTheme.gradients.accent} text-white`
+                  : "text-muted-foreground hover:bg-muted"
               }`}
             >
               <DollarSign className="w-3 h-3" />
@@ -237,11 +237,13 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
 
         {/* Filter Description */}
         <div className="text-center mt-4">
-          <p className="text-sm text-gray-600">
-            {gameFilter === "all" && "Showing all available games"}
-            {gameFilter === "free" && "🆓 Free games - play without any cost!"}
+          <p className="text-sm text-muted-foreground">
+            {gameFilter === "all" &&
+              `Showing all ${currentTheme.name} themed games`}
+            {gameFilter === "free" &&
+              `🆓 Free ${currentTheme.name} games - play without any cost!`}
             {gameFilter === "earning" &&
-              "💰 Earning games - compete for real money prizes!"}
+              `💰 Earning ${currentTheme.name} games - compete for real money prizes!`}
           </p>
         </div>
       </div>
