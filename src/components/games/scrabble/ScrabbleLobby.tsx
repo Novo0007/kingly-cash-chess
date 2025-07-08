@@ -430,11 +430,13 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
                 <Select
                   value={maxPlayers.toString()}
                   onValueChange={(value) => setMaxPlayers(parseInt(value))}
+                  disabled={isSinglePlayer}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="1">1 Player (Single Player)</SelectItem>
                     <SelectItem value="2">2 Players</SelectItem>
                     <SelectItem value="3">3 Players</SelectItem>
                     <SelectItem value="4">4 Players</SelectItem>
