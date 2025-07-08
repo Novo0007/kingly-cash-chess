@@ -395,20 +395,40 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
       const displayTile = placedTile?.tile || cell.tile;
       const multiplierText = getCellMultiplierDisplay(row, col);
       const cellColor = getCellMultiplierColor(row, col);
+      const canPlaceHere = selectedTile && !cell.tile && !placedTile;
 
       return (
         <div
           key={`${row}-${col}`}
           className={cn(
-            "relative w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 border border-gray-300 flex items-center justify-center text-[8px] md:text-[10px] font-bold transition-all duration-200",
+            "relative border border-gray-300 flex items-center justify-center font-bold transition-all duration-200",
+            // Responsive sizing
+            isMobile
+              ? "w-5 h-5 md:w-7 md:h-7 text-[6px] md:text-[8px]"
+              : "w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-[8px] md:text-[10px]",
             cellColor,
             displayTile ? "bg-gray-100" : "",
             row === 7 && col === 7 && !displayTile
               ? "text-yellow-800"
               : "text-white",
+            // Touch interaction indicators
+            canPlaceHere &&
+              isMobile &&
+              "ring-2 ring-purple-400 ring-opacity-50",
+            canPlaceHere && "cursor-pointer",
           )}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, row, col)}
+          onDragOver={!isMobile ? handleDragOver : undefined}
+          onDrop={!isMobile ? (e) => handleDrop(e, row, col) : undefined}
+          onClick={isMobile ? () => handleCellTouch(row, col) : undefined}
+          onTouchStart={
+            isMobile
+              ? (e) => {
+                  if (canPlaceHere) {
+                    e.preventDefault();
+                  }
+                }
+              : undefined
+          }
         >
           {displayTile ? (
             renderTile(displayTile, true, { row, col })
@@ -427,11 +447,14 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
       );
     },
     [
+      isMobile,
       placedTiles,
+      selectedTile,
       getCellMultiplierDisplay,
       getCellMultiplierColor,
       handleDragOver,
       handleDrop,
+      handleCellTouch,
       renderTile,
     ],
   );
