@@ -893,8 +893,16 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
                       Waiting for more players...
                     </p>
                     <p className="text-sm text-yellow-600 mt-1">
-                      Need {Math.max(0, 2 - gameState.players.length)} more
-                      player(s) to start
+                      Need{" "}
+                      {Math.max(
+                        0,
+                        gameState.gameSettings.maxPlayers -
+                          gameState.players.length,
+                      )}{" "}
+                      more player(s) to start
+                    </p>
+                    <p className="text-xs text-yellow-500 mt-2">
+                      Game will start automatically when full
                     </p>
                   </CardContent>
                 </Card>
