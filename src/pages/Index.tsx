@@ -329,7 +329,19 @@ const Index = () => {
   };
 
   if (useNealFunStyle && currentView === "games") {
-    return <NealFunGameLobby onSelectGame={handleSelectGame} />;
+    return (
+      <MobileOptimized>
+        <NealFunGameLobby onSelectGame={handleSelectGame} />
+        {/* Bottom Nav for mobile */}
+        <div className="md:hidden relative z-30">
+          <BottomNav
+            currentView={currentView}
+            onViewChange={setCurrentView}
+            isAdmin={isAdmin}
+          />
+        </div>
+      </MobileOptimized>
+    );
   }
 
   return (
