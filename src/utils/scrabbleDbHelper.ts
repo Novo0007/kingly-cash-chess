@@ -72,11 +72,11 @@ export const createScrabbleGame = async (
       player3_id: null,
       player4_id: null,
       current_players: 1,
-      max_players: maxPlayers,
+      max_players: isSinglePlayer ? 2 : maxPlayers, // Set to 2 for single player to satisfy DB constraint
       entry_fee: entryFee,
       prize_amount: entryFee, // Initial prize pool
       winner_id: null,
-      is_friend_challenge: isFriendChallenge,
+      is_friend_challenge: isFriendChallenge || isSinglePlayer, // Single player games are like friend challenges
       game_state: null, // Will be set when game starts
     };
 
