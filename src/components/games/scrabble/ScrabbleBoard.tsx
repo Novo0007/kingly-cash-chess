@@ -508,10 +508,50 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
         </Card>
       )}
 
+      {/* Mobile Controls */}
+      {isMobile && (
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-blue-800">
+                Touch Mode:
+              </span>
+              <div className="flex items-center gap-2">
+                <Smartphone className="w-4 h-4 text-blue-600" />
+                <Badge variant="outline" className="text-blue-700">
+                  Tap to Play
+                </Badge>
+              </div>
+            </div>
+            <p className="text-xs text-blue-700">
+              {selectedTile
+                ? `Selected: ${selectedTile.letter || "?"} - Tap a board cell to place it`
+                : "Tap a tile from your rack to select it, then tap a board cell to place it"}
+            </p>
+            {selectedTile && (
+              <Button
+                onClick={() => setSelectedTile(null)}
+                variant="outline"
+                size="sm"
+                className="mt-2 text-xs"
+              >
+                Clear Selection
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Game Board */}
       <Card className="overflow-hidden">
-        <CardContent className="p-2 md:p-4">
-          <div ref={boardRef} className="scrabble-board">
+        <CardContent className={cn("p-2 md:p-4", isMobile && "p-1")}>
+          <div
+            ref={boardRef}
+            className={cn(
+              "scrabble-board",
+              isMobile && "scrabble-board-mobile",
+            )}
+          >
             {gameState.board.map((row, rowIndex) =>
               row.map((cell, colIndex) =>
                 renderBoardCell(cell, rowIndex, colIndex),
