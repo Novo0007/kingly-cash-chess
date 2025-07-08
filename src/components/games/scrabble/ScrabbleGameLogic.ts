@@ -307,9 +307,10 @@ export class ScrabbleGameLogic {
     this.gameState.gameSettings.prizePot +=
       this.gameState.gameSettings.entryCost;
 
-    // Start game if we have minimum players (2)
+    // Start game if we have minimum players (1 for single player, 2 for multiplayer)
+    const minPlayers = this.isSinglePlayer ? 1 : 2;
     if (
-      this.gameState.players.length >= 2 &&
+      this.gameState.players.length >= minPlayers &&
       this.gameState.gameStatus === "waiting"
     ) {
       this.startGame();
