@@ -7,11 +7,13 @@ import { MobileOptimized } from "@/components/layout/MobileOptimized";
 import { GameLobby } from "@/components/chess/GameLobby";
 import { GamePage } from "@/components/chess/GamePage";
 import { GameSelection } from "@/components/games/GameSelection";
+import { NealFunGameLobby } from "@/components/games/NealFunGameLobby";
 import { LudoLobby } from "@/components/games/ludo/LudoLobby";
 import { LudoGame } from "@/components/games/ludo/LudoGame";
 import { MazeGame } from "@/components/games/maze/MazeGame";
 import { Game2048 } from "@/components/games/game2048/Game2048";
 import { MathGame } from "@/components/games/math/MathGame";
+import { ScrabbleGame } from "@/components/games/scrabble/ScrabbleGame";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -27,9 +29,10 @@ const Index = () => {
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
   const [selectedGameType, setSelectedGameType] = useState<
-    "chess" | "ludo" | "maze" | "game2048" | "math" | null
+    "chess" | "ludo" | "maze" | "game2048" | "math" | "scrabble" | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [useNealFunStyle, setUseNealFunStyle] = useState(true);
 
   // Optimized profile fetching with caching
   const fetchUserProfile = useCallback(async (userId: string) => {
@@ -157,7 +160,7 @@ const Index = () => {
   }, [user?.email]);
 
   const handleSelectGame = (
-    gameType: "chess" | "ludo" | "maze" | "game2048" | "math",
+    gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "scrabble",
   ) => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
@@ -170,6 +173,8 @@ const Index = () => {
       setCurrentView("game2048");
     } else if (gameType === "math") {
       setCurrentView("math-game");
+    } else if (gameType === "scrabble") {
+      setCurrentView("scrabble-game");
     }
   };
 
@@ -185,6 +190,8 @@ const Index = () => {
       setCurrentView("game2048");
     } else if (selectedGameType === "math") {
       setCurrentView("math-game");
+    } else if (selectedGameType === "scrabble") {
+      setCurrentView("scrabble-game");
     }
   };
 
@@ -200,6 +207,8 @@ const Index = () => {
       setCurrentView("game2048");
     } else if (selectedGameType === "math") {
       setCurrentView("math-game");
+    } else if (selectedGameType === "scrabble") {
+      setCurrentView("scrabble-game");
     }
   };
 
@@ -251,7 +260,11 @@ const Index = () => {
           </div>
         );
       case "games":
-        return <GameSelection onSelectGame={handleSelectGame} />;
+        return useNealFunStyle ? (
+          <NealFunGameLobby onSelectGame={handleSelectGame} />
+        ) : (
+          <GameSelection onSelectGame={handleSelectGame} />
+        );
       case "lobby":
         return (
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-2 sm:gap-4 md:gap-6">
@@ -311,6 +324,8 @@ const Index = () => {
         return <Game2048 onBack={handleBackToGameSelection} user={user} />;
       case "math-game":
         return <MathGame onBack={handleBackToGameSelection} user={user} />;
+      case "scrabble-game":
+        return <ScrabbleGame onBack={handleBackToGameSelection} user={user} />;
       case "wallet":
         return <WalletManager />;
       case "friends":
@@ -321,6 +336,22 @@ const Index = () => {
         return <GameSelection onSelectGame={handleSelectGame} />;
     }
   };
+
+  if (useNealFunStyle && currentView === "games") {
+    return (
+      <MobileOptimized>
+        <NealFunGameLobby onSelectGame={handleSelectGame} />
+        {/* Bottom Nav for mobile */}
+        <div className="md:hidden relative z-30">
+          <BottomNav
+            currentView={currentView}
+            onViewChange={setCurrentView}
+            isAdmin={isAdmin}
+          />
+        </div>
+      </MobileOptimized>
+    );
+  }
 
   return (
     <MobileOptimized className="wood-bg">
