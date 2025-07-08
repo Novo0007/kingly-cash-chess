@@ -565,20 +565,49 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       </Card>
 
       {/* Security Notice */}
-      <Card className="bg-gray-50 border-gray-200">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <span className="text-green-600 text-sm">🔒</span>
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+        <CardContent className="p-6">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+              <span className="text-blue-600 text-lg">🛡️</span>
             </div>
-            <div>
-              <h4 className="font-medium text-gray-800 mb-1">Safe & Secure</h4>
-              <p className="text-sm text-gray-600">
-                All transactions are encrypted and secure. We use
-                industry-standard payment processing to protect your financial
-                information. Your coins are immediately credited to your
-                account.
-              </p>
+            <div className="flex-1">
+              <h4 className="font-bold text-blue-800 mb-2 text-lg">
+                100% Safe & Secure with Razorpay
+              </h4>
+              <div className="space-y-2 text-sm text-blue-700">
+                <p>
+                  🔒 <strong>Bank-level security:</strong> All transactions are
+                  processed through Razorpay's PCI DSS compliant infrastructure
+                </p>
+                <p>
+                  ⚡ <strong>Instant credit:</strong> Your coins are
+                  automatically added to your account upon successful payment
+                </p>
+                <p>
+                  🇮🇳 <strong>Made for India:</strong> Supports all major Indian
+                  banks, UPI, wallets, and international cards
+                </p>
+                <p>
+                  📱 <strong>Mobile optimized:</strong> Seamless payment
+                  experience on all devices
+                </p>
+                <p>
+                  🏆 <strong>Trusted by millions:</strong> Razorpay processes
+                  billions of transactions for top Indian companies
+                </p>
+              </div>
+
+              <div className="mt-4 p-3 bg-white rounded-lg border border-blue-200">
+                <div className="flex items-center gap-2 text-xs text-blue-600">
+                  <span className="font-medium">Powered by</span>
+                  <span className="px-2 py-1 bg-blue-600 text-white rounded font-bold">
+                    Razorpay
+                  </span>
+                  <span>•</span>
+                  <span>RBI Authorized Payment Aggregator</span>
+                </div>
+              </div>
             </div>
           </div>
         </CardContent>
