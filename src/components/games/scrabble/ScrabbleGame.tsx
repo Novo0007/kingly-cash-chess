@@ -349,18 +349,23 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         .select("id, username")
         .in("id", playerIds);
 
-      // Add each player to the game logic
-      for (const playerId of playerIds) {
-        const profile = profiles?.find((p) => p.id === playerId);
-        const playerUsername =
-          playerId === user.id
-            ? user.user_metadata?.username ||
-              user.email?.split("@")[0] ||
-              "Player"
-            : profile?.username || "Player";
+      // If there's an existing game state, restore it
+      if (existingGameState) {
+        logic.updateGameState(existingGameState);
+      } else {
+        // Add each player to the game logic
+        for (const playerId of playerIds) {
+          const profile = profiles?.find((p) => p.id === playerId);
+          const playerUsername =
+            playerId === user.id
+              ? user.user_metadata?.username ||
+                user.email?.split("@")[0] ||
+                "Player"
+              : profile?.username || "Player";
 
-        const playerCoins = playerId === user.id ? userCoins : 1000; // Default coins for other players
-        logic.addPlayer(playerId, playerUsername, playerCoins);
+          const playerCoins = playerId === user.id ? userCoins : 1000; // Default coins for other players
+          logic.addPlayer(playerId, playerUsername, playerCoins);
+        }
       }
 
       setGameLogic(logic);
