@@ -13,7 +13,7 @@ import { LudoGame } from "@/components/games/ludo/LudoGame";
 import { MazeGame } from "@/components/games/maze/MazeGame";
 import { Game2048 } from "@/components/games/game2048/Game2048";
 import { MathGame } from "@/components/games/math/MathGame";
-import { ScrabbleGame } from "@/components/games/scrabble/ScrabbleGame";
+import { WordSearchGame } from "@/components/games/wordsearch/WordSearchGame";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -29,7 +29,7 @@ const Index = () => {
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
   const [selectedGameType, setSelectedGameType] = useState<
-    "chess" | "ludo" | "maze" | "game2048" | "math" | "scrabble" | null
+    "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch" | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [useNealFunStyle, setUseNealFunStyle] = useState(true);
@@ -160,7 +160,7 @@ const Index = () => {
   }, [user?.email]);
 
   const handleSelectGame = (
-    gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "scrabble",
+    gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
   ) => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
@@ -173,8 +173,8 @@ const Index = () => {
       setCurrentView("game2048");
     } else if (gameType === "math") {
       setCurrentView("math-game");
-    } else if (gameType === "scrabble") {
-      setCurrentView("scrabble-game");
+    } else if (gameType === "wordsearch") {
+      setCurrentView("wordsearch-game");
     }
   };
 
@@ -190,8 +190,8 @@ const Index = () => {
       setCurrentView("game2048");
     } else if (selectedGameType === "math") {
       setCurrentView("math-game");
-    } else if (selectedGameType === "scrabble") {
-      setCurrentView("scrabble-game");
+    } else if (selectedGameType === "wordsearch") {
+      setCurrentView("wordsearch-game");
     }
   };
 
@@ -207,8 +207,8 @@ const Index = () => {
       setCurrentView("game2048");
     } else if (selectedGameType === "math") {
       setCurrentView("math-game");
-    } else if (selectedGameType === "scrabble") {
-      setCurrentView("scrabble-game");
+    } else if (selectedGameType === "wordsearch") {
+      setCurrentView("wordsearch-game");
     }
   };
 
@@ -324,8 +324,10 @@ const Index = () => {
         return <Game2048 onBack={handleBackToGameSelection} user={user} />;
       case "math-game":
         return <MathGame onBack={handleBackToGameSelection} user={user} />;
-      case "scrabble-game":
-        return <ScrabbleGame onBack={handleBackToGameSelection} user={user} />;
+      case "wordsearch-game":
+        return (
+          <WordSearchGame onBack={handleBackToGameSelection} user={user} />
+        );
       case "wallet":
         return <WalletManager />;
       case "friends":

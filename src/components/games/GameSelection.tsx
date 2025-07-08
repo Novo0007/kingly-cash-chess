@@ -28,7 +28,7 @@ import "../../styles/game-lobby.css";
 
 interface GameSelectionProps {
   onSelectGame: (
-    gameType: "chess" | "ludo" | "maze" | "game2048" | "math",
+    gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
   ) => void;
 }
 
@@ -51,7 +51,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
 
   // Memoize click handlers for better performance
   const handleGameSelect = useCallback(
-    (gameType: "chess" | "ludo" | "maze" | "game2048" | "math") => {
+    (
+      gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
+    ) => {
       onSelectGame(gameType);
     },
     [onSelectGame],
@@ -82,7 +84,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         gradient: "from-amber-700 via-orange-700 to-yellow-700",
         lightGradient: "from-amber-100 via-orange-100 to-yellow-100",
         features: [
-          "🏆 Tournaments",
+          "��� Tournaments",
           "⚡ Quick Matches",
           "💰 Real Prizes",
           "📈 Rankings",
@@ -169,6 +171,26 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         status: "NEW",
         players: "200+ Playing",
         isMoneyGame: false,
+      },
+      {
+        id: "wordsearch",
+        title: "Word Search Puzzle",
+        description:
+          "Find hidden words in grids - multiplayer word puzzles with coin rewards!",
+        icon: BookOpen,
+        emoji: "📝",
+        color: "emerald",
+        gradient: "from-emerald-700 via-teal-700 to-green-700",
+        lightGradient: "from-emerald-100 via-teal-100 to-green-100",
+        features: [
+          "👥 Multiplayer Mode",
+          "🪙 Coin System",
+          "💡 Smart Hints",
+          "🏆 Leaderboards",
+        ],
+        status: "NEW",
+        players: "150+ Playing",
+        isMoneyGame: true,
       },
     ],
     [],
@@ -411,7 +433,8 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                             | "ludo"
                             | "maze"
                             | "game2048"
-                            | "math",
+                            | "math"
+                            | "wordsearch",
                         )
                       }
                       className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:from-opacity-90 text-white border-0 py-4 md:py-5 lg:py-6 text-sm md:text-base lg:text-lg font-bold rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 ease-out transform hover:scale-[1.03] hover:-translate-y-1 group/btn will-change-transform`}
@@ -565,7 +588,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         </div>
 
         {/* Enhanced Game Rules Section */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        <div className="grid grid-cols-2 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
           <Card className="relative bg-gradient-to-br from-blue-500 to-purple-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20"></div>
             <CardContent className="relative p-6">
@@ -701,6 +724,35 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </div>
                 <Button
                   onClick={() => navigate("/math-rules")}
+                  variant="secondary"
+                  className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
+                >
+                  Learn
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="relative bg-gradient-to-br from-emerald-500 to-teal-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-400/20"></div>
+            <CardContent className="relative p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <BookOpen className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-lg font-heading">
+                      Word Search Rules
+                    </h4>
+                    <p className="text-white/90 text-sm font-medium">
+                      Master word-finding strategies and multiplayer tactics
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => navigate("/wordsearch-rules")}
                   variant="secondary"
                   className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
                 >
