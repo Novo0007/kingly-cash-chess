@@ -55,6 +55,7 @@ export interface ScrabbleGameState {
     prizePot: number;
     maxPlayers: number;
     isPrivate: boolean;
+    isSinglePlayer?: boolean;
   };
   winner?: string;
   gameResult?: "completed" | "abandoned" | "timeout";
