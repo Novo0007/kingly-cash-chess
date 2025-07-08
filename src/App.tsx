@@ -12,6 +12,7 @@ import { LudoRulesPage } from "./pages/LudoRulesPage";
 import MazeRulesPage from "./pages/MazeRulesPage";
 import { Game2048RulesPage } from "./pages/Game2048RulesPage";
 import { MathRulesPage } from "./pages/MathRulesPage";
+import WordSearchRulesPage from "./pages/WordSearchRulesPage";
 import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { DraggableMusicControl } from "@/components/music/DraggableMusicControl";
 
