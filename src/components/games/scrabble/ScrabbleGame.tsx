@@ -304,9 +304,16 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
       logic.addPlayer(user.id, username, userCoins);
 
       setGameLogic(logic);
-      setGameState(logic.getGameState());
+      const newGameState = logic.getGameState();
+      setGameState(newGameState);
       setCurrentGameId(gameId);
       setCurrentView("game");
+
+      // Load player profiles for all players in the game
+      if (newGameState.players.length > 0) {
+        const playerIds = newGameState.players.map((p) => p.id);
+        await loadPlayerProfiles(playerIds);
+      }
 
       await loadUserCoins(); // Refresh coin balance
       toast.success("Joined game successfully!");
