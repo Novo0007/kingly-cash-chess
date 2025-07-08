@@ -487,39 +487,45 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
                 </div>
               </div>
 
-              {/* Hint Buttons */}
+              {/* Hint Buttons - Mobile Optimized */}
               <div className="flex flex-wrap gap-2 justify-center">
                 <Button
                   variant="outline"
-                  size="sm"
+                  size={isMobile ? "default" : "sm"}
                   onClick={() => handleHintRequest("letter_highlight")}
-                  className="flex items-center gap-1"
+                  className="hint-button flex items-center gap-1 min-h-[44px]"
                   disabled={coinBalance < 5}
                 >
                   <Lightbulb className="h-4 w-4" />
-                  First Letter (5 <Coins className="h-3 w-3" />)
+                  <span className="hidden sm:inline">First Letter</span>
+                  <span className="sm:hidden">Letter</span>
+                  (5 <Coins className="h-3 w-3" />)
                 </Button>
 
                 <Button
                   variant="outline"
-                  size="sm"
+                  size={isMobile ? "default" : "sm"}
                   onClick={() => handleHintRequest("word_location")}
-                  className="flex items-center gap-1"
+                  className="hint-button flex items-center gap-1 min-h-[44px]"
                   disabled={coinBalance < 5}
                 >
                   <Target className="h-4 w-4" />
-                  Show Word (5 <Coins className="h-3 w-3" />)
+                  <span className="hidden sm:inline">Show Word</span>
+                  <span className="sm:hidden">Show</span>
+                  (5 <Coins className="h-3 w-3" />)
                 </Button>
 
                 <Button
                   variant="outline"
-                  size="sm"
+                  size={isMobile ? "default" : "sm"}
                   onClick={() => handleHintRequest("direction_hint")}
-                  className="flex items-center gap-1"
+                  className="hint-button flex items-center gap-1 min-h-[44px]"
                   disabled={coinBalance < 5}
                 >
                   <Star className="h-4 w-4" />
-                  Direction (5 <Coins className="h-3 w-3" />)
+                  <span className="hidden sm:inline">Direction</span>
+                  <span className="sm:hidden">Dir</span>
+                  (5 <Coins className="h-3 w-3" />)
                 </Button>
               </div>
             </CardContent>
