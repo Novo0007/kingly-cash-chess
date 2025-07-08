@@ -88,6 +88,16 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
       isPopular: false,
       isPaid: false,
     },
+    {
+      id: "wordsearch",
+      title: "Word Search Puzzle",
+      description: "Find hidden words in grids with friends",
+      icon: BookOpen,
+      emoji: "📝",
+      players: "150+ playing",
+      isPopular: true,
+      isPaid: true,
+    },
   ];
 
   const comingSoon = [
