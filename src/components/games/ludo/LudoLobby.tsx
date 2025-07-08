@@ -24,6 +24,7 @@ import { Button as ChatButton } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { checkLudoTablesExist } from "@/utils/ludoDbHelper";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type Profile = Tables<"profiles">;
 type LudoGame = {
@@ -59,6 +60,7 @@ export const LudoLobby = ({
   onJoinGame,
   onBackToGameSelection,
 }: LudoLobbyProps) => {
+  const { currentTheme } = useTheme();
   const [games, setGames] = useState<LudoGame[]>([]);
   const [entryFee, setEntryFee] = useState("10");
   const [gameName, setGameName] = useState("");
