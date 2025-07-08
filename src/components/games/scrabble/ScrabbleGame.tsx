@@ -458,21 +458,27 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
               <div className="flex items-center gap-3">
                 {/* Player Avatar */}
                 <div className="relative">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${
-                      player.id === user.id
-                        ? "bg-gradient-to-br from-blue-500 to-blue-600"
-                        : index === 0
-                          ? "bg-gradient-to-br from-green-500 to-green-600"
-                          : index === 1
-                            ? "bg-gradient-to-br from-purple-500 to-purple-600"
-                            : index === 2
-                              ? "bg-gradient-to-br from-orange-500 to-orange-600"
-                              : "bg-gradient-to-br from-red-500 to-red-600"
-                    }`}
-                  >
-                    {player.username.substring(0, 2).toUpperCase()}
-                  </div>
+                  <Avatar className="w-10 h-10">
+                    <AvatarImage
+                      src={playerProfiles.get(player.id)?.avatar_url || ""}
+                      alt={player.username}
+                    />
+                    <AvatarFallback
+                      className={`text-white font-bold text-sm ${
+                        player.id === user.id
+                          ? "bg-gradient-to-br from-blue-500 to-blue-600"
+                          : index === 0
+                            ? "bg-gradient-to-br from-green-500 to-green-600"
+                            : index === 1
+                              ? "bg-gradient-to-br from-purple-500 to-purple-600"
+                              : index === 2
+                                ? "bg-gradient-to-br from-orange-500 to-orange-600"
+                                : "bg-gradient-to-br from-red-500 to-red-600"
+                      }`}
+                    >
+                      {player.username.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
                   {index === gameState.currentPlayerIndex && (
                     <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
                       <Crown className="h-3 w-3 text-white" />
