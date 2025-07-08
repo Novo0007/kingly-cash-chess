@@ -594,6 +594,30 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
           </CardHeader>
         </Card>
 
+        {/* Database Setup Notice */}
+        <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="text-orange-600 mt-1">⚠️</div>
+              <div className="text-sm text-orange-800">
+                <p className="font-medium mb-1">Database Setup Required:</p>
+                <p className="text-xs">
+                  To enable full functionality (coin system, multiplayer,
+                  leaderboards), please run the Word Search database migration
+                  in your Supabase dashboard:
+                  <code className="bg-orange-100 px-1 rounded">
+                    migrations/20250103160000_create_wordsearch_tables.sql
+                  </code>
+                </p>
+                <p className="text-xs mt-1">
+                  ✅ Solo games work without database setup • Starting balance:
+                  100 coins
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Game Settings */}
         <Card>
           <CardHeader>
