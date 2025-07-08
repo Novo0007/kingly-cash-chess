@@ -88,6 +88,16 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
       isPopular: false,
       isPaid: false,
     },
+    {
+      id: "scrabble",
+      title: "Scrabble Words",
+      description: "Word-building game with friends, real-time multiplayer!",
+      icon: BookOpen,
+      emoji: "📝",
+      players: "150+ playing",
+      isPopular: true,
+      isPaid: true,
+    },
   ];
 
   const comingSoon = [
