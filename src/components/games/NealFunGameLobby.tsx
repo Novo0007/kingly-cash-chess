@@ -121,7 +121,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
   });
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-white font-sans pb-20 md:pb-0">
       {/* Global Chat System */}
       <MobileChatSystem
         isGlobalChat={true}
