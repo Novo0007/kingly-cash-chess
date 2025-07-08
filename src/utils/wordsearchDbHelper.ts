@@ -291,13 +291,30 @@ export const getAvailableWordSearchGames = async (): Promise<{
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching Word Search games:", error);
-      return { success: false, error: error.message };
+      console.error("Error fetching Word Search games:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+
+      // Check if table doesn't exist
+      if (error.code === "42P01" || error.message?.includes("does not exist")) {
+        console.warn(
+          "Word Search game tables not created yet. Returning empty list.",
+        );
+        return { success: true, games: [] }; // Return empty list for demo
+      }
+
+      return { success: false, error: error.message || "Database error" };
     }
 
     return { success: true, games: data || [] };
   } catch (error) {
-    console.error("Unexpected error fetching Word Search games:", error);
+    console.error("Unexpected error fetching Word Search games:", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return { success: false, error: "Failed to fetch games" };
   }
 };
