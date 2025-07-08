@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
+import { ThemeProvider as CustomThemeProvider } from "@/contexts/ThemeContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { ChessRulesPage } from "./pages/ChessRulesPage";
@@ -166,31 +167,36 @@ const App = () => {
       enableSystem
       disableTransitionOnChange
     >
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
+      <CustomThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
 
-          {/* Draggable Background Music Control */}
-          <DraggableMusicControl isPlaying={isPlaying} onToggle={toggleMusic} />
+            {/* Draggable Background Music Control */}
+            <DraggableMusicControl
+              isPlaying={isPlaying}
+              onToggle={toggleMusic}
+            />
 
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/chess-rules" element={<ChessRulesPage />} />
-              <Route path="/ludo-rules" element={<LudoRulesPage />} />
-              <Route path="/maze-rules" element={<MazeRulesPage />} />
-              <Route path="/game2048-rules" element={<Game2048RulesPage />} />
-              <Route path="/math-rules" element={<MathRulesPage />} />
-              <Route
-                path="/wordsearch-rules"
-                element={<WordSearchRulesPage />}
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/chess-rules" element={<ChessRulesPage />} />
+                <Route path="/ludo-rules" element={<LudoRulesPage />} />
+                <Route path="/maze-rules" element={<MazeRulesPage />} />
+                <Route path="/game2048-rules" element={<Game2048RulesPage />} />
+                <Route path="/math-rules" element={<MathRulesPage />} />
+                <Route
+                  path="/wordsearch-rules"
+                  element={<WordSearchRulesPage />}
+                />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </CustomThemeProvider>
     </ThemeProvider>
   );
 };
