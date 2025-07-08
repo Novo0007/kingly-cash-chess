@@ -135,30 +135,95 @@ export const CoinShop: React.FC<CoinShopProps> = ({
     setIsLoading(packageData.id);
 
     try {
-      // In a real app, you would integrate with a payment gateway here
-      // For demo purposes, we'll simulate a successful purchase
+      console.log("Initiating coin purchase:", packageData);
 
-      // Simulate payment processing delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Initialize Razorpay
+      const options = {
+        key: "rzp_live_uEV76dlTQYpxEl", // Use same key as wallet
+        amount: packageData.price * 100, // Convert to paise
+        currency: "INR",
+        name: "Scrabble Coin Shop",
+        description: `Purchase ${packageData.coins + packageData.bonus} coins`,
+        image: "/favicon.ico",
+        handler: async function (response: any) {
+          try {
+            console.log("Payment successful:", response.razorpay_payment_id);
+            toast.info(
+              "💳 Payment successful! Adding coins to your account...",
+            );
 
-      const result = await purchaseCoins(userId, {
-        coins: packageData.coins,
-        price: packageData.price,
-        bonus: packageData.bonus,
+            // Process coin purchase after successful payment
+            const result = await purchaseCoins(
+              userId,
+              {
+                coins: packageData.coins,
+                price: packageData.price,
+                bonus: packageData.bonus,
+              },
+              response.razorpay_payment_id,
+            );
+
+            if (result.success) {
+              toast.success(
+                `🎉 Successfully purchased ${packageData.coins + packageData.bonus} coins!`,
+              );
+              onPurchaseComplete();
+            } else {
+              toast.error(result.error || "Coin credit failed");
+            }
+          } catch (error) {
+            console.error("Payment confirmation error:", error);
+            toast.error(
+              "Payment confirmed but coin credit failed. Please contact support.",
+            );
+          } finally {
+            setIsLoading(null);
+          }
+        },
+        prefill: {
+          name: "Scrabble Player",
+          email: "player@scrabble.com",
+        },
+        theme: {
+          color: "#9333EA", // Purple theme for Scrabble
+        },
+        modal: {
+          ondismiss: function () {
+            console.log("Payment cancelled by user");
+            setIsLoading(null);
+          },
+        },
+      };
+
+      // @ts-ignore - Razorpay is loaded via script tag
+      if (typeof window.Razorpay === "undefined") {
+        toast.error("Payment system not loaded. Please refresh the page.");
+        setIsLoading(null);
+        return;
+      }
+
+      // @ts-ignore
+      const rzp = new window.Razorpay(options);
+
+      rzp.on("payment.failed", function (response: any) {
+        console.error("Payment failed:", response.error);
+
+        // Handle specific error cases
+        if (response.error && response.error.code === "BAD_REQUEST_ERROR") {
+          toast.error("Payment request invalid. Please try again.");
+        } else if (response.error && response.error.description) {
+          toast.error(`Payment failed: ${response.error.description}`);
+        } else {
+          toast.error("Payment failed. Please try again.");
+        }
+
+        setIsLoading(null);
       });
 
-      if (result.success) {
-        toast.success(
-          `Successfully purchased ${packageData.coins + packageData.bonus} coins!`,
-        );
-        onPurchaseComplete();
-      } else {
-        toast.error(result.error || "Purchase failed");
-      }
+      rzp.open();
     } catch (error) {
-      console.error("Purchase error:", error);
-      toast.error("Purchase failed. Please try again.");
-    } finally {
+      console.error("Razorpay initialization error:", error);
+      toast.error("Failed to initialize payment. Please try again.");
       setIsLoading(null);
     }
   };
@@ -395,12 +460,16 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       </div>
 
       {/* Payment Methods */}
-      <Card>
+      <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CreditCard className="h-6 w-6 text-green-600" />
-            Secure Payment Methods
+            Secure Payment via Razorpay
           </CardTitle>
+          <p className="text-green-700 text-sm mt-2">
+            🔒 All payments are processed securely through Razorpay, India's
+            leading payment gateway
+          </p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -409,28 +478,38 @@ export const CoinShop: React.FC<CoinShopProps> = ({
               return (
                 <div
                   key={method.id}
-                  className={`flex items-center gap-3 p-4 border rounded-lg ${
-                    method.available
-                      ? "border-green-200 bg-green-50"
-                      : "border-gray-200 bg-gray-50"
-                  }`}
+                  className="flex items-center gap-3 p-4 border-2 border-green-200 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <IconComponent
-                    className={`h-6 w-6 ${method.available ? "text-green-600" : "text-gray-400"}`}
-                  />
+                  <IconComponent className="h-6 w-6 text-green-600" />
                   <div>
-                    <span
-                      className={`font-medium ${method.available ? "text-green-800" : "text-gray-500"}`}
-                    >
+                    <span className="font-medium text-green-800">
                       {method.name}
                     </span>
-                    <div className="text-xs text-gray-600">
-                      {method.available ? "✓ Available" : "Coming Soon"}
+                    <div className="text-xs text-green-600 flex items-center gap-1">
+                      <CheckCircle className="h-3 w-3" />
+                      Available via Razorpay
                     </div>
                   </div>
                 </div>
               );
             })}
+          </div>
+
+          <div className="mt-4 p-3 bg-white rounded-lg border border-green-200">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                <CheckCircle className="h-4 w-4 text-white" />
+              </div>
+              <span className="font-medium text-green-800">
+                Additional Payment Options
+              </span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-green-700">
+              <span>• Net Banking</span>
+              <span>• RTGS/NEFT</span>
+              <span>• PayLater</span>
+              <span>• International Cards</span>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -481,20 +560,49 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       </Card>
 
       {/* Security Notice */}
-      <Card className="bg-gray-50 border-gray-200">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <span className="text-green-600 text-sm">🔒</span>
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+        <CardContent className="p-6">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+              <span className="text-blue-600 text-lg">🛡️</span>
             </div>
-            <div>
-              <h4 className="font-medium text-gray-800 mb-1">Safe & Secure</h4>
-              <p className="text-sm text-gray-600">
-                All transactions are encrypted and secure. We use
-                industry-standard payment processing to protect your financial
-                information. Your coins are immediately credited to your
-                account.
-              </p>
+            <div className="flex-1">
+              <h4 className="font-bold text-blue-800 mb-2 text-lg">
+                100% Safe & Secure with Razorpay
+              </h4>
+              <div className="space-y-2 text-sm text-blue-700">
+                <p>
+                  🔒 <strong>Bank-level security:</strong> All transactions are
+                  processed through Razorpay's PCI DSS compliant infrastructure
+                </p>
+                <p>
+                  ⚡ <strong>Instant credit:</strong> Your coins are
+                  automatically added to your account upon successful payment
+                </p>
+                <p>
+                  🇮🇳 <strong>Made for India:</strong> Supports all major Indian
+                  banks, UPI, wallets, and international cards
+                </p>
+                <p>
+                  📱 <strong>Mobile optimized:</strong> Seamless payment
+                  experience on all devices
+                </p>
+                <p>
+                  🏆 <strong>Trusted by millions:</strong> Razorpay processes
+                  billions of transactions for top Indian companies
+                </p>
+              </div>
+
+              <div className="mt-4 p-3 bg-white rounded-lg border border-blue-200">
+                <div className="flex items-center gap-2 text-xs text-blue-600">
+                  <span className="font-medium">Powered by</span>
+                  <span className="px-2 py-1 bg-blue-600 text-white rounded font-bold">
+                    Razorpay
+                  </span>
+                  <span>•</span>
+                  <span>RBI Authorized Payment Aggregator</span>
+                </div>
+              </div>
             </div>
           </div>
         </CardContent>

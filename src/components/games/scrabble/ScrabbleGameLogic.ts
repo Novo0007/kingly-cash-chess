@@ -55,6 +55,7 @@ export interface ScrabbleGameState {
     prizePot: number;
     maxPlayers: number;
     isPrivate: boolean;
+    isSinglePlayer?: boolean;
   };
   winner?: string;
   gameResult?: "completed" | "abandoned" | "timeout";
@@ -198,11 +199,18 @@ export const VALID_WORDS = new Set([
 
 export class ScrabbleGameLogic {
   private gameState: ScrabbleGameState;
+  private isSinglePlayer: boolean;
 
   constructor(
     gameId: string,
-    settings: { entryCost: number; maxPlayers: number; isPrivate: boolean },
+    settings: {
+      entryCost: number;
+      maxPlayers: number;
+      isPrivate: boolean;
+      isSinglePlayer?: boolean;
+    },
   ) {
+    this.isSinglePlayer = settings.isSinglePlayer || false;
     this.gameState = this.initializeGame(gameId, settings);
   }
 
@@ -259,6 +267,7 @@ export class ScrabbleGameLogic {
         prizePot: 0,
         maxPlayers: settings.maxPlayers,
         isPrivate: settings.isPrivate,
+        isSinglePlayer: this.isSinglePlayer,
       },
     };
   }
@@ -299,9 +308,10 @@ export class ScrabbleGameLogic {
     this.gameState.gameSettings.prizePot +=
       this.gameState.gameSettings.entryCost;
 
-    // Start game if we have minimum players (2)
+    // Start game if we have minimum players (1 for single player, 2 for multiplayer)
+    const minPlayers = this.isSinglePlayer ? 1 : 2;
     if (
-      this.gameState.players.length >= 2 &&
+      this.gameState.players.length >= minPlayers &&
       this.gameState.gameStatus === "waiting"
     ) {
       this.startGame();

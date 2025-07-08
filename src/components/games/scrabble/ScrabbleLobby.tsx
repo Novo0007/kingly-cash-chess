@@ -45,6 +45,7 @@ interface ScrabbleLobbyProps {
     maxPlayers: number,
     entryFee: number,
     isPrivate: boolean,
+    isSinglePlayer?: boolean,
   ) => void;
   onJoinGame: (gameId: string) => void;
   userCoins: number;
@@ -68,6 +69,7 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
   const [maxPlayers, setMaxPlayers] = useState<number>(2);
   const [entryFee, setEntryFee] = useState<number>(0);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [isSinglePlayer, setIsSinglePlayer] = useState(false);
 
   // Load available games
   useEffect(() => {
@@ -102,7 +104,13 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
       return;
     }
 
-    await onCreateGame(gameName.trim(), maxPlayers, entryFee, isPrivate);
+    await onCreateGame(
+      gameName.trim(),
+      maxPlayers,
+      entryFee,
+      isPrivate,
+      isSinglePlayer,
+    );
     setCreateDialogOpen(false);
 
     // Reset form
@@ -110,6 +118,7 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
     setMaxPlayers(2);
     setEntryFee(0);
     setIsPrivate(false);
+    setIsSinglePlayer(false);
   };
 
   const formatTimeAgo = (dateString: string) => {
@@ -148,22 +157,32 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
 
   const quickGameOptions = [
     {
+      name: "Single Player",
+      players: 1,
+      fee: 0,
+      description: "Practice mode - play alone",
+      isSinglePlayer: true,
+    },
+    {
       name: "Quick Match",
       players: 2,
       fee: 0,
       description: "Free 2-player game",
+      isSinglePlayer: false,
     },
     {
       name: "Casual Game",
       players: 4,
       fee: 10,
       description: "4-player game, small stakes",
+      isSinglePlayer: false,
     },
     {
       name: "Championship",
       players: 4,
       fee: 50,
       description: "High stakes tournament",
+      isSinglePlayer: false,
     },
   ];
 
@@ -221,7 +240,14 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
                     className="border-2 hover:border-blue-300 transition-colors"
                   >
                     <CardContent className="p-4">
-                      <h3 className="font-bold text-lg mb-2">{option.name}</h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="font-bold text-lg">{option.name}</h3>
+                        {option.isSinglePlayer && (
+                          <Badge className="bg-green-100 text-green-800 text-xs">
+                            Practice
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-sm text-gray-600 mb-3">
                         {option.description}
                       </p>
@@ -275,6 +301,7 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
                                   option.players,
                                   option.fee,
                                   false,
+                                  option.isSinglePlayer,
                                 );
                               }}
                               className="w-full"
@@ -410,11 +437,13 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
                 <Select
                   value={maxPlayers.toString()}
                   onValueChange={(value) => setMaxPlayers(parseInt(value))}
+                  disabled={isSinglePlayer}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="1">1 Player (Single Player)</SelectItem>
                     <SelectItem value="2">2 Players</SelectItem>
                     <SelectItem value="3">3 Players</SelectItem>
                     <SelectItem value="4">4 Players</SelectItem>
@@ -448,6 +477,25 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
                   onCheckedChange={setIsPrivate}
                 />
                 <Label htmlFor="private">Private Game (Friends Only)</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="singlePlayer"
+                  checked={isSinglePlayer}
+                  onCheckedChange={(checked) => {
+                    setIsSinglePlayer(checked);
+                    if (checked) {
+                      setMaxPlayers(1);
+                      setIsPrivate(true); // Single player games are always private
+                    } else {
+                      setMaxPlayers(2);
+                    }
+                  }}
+                />
+                <Label htmlFor="singlePlayer">
+                  Single Player Mode (Practice)
+                </Label>
               </div>
 
               {entryFee > 0 && (

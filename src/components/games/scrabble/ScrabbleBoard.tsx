@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   ScrabbleTile,
   BoardCell,
@@ -310,6 +311,49 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
 
   return (
     <div className={cn("space-y-4", className)}>
+      {/* Current Player Indicator */}
+      {gameState.gameStatus === "active" && (
+        <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Avatar className="w-10 h-10">
+                  <AvatarFallback
+                    className={`text-white font-bold text-sm ${
+                      isCurrentPlayerTurn
+                        ? "bg-gradient-to-br from-green-500 to-green-600"
+                        : "bg-gradient-to-br from-gray-400 to-gray-500"
+                    }`}
+                  >
+                    {gameState.players[gameState.currentPlayerIndex]?.username
+                      .substring(0, 2)
+                      .toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="font-bold text-lg text-gray-800">
+                    {isCurrentPlayerTurn
+                      ? "Your Turn!"
+                      : `${gameState.players[gameState.currentPlayerIndex]?.username}'s Turn`}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {isCurrentPlayerTurn
+                      ? "Place tiles to form words"
+                      : "Waiting for player to move"}
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm text-gray-600">Turn</div>
+                <div className="text-xl font-bold text-blue-600">
+                  {gameState.currentPlayerIndex + 1}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Game Board */}
       <Card className="overflow-hidden">
         <CardContent className="p-2 md:p-4">

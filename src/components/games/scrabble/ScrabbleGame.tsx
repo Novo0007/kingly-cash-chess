@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   ArrowLeft,
   Trophy,
@@ -49,6 +50,13 @@ interface ScrabbleGameProps {
 
 type GameView = "lobby" | "game" | "rules" | "shop" | "gameComplete";
 
+interface UserProfile {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+  full_name: string | null;
+}
+
 export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
   const { isMobile } = useDeviceType();
   const [currentView, setCurrentView] = useState<GameView>("lobby");
@@ -62,6 +70,9 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
     winner: Player;
     finalScores: { player: Player; score: number }[];
   } | null>(null);
+  const [playerProfiles, setPlayerProfiles] = useState<
+    Map<string, UserProfile>
+  >(new Map());
 
   const timerRef = useRef<NodeJS.Timeout>();
   const gameSubscriptionRef = useRef<any>();
@@ -129,6 +140,30 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
     }
   };
 
+  const loadPlayerProfiles = async (playerIds: string[]) => {
+    try {
+      const { data: profiles, error } = await supabase
+        .from("profiles")
+        .select("id, username, avatar_url, full_name")
+        .in("id", playerIds);
+
+      if (error) {
+        console.error("Error loading player profiles:", error);
+        return;
+      }
+
+      if (profiles) {
+        const profileMap = new Map<string, UserProfile>();
+        profiles.forEach((profile) => {
+          profileMap.set(profile.id, profile);
+        });
+        setPlayerProfiles(profileMap);
+      }
+    } catch (error) {
+      console.error("Unexpected error loading player profiles:", error);
+    }
+  };
+
   const setupGameSubscription = useCallback(() => {
     if (!currentGameId) return;
 
@@ -152,6 +187,24 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
               gameLogic.getGameState = () => newGameState;
             }
 
+            // Load player profiles if we have new players
+            if (newGameState.players.length > 0) {
+              const playerIds = newGameState.players.map((p) => p.id);
+              loadPlayerProfiles(playerIds);
+
+              // Notify when a new player joins (but not for the first update)
+              if (
+                gameState &&
+                newGameState.players.length > gameState.players.length
+              ) {
+                const newPlayer =
+                  newGameState.players[newGameState.players.length - 1];
+                if (newPlayer.id !== user.id) {
+                  toast.success(`🎉 ${newPlayer.username} joined the game!`);
+                }
+              }
+            }
+
             // Check for game completion
             if (newGameState.gameStatus === "completed") {
               handleGameCompletion(newGameState);
@@ -167,6 +220,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
     maxPlayers: number,
     entryFee: number,
     isPrivate: boolean,
+    isSinglePlayer: boolean = false,
   ) => {
     if (userCoins < entryFee) {
       toast.error("Insufficient coins!");
@@ -181,6 +235,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         maxPlayers,
         entryFee,
         isPrivate,
+        isSinglePlayer,
       );
 
       if (result.success && result.gameId) {
@@ -189,6 +244,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
           entryCost: entryFee,
           maxPlayers,
           isPrivate,
+          isSinglePlayer,
         });
 
         // Add current user to the game
@@ -197,9 +253,19 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         logic.addPlayer(user.id, username, userCoins);
 
         setGameLogic(logic);
-        setGameState(logic.getGameState());
+        const newGameState = logic.getGameState();
+        setGameState(newGameState);
         setCurrentGameId(result.gameId);
         setCurrentView("game");
+
+        // Update the game state in the database
+        await updateScrabbleGameState(result.gameId, newGameState);
+
+        // Load player profiles for all players in the game
+        if (newGameState.players.length > 0) {
+          const playerIds = newGameState.players.map((p) => p.id);
+          await loadPlayerProfiles(playerIds);
+        }
 
         await loadUserCoins(); // Refresh coin balance
         toast.success("Game created successfully!");
@@ -238,34 +304,62 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         return;
       }
 
-      // Create or load game logic
-      let logic: ScrabbleGameLogic;
-      if (game.game_state) {
-        // Game already has state, load it
-        logic = new ScrabbleGameLogic(gameId, {
-          entryCost: game.entry_fee,
-          maxPlayers: game.max_players,
-          isPrivate: game.is_friend_challenge,
-        });
-        // TODO: Load existing game state into logic
-      } else {
-        // New game, create fresh logic
-        logic = new ScrabbleGameLogic(gameId, {
-          entryCost: game.entry_fee,
-          maxPlayers: game.max_players,
-          isPrivate: game.is_friend_challenge,
-        });
+      // Detect if this is a single player game (max_players is 2 but created as single player)
+      const isSinglePlayerGame =
+        game.max_players === 2 &&
+        game.is_friend_challenge &&
+        game.current_players === 1;
+
+      // Create fresh game logic and add all players
+      const logic = new ScrabbleGameLogic(gameId, {
+        entryCost: game.entry_fee,
+        maxPlayers: isSinglePlayerGame ? 1 : game.max_players,
+        isPrivate: game.is_friend_challenge,
+        isSinglePlayer: isSinglePlayerGame,
+      });
+
+      // Add all existing players to the game logic
+      const playerIds = [
+        game.player1_id,
+        game.player2_id,
+        game.player3_id,
+        game.player4_id,
+      ].filter(Boolean);
+
+      // We need to get player info for all players
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, username")
+        .in("id", playerIds);
+
+      // Add each player to the game logic
+      for (const playerId of playerIds) {
+        const profile = profiles?.find((p) => p.id === playerId);
+        const playerUsername =
+          playerId === user.id
+            ? user.user_metadata?.username ||
+              user.email?.split("@")[0] ||
+              "Player"
+            : profile?.username || "Player";
+
+        const playerCoins = playerId === user.id ? userCoins : 1000; // Default coins for other players
+        logic.addPlayer(playerId, playerUsername, playerCoins);
       }
 
-      // Add current user to the game
-      const username =
-        user.user_metadata?.username || user.email?.split("@")[0] || "Player";
-      logic.addPlayer(user.id, username, userCoins);
-
       setGameLogic(logic);
-      setGameState(logic.getGameState());
+      const newGameState = logic.getGameState();
+      setGameState(newGameState);
       setCurrentGameId(gameId);
       setCurrentView("game");
+
+      // Update the game state in the database with all players
+      await updateScrabbleGameState(gameId, newGameState);
+
+      // Load player profiles for all players in the game
+      if (newGameState.players.length > 0) {
+        const playerIds = newGameState.players.map((p) => p.id);
+        await loadPlayerProfiles(playerIds);
+      }
 
       await loadUserCoins(); // Refresh coin balance
       toast.success("Joined game successfully!");
@@ -400,36 +494,116 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Users className="h-5 w-5" />
-            Players ({gameState.players.length}/
-            {gameState.gameSettings.maxPlayers})
+            {gameState.gameSettings.isSinglePlayer
+              ? "Single Player Mode"
+              : `Players (${gameState.players.length}/${gameState.gameSettings.maxPlayers})`}
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-3">
           {gameState.players.map((player, index) => (
             <div
               key={player.id}
-              className={`flex items-center justify-between p-2 rounded-lg ${
+              className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
                 index === gameState.currentPlayerIndex
-                  ? "bg-blue-100 border-2 border-blue-300"
-                  : "bg-gray-50"
+                  ? "bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-300 shadow-md"
+                  : "bg-gray-50 hover:bg-gray-100"
               }`}
             >
-              <div className="flex items-center gap-2">
-                {index === gameState.currentPlayerIndex && (
-                  <Crown className="h-4 w-4 text-blue-600" />
-                )}
-                <span
-                  className={`font-medium ${player.id === user.id ? "text-blue-600" : ""}`}
-                >
-                  {player.username} {player.id === user.id && "(You)"}
-                </span>
+              <div className="flex items-center gap-3">
+                {/* Player Avatar */}
+                <div className="relative">
+                  <Avatar className="w-10 h-10">
+                    <AvatarImage
+                      src={playerProfiles.get(player.id)?.avatar_url || ""}
+                      alt={player.username}
+                    />
+                    <AvatarFallback
+                      className={`text-white font-bold text-sm ${
+                        player.id === user.id
+                          ? "bg-gradient-to-br from-blue-500 to-blue-600"
+                          : index === 0
+                            ? "bg-gradient-to-br from-green-500 to-green-600"
+                            : index === 1
+                              ? "bg-gradient-to-br from-purple-500 to-purple-600"
+                              : index === 2
+                                ? "bg-gradient-to-br from-orange-500 to-orange-600"
+                                : "bg-gradient-to-br from-red-500 to-red-600"
+                      }`}
+                    >
+                      {player.username.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {index === gameState.currentPlayerIndex && (
+                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
+                      <Crown className="h-3 w-3 text-white" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Player Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span
+                      className={`font-medium truncate ${
+                        player.id === user.id
+                          ? "text-blue-600"
+                          : "text-gray-800"
+                      }`}
+                    >
+                      {player.username}
+                    </span>
+                    {player.id === user.id && (
+                      <Badge className="bg-blue-100 text-blue-800 text-xs">
+                        You
+                      </Badge>
+                    )}
+                    {index === gameState.currentPlayerIndex && (
+                      <Badge className="bg-yellow-100 text-yellow-800 text-xs">
+                        Turn
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                    <span>Position #{index + 1}</span>
+                    {gameState.gameStatus === "active" && <span>•</span>}
+                    {gameState.gameStatus === "active" && (
+                      <span>{player.rack.length} tiles</span>
+                    )}
+                  </div>
+                </div>
               </div>
+
+              {/* Player Stats */}
               <div className="flex items-center gap-2">
-                <Badge variant="outline">{player.score} pts</Badge>
-                <Badge variant="secondary">{player.rack.length} tiles</Badge>
+                <div className="text-right">
+                  <div className="font-bold text-lg text-gray-800">
+                    {player.score}
+                  </div>
+                  <div className="text-xs text-gray-500">points</div>
+                </div>
               </div>
             </div>
           ))}
+
+          {/* Waiting for more players - only show for multiplayer games */}
+          {gameState.gameStatus === "waiting" &&
+            !gameState.gameSettings.isSinglePlayer &&
+            gameState.players.length < gameState.gameSettings.maxPlayers && (
+              <div className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg">
+                <div className="text-center text-gray-500">
+                  <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm font-medium">
+                    Waiting for{" "}
+                    {gameState.gameSettings.maxPlayers -
+                      gameState.players.length}{" "}
+                    more player(s)
+                  </p>
+                  <p className="text-xs mt-1 opacity-75">
+                    Share the game ID to invite friends
+                  </p>
+                </div>
+              </div>
+            )}
         </CardContent>
       </Card>
     );
@@ -651,20 +825,36 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
           <div className="space-y-4">
             {renderPlayerList()}
 
-            {gameState.gameStatus === "waiting" && (
-              <Card className="bg-yellow-50 border-yellow-200">
-                <CardContent className="p-4 text-center">
-                  <Clock className="h-8 w-8 mx-auto mb-2 text-yellow-600" />
-                  <p className="text-yellow-800 font-medium">
-                    Waiting for more players...
-                  </p>
-                  <p className="text-sm text-yellow-600 mt-1">
-                    Need {Math.max(0, 2 - gameState.players.length)} more
-                    player(s) to start
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+            {gameState.gameStatus === "waiting" &&
+              !gameState.gameSettings.isSinglePlayer && (
+                <Card className="bg-yellow-50 border-yellow-200">
+                  <CardContent className="p-4 text-center">
+                    <Clock className="h-8 w-8 mx-auto mb-2 text-yellow-600" />
+                    <p className="text-yellow-800 font-medium">
+                      Waiting for more players...
+                    </p>
+                    <p className="text-sm text-yellow-600 mt-1">
+                      Need {Math.max(0, 2 - gameState.players.length)} more
+                      player(s) to start
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+            {gameState.gameStatus === "waiting" &&
+              gameState.gameSettings.isSinglePlayer && (
+                <Card className="bg-green-50 border-green-200">
+                  <CardContent className="p-4 text-center">
+                    <Brain className="h-8 w-8 mx-auto mb-2 text-green-600" />
+                    <p className="text-green-800 font-medium">
+                      Single Player Practice Mode
+                    </p>
+                    <p className="text-sm text-green-600 mt-1">
+                      Perfect your Scrabble skills!
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
           </div>
         </div>
       </div>

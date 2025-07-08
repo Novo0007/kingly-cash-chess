@@ -51,6 +51,7 @@ export const createScrabbleGame = async (
   maxPlayers: number,
   entryFee: number,
   isFriendChallenge: boolean = false,
+  isSinglePlayer: boolean = false,
 ): Promise<{ success: boolean; gameId?: string; error?: string }> => {
   try {
     // Check if user has enough coins
@@ -71,11 +72,11 @@ export const createScrabbleGame = async (
       player3_id: null,
       player4_id: null,
       current_players: 1,
-      max_players: maxPlayers,
+      max_players: isSinglePlayer ? 2 : maxPlayers, // Set to 2 for single player to satisfy DB constraint
       entry_fee: entryFee,
       prize_amount: entryFee, // Initial prize pool
       winner_id: null,
-      is_friend_challenge: isFriendChallenge,
+      is_friend_challenge: isFriendChallenge || isSinglePlayer, // Single player games are like friend challenges
       game_state: null, // Will be set when game starts
     };
 
@@ -541,28 +542,31 @@ export const hasClaimedFreeCoins = async (
 export const purchaseCoins = async (
   userId: string,
   coinPackage: { coins: number; price: number; bonus?: number },
+  paymentId?: string,
 ): Promise<{ success: boolean; newBalance?: number; error?: string }> => {
   try {
     const totalCoins = coinPackage.coins + (coinPackage.bonus || 0);
-
-    // In a real app, you would integrate with a payment gateway here
-    // For now, we'll just add the coins directly
 
     const result = await updateUserCoins(userId, totalCoins, "purchase");
     if (!result.success) {
       return result;
     }
 
-    // Log the purchase transaction
-    await supabase.from("coin_transactions").insert([
-      {
-        user_id: userId,
-        amount: totalCoins,
-        transaction_type: "purchase",
-        description: `Purchased ${coinPackage.coins} coins${coinPackage.bonus ? ` (+${coinPackage.bonus} bonus)` : ""} for ₹${coinPackage.price}`,
-        balance_after: result.newBalance,
-      },
-    ]);
+    // Log the purchase transaction with Razorpay payment ID
+    const transactionData: any = {
+      user_id: userId,
+      amount: totalCoins,
+      transaction_type: "purchase",
+      description: `Purchased ${coinPackage.coins} coins${coinPackage.bonus ? ` (+${coinPackage.bonus} bonus)` : ""} for ₹${coinPackage.price}${paymentId ? ` (Payment ID: ${paymentId})` : ""}`,
+      balance_after: result.newBalance,
+    };
+
+    // Add Razorpay payment ID if available
+    if (paymentId) {
+      transactionData.razorpay_payment_id = paymentId;
+    }
+
+    await supabase.from("coin_transactions").insert([transactionData]);
 
     return result;
   } catch (error) {
