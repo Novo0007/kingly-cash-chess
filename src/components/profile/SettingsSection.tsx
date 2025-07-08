@@ -25,6 +25,7 @@ import { AboutSection } from "./AboutSection";
 import { PrivacyPolicySection } from "./PrivacyPolicySection";
 import { UserGuideSection } from "./UserGuideSection";
 import { ContactSection } from "./ContactSection";
+import { ThemeSelector } from "./ThemeSelector";
 
 interface SettingsSectionProps {
   onBack: () => void;
@@ -51,6 +52,10 @@ export const SettingsSection = ({ onBack }: SettingsSectionProps) => {
 
   if (currentSection === "contact") {
     return <ContactSection onBack={() => setCurrentSection(null)} />;
+  }
+
+  if (currentSection === "theme") {
+    return <ThemeSelector onBack={() => setCurrentSection(null)} />;
   }
 
   const settingsItems = [
@@ -111,8 +116,7 @@ export const SettingsSection = ({ onBack }: SettingsSectionProps) => {
       description: "Choose your preferred theme",
       icon: Palette,
       action: () => {
-        // Theme selector
-        alert("Theme settings will be implemented soon!");
+        setCurrentSection("theme");
       },
     },
     {
@@ -300,7 +304,7 @@ export const SettingsSection = ({ onBack }: SettingsSectionProps) => {
                   <span className="text-gray-500 text-sm">Made with</span>
                   <div className="relative">
                     <div className="absolute inset-0 bg-red-400 rounded-full blur-sm opacity-60 animate-pulse"></div>
-                    <span className="relative text-red-400">❤️</span>
+                    <span className="relative text-red-400">❤��</span>
                   </div>
                   <span className="text-gray-500 text-sm">for gamers</span>
                 </div>
