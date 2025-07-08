@@ -537,3 +537,73 @@
     animation-duration: 4s;
   }
 }
+
+/* Special theme card effects */
+.matrix-card {
+  position: relative;
+}
+
+.matrix-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 0, 0.1) 2px,
+    rgba(0, 255, 0, 0.1) 4px
+  );
+  animation: matrix-scan 3s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes matrix-scan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.glitch-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.glitch-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 48%,
+    rgba(255, 0, 255, 0.2) 49%,
+    rgba(255, 0, 255, 0.2) 50%,
+    rgba(0, 255, 255, 0.2) 51%,
+    transparent 52%
+  );
+  animation: glitch-scan 2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes glitch-scan {
+  0%,
+  100% {
+    transform: translateX(-100%) translateY(-100%) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(100%) translateY(100%) rotate(-45deg);
+    opacity: 1;
+  }
+}
