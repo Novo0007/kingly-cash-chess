@@ -470,6 +470,25 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
                 <Label htmlFor="private">Private Game (Friends Only)</Label>
               </div>
 
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="singlePlayer"
+                  checked={isSinglePlayer}
+                  onCheckedChange={(checked) => {
+                    setIsSinglePlayer(checked);
+                    if (checked) {
+                      setMaxPlayers(1);
+                      setIsPrivate(true); // Single player games are always private
+                    } else {
+                      setMaxPlayers(2);
+                    }
+                  }}
+                />
+                <Label htmlFor="singlePlayer">
+                  Single Player Mode (Practice)
+                </Label>
+              </div>
+
               {entryFee > 0 && (
                 <div className="p-3 bg-blue-50 rounded-lg">
                   <p className="text-sm text-blue-800">
