@@ -167,8 +167,6 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
   const setupGameSubscription = useCallback(() => {
     if (!currentGameId) return;
 
-    console.log(`Setting up subscription for game: ${currentGameId}`);
-
     gameSubscriptionRef.current = supabase
       .channel(`scrabble_game_${currentGameId}`)
       .on(
@@ -180,11 +178,8 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
           filter: `id=eq.${currentGameId}`,
         },
         (payload) => {
-          console.log("Received real-time update:", payload);
-
           if (payload.new && payload.new.game_state) {
             const newGameState = payload.new.game_state as ScrabbleGameState;
-            console.log("Updating game state:", newGameState);
             setGameState(newGameState);
 
             if (gameLogic) {
