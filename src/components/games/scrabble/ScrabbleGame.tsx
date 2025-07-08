@@ -256,6 +256,11 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         setCurrentView("game");
 
         // Update the game state in the database
+        console.log("Updating game state after creation:", {
+          playersCount: newGameState.players.length,
+          gameStatus: newGameState.gameStatus,
+          gameId: result.gameId,
+        });
         await updateScrabbleGameState(result.gameId, newGameState);
 
         // Load player profiles for all players in the game
