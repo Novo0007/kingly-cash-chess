@@ -11,6 +11,8 @@ This project includes a comprehensive theme system with multiple beautiful theme
 - **MindMaze UI** 🧠: Professional dark theme with blue accents for focus
 - **GlowyFun** ✨: Bright and playful theme with glowing elements
 - **DreamPixels** 🌙: Soft pastel theme with dreamy gradient colors
+- **Hacker Matrix** 🔰: Dark terminal-inspired theme with green matrix effects
+- **Glitch Cyber** ⚡: Futuristic cyberpunk theme with neon glitch effects
 
 ### Features:
 
@@ -23,6 +25,8 @@ This project includes a comprehensive theme system with multiple beautiful theme
 - ✅ **Beautiful themed loading screen** with smooth animations
 - ✅ **Mobile-optimized** loading experience
 - ✅ **Floating particles** and dynamic backgrounds
+- ✅ **Special effects** for Hacker Matrix and Glitch Cyber themes
+- ✅ **Matrix rain** and **glitch animations** for immersive experience
 
 ### How to Use:
 
@@ -41,6 +45,9 @@ The app features a stunning theme-aware loading screen with:
 - **Responsive design** optimized for mobile devices
 - **Theme-specific colors** and gradients throughout
 - **Staggered entrance animations** for smooth loading
+- **Matrix rain effect** for Hacker Matrix theme
+- **Glitch particles** for Glitch Cyber theme
+- **Interactive hover effects** with theme-specific animations
 
 ### For Developers:
 
