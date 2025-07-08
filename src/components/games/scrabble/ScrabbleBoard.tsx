@@ -668,8 +668,19 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
           {isExchangeMode && (
             <div className="mt-2 p-2 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
-                Click tiles to select them for exchange. You can exchange up to
-                7 tiles.
+                {isMobile ? "Tap" : "Click"} tiles to select them for exchange.
+                You can exchange up to 7 tiles.
+              </p>
+            </div>
+          )}
+
+          {/* Mobile help text */}
+          {isMobile && !isExchangeMode && isCurrentPlayerTurn && (
+            <div className="mt-2 p-2 bg-green-50 rounded-lg border border-green-200">
+              <p className="text-xs text-green-800">
+                {selectedTile
+                  ? `Selected: ${selectedTile.letter || "?"} - Tap an empty board cell to place it`
+                  : "Tap a tile from your rack, then tap the board to place it"}
               </p>
             </div>
           )}
