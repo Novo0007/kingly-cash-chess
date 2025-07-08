@@ -590,13 +590,30 @@ export const getWordSearchLeaderboard = async (
     const { data, error } = await query;
 
     if (error) {
-      console.error("Error fetching Word Search leaderboard:", error);
-      return { success: false, error: error.message };
+      console.error("Error fetching Word Search leaderboard:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+
+      // Check if table doesn't exist
+      if (error.code === "42P01" || error.message?.includes("does not exist")) {
+        console.warn(
+          "Word Search score tables not created yet. Returning empty leaderboard.",
+        );
+        return { success: true, scores: [] }; // Return empty list for demo
+      }
+
+      return { success: false, error: error.message || "Database error" };
     }
 
     return { success: true, scores: data || [] };
   } catch (error) {
-    console.error("Unexpected error fetching Word Search leaderboard:", error);
+    console.error("Unexpected error fetching Word Search leaderboard:", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return { success: false, error: "Failed to fetch leaderboard" };
   }
 };
