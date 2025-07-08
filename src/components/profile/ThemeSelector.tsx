@@ -91,6 +91,8 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onBack }) => {
                   isSelected
                     ? "border-white/50 shadow-2xl"
                     : "border-white/20 hover:border-white/40"
+                } ${theme.id === "hackermatrix" ? "matrix-card" : ""} ${
+                  theme.id === "glitchcyber" ? "glitch-card" : ""
                 }`}
                 onClick={() => handleThemeChange(theme.id)}
               >
@@ -113,9 +115,21 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onBack }) => {
                 <CardContent className="p-6 relative z-10">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="text-3xl">{theme.preview}</div>
+                      <div
+                        className={`text-3xl ${
+                          theme.id === "hackermatrix" ? "matrix-text" : ""
+                        } ${theme.id === "glitchcyber" ? "glitch-text" : ""}`}
+                      >
+                        {theme.preview}
+                      </div>
                       <div>
-                        <h3 className="text-white font-bold text-lg">
+                        <h3
+                          className={`text-white font-bold text-lg ${
+                            theme.id === "hackermatrix" ? "matrix-text" : ""
+                          } ${
+                            theme.id === "glitchcyber" ? "glitch-element" : ""
+                          }`}
+                        >
                           {theme.name}
                         </h3>
                         <p className="text-white/80 text-sm">
