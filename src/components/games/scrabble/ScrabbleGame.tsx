@@ -184,7 +184,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
 
             if (gameLogic) {
               // Update local game logic with new state
-              gameLogic.getGameState = () => newGameState;
+              gameLogic.updateGameState(newGameState);
             }
 
             // Load player profiles if we have new players
@@ -202,6 +202,24 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
                 if (newPlayer.id !== user.id) {
                   toast.success(`🎉 ${newPlayer.username} joined the game!`);
                 }
+              }
+            }
+
+            // Auto-start game when it becomes full
+            if (
+              newGameState.gameStatus === "waiting" &&
+              newGameState.players.length >= 2 && // Minimum for multiplayer
+              newGameState.players.length ===
+                newGameState.gameSettings.maxPlayers &&
+              !newGameState.gameSettings.isSinglePlayer
+            ) {
+              // Start the game automatically
+              if (gameLogic) {
+                gameLogic.forceStartGame();
+                const updatedState = gameLogic.getGameState();
+                setGameState(updatedState);
+                updateScrabbleGameState(currentGameId, updatedState);
+                toast.success("🎮 Game is starting! All players have joined!");
               }
             }
 
