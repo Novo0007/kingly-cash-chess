@@ -317,17 +317,19 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${
-                    isCurrentPlayerTurn
-                      ? "bg-gradient-to-br from-green-500 to-green-600"
-                      : "bg-gradient-to-br from-gray-400 to-gray-500"
-                  }`}
-                >
-                  {gameState.players[gameState.currentPlayerIndex]?.username
-                    .substring(0, 2)
-                    .toUpperCase()}
-                </div>
+                <Avatar className="w-10 h-10">
+                  <AvatarFallback
+                    className={`text-white font-bold text-sm ${
+                      isCurrentPlayerTurn
+                        ? "bg-gradient-to-br from-green-500 to-green-600"
+                        : "bg-gradient-to-br from-gray-400 to-gray-500"
+                    }`}
+                  >
+                    {gameState.players[gameState.currentPlayerIndex]?.username
+                      .substring(0, 2)
+                      .toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
                 <div>
                   <div className="font-bold text-lg text-gray-800">
                     {isCurrentPlayerTurn
