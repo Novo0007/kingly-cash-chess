@@ -325,14 +325,18 @@ export const getUserCoins = async (
     }
 
     if (!data) {
-      // Create initial coin record for user
+      // Create initial coin record for user with bonus for first-time players
+      const startingCoins = 1000; // Base starting coins
+      const firstTimeBonus = 300; // Bonus for first-time players
+      const totalStartingCoins = startingCoins + firstTimeBonus;
+
       const { data: newRecord, error: createError } = await supabase
         .from("user_coins")
         .insert([
           {
             user_id: userId,
-            coins: 1000, // Free starting coins
-            total_earned: 1000,
+            coins: totalStartingCoins,
+            total_earned: totalStartingCoins,
             total_spent: 0,
           },
         ])
