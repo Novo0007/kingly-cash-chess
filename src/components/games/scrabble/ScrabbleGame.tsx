@@ -187,6 +187,12 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
               gameLogic.getGameState = () => newGameState;
             }
 
+            // Load player profiles if we have new players
+            if (newGameState.players.length > 0) {
+              const playerIds = newGameState.players.map((p) => p.id);
+              loadPlayerProfiles(playerIds);
+            }
+
             // Check for game completion
             if (newGameState.gameStatus === "completed") {
               handleGameCompletion(newGameState);
