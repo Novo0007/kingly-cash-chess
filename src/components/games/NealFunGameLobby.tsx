@@ -16,6 +16,7 @@ import {
   Filter,
   DollarSign,
   Gift,
+  BookOpen,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
