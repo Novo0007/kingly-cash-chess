@@ -508,6 +508,276 @@ export const getCoinTransactions = async (
 };
 
 /**
+ * Get top 10 players by highest scores
+ */
+export const getTopPlayersByScore = async (): Promise<{
+  success: boolean;
+  players?: any[];
+  error?: string;
+}> => {
+  try {
+    const { data, error } = await supabase
+      .from("scrabble_scores")
+      .select(
+        `
+        user_id,
+        score,
+        is_winner,
+        created_at,
+        scrabble_games!inner(*)
+      `,
+      )
+      .order("score", { ascending: false })
+      .limit(50);
+
+    if (error) {
+      console.error("Error fetching top players by score:", error);
+      return { success: false, error: error.message };
+    }
+
+    // Group by user and get their highest score
+    const userScores = new Map();
+
+    data?.forEach((scoreRecord) => {
+      const userId = scoreRecord.user_id;
+      if (
+        !userScores.has(userId) ||
+        userScores.get(userId).score < scoreRecord.score
+      ) {
+        userScores.set(userId, scoreRecord);
+      }
+    });
+
+    // Get user profiles for the top players
+    const topUserIds = Array.from(userScores.keys()).slice(0, 10);
+    const { data: profiles, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, username, avatar_url")
+      .in("id", topUserIds);
+
+    if (profileError) {
+      console.error("Error fetching user profiles:", profileError);
+      return { success: false, error: profileError.message };
+    }
+
+    // Combine scores with user profiles
+    const topPlayers = Array.from(userScores.values())
+      .slice(0, 10)
+      .map((scoreRecord) => {
+        const userProfile = profiles?.find((p) => p.id === scoreRecord.user_id);
+        return {
+          ...scoreRecord,
+          username: userProfile?.username || "Anonymous",
+          avatar_url: userProfile?.avatar_url,
+        };
+      })
+      .sort((a, b) => b.score - a.score);
+
+    return { success: true, players: topPlayers };
+  } catch (error) {
+    console.error("Unexpected error fetching top players by score:", error);
+    return { success: false, error: "Failed to fetch top players" };
+  }
+};
+
+/**
+ * Get top 3 players by total coins won
+ */
+export const getTopPlayersByCoinsWon = async (): Promise<{
+  success: boolean;
+  players?: any[];
+  error?: string;
+}> => {
+  try {
+    const { data, error } = await supabase
+      .from("scrabble_scores")
+      .select(
+        `
+        user_id,
+        coins_won,
+        created_at
+      `,
+      )
+      .gt("coins_won", 0)
+      .order("coins_won", { ascending: false })
+      .limit(100);
+
+    if (error) {
+      console.error("Error fetching top players by coins won:", error);
+      return { success: false, error: error.message };
+    }
+
+    // Group by user and sum their total coins won
+    const userCoinsWon = new Map();
+
+    data?.forEach((scoreRecord) => {
+      const userId = scoreRecord.user_id;
+      const currentTotal = userCoinsWon.get(userId) || 0;
+      userCoinsWon.set(userId, currentTotal + scoreRecord.coins_won);
+    });
+
+    // Get top 3 users by total coins won
+    const topUserEntries = Array.from(userCoinsWon.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+
+    if (topUserEntries.length === 0) {
+      return { success: true, players: [] };
+    }
+
+    // Get user profiles for the top players
+    const topUserIds = topUserEntries.map((entry) => entry[0]);
+    const { data: profiles, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, username, avatar_url")
+      .in("id", topUserIds);
+
+    if (profileError) {
+      console.error("Error fetching user profiles:", profileError);
+      return { success: false, error: profileError.message };
+    }
+
+    // Combine with user profiles
+    const topPlayers = topUserEntries.map(([userId, totalCoinsWon]) => {
+      const userProfile = profiles?.find((p) => p.id === userId);
+      return {
+        user_id: userId,
+        username: userProfile?.username || "Anonymous",
+        avatar_url: userProfile?.avatar_url,
+        total_coins_won: totalCoinsWon,
+      };
+    });
+
+    return { success: true, players: topPlayers };
+  } catch (error) {
+    console.error("Unexpected error fetching top players by coins won:", error);
+    return { success: false, error: "Failed to fetch top coin winners" };
+  }
+};
+
+/**
+ * Get comprehensive leaderboard stats for a user
+ */
+export const getUserLeaderboardStats = async (
+  userId: string,
+): Promise<{
+  success: boolean;
+  stats?: {
+    totalGames: number;
+    totalWins: number;
+    highestScore: number;
+    totalCoinsWon: number;
+    averageScore: number;
+    winRate: number;
+    scoreRank: number;
+    coinsRank: number;
+  };
+  error?: string;
+}> => {
+  try {
+    // Get user's game stats
+    const { data: userScores, error: scoresError } = await supabase
+      .from("scrabble_scores")
+      .select("*")
+      .eq("user_id", userId);
+
+    if (scoresError) {
+      console.error("Error fetching user scores:", scoresError);
+      return { success: false, error: scoresError.message };
+    }
+
+    if (!userScores || userScores.length === 0) {
+      return {
+        success: true,
+        stats: {
+          totalGames: 0,
+          totalWins: 0,
+          highestScore: 0,
+          totalCoinsWon: 0,
+          averageScore: 0,
+          winRate: 0,
+          scoreRank: 0,
+          coinsRank: 0,
+        },
+      };
+    }
+
+    // Calculate user stats
+    const totalGames = userScores.length;
+    const totalWins = userScores.filter((s) => s.is_winner).length;
+    const highestScore = Math.max(...userScores.map((s) => s.score));
+    const totalCoinsWon = userScores.reduce((sum, s) => sum + s.coins_won, 0);
+    const averageScore = Math.round(
+      userScores.reduce((sum, s) => sum + s.score, 0) / totalGames,
+    );
+    const winRate = Math.round((totalWins / totalGames) * 100);
+
+    // Get user's rank by highest score
+    const { data: allScores, error: allScoresError } = await supabase
+      .from("scrabble_scores")
+      .select("user_id, score")
+      .order("score", { ascending: false });
+
+    let scoreRank = 0;
+    if (!allScoresError && allScores) {
+      // Group by user and get highest score
+      const userMaxScores = new Map();
+      allScores.forEach((score) => {
+        const currentMax = userMaxScores.get(score.user_id) || 0;
+        if (score.score > currentMax) {
+          userMaxScores.set(score.user_id, score.score);
+        }
+      });
+
+      const sortedUsers = Array.from(userMaxScores.entries()).sort(
+        (a, b) => b[1] - a[1],
+      );
+
+      scoreRank = sortedUsers.findIndex(([id]) => id === userId) + 1;
+    }
+
+    // Get user's rank by total coins won
+    const { data: allCoins, error: allCoinsError } = await supabase
+      .from("scrabble_scores")
+      .select("user_id, coins_won")
+      .gt("coins_won", 0);
+
+    let coinsRank = 0;
+    if (!allCoinsError && allCoins) {
+      // Group by user and sum coins won
+      const userTotalCoins = new Map();
+      allCoins.forEach((score) => {
+        const currentTotal = userTotalCoins.get(score.user_id) || 0;
+        userTotalCoins.set(score.user_id, currentTotal + score.coins_won);
+      });
+
+      const sortedUsersByCoins = Array.from(userTotalCoins.entries()).sort(
+        (a, b) => b[1] - a[1],
+      );
+
+      coinsRank = sortedUsersByCoins.findIndex(([id]) => id === userId) + 1;
+    }
+
+    return {
+      success: true,
+      stats: {
+        totalGames,
+        totalWins,
+        highestScore,
+        totalCoinsWon,
+        averageScore,
+        winRate,
+        scoreRank,
+        coinsRank,
+      },
+    };
+  } catch (error) {
+    console.error("Unexpected error fetching user leaderboard stats:", error);
+    return { success: false, error: "Failed to fetch user stats" };
+  }
+};
+
+/**
  * Complete a Scrabble game and distribute prizes
  */
 export const completeScrabbleGame = async (
