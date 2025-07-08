@@ -32,6 +32,8 @@ export const CoinShop: React.FC<CoinShopProps> = ({
   userId,
 }) => {
   const [isLoading, setIsLoading] = useState<string | null>(null);
+  const [hasClaimedFree, setHasClaimedFree] = useState<boolean>(true); // Default to true to hide initially
+  const [claimingFree, setClaimingFree] = useState<boolean>(false);
 
   const coinPackages = [
     {
