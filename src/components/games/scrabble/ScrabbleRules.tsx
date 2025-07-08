@@ -24,9 +24,7 @@ import { useDeviceType } from "@/hooks/use-mobile";
 
 export const ScrabbleRules: React.FC = () => {
   const { isMobile } = useDeviceType();
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(),
-  );
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
   const toggleSection = (section: string) => {
     const newExpanded = new Set(expandedSections);
@@ -77,10 +75,8 @@ export const ScrabbleRules: React.FC = () => {
       {/* Header */}
       <Card className="bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0">
         <CardHeader className="text-center p-4 md:p-6">
-          <CardTitle
-            className={`flex items-center justify-center gap-2 ${isMobile ? "text-xl" : "text-2xl"}`}
-          >
-            <BookOpen className={`${isMobile ? "h-6 w-6" : "h-8 w-8"}`} />
+          <CardTitle className={`flex items-center justify-center gap-2 ${isMobile ? 'text-xl' : 'text-2xl'}`}>
+            <BookOpen className={`${isMobile ? 'h-6 w-6' : 'h-8 w-8'}`} />
             Scrabble / Words with Friends Rules
           </CardTitle>
           <p className="text-blue-100 text-sm md:text-base">
@@ -90,39 +86,107 @@ export const ScrabbleRules: React.FC = () => {
       </Card>
 
       {/* Quick Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
         <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0">
-          <CardContent className="p-4 text-center">
-            <Users className="h-8 w-8 mx-auto mb-2" />
-            <div className="text-2xl font-bold">2-4</div>
-            <div className="text-xs opacity-90">Players</div>
+          <CardContent className={`text-center ${isMobile ? 'p-3' : 'p-4'}`}>
+            <Users className={`mx-auto mb-1 md:mb-2 ${isMobile ? 'h-6 w-6' : 'h-8 w-8'}`} />
+            <div className={`font-bold ${isMobile ? 'text-lg' : 'text-2xl'}`}>2-4</div>
+            <div className={`opacity-90 ${isMobile ? 'text-[10px]' : 'text-xs'}`}>Players</div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
-          <CardContent className="p-4 text-center">
-            <Clock className="h-8 w-8 mx-auto mb-2" />
-            <div className="text-2xl font-bold">5 min</div>
-            <div className="text-xs opacity-90">Per Turn</div>
+          <CardContent className={`text-center ${isMobile ? 'p-3' : 'p-4'}`}>
+            <Clock className={`mx-auto mb-1 md:mb-2 ${isMobile ? 'h-6 w-6' : 'h-8 w-8'}`} />
+            <div className={`font-bold ${isMobile ? 'text-lg' : 'text-2xl'}`}>5 min</div>
+            <div className={`opacity-90 ${isMobile ? 'text-[10px]' : 'text-xs'}`}>Per Turn</div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0">
-          <CardContent className="p-4 text-center">
-            <Target className="h-8 w-8 mx-auto mb-2" />
-            <div className="text-2xl font-bold">7</div>
-            <div className="text-xs opacity-90">Tiles per Player</div>
+          <CardContent className={`text-center ${isMobile ? 'p-3' : 'p-4'}`}>
+            <Target className={`mx-auto mb-1 md:mb-2 ${isMobile ? 'h-6 w-6' : 'h-8 w-8'}`} />
+            <div className={`font-bold ${isMobile ? 'text-lg' : 'text-2xl'}`}>7</div>
+            <div className={`opacity-90 ${isMobile ? 'text-[10px]' : 'text-xs'}`}>Tiles per Player</div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white border-0">
-          <CardContent className="p-4 text-center">
-            <Trophy className="h-8 w-8 mx-auto mb-2" />
-            <div className="text-2xl font-bold">50</div>
-            <div className="text-xs opacity-90">Bonus for 7 tiles</div>
+          <CardContent className={`text-center ${isMobile ? 'p-3' : 'p-4'}`}>
+            <Trophy className={`mx-auto mb-1 md:mb-2 ${isMobile ? 'h-6 w-6' : 'h-8 w-8'}`} />
+            <div className={`font-bold ${isMobile ? 'text-lg' : 'text-2xl'}`}>50</div>
+            <div className={`opacity-90 ${isMobile ? 'text-[10px]' : 'text-xs'}`}>Bonus for 7 tiles</div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Mobile Controls Guide */}
+      {isMobile && (
+        <Card className="bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Smartphone className="h-5 w-5 text-purple-600" />
+              Mobile Controls
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-3">
+              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                  1
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-sm">Select a Tile</p>
+                  <p className="text-xs text-gray-600">Tap any tile from your rack to select it</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                  2
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-sm">Place on Board</p>
+                  <p className="text-xs text-gray-600">Tap any empty cell on the board to place your tile</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                  3
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-sm">Confirm Move</p>
+                  <p className="text-xs text-gray-600">Tap "Play Word" when you're ready to submit</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+              <p className="text-sm text-yellow-800 font-medium mb-1">💡 Pro Tips:</p>
+              <ul className="text-xs text-yellow-700 space-y-1">
+                <li>• Selected tiles show a purple highlight</li>
+                <li>• Valid placement spots show subtle highlights</li>
+                <li>• Tap placed tiles to remove them</li>
+                <li>• Use "Clear" to remove all placed tiles</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <Tabs defaultValue="basics" className="w-full">
+        <TabsList className={`grid w-full ${isMobile ? 'grid-cols-2' : 'grid-cols-4'}`}>
+          <TabsTrigger value="basics" className={isMobile ? 'text-xs' : 'text-sm'}>Basics</TabsTrigger>
+          <TabsTrigger value="scoring" className={isMobile ? 'text-xs' : 'text-sm'}>Scoring</TabsTrigger>
+          {!isMobile && <TabsTrigger value="strategy" className="text-sm">Strategy</TabsTrigger>}
+          {!isMobile && <TabsTrigger value="coins" className="text-sm">Coins</TabsTrigger>}
+          {isMobile && (
+            <TabsTrigger value="more" className="text-xs">More</TabsTrigger>
+          )}
+        </TabsList>
+
+        <TabsContent value="basics" className="space-y-4">{/* Basics content will go here */}
 
       {/* Basic Rules */}
       <Card>
