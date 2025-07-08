@@ -252,16 +252,16 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
       <div className="max-w-5xl mx-auto px-6 pb-16">
         {filteredGames.length === 0 ? (
           <div className="text-center py-16">
-            <div className="text-6xl mb-4">🎮</div>
-            <h3 className="text-2xl font-light text-black mb-2">
+            <div className="text-6xl mb-4">{currentTheme.preview}</div>
+            <h3 className="text-2xl font-light text-foreground mb-2">
               No games found
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               No games match your current filter selection.
             </p>
             <Button
               onClick={() => setGameFilter("all")}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className={`bg-gradient-to-r ${currentTheme.gradients.primary} text-white`}
             >
               Show All Games
             </Button>
@@ -286,29 +286,38 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
                   )
                 }
               >
-                <Card className="bg-white border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-lg h-full">
-                  <CardContent className="p-6">
+                <Card
+                  className={`bg-card border border-border hover:border-primary/50 transition-all duration-200 hover:shadow-lg h-full relative overflow-hidden`}
+                >
+                  <div
+                    className={`absolute -inset-1 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-lg blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300`}
+                  ></div>
+                  <CardContent className="p-6 relative z-10">
                     <div className="flex items-start gap-4 mb-4">
                       <div className="flex-shrink-0">
-                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors duration-200">
-                          <game.icon className="w-6 h-6 text-gray-700" />
+                        <div
+                          className={`w-12 h-12 bg-gradient-to-r ${currentTheme.gradients.secondary}/20 rounded-lg flex items-center justify-center group-hover:bg-gradient-to-r group-hover:${currentTheme.gradients.secondary}/40 transition-all duration-200`}
+                        >
+                          <game.icon className="w-6 h-6 text-foreground" />
                         </div>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-lg font-medium text-black truncate">
+                          <h3 className="text-lg font-medium text-foreground truncate">
                             {game.title}
                           </h3>
                           {game.isPopular && (
-                            <Badge className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5">
+                            <Badge
+                              className={`bg-gradient-to-r ${currentTheme.gradients.accent}/20 text-primary text-xs px-2 py-0.5 border border-primary/20`}
+                            >
                               Popular
                             </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
                           {game.description}
                         </p>
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <Users className="w-3 h-3" />
                           <span>{game.players}</span>
                           {game.isPaid && (
@@ -325,7 +334,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
                     </div>
 
                     <div className="text-right">
-                      <span className="text-blue-600 text-sm font-medium group-hover:underline">
+                      <span className="text-primary text-sm font-medium group-hover:underline">
                         Play Now →
                       </span>
                     </div>
