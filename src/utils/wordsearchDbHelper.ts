@@ -84,7 +84,10 @@ export const createWordSearchGame = async (
   try {
     console.log("Creating Word Search game...");
 
+    const gameId = `wordsearch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
     const gameRecord: Partial<WordSearchGameRecord> = {
+      id: gameId,
       creator_id: creatorId,
       game_name: gameName,
       game_state: gameState,
