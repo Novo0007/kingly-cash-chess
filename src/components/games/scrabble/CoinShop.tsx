@@ -13,7 +13,11 @@ import {
   Crown,
   Zap,
 } from "lucide-react";
-import { purchaseCoins } from "@/utils/scrabbleDbHelper";
+import {
+  purchaseCoins,
+  claimFreeCoins,
+  hasClaimedFreeCoins,
+} from "@/utils/scrabbleDbHelper";
 import { toast } from "sonner";
 
 interface CoinShopProps {
