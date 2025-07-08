@@ -118,6 +118,14 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
     const result = await getUserCoins(user.id);
     if (result.success) {
       setUserCoins(result.coins);
+
+      // Check if this is a new user (first time getting coins)
+      if (result.totalEarned === 1300) {
+        // 1000 base + 300 bonus
+        toast.success(
+          "🎉 Welcome bonus! You received 300 extra coins for being a first-time player!",
+        );
+      }
     }
   };
 
