@@ -4,6 +4,7 @@ import { ScrabbleBoard } from "./ScrabbleBoard";
 import { ScrabbleLobby } from "./ScrabbleLobby";
 import { ScrabbleRules } from "./ScrabbleRules";
 import { CoinShop } from "./CoinShop";
+import { ScrabbleLeaderboard } from "./ScrabbleLeaderboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
