@@ -522,90 +522,105 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {gameState.players.map((player, index) => (
-            <div
-              key={player.id}
-              className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
-                index === gameState.currentPlayerIndex
-                  ? "bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-300 shadow-md"
-                  : "bg-gray-50 hover:bg-gray-100"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                {/* Player Avatar */}
-                <div className="relative">
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage
-                      src={playerProfiles.get(player.id)?.avatar_url || ""}
-                      alt={player.username}
-                    />
-                    <AvatarFallback
-                      className={`text-white font-bold text-sm ${
-                        player.id === user.id
-                          ? "bg-gradient-to-br from-blue-500 to-blue-600"
-                          : index === 0
-                            ? "bg-gradient-to-br from-green-500 to-green-600"
-                            : index === 1
-                              ? "bg-gradient-to-br from-purple-500 to-purple-600"
-                              : index === 2
-                                ? "bg-gradient-to-br from-orange-500 to-orange-600"
-                                : "bg-gradient-to-br from-red-500 to-red-600"
-                      }`}
-                    >
-                      {player.username.substring(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  {index === gameState.currentPlayerIndex && (
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
-                      <Crown className="h-3 w-3 text-white" />
+          {gameState.players.map((player, index) => {
+            const playerProfile = playerProfiles.get(player.id);
+            const displayName =
+              playerProfile?.username || player.username || "Player";
+
+            return (
+              <div
+                key={player.id}
+                className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
+                  index === gameState.currentPlayerIndex
+                    ? "bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-300 shadow-md"
+                    : "bg-gray-50 hover:bg-gray-100"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  {/* Player Avatar */}
+                  <div className="relative">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage
+                        src={playerProfile?.avatar_url || ""}
+                        alt={displayName}
+                      />
+                      <AvatarFallback
+                        className={`text-white font-bold text-sm ${
+                          player.id === user.id
+                            ? "bg-gradient-to-br from-blue-500 to-blue-600"
+                            : index === 0
+                              ? "bg-gradient-to-br from-green-500 to-green-600"
+                              : index === 1
+                                ? "bg-gradient-to-br from-purple-500 to-purple-600"
+                                : index === 2
+                                  ? "bg-gradient-to-br from-orange-500 to-orange-600"
+                                  : "bg-gradient-to-br from-red-500 to-red-600"
+                        }`}
+                      >
+                        {displayName.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    {index === gameState.currentPlayerIndex &&
+                      gameState.gameStatus === "active" && (
+                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
+                          <Crown className="h-3 w-3 text-white" />
+                        </div>
+                      )}
+                  </div>
+
+                  {/* Player Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        className={`font-medium truncate ${
+                          player.id === user.id
+                            ? "text-blue-600"
+                            : "text-gray-800"
+                        }`}
+                      >
+                        {displayName}
+                      </span>
+                      {player.id === user.id && (
+                        <Badge className="bg-blue-100 text-blue-800 text-xs">
+                          You
+                        </Badge>
+                      )}
+                      {index === gameState.currentPlayerIndex &&
+                        gameState.gameStatus === "active" && (
+                          <Badge className="bg-yellow-100 text-yellow-800 text-xs">
+                            Turn
+                          </Badge>
+                        )}
+                      {gameState.gameStatus === "waiting" && (
+                        <Badge className="bg-gray-100 text-gray-800 text-xs">
+                          Waiting
+                        </Badge>
+                      )}
                     </div>
-                  )}
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <span>Position #{index + 1}</span>
+                      {gameState.gameStatus === "active" && <span>•</span>}
+                      {gameState.gameStatus === "active" && (
+                        <span>{player.rack.length} tiles</span>
+                      )}
+                      {gameState.gameStatus === "waiting" && <span>•</span>}
+                      {gameState.gameStatus === "waiting" && <span>Ready</span>}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Player Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span
-                      className={`font-medium truncate ${
-                        player.id === user.id
-                          ? "text-blue-600"
-                          : "text-gray-800"
-                      }`}
-                    >
-                      {player.username}
-                    </span>
-                    {player.id === user.id && (
-                      <Badge className="bg-blue-100 text-blue-800 text-xs">
-                        You
-                      </Badge>
-                    )}
-                    {index === gameState.currentPlayerIndex && (
-                      <Badge className="bg-yellow-100 text-yellow-800 text-xs">
-                        Turn
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-600">
-                    <span>Position #{index + 1}</span>
-                    {gameState.gameStatus === "active" && <span>•</span>}
-                    {gameState.gameStatus === "active" && (
-                      <span>{player.rack.length} tiles</span>
-                    )}
+                {/* Player Stats */}
+                <div className="flex items-center gap-2">
+                  <div className="text-right">
+                    <div className="font-bold text-lg text-gray-800">
+                      {player.score}
+                    </div>
+                    <div className="text-xs text-gray-500">points</div>
                   </div>
                 </div>
               </div>
-
-              {/* Player Stats */}
-              <div className="flex items-center gap-2">
-                <div className="text-right">
-                  <div className="font-bold text-lg text-gray-800">
-                    {player.score}
-                  </div>
-                  <div className="text-xs text-gray-500">points</div>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* Waiting for more players - only show for multiplayer games */}
           {gameState.gameStatus === "waiting" &&
