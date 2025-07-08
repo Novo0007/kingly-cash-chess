@@ -51,6 +51,7 @@ export const createScrabbleGame = async (
   maxPlayers: number,
   entryFee: number,
   isFriendChallenge: boolean = false,
+  isSinglePlayer: boolean = false,
 ): Promise<{ success: boolean; gameId?: string; error?: string }> => {
   try {
     // Check if user has enough coins
