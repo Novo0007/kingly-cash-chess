@@ -825,20 +825,36 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
           <div className="space-y-4">
             {renderPlayerList()}
 
-            {gameState.gameStatus === "waiting" && (
-              <Card className="bg-yellow-50 border-yellow-200">
-                <CardContent className="p-4 text-center">
-                  <Clock className="h-8 w-8 mx-auto mb-2 text-yellow-600" />
-                  <p className="text-yellow-800 font-medium">
-                    Waiting for more players...
-                  </p>
-                  <p className="text-sm text-yellow-600 mt-1">
-                    Need {Math.max(0, 2 - gameState.players.length)} more
-                    player(s) to start
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+            {gameState.gameStatus === "waiting" &&
+              !gameState.gameSettings.isSinglePlayer && (
+                <Card className="bg-yellow-50 border-yellow-200">
+                  <CardContent className="p-4 text-center">
+                    <Clock className="h-8 w-8 mx-auto mb-2 text-yellow-600" />
+                    <p className="text-yellow-800 font-medium">
+                      Waiting for more players...
+                    </p>
+                    <p className="text-sm text-yellow-600 mt-1">
+                      Need {Math.max(0, 2 - gameState.players.length)} more
+                      player(s) to start
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+            {gameState.gameStatus === "waiting" &&
+              gameState.gameSettings.isSinglePlayer && (
+                <Card className="bg-green-50 border-green-200">
+                  <CardContent className="p-4 text-center">
+                    <Brain className="h-8 w-8 mx-auto mb-2 text-green-600" />
+                    <p className="text-green-800 font-medium">
+                      Single Player Practice Mode
+                    </p>
+                    <p className="text-sm text-green-600 mt-1">
+                      Perfect your Scrabble skills!
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
           </div>
         </div>
       </div>
