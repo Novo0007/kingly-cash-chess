@@ -358,6 +358,9 @@ export const CoinShop: React.FC<CoinShopProps> = ({
             {coinPackages.map((pkg) => {
               const totalCoins = pkg.coins + pkg.bonus;
               const isPurchasing = purchasing === pkg.id;
+              const displayPrice =
+                paymentRegion === "IN" ? pkg.priceINR : pkg.price;
+              const currency = paymentRegion === "IN" ? "₹" : "$";
 
               return (
                 <Card
@@ -419,7 +422,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
 
                     <Button
                       onClick={() => handlePurchase(pkg)}
-                      disabled={isPurchasing}
+                      disabled={isPurchasing || razorpayLoading}
                       className={`w-full bg-gradient-to-r ${pkg.gradient} hover:opacity-90 text-white`}
                       size="lg"
                     >
@@ -427,7 +430,22 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                         "Processing..."
                       ) : (
                         <div className="flex items-center gap-2">
-                          <CreditCard className="h-4 w-4" />${pkg.price}
+                          {paymentRegion === "IN" ? (
+                            <>
+                              <CreditCard className="h-4 w-4" />
+                              {currency}
+                              {displayPrice}
+                              <span className="text-xs opacity-75">
+                                via Razorpay
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <CreditCard className="h-4 w-4" />
+                              {currency}
+                              {displayPrice}
+                            </>
+                          )}
                         </div>
                       )}
                     </Button>
