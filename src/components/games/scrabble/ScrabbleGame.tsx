@@ -233,11 +233,9 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
           // Also handle when players join (update from scrabble_games table)
           if (payload.new && payload.eventType === "UPDATE") {
             const gameRecord = payload.new as ScrabbleGameRecord;
-            console.log("Game record updated:", gameRecord);
 
             // If we don't have a game state yet, but players have joined, reload
             if (!gameState && gameRecord.current_players > 1) {
-              console.log("Reloading game due to new players");
               // Trigger a reload of the game
               setTimeout(() => {
                 window.location.reload();
@@ -246,9 +244,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
           }
         },
       )
-      .subscribe((status) => {
-        console.log("Subscription status:", status);
-      });
+      .subscribe();
   }, [currentGameId, gameLogic, gameState, user.id]);
 
   const handleCreateGame = async (
