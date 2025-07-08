@@ -73,15 +73,17 @@ export const ScrabbleRules: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
       <Card className="bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0">
-        <CardHeader className="text-center">
-          <CardTitle className="flex items-center justify-center gap-2 text-2xl">
-            <BookOpen className="h-8 w-8" />
+        <CardHeader className="text-center p-4 md:p-6">
+          <CardTitle
+            className={`flex items-center justify-center gap-2 ${isMobile ? "text-xl" : "text-2xl"}`}
+          >
+            <BookOpen className={`${isMobile ? "h-6 w-6" : "h-8 w-8"}`} />
             Scrabble / Words with Friends Rules
           </CardTitle>
-          <p className="text-blue-100">
+          <p className="text-blue-100 text-sm md:text-base">
             Master the art of word-building and strategy!
           </p>
         </CardHeader>
