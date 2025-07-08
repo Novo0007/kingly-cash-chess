@@ -298,29 +298,40 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         return;
       }
 
-      // Create or load game logic
-      let logic: ScrabbleGameLogic;
-      if (game.game_state) {
-        // Game already has state, load it
-        logic = new ScrabbleGameLogic(gameId, {
-          entryCost: game.entry_fee,
-          maxPlayers: game.max_players,
-          isPrivate: game.is_friend_challenge,
-        });
-        // TODO: Load existing game state into logic
-      } else {
-        // New game, create fresh logic
-        logic = new ScrabbleGameLogic(gameId, {
-          entryCost: game.entry_fee,
-          maxPlayers: game.max_players,
-          isPrivate: game.is_friend_challenge,
-        });
-      }
+      // Create fresh game logic and add all players
+      const logic = new ScrabbleGameLogic(gameId, {
+        entryCost: game.entry_fee,
+        maxPlayers: game.max_players,
+        isPrivate: game.is_friend_challenge,
+      });
 
-      // Add current user to the game
-      const username =
-        user.user_metadata?.username || user.email?.split("@")[0] || "Player";
-      logic.addPlayer(user.id, username, userCoins);
+      // Add all existing players to the game logic
+      const playerIds = [
+        game.player1_id,
+        game.player2_id,
+        game.player3_id,
+        game.player4_id,
+      ].filter(Boolean);
+
+      // We need to get player info for all players
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, username")
+        .in("id", playerIds);
+
+      // Add each player to the game logic
+      for (const playerId of playerIds) {
+        const profile = profiles?.find((p) => p.id === playerId);
+        const playerUsername =
+          playerId === user.id
+            ? user.user_metadata?.username ||
+              user.email?.split("@")[0] ||
+              "Player"
+            : profile?.username || "Player";
+
+        const playerCoins = playerId === user.id ? userCoins : 1000; // Default coins for other players
+        logic.addPlayer(playerId, playerUsername, playerCoins);
+      }
 
       setGameLogic(logic);
       const newGameState = logic.getGameState();
