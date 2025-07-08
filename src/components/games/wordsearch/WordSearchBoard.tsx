@@ -193,11 +193,12 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
     });
   }, [dragState, onWordFound]);
 
-  // Touch events for mobile
+  // Enhanced touch events for mobile with better responsiveness
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
       if (!isActive) return;
 
+      e.preventDefault(); // Prevent context menu and other touch behaviors
       const touch = e.touches[0];
       const target = document.elementFromPoint(
         touch.clientX,
@@ -207,6 +208,11 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
       if (target && target.classList.contains("word-cell")) {
         const position = getCellPosition(target);
         if (position) {
+          // Add haptic feedback for mobile
+          if (window.navigator && (window.navigator as any).vibrate) {
+            (window.navigator as any).vibrate(10);
+          }
+
           setDragState({
             isDragging: true,
             startCell: position,
@@ -223,12 +229,39 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
     (e: React.TouchEvent) => {
       if (!dragState.isDragging || !dragState.startCell) return;
 
-      e.preventDefault(); // Prevent scrolling
+      e.preventDefault(); // Prevent scrolling and page interactions
       const touch = e.touches[0];
-      const target = document.elementFromPoint(
+
+      // Use a slightly larger touch area for better mobile experience
+      const touchRadius = 10;
+      let target = document.elementFromPoint(
         touch.clientX,
         touch.clientY,
       ) as HTMLElement;
+
+      // If no direct hit, try nearby points for better touch detection
+      if (!target || !target.classList.contains("word-cell")) {
+        for (const offset of [
+          [-touchRadius, 0],
+          [touchRadius, 0],
+          [0, -touchRadius],
+          [0, touchRadius],
+          [-touchRadius, -touchRadius],
+          [touchRadius, touchRadius],
+          [-touchRadius, touchRadius],
+          [touchRadius, -touchRadius],
+        ]) {
+          const nearbyTarget = document.elementFromPoint(
+            touch.clientX + offset[0],
+            touch.clientY + offset[1],
+          ) as HTMLElement;
+
+          if (nearbyTarget && nearbyTarget.classList.contains("word-cell")) {
+            target = nearbyTarget;
+            break;
+          }
+        }
+      }
 
       if (target && target.classList.contains("word-cell")) {
         const position = getCellPosition(target);
@@ -255,9 +288,21 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
     ],
   );
 
-  const handleTouchEnd = useCallback(() => {
-    handleMouseUp();
-  }, [handleMouseUp]);
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      e.preventDefault();
+
+      // Add completion haptic feedback
+      if (window.navigator && (window.navigator as any).vibrate) {
+        if (dragState.selectedCells.length >= 2) {
+          (window.navigator as any).vibrate([20, 50, 20]); // Success pattern
+        }
+      }
+
+      handleMouseUp();
+    },
+    [handleMouseUp, dragState.selectedCells.length],
+  );
 
   const isCellSelected = useCallback(
     (row: number, col: number): boolean => {
