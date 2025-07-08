@@ -75,9 +75,30 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
   useEffect(() => {
     loadAvailableGames();
 
-    // Refresh games every 10 seconds
-    const interval = setInterval(loadAvailableGames, 10000);
-    return () => clearInterval(interval);
+    // Set up real-time subscription for game updates
+    const channel = supabase
+      .channel("scrabble_lobby")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "scrabble_games",
+        },
+        (payload) => {
+          // Reload available games when any game changes
+          loadAvailableGames();
+        },
+      )
+      .subscribe();
+
+    // Also refresh games every 30 seconds as fallback
+    const interval = setInterval(loadAvailableGames, 30000);
+
+    return () => {
+      channel.unsubscribe();
+      clearInterval(interval);
+    };
   }, []);
 
   const loadAvailableGames = async () => {
