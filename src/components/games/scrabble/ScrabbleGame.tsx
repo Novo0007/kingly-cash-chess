@@ -742,7 +742,24 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
             />
           </TabsContent>
 
-          <TabsContent value="rules">
+          <TabsContent value="rules" className="space-y-4">
+            <Card className="bg-blue-50 border-blue-200">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <BookOpen className="h-5 w-5 text-blue-600" />
+                  <span className="font-medium text-blue-800">
+                    {isMobile
+                      ? "Quick Rules Guide"
+                      : "Complete Rules & Strategy Guide"}
+                  </span>
+                </div>
+                <p className="text-sm text-blue-700">
+                  {isMobile
+                    ? "Learn the basics and mobile controls for playing Scrabble"
+                    : "Everything you need to know about playing Scrabble, including strategy tips and scoring"}
+                </p>
+              </CardContent>
+            </Card>
             <ScrabbleRules />
           </TabsContent>
 
