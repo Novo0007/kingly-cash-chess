@@ -93,6 +93,18 @@ export const CoinShop: React.FC<CoinShopProps> = ({
     { id: "wallet", name: "Digital Wallet", icon: Wallet, available: true },
   ];
 
+  // Check if user has already claimed free coins
+  React.useEffect(() => {
+    const checkFreeClaimStatus = async () => {
+      const result = await hasClaimedFreeCoins(userId);
+      if (result.success) {
+        setHasClaimedFree(result.hasClaimed);
+      }
+    };
+
+    checkFreeClaimStatus();
+  }, [userId]);
+
   const handlePurchase = async (packageData: (typeof coinPackages)[0]) => {
     setIsLoading(packageData.id);
 
