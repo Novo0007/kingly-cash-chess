@@ -45,6 +45,7 @@ interface ScrabbleLobbyProps {
     maxPlayers: number,
     entryFee: number,
     isPrivate: boolean,
+    isSinglePlayer?: boolean,
   ) => void;
   onJoinGame: (gameId: string) => void;
   userCoins: number;
