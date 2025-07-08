@@ -72,7 +72,7 @@ export const createScrabbleGame = async (
       player3_id: null,
       player4_id: null,
       current_players: 1,
-      max_players: isSinglePlayer ? 2 : maxPlayers, // Set to 2 for single player to satisfy DB constraint
+      max_players: maxPlayers >= 2 ? maxPlayers : 2, // Ensure at least 2 to satisfy DB constraint
       entry_fee: entryFee,
       prize_amount: entryFee, // Initial prize pool
       winner_id: null,

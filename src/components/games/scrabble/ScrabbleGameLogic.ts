@@ -781,6 +781,16 @@ export class ScrabbleGameLogic {
     return this.gameState;
   }
 
+  updateGameState(newState: ScrabbleGameState): void {
+    this.gameState = newState;
+  }
+
+  forceStartGame(): void {
+    if (this.gameState.gameStatus === "waiting") {
+      this.startGame();
+    }
+  }
+
   getCurrentPlayer(): Player | null {
     if (this.gameState.players.length === 0) return null;
     return this.gameState.players[this.gameState.currentPlayerIndex];

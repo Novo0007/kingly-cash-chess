@@ -86,7 +86,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
 
   // Set up real-time subscription for game updates
   useEffect(() => {
-    if (currentGameId && currentView === "game") {
+    if (currentGameId) {
       setupGameSubscription();
     }
 
@@ -95,7 +95,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         gameSubscriptionRef.current.unsubscribe();
       }
     };
-  }, [currentGameId, currentView]);
+  }, [currentGameId]);
 
   // Timer effect
   useEffect(() => {
@@ -184,12 +184,13 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
 
             if (gameLogic) {
               // Update local game logic with new state
-              gameLogic.getGameState = () => newGameState;
+              gameLogic.updateGameState(newGameState);
             }
 
             // Load player profiles if we have new players
             if (newGameState.players.length > 0) {
               const playerIds = newGameState.players.map((p) => p.id);
+              // Always reload profiles to ensure we have latest data
               loadPlayerProfiles(playerIds);
 
               // Notify when a new player joins (but not for the first update)
@@ -205,15 +206,46 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
               }
             }
 
+            // Auto-start game when it becomes full
+            if (
+              newGameState.gameStatus === "waiting" &&
+              newGameState.players.length >= 2 && // Minimum for multiplayer
+              newGameState.players.length ===
+                newGameState.gameSettings.maxPlayers &&
+              !newGameState.gameSettings.isSinglePlayer
+            ) {
+              // Start the game automatically
+              if (gameLogic) {
+                gameLogic.forceStartGame();
+                const updatedState = gameLogic.getGameState();
+                setGameState(updatedState);
+                updateScrabbleGameState(currentGameId, updatedState);
+                toast.success("🎮 Game is starting! All players have joined!");
+              }
+            }
+
             // Check for game completion
             if (newGameState.gameStatus === "completed") {
               handleGameCompletion(newGameState);
             }
           }
+
+          // Also handle when players join (update from scrabble_games table)
+          if (payload.new && payload.eventType === "UPDATE") {
+            const gameRecord = payload.new as ScrabbleGameRecord;
+
+            // If we don't have a game state yet, but players have joined, reload
+            if (!gameState && gameRecord.current_players > 1) {
+              // Trigger a reload of the game
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            }
+          }
         },
       )
       .subscribe();
-  }, [currentGameId, gameLogic]);
+  }, [currentGameId, gameLogic, gameState, user.id]);
 
   const handleCreateGame = async (
     gameName: string,
@@ -242,7 +274,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         // Create game logic
         const logic = new ScrabbleGameLogic(result.gameId, {
           entryCost: entryFee,
-          maxPlayers,
+          maxPlayers: isSinglePlayer ? 1 : maxPlayers,
           isPrivate,
           isSinglePlayer,
         });
@@ -304,16 +336,15 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         return;
       }
 
-      // Detect if this is a single player game (max_players is 2 but created as single player)
+      // Check if this is a single player game by looking at the existing game state
+      const existingGameState = game.game_state as ScrabbleGameState | null;
       const isSinglePlayerGame =
-        game.max_players === 2 &&
-        game.is_friend_challenge &&
-        game.current_players === 1;
+        existingGameState?.gameSettings?.isSinglePlayer || false;
 
       // Create fresh game logic and add all players
       const logic = new ScrabbleGameLogic(gameId, {
         entryCost: game.entry_fee,
-        maxPlayers: isSinglePlayerGame ? 1 : game.max_players,
+        maxPlayers: game.max_players,
         isPrivate: game.is_friend_challenge,
         isSinglePlayer: isSinglePlayerGame,
       });
@@ -332,18 +363,23 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         .select("id, username")
         .in("id", playerIds);
 
-      // Add each player to the game logic
-      for (const playerId of playerIds) {
-        const profile = profiles?.find((p) => p.id === playerId);
-        const playerUsername =
-          playerId === user.id
-            ? user.user_metadata?.username ||
-              user.email?.split("@")[0] ||
-              "Player"
-            : profile?.username || "Player";
+      // If there's an existing game state, restore it
+      if (existingGameState) {
+        logic.updateGameState(existingGameState);
+      } else {
+        // Add each player to the game logic
+        for (const playerId of playerIds) {
+          const profile = profiles?.find((p) => p.id === playerId);
+          const playerUsername =
+            playerId === user.id
+              ? user.user_metadata?.username ||
+                user.email?.split("@")[0] ||
+                "Player"
+              : profile?.username || "Player";
 
-        const playerCoins = playerId === user.id ? userCoins : 1000; // Default coins for other players
-        logic.addPlayer(playerId, playerUsername, playerCoins);
+          const playerCoins = playerId === user.id ? userCoins : 1000; // Default coins for other players
+          logic.addPlayer(playerId, playerUsername, playerCoins);
+        }
       }
 
       setGameLogic(logic);
@@ -500,90 +536,105 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {gameState.players.map((player, index) => (
-            <div
-              key={player.id}
-              className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
-                index === gameState.currentPlayerIndex
-                  ? "bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-300 shadow-md"
-                  : "bg-gray-50 hover:bg-gray-100"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                {/* Player Avatar */}
-                <div className="relative">
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage
-                      src={playerProfiles.get(player.id)?.avatar_url || ""}
-                      alt={player.username}
-                    />
-                    <AvatarFallback
-                      className={`text-white font-bold text-sm ${
-                        player.id === user.id
-                          ? "bg-gradient-to-br from-blue-500 to-blue-600"
-                          : index === 0
-                            ? "bg-gradient-to-br from-green-500 to-green-600"
-                            : index === 1
-                              ? "bg-gradient-to-br from-purple-500 to-purple-600"
-                              : index === 2
-                                ? "bg-gradient-to-br from-orange-500 to-orange-600"
-                                : "bg-gradient-to-br from-red-500 to-red-600"
-                      }`}
-                    >
-                      {player.username.substring(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  {index === gameState.currentPlayerIndex && (
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
-                      <Crown className="h-3 w-3 text-white" />
+          {gameState.players.map((player, index) => {
+            const playerProfile = playerProfiles.get(player.id);
+            const displayName =
+              playerProfile?.username || player.username || "Player";
+
+            return (
+              <div
+                key={player.id}
+                className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
+                  index === gameState.currentPlayerIndex
+                    ? "bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-300 shadow-md"
+                    : "bg-gray-50 hover:bg-gray-100"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  {/* Player Avatar */}
+                  <div className="relative">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage
+                        src={playerProfile?.avatar_url || ""}
+                        alt={displayName}
+                      />
+                      <AvatarFallback
+                        className={`text-white font-bold text-sm ${
+                          player.id === user.id
+                            ? "bg-gradient-to-br from-blue-500 to-blue-600"
+                            : index === 0
+                              ? "bg-gradient-to-br from-green-500 to-green-600"
+                              : index === 1
+                                ? "bg-gradient-to-br from-purple-500 to-purple-600"
+                                : index === 2
+                                  ? "bg-gradient-to-br from-orange-500 to-orange-600"
+                                  : "bg-gradient-to-br from-red-500 to-red-600"
+                        }`}
+                      >
+                        {displayName.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    {index === gameState.currentPlayerIndex &&
+                      gameState.gameStatus === "active" && (
+                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
+                          <Crown className="h-3 w-3 text-white" />
+                        </div>
+                      )}
+                  </div>
+
+                  {/* Player Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        className={`font-medium truncate ${
+                          player.id === user.id
+                            ? "text-blue-600"
+                            : "text-gray-800"
+                        }`}
+                      >
+                        {displayName}
+                      </span>
+                      {player.id === user.id && (
+                        <Badge className="bg-blue-100 text-blue-800 text-xs">
+                          You
+                        </Badge>
+                      )}
+                      {index === gameState.currentPlayerIndex &&
+                        gameState.gameStatus === "active" && (
+                          <Badge className="bg-yellow-100 text-yellow-800 text-xs">
+                            Turn
+                          </Badge>
+                        )}
+                      {gameState.gameStatus === "waiting" && (
+                        <Badge className="bg-gray-100 text-gray-800 text-xs">
+                          Waiting
+                        </Badge>
+                      )}
                     </div>
-                  )}
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <span>Position #{index + 1}</span>
+                      {gameState.gameStatus === "active" && <span>•</span>}
+                      {gameState.gameStatus === "active" && (
+                        <span>{player.rack.length} tiles</span>
+                      )}
+                      {gameState.gameStatus === "waiting" && <span>•</span>}
+                      {gameState.gameStatus === "waiting" && <span>Ready</span>}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Player Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span
-                      className={`font-medium truncate ${
-                        player.id === user.id
-                          ? "text-blue-600"
-                          : "text-gray-800"
-                      }`}
-                    >
-                      {player.username}
-                    </span>
-                    {player.id === user.id && (
-                      <Badge className="bg-blue-100 text-blue-800 text-xs">
-                        You
-                      </Badge>
-                    )}
-                    {index === gameState.currentPlayerIndex && (
-                      <Badge className="bg-yellow-100 text-yellow-800 text-xs">
-                        Turn
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-600">
-                    <span>Position #{index + 1}</span>
-                    {gameState.gameStatus === "active" && <span>•</span>}
-                    {gameState.gameStatus === "active" && (
-                      <span>{player.rack.length} tiles</span>
-                    )}
+                {/* Player Stats */}
+                <div className="flex items-center gap-2">
+                  <div className="text-right">
+                    <div className="font-bold text-lg text-gray-800">
+                      {player.score}
+                    </div>
+                    <div className="text-xs text-gray-500">points</div>
                   </div>
                 </div>
               </div>
-
-              {/* Player Stats */}
-              <div className="flex items-center gap-2">
-                <div className="text-right">
-                  <div className="font-bold text-lg text-gray-800">
-                    {player.score}
-                  </div>
-                  <div className="text-xs text-gray-500">points</div>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* Waiting for more players - only show for multiplayer games */}
           {gameState.gameStatus === "waiting" &&
@@ -691,7 +742,24 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
             />
           </TabsContent>
 
-          <TabsContent value="rules">
+          <TabsContent value="rules" className="space-y-4">
+            <Card className="bg-blue-50 border-blue-200">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <BookOpen className="h-5 w-5 text-blue-600" />
+                  <span className="font-medium text-blue-800">
+                    {isMobile
+                      ? "Quick Rules Guide"
+                      : "Complete Rules & Strategy Guide"}
+                  </span>
+                </div>
+                <p className="text-sm text-blue-700">
+                  {isMobile
+                    ? "Learn the basics and mobile controls for playing Scrabble"
+                    : "Everything you need to know about playing Scrabble, including strategy tips and scoring"}
+                </p>
+              </CardContent>
+            </Card>
             <ScrabbleRules />
           </TabsContent>
 
@@ -834,8 +902,16 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
                       Waiting for more players...
                     </p>
                     <p className="text-sm text-yellow-600 mt-1">
-                      Need {Math.max(0, 2 - gameState.players.length)} more
-                      player(s) to start
+                      Need{" "}
+                      {Math.max(
+                        0,
+                        gameState.gameSettings.maxPlayers -
+                          gameState.players.length,
+                      )}{" "}
+                      more player(s) to start
+                    </p>
+                    <p className="text-xs text-yellow-500 mt-2">
+                      Game will start automatically when full
                     </p>
                   </CardContent>
                 </Card>

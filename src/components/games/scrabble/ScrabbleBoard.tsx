@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +10,15 @@ import {
   BOARD_MULTIPLIERS,
 } from "./ScrabbleGameLogic";
 import { cn } from "@/lib/utils";
-import { Trash2, RotateCcw, CheckCircle, X } from "lucide-react";
+import {
+  Trash2,
+  RotateCcw,
+  CheckCircle,
+  X,
+  Smartphone,
+  Mouse,
+} from "lucide-react";
+import { useDeviceType } from "@/hooks/use-mobile";
 import "./scrabble.css";
 
 interface ScrabbleBoardProps {
@@ -38,7 +46,9 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
   onPass,
   className,
 }) => {
+  const { isMobile } = useDeviceType();
   const [draggedTile, setDraggedTile] = useState<DraggedTile | null>(null);
+  const [selectedTile, setSelectedTile] = useState<ScrabbleTile | null>(null);
   const [placedTiles, setPlacedTiles] = useState<
     { tile: ScrabbleTile; position: { row: number; col: number } }[]
   >([]);
@@ -46,11 +56,19 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
     Set<string>
   >(new Set());
   const [isExchangeMode, setIsExchangeMode] = useState(false);
+  const [touchMode, setTouchMode] = useState<"drag" | "select">("select");
   const boardRef = useRef<HTMLDivElement>(null);
 
   const currentPlayer = gameState.players.find((p) => p.id === currentPlayerId);
   const isCurrentPlayerTurn =
     gameState.players[gameState.currentPlayerIndex]?.id === currentPlayerId;
+
+  // Auto-detect touch mode on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setTouchMode("select");
+    }
+  }, [isMobile]);
 
   const getCellMultiplierDisplay = useCallback((row: number, col: number) => {
     const key = `${row},${col}`;
@@ -150,6 +168,76 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
     [draggedTile, isCurrentPlayerTurn, gameState.board, placedTiles],
   );
 
+  // Touch-based tile placement for mobile
+  const handleCellTouch = useCallback(
+    (row: number, col: number) => {
+      if (!isCurrentPlayerTurn || isExchangeMode) return;
+
+      // If we have a selected tile, place it
+      if (selectedTile && touchMode === "select") {
+        // Check if cell is already occupied by a permanent tile
+        const existingTile = gameState.board[row][col].tile;
+        const placedTile = placedTiles.find(
+          (pt) => pt.position.row === row && pt.position.col === col,
+        );
+
+        if (existingTile && !placedTile) {
+          return;
+        }
+
+        // Remove any existing placed tile at this position
+        setPlacedTiles((prev) =>
+          prev.filter(
+            (pt) => !(pt.position.row === row && pt.position.col === col),
+          ),
+        );
+
+        // Add the tile to the new position
+        setPlacedTiles((prev) => [
+          ...prev,
+          {
+            tile: selectedTile,
+            position: { row, col },
+          },
+        ]);
+
+        setSelectedTile(null);
+      }
+    },
+    [
+      isCurrentPlayerTurn,
+      isExchangeMode,
+      selectedTile,
+      touchMode,
+      gameState.board,
+      placedTiles,
+    ],
+  );
+
+  // Handle tile selection for mobile
+  const handleTileSelect = useCallback(
+    (tile: ScrabbleTile, source: "rack" | "board") => {
+      if (!isCurrentPlayerTurn) return;
+
+      if (isExchangeMode && source === "rack") {
+        handleTileClickForExchange(tile);
+        return;
+      }
+
+      if (touchMode === "select") {
+        // In select mode, just select the tile
+        setSelectedTile(selectedTile?.id === tile.id ? null : tile);
+      }
+    },
+    [
+      isCurrentPlayerTurn,
+      isExchangeMode,
+      touchMode,
+      selectedTile,
+      handleTileClickForExchange,
+    ],
+  );
+
   const handleReturnToRack = useCallback((tileId: string) => {
     setPlacedTiles((prev) => prev.filter((pt) => pt.tile.id !== tileId));
   }, []);
@@ -200,36 +288,66 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
       position?: { row: number; col: number },
     ) => {
       const isSelected = selectedTilesForExchange.has(tile.id);
+      const isSelectedForPlacement = selectedTile?.id === tile.id;
 
       return (
         <div
           key={tile.id}
-          draggable={isCurrentPlayerTurn && !isExchangeMode}
+          draggable={!isMobile && isCurrentPlayerTurn && !isExchangeMode}
           onDragStart={(e) => {
-            if (isExchangeMode) {
+            if (isMobile || isExchangeMode) {
               e.preventDefault();
               return;
             }
             handleDragStart(tile, isPlaced ? "board" : "rack", position);
           }}
           onClick={() => {
-            if (isExchangeMode && !isPlaced) {
-              handleTileClickForExchange(tile);
-            } else if (isPlaced) {
-              handleReturnToRack(tile.id);
+            if (isMobile) {
+              handleTileSelect(tile, isPlaced ? "board" : "rack");
+            } else {
+              if (isExchangeMode && !isPlaced) {
+                handleTileClickForExchange(tile);
+              } else if (isPlaced) {
+                handleReturnToRack(tile.id);
+              }
+            }
+          }}
+          onTouchStart={(e) => {
+            // Prevent default to avoid scroll
+            if (isCurrentPlayerTurn) {
+              e.preventDefault();
             }
           }}
           className={cn(
-            "relative w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-amber-100 to-amber-200 border-2 border-amber-400 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg",
-            isCurrentPlayerTurn && "cursor-grab active:cursor-grabbing",
+            "relative w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-amber-100 to-amber-200 border-2 border-amber-400 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200",
+            isCurrentPlayerTurn &&
+              !isMobile &&
+              "cursor-grab active:cursor-grabbing",
+            isCurrentPlayerTurn &&
+              isMobile &&
+              "hover:scale-105 active:scale-95",
+            !isMobile && "hover:scale-105 hover:shadow-lg",
             isSelected && "ring-2 ring-blue-500 bg-blue-100",
+            isSelectedForPlacement && "ring-2 ring-purple-500 bg-purple-100",
             isPlaced && "ring-2 ring-green-500",
+            // Larger touch targets on mobile
+            isMobile && "w-10 h-10 md:w-12 md:h-12 text-sm md:text-base",
           )}
         >
-          <span className="text-xs md:text-sm font-bold text-amber-900">
+          <span
+            className={cn(
+              "font-bold text-amber-900",
+              isMobile ? "text-sm md:text-base" : "text-xs md:text-sm",
+            )}
+          >
             {tile.letter || "?"}
           </span>
-          <span className="absolute bottom-0 right-0 text-[8px] md:text-[10px] font-bold text-amber-800">
+          <span
+            className={cn(
+              "absolute bottom-0 right-0 font-bold text-amber-800",
+              isMobile ? "text-[10px] md:text-xs" : "text-[8px] md:text-[10px]",
+            )}
+          >
             {tile.value}
           </span>
           {isPlaced && (
@@ -238,21 +356,34 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
                 e.stopPropagation();
                 handleReturnToRack(tile.id);
               }}
-              className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] hover:bg-red-600"
+              className={cn(
+                "absolute bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600",
+                isMobile
+                  ? "-top-1 -right-1 w-5 h-5 text-xs"
+                  : "-top-1 -right-1 w-4 h-4 text-[10px]",
+              )}
             >
-              <X className="w-2 h-2" />
+              <X className={isMobile ? "w-3 h-3" : "w-2 h-2"} />
             </button>
+          )}
+          {isSelectedForPlacement && isMobile && (
+            <div className="absolute -top-1 -left-1 w-4 h-4 bg-purple-500 text-white rounded-full flex items-center justify-center text-[8px]">
+              ✓
+            </div>
           )}
         </div>
       );
     },
     [
+      isMobile,
       isCurrentPlayerTurn,
       isExchangeMode,
       selectedTilesForExchange,
+      selectedTile,
       handleTileClickForExchange,
       handleReturnToRack,
       handleDragStart,
+      handleTileSelect,
     ],
   );
 
@@ -264,20 +395,40 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
       const displayTile = placedTile?.tile || cell.tile;
       const multiplierText = getCellMultiplierDisplay(row, col);
       const cellColor = getCellMultiplierColor(row, col);
+      const canPlaceHere = selectedTile && !cell.tile && !placedTile;
 
       return (
         <div
           key={`${row}-${col}`}
           className={cn(
-            "relative w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 border border-gray-300 flex items-center justify-center text-[8px] md:text-[10px] font-bold transition-all duration-200",
+            "relative border border-gray-300 flex items-center justify-center font-bold transition-all duration-200",
+            // Responsive sizing
+            isMobile
+              ? "w-5 h-5 md:w-7 md:h-7 text-[6px] md:text-[8px]"
+              : "w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 text-[8px] md:text-[10px]",
             cellColor,
             displayTile ? "bg-gray-100" : "",
             row === 7 && col === 7 && !displayTile
               ? "text-yellow-800"
               : "text-white",
+            // Touch interaction indicators
+            canPlaceHere &&
+              isMobile &&
+              "ring-2 ring-purple-400 ring-opacity-50",
+            canPlaceHere && "cursor-pointer",
           )}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, row, col)}
+          onDragOver={!isMobile ? handleDragOver : undefined}
+          onDrop={!isMobile ? (e) => handleDrop(e, row, col) : undefined}
+          onClick={isMobile ? () => handleCellTouch(row, col) : undefined}
+          onTouchStart={
+            isMobile
+              ? (e) => {
+                  if (canPlaceHere) {
+                    e.preventDefault();
+                  }
+                }
+              : undefined
+          }
         >
           {displayTile ? (
             renderTile(displayTile, true, { row, col })
@@ -296,11 +447,14 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
       );
     },
     [
+      isMobile,
       placedTiles,
+      selectedTile,
       getCellMultiplierDisplay,
       getCellMultiplierColor,
       handleDragOver,
       handleDrop,
+      handleCellTouch,
       renderTile,
     ],
   );
@@ -354,10 +508,50 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
         </Card>
       )}
 
+      {/* Mobile Controls */}
+      {isMobile && (
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-blue-800">
+                Touch Mode:
+              </span>
+              <div className="flex items-center gap-2">
+                <Smartphone className="w-4 h-4 text-blue-600" />
+                <Badge variant="outline" className="text-blue-700">
+                  Tap to Play
+                </Badge>
+              </div>
+            </div>
+            <p className="text-xs text-blue-700">
+              {selectedTile
+                ? `Selected: ${selectedTile.letter || "?"} - Tap a board cell to place it`
+                : "Tap a tile from your rack to select it, then tap a board cell to place it"}
+            </p>
+            {selectedTile && (
+              <Button
+                onClick={() => setSelectedTile(null)}
+                variant="outline"
+                size="sm"
+                className="mt-2 text-xs"
+              >
+                Clear Selection
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Game Board */}
       <Card className="overflow-hidden">
-        <CardContent className="p-2 md:p-4">
-          <div ref={boardRef} className="scrabble-board">
+        <CardContent className={cn("p-2 md:p-4", isMobile && "p-1")}>
+          <div
+            ref={boardRef}
+            className={cn(
+              "scrabble-board",
+              isMobile && "scrabble-board-mobile",
+            )}
+          >
             {gameState.board.map((row, rowIndex) =>
               row.map((cell, colIndex) =>
                 renderBoardCell(cell, rowIndex, colIndex),
@@ -393,13 +587,15 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
 
           {/* Action Buttons */}
           {isCurrentPlayerTurn && (
-            <div className="flex flex-wrap gap-2">
+            <div
+              className={`flex flex-wrap gap-2 ${isMobile ? "justify-center" : ""}`}
+            >
               {isExchangeMode ? (
                 <>
                   <Button
                     onClick={handleConfirmExchange}
                     disabled={selectedTilesForExchange.size === 0}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className={`bg-blue-600 hover:bg-blue-700 ${isMobile ? "flex-1 min-w-[120px]" : ""}`}
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
                     Exchange {selectedTilesForExchange.size} Tiles
@@ -410,6 +606,7 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
                       setSelectedTilesForExchange(new Set());
                     }}
                     variant="outline"
+                    className={isMobile ? "flex-1" : ""}
                   >
                     Cancel
                   </Button>
@@ -419,15 +616,16 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
                   <Button
                     onClick={handleConfirmMove}
                     disabled={placedTiles.length === 0}
-                    className="bg-green-600 hover:bg-green-700"
+                    className={`bg-green-600 hover:bg-green-700 ${isMobile ? "flex-1 min-w-[100px]" : ""}`}
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    Play Word
+                    {isMobile ? "Play" : "Play Word"}
                   </Button>
                   <Button
                     onClick={handleClearBoard}
                     disabled={placedTiles.length === 0}
                     variant="outline"
+                    className={isMobile ? "flex-1" : ""}
                   >
                     <RotateCcw className="w-4 h-4 mr-2" />
                     Clear
@@ -436,23 +634,53 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
                     onClick={() => setIsExchangeMode(true)}
                     disabled={gameState.tileBag.length < 7}
                     variant="outline"
+                    className={isMobile ? "flex-1" : ""}
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Exchange
+                    {isMobile ? "Swap" : "Exchange"}
                   </Button>
-                  <Button onClick={onPass} variant="outline">
-                    Pass Turn
+                  <Button
+                    onClick={onPass}
+                    variant="outline"
+                    className={isMobile ? "flex-1" : ""}
+                  >
+                    Pass
                   </Button>
                 </>
               )}
             </div>
           )}
 
+          {/* Clear selection button for mobile */}
+          {isMobile && selectedTile && (
+            <div className="mt-2">
+              <Button
+                onClick={() => setSelectedTile(null)}
+                variant="outline"
+                size="sm"
+                className="w-full"
+              >
+                Clear Selection ({selectedTile.letter || "?"})
+              </Button>
+            </div>
+          )}
+
           {isExchangeMode && (
             <div className="mt-2 p-2 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
-                Click tiles to select them for exchange. You can exchange up to
-                7 tiles.
+                {isMobile ? "Tap" : "Click"} tiles to select them for exchange.
+                You can exchange up to 7 tiles.
+              </p>
+            </div>
+          )}
+
+          {/* Mobile help text */}
+          {isMobile && !isExchangeMode && isCurrentPlayerTurn && (
+            <div className="mt-2 p-2 bg-green-50 rounded-lg border border-green-200">
+              <p className="text-xs text-green-800">
+                {selectedTile
+                  ? `Selected: ${selectedTile.letter || "?"} - Tap an empty board cell to place it`
+                  : "Tap a tile from your rack, then tap the board to place it"}
               </p>
             </div>
           )}
