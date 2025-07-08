@@ -20,6 +20,9 @@ This project includes a comprehensive theme system with multiple beautiful theme
 - ✅ CSS custom properties for dynamic styling
 - ✅ Applied across all game lobbies and components
 - ✅ Theme-specific animations and effects
+- ✅ **Beautiful themed loading screen** with smooth animations
+- ✅ **Mobile-optimized** loading experience
+- ✅ **Floating particles** and dynamic backgrounds
 
 ### How to Use:
 
@@ -28,11 +31,23 @@ This project includes a comprehensive theme system with multiple beautiful theme
 3. Click any theme to instantly apply it
 4. Your preference is automatically saved
 
+### 🌟 Loading Screen:
+
+The app features a stunning theme-aware loading screen with:
+
+- **Dynamic backgrounds** that match the selected theme
+- **Floating particle animations** for visual appeal
+- **Smooth progress animations** with shimmer effects
+- **Responsive design** optimized for mobile devices
+- **Theme-specific colors** and gradients throughout
+- **Staggered entrance animations** for smooth loading
+
 ### For Developers:
 
 - Themes are defined in `src/types/themes.ts`
 - Context provider in `src/contexts/ThemeContext.tsx`
 - Theme selector component in `src/components/profile/ThemeSelector.tsx`
+- Loading screen component in `src/App.tsx` (LoadingScreen component)
 - CSS variables automatically updated on theme change
 - Use `useTheme()` hook to access current theme in components
 
