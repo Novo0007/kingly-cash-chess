@@ -13,10 +13,12 @@ import {
   Crown,
   Sparkles,
   History,
+  MapPin,
 } from "lucide-react";
 import { addCoins, getUserCoinBalance } from "@/utils/wordsearchDbHelper";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
+import { useRazorpay, convertUSDToINR, formatINR } from "@/hooks/useRazorpay";
 import type { User } from "@supabase/supabase-js";
 
 interface CoinShopProps {
@@ -31,6 +33,7 @@ interface CoinPackage {
   name: string;
   coins: number;
   price: number;
+  priceINR: number;
   bonus: number;
   popular?: boolean;
   bestValue?: boolean;
@@ -46,8 +49,10 @@ export const CoinShop: React.FC<CoinShopProps> = ({
   onPurchaseComplete,
 }) => {
   const { isMobile } = useDeviceType();
+  const { initiatePayment, isLoading: razorpayLoading } = useRazorpay();
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [lastFreeCoins, setLastFreeCoins] = useState<string | null>(null);
+  const [paymentRegion, setPaymentRegion] = useState<"US" | "IN">("IN"); // Default to India
 
   // Check if user can claim free daily coins
   useEffect(() => {
@@ -61,6 +66,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       name: "Starter Pack",
       coins: 100,
       price: 0.99,
+      priceINR: 79,
       bonus: 10,
       icon: <Gift className="h-6 w-6" />,
       gradient: "from-green-500 to-emerald-600",
@@ -71,6 +77,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       name: "Popular Pack",
       coins: 500,
       price: 4.99,
+      priceINR: 399,
       bonus: 100,
       popular: true,
       icon: <Star className="h-6 w-6" />,
@@ -82,6 +89,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       name: "Value Pack",
       coins: 1000,
       price: 8.99,
+      priceINR: 699,
       bonus: 250,
       bestValue: true,
       icon: <Zap className="h-6 w-6" />,
@@ -93,6 +101,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       name: "Premium Pack",
       coins: 2500,
       price: 19.99,
+      priceINR: 1599,
       bonus: 750,
       icon: <Crown className="h-6 w-6" />,
       gradient: "from-yellow-500 to-amber-600",
@@ -103,6 +112,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       name: "Ultimate Pack",
       coins: 5000,
       price: 34.99,
+      priceINR: 2799,
       bonus: 2000,
       icon: <Sparkles className="h-6 w-6" />,
       gradient: "from-purple-600 to-pink-600",
@@ -170,22 +180,55 @@ export const CoinShop: React.FC<CoinShopProps> = ({
     setPurchasing(packageData.id);
 
     try {
-      // Simulate payment processing (in a real app, you'd integrate with a payment provider)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      let paymentSuccess = false;
 
-      const totalCoins = packageData.coins + packageData.bonus;
-      const result = await addCoins(
-        user.id,
-        totalCoins,
-        "purchase",
-        `Purchased ${packageData.name} - ${packageData.coins} coins + ${packageData.bonus} bonus`,
-      );
+      if (paymentRegion === "IN") {
+        // Use Razorpay for Indian users
+        const paymentResult = await initiatePayment({
+          amount: packageData.priceINR,
+          currency: "INR",
+          name: "Word Search Game",
+          description: `${packageData.name} - ${packageData.coins + packageData.bonus} coins`,
+          prefill: {
+            name:
+              user.user_metadata?.full_name || user.email?.split("@")[0] || "",
+            email: user.email || "",
+          },
+        });
 
-      if (result.success) {
-        toast.success(`🎉 You received ${totalCoins} coins!`);
-        onPurchaseComplete();
+        if (paymentResult.success) {
+          paymentSuccess = true;
+          toast.success(
+            `🎉 Payment successful! Transaction ID: ${paymentResult.paymentId}`,
+          );
+        } else if (paymentResult.error === "Payment cancelled by user") {
+          toast.info("Payment cancelled");
+          setPurchasing(null);
+          return;
+        } else {
+          throw new Error(paymentResult.error || "Payment failed");
+        }
       } else {
-        toast.error("Failed to process purchase");
+        // Simulate international payment (for demo purposes)
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        paymentSuccess = true;
+      }
+
+      if (paymentSuccess) {
+        const totalCoins = packageData.coins + packageData.bonus;
+        const result = await addCoins(
+          user.id,
+          totalCoins,
+          "purchase",
+          `Purchased ${packageData.name} - ${packageData.coins} coins + ${packageData.bonus} bonus`,
+        );
+
+        if (result.success) {
+          toast.success(`🎉 You received ${totalCoins} coins!`);
+          onPurchaseComplete();
+        } else {
+          toast.error("Failed to process coin credit");
+        }
       }
     } catch (error) {
       console.error("Error processing purchase:", error);
@@ -228,9 +271,30 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                 Back
               </Button>
 
-              <div className="flex items-center gap-2">
-                <Coins className="h-5 w-5" />
-                <span className="font-bold text-lg">{currentBalance}</span>
+              <div className="flex items-center gap-4">
+                {/* Region Selector */}
+                <div className="flex items-center gap-2 bg-white/20 rounded-lg px-3 py-1">
+                  <MapPin className="h-4 w-4" />
+                  <select
+                    value={paymentRegion}
+                    onChange={(e) =>
+                      setPaymentRegion(e.target.value as "US" | "IN")
+                    }
+                    className="bg-transparent text-white text-sm border-none outline-none cursor-pointer"
+                  >
+                    <option value="IN" className="text-black">
+                      🇮🇳 India (INR)
+                    </option>
+                    <option value="US" className="text-black">
+                      🇺🇸 International (USD)
+                    </option>
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Coins className="h-5 w-5" />
+                  <span className="font-bold text-lg">{currentBalance}</span>
+                </div>
               </div>
             </div>
 
@@ -239,6 +303,11 @@ export const CoinShop: React.FC<CoinShopProps> = ({
               <p className="text-green-100">
                 Get coins to play multiplayer games and buy hints
               </p>
+              {paymentRegion === "IN" && (
+                <p className="text-green-200 text-sm mt-1">
+                  💳 Secure payments powered by Razorpay
+                </p>
+              )}
             </div>
           </CardHeader>
         </Card>
@@ -289,6 +358,9 @@ export const CoinShop: React.FC<CoinShopProps> = ({
             {coinPackages.map((pkg) => {
               const totalCoins = pkg.coins + pkg.bonus;
               const isPurchasing = purchasing === pkg.id;
+              const displayPrice =
+                paymentRegion === "IN" ? pkg.priceINR : pkg.price;
+              const currency = paymentRegion === "IN" ? "₹" : "$";
 
               return (
                 <Card
@@ -350,7 +422,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
 
                     <Button
                       onClick={() => handlePurchase(pkg)}
-                      disabled={isPurchasing}
+                      disabled={isPurchasing || razorpayLoading}
                       className={`w-full bg-gradient-to-r ${pkg.gradient} hover:opacity-90 text-white`}
                       size="lg"
                     >
@@ -358,7 +430,22 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                         "Processing..."
                       ) : (
                         <div className="flex items-center gap-2">
-                          <CreditCard className="h-4 w-4" />${pkg.price}
+                          {paymentRegion === "IN" ? (
+                            <>
+                              <CreditCard className="h-4 w-4" />
+                              {currency}
+                              {displayPrice}
+                              <span className="text-xs opacity-75">
+                                via Razorpay
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <CreditCard className="h-4 w-4" />
+                              {currency}
+                              {displayPrice}
+                            </>
+                          )}
                         </div>
                       )}
                     </Button>
@@ -406,18 +493,23 @@ export const CoinShop: React.FC<CoinShopProps> = ({
           </CardContent>
         </Card>
 
-        {/* Note */}
+        {/* Payment Info */}
         <Card className="bg-gray-50 border-gray-200">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
               <div className="text-blue-600 mt-1">ℹ️</div>
               <div className="text-sm text-gray-700">
-                <p className="font-medium mb-1">Important Notes:</p>
+                <p className="font-medium mb-1">Payment Information:</p>
                 <ul className="space-y-1 text-xs">
-                  <li>• This is a demo - no real payments are processed</li>
-                  <li>• Coins are virtual currency for game features</li>
-                  <li>• Free daily coins help you play without spending</li>
-                  <li>• Win coins back by performing well in games</li>
+                  <li>
+                    • 🇮🇳 Indian users: Secure payments via Razorpay (UPI, Cards,
+                    Net Banking)
+                  </li>
+                  <li>• 🌍 International users: Standard payment gateway</li>
+                  <li>• 🔒 All transactions are secure and encrypted</li>
+                  <li>• 💰 Get bonus coins with every purchase</li>
+                  <li>• 🎁 Free daily coins available every 24 hours</li>
+                  <li>• 🏆 Win coins back by performing well in games</li>
                 </ul>
               </div>
             </div>

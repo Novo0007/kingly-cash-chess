@@ -29,7 +29,7 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
   const boardRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState(32);
 
-  // Calculate cell size based on container width
+  // Calculate cell size based on container width with better mobile optimization
   useEffect(() => {
     const updateCellSize = () => {
       if (boardRef.current) {
@@ -38,9 +38,10 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
         const availableWidth = containerWidth - padding;
         const calculatedSize = Math.floor(availableWidth / gameState.gridSize);
 
-        // Constrain between min and max sizes
-        const minSize = 20;
-        const maxSize = 50;
+        // Mobile-optimized size constraints
+        const isMobileDevice = window.innerWidth < 768;
+        const minSize = isMobileDevice ? 24 : 20; // Larger minimum for mobile
+        const maxSize = isMobileDevice ? 40 : 50; // Reasonable maximum for mobile
         const finalSize = Math.max(minSize, Math.min(maxSize, calculatedSize));
 
         setCellSize(finalSize);
@@ -49,7 +50,11 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
 
     updateCellSize();
     window.addEventListener("resize", updateCellSize);
-    return () => window.removeEventListener("resize", updateCellSize);
+    window.addEventListener("orientationchange", updateCellSize);
+    return () => {
+      window.removeEventListener("resize", updateCellSize);
+      window.removeEventListener("orientationchange", updateCellSize);
+    };
   }, [gameState.gridSize]);
 
   const getCellPosition = useCallback(
@@ -193,11 +198,12 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
     });
   }, [dragState, onWordFound]);
 
-  // Touch events for mobile
+  // Enhanced touch events for mobile with better responsiveness
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
       if (!isActive) return;
 
+      e.preventDefault(); // Prevent context menu and other touch behaviors
       const touch = e.touches[0];
       const target = document.elementFromPoint(
         touch.clientX,
@@ -207,6 +213,11 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
       if (target && target.classList.contains("word-cell")) {
         const position = getCellPosition(target);
         if (position) {
+          // Add haptic feedback for mobile
+          if (window.navigator && (window.navigator as any).vibrate) {
+            (window.navigator as any).vibrate(10);
+          }
+
           setDragState({
             isDragging: true,
             startCell: position,
@@ -223,12 +234,39 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
     (e: React.TouchEvent) => {
       if (!dragState.isDragging || !dragState.startCell) return;
 
-      e.preventDefault(); // Prevent scrolling
+      e.preventDefault(); // Prevent scrolling and page interactions
       const touch = e.touches[0];
-      const target = document.elementFromPoint(
+
+      // Use a slightly larger touch area for better mobile experience
+      const touchRadius = 10;
+      let target = document.elementFromPoint(
         touch.clientX,
         touch.clientY,
       ) as HTMLElement;
+
+      // If no direct hit, try nearby points for better touch detection
+      if (!target || !target.classList.contains("word-cell")) {
+        for (const offset of [
+          [-touchRadius, 0],
+          [touchRadius, 0],
+          [0, -touchRadius],
+          [0, touchRadius],
+          [-touchRadius, -touchRadius],
+          [touchRadius, touchRadius],
+          [-touchRadius, touchRadius],
+          [touchRadius, -touchRadius],
+        ]) {
+          const nearbyTarget = document.elementFromPoint(
+            touch.clientX + offset[0],
+            touch.clientY + offset[1],
+          ) as HTMLElement;
+
+          if (nearbyTarget && nearbyTarget.classList.contains("word-cell")) {
+            target = nearbyTarget;
+            break;
+          }
+        }
+      }
 
       if (target && target.classList.contains("word-cell")) {
         const position = getCellPosition(target);
@@ -255,9 +293,21 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
     ],
   );
 
-  const handleTouchEnd = useCallback(() => {
-    handleMouseUp();
-  }, [handleMouseUp]);
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      e.preventDefault();
+
+      // Add completion haptic feedback
+      if (window.navigator && (window.navigator as any).vibrate) {
+        if (dragState.selectedCells.length >= 2) {
+          (window.navigator as any).vibrate([20, 50, 20]); // Success pattern
+        }
+      }
+
+      handleMouseUp();
+    },
+    [handleMouseUp, dragState.selectedCells.length],
+  );
 
   const isCellSelected = useCallback(
     (row: number, col: number): boolean => {
@@ -272,18 +322,24 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
     (row: number, col: number): string => {
       const cell = gameState.grid[row][col];
       let className =
-        "word-cell flex items-center justify-center font-bold text-sm md:text-base border border-gray-300 cursor-pointer select-none transition-all duration-150";
+        "word-cell flex items-center justify-center font-bold text-sm md:text-base border border-gray-300 cursor-pointer select-none transition-all duration-150 touch-manipulation";
 
-      // Base styling
+      // Enhanced mobile touch targets
+      className += " active:scale-95 active:bg-blue-100";
+
+      // Base styling with proper CSS classes for mobile
       if (cell.isFound) {
-        className += " bg-green-200 text-green-800 border-green-400";
+        className +=
+          " bg-green-200 text-green-800 border-green-400 shadow-sm found";
       } else if (cell.hintHighlight) {
         className +=
-          " bg-yellow-200 text-yellow-800 border-yellow-400 animate-pulse";
+          " bg-yellow-200 text-yellow-800 border-yellow-400 hint-highlight shadow-md";
       } else if (isCellSelected(row, col)) {
-        className += " bg-blue-200 text-blue-800 border-blue-400";
+        className +=
+          " bg-blue-200 text-blue-800 border-blue-400 shadow-sm selected ring-2 ring-blue-300";
       } else {
-        className += " bg-white text-gray-800 hover:bg-gray-50";
+        className +=
+          " bg-white text-gray-800 hover:bg-gray-50 active:bg-blue-50";
       }
 
       return className;
@@ -311,7 +367,7 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
   };
 
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full flex justify-center word-search-container">
       <div
         ref={boardRef}
         className="word-search-board"

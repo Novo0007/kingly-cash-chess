@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import "@/styles/wordsearch-mobile.css";
 import {
   ArrowLeft,
   Clock,
@@ -74,7 +75,10 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
         setCoinBalance(100); // Default fallback balance
       }
     } catch (error) {
-      console.warn("Error fetching coin balance:", error);
+      console.warn(
+        "Error fetching coin balance:",
+        error instanceof Error ? error.message : String(error),
+      );
       setCoinBalance(100); // Default fallback balance
     }
   }, [user.id]);
@@ -222,7 +226,10 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
 
         setCoinBalance(Math.max(0, coinBalance - hintCost)); // Local fallback
       } catch (error) {
-        console.warn("Error processing hint purchase:", error);
+        console.warn(
+          "Error processing hint purchase:",
+          error instanceof Error ? error.message : String(error),
+        );
         // Continue with hint anyway for demo purposes
         setCoinBalance(Math.max(0, coinBalance - hintCost));
       }
@@ -480,39 +487,45 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
                 </div>
               </div>
 
-              {/* Hint Buttons */}
+              {/* Hint Buttons - Mobile Optimized */}
               <div className="flex flex-wrap gap-2 justify-center">
                 <Button
                   variant="outline"
-                  size="sm"
+                  size={isMobile ? "default" : "sm"}
                   onClick={() => handleHintRequest("letter_highlight")}
-                  className="flex items-center gap-1"
+                  className="hint-button flex items-center gap-1 min-h-[44px]"
                   disabled={coinBalance < 5}
                 >
                   <Lightbulb className="h-4 w-4" />
-                  First Letter (5 <Coins className="h-3 w-3" />)
+                  <span className="hidden sm:inline">First Letter</span>
+                  <span className="sm:hidden">Letter</span>
+                  (5 <Coins className="h-3 w-3" />)
                 </Button>
 
                 <Button
                   variant="outline"
-                  size="sm"
+                  size={isMobile ? "default" : "sm"}
                   onClick={() => handleHintRequest("word_location")}
-                  className="flex items-center gap-1"
+                  className="hint-button flex items-center gap-1 min-h-[44px]"
                   disabled={coinBalance < 5}
                 >
                   <Target className="h-4 w-4" />
-                  Show Word (5 <Coins className="h-3 w-3" />)
+                  <span className="hidden sm:inline">Show Word</span>
+                  <span className="sm:hidden">Show</span>
+                  (5 <Coins className="h-3 w-3" />)
                 </Button>
 
                 <Button
                   variant="outline"
-                  size="sm"
+                  size={isMobile ? "default" : "sm"}
                   onClick={() => handleHintRequest("direction_hint")}
-                  className="flex items-center gap-1"
+                  className="hint-button flex items-center gap-1 min-h-[44px]"
                   disabled={coinBalance < 5}
                 >
                   <Star className="h-4 w-4" />
-                  Direction (5 <Coins className="h-3 w-3" />)
+                  <span className="hidden sm:inline">Direction</span>
+                  <span className="sm:hidden">Dir</span>
+                  (5 <Coins className="h-3 w-3" />)
                 </Button>
               </div>
             </CardContent>
@@ -592,30 +605,6 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
               </p>
             </div>
           </CardHeader>
-        </Card>
-
-        {/* Database Setup Notice */}
-        <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <div className="text-orange-600 mt-1">⚠️</div>
-              <div className="text-sm text-orange-800">
-                <p className="font-medium mb-1">Database Setup Required:</p>
-                <p className="text-xs">
-                  To enable full functionality (coin system, multiplayer,
-                  leaderboards), please run the Word Search database migration
-                  in your Supabase dashboard:
-                  <code className="bg-orange-100 px-1 rounded">
-                    migrations/20250103160000_create_wordsearch_tables.sql
-                  </code>
-                </p>
-                <p className="text-xs mt-1">
-                  ✅ Solo games work without database setup • Starting balance:
-                  100 coins
-                </p>
-              </div>
-            </div>
-          </CardContent>
         </Card>
 
         {/* Game Settings */}
