@@ -14,6 +14,7 @@ import {
   Timer,
   Grid3x3,
 } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface Game2048LobbyProps {
   onStartGame: (difficulty: "classic" | "challenge" | "expert") => void;
@@ -26,6 +27,7 @@ export const Game2048Lobby: React.FC<Game2048LobbyProps> = ({
   onShowRules,
   onShowLeaderboard,
 }) => {
+  const { currentTheme } = useTheme();
   const difficulties = [
     {
       id: "classic" as const,
