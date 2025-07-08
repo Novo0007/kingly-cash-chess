@@ -494,8 +494,9 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Users className="h-5 w-5" />
-            Players ({gameState.players.length}/
-            {gameState.gameSettings.maxPlayers})
+            {gameState.gameSettings.isSinglePlayer
+              ? "Single Player Mode"
+              : `Players (${gameState.players.length}/${gameState.gameSettings.maxPlayers})`}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
