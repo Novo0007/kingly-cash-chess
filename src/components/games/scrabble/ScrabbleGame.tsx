@@ -191,6 +191,18 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
             if (newGameState.players.length > 0) {
               const playerIds = newGameState.players.map((p) => p.id);
               loadPlayerProfiles(playerIds);
+
+              // Notify when a new player joins (but not for the first update)
+              if (
+                gameState &&
+                newGameState.players.length > gameState.players.length
+              ) {
+                const newPlayer =
+                  newGameState.players[newGameState.players.length - 1];
+                if (newPlayer.id !== user.id) {
+                  toast.success(`🎉 ${newPlayer.username} joined the game!`);
+                }
+              }
             }
 
             // Check for game completion
