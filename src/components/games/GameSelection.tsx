@@ -172,6 +172,26 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         players: "200+ Playing",
         isMoneyGame: false,
       },
+      {
+        id: "wordsearch",
+        title: "Word Search Puzzle",
+        description:
+          "Find hidden words in grids - multiplayer word puzzles with coin rewards!",
+        icon: BookOpen,
+        emoji: "📝",
+        color: "emerald",
+        gradient: "from-emerald-700 via-teal-700 to-green-700",
+        lightGradient: "from-emerald-100 via-teal-100 to-green-100",
+        features: [
+          "👥 Multiplayer Mode",
+          "🪙 Coin System",
+          "💡 Smart Hints",
+          "🏆 Leaderboards",
+        ],
+        status: "NEW",
+        players: "150+ Playing",
+        isMoneyGame: true,
+      },
     ],
     [],
   );
