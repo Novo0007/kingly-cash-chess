@@ -159,7 +159,7 @@ const Index = () => {
   }, [user?.email]);
 
   const handleSelectGame = (
-    gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "scrabble",
+    gameType: "chess" | "ludo" | "maze" | "game2048" | "math",
   ) => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
