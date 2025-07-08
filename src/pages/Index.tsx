@@ -173,6 +173,8 @@ const Index = () => {
       setCurrentView("game2048");
     } else if (gameType === "math") {
       setCurrentView("math-game");
+    } else if (gameType === "wordsearch") {
+      setCurrentView("wordsearch-game");
     }
   };
 
