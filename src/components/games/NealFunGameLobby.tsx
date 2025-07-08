@@ -110,7 +110,9 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
   ];
 
   const handleGameSelect = useCallback(
-    (gameType: "chess" | "ludo" | "maze" | "game2048" | "math") => {
+    (
+      gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "scrabble",
+    ) => {
       onSelectGame(gameType);
     },
     [onSelectGame],
