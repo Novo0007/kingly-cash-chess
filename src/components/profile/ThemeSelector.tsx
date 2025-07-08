@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Check, Palette, Sparkles, Star } from "lucide-react";
 import { toast } from "sonner";
+import type { ThemeId } from "@/types/themes";
 
 interface ThemeSelectorProps {
   onBack?: () => void;
@@ -14,7 +15,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onBack }) => {
   const { currentTheme, setTheme, themeId, allThemes } = useTheme();
 
   const handleThemeChange = (newThemeId: string) => {
-    setTheme(newThemeId as any);
+    setTheme(newThemeId as ThemeId);
     toast.success(
       `Theme changed to ${allThemes.find((t) => t.id === newThemeId)?.name}!`,
     );
