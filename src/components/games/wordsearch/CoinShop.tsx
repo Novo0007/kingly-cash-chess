@@ -493,18 +493,23 @@ export const CoinShop: React.FC<CoinShopProps> = ({
           </CardContent>
         </Card>
 
-        {/* Note */}
+        {/* Payment Info */}
         <Card className="bg-gray-50 border-gray-200">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
               <div className="text-blue-600 mt-1">ℹ️</div>
               <div className="text-sm text-gray-700">
-                <p className="font-medium mb-1">Important Notes:</p>
+                <p className="font-medium mb-1">Payment Information:</p>
                 <ul className="space-y-1 text-xs">
-                  <li>• This is a demo - no real payments are processed</li>
-                  <li>• Coins are virtual currency for game features</li>
-                  <li>• Free daily coins help you play without spending</li>
-                  <li>• Win coins back by performing well in games</li>
+                  <li>
+                    • 🇮🇳 Indian users: Secure payments via Razorpay (UPI, Cards,
+                    Net Banking)
+                  </li>
+                  <li>• 🌍 International users: Standard payment gateway</li>
+                  <li>• 🔒 All transactions are secure and encrypted</li>
+                  <li>• 💰 Get bonus coins with every purchase</li>
+                  <li>• 🎁 Free daily coins available every 24 hours</li>
+                  <li>• 🏆 Win coins back by performing well in games</li>
                 </ul>
               </div>
             </div>
