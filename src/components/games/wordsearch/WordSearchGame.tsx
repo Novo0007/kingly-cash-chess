@@ -74,7 +74,10 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
         setCoinBalance(100); // Default fallback balance
       }
     } catch (error) {
-      console.warn("Error fetching coin balance:", error);
+      console.warn(
+        "Error fetching coin balance:",
+        error instanceof Error ? error.message : String(error),
+      );
       setCoinBalance(100); // Default fallback balance
     }
   }, [user.id]);
