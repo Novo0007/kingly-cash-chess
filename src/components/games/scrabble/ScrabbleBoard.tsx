@@ -313,11 +313,7 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
       {/* Game Board */}
       <Card className="overflow-hidden">
         <CardContent className="p-2 md:p-4">
-          <div
-            ref={boardRef}
-            className="grid grid-cols-15 gap-[1px] md:gap-1 bg-gray-400 p-1 md:p-2 rounded-lg mx-auto w-fit"
-            style={{ gridTemplateColumns: "repeat(15, minmax(0, 1fr))" }}
-          >
+          <div ref={boardRef} className="scrabble-board">
             {gameState.board.map((row, rowIndex) =>
               row.map((cell, colIndex) =>
                 renderBoardCell(cell, rowIndex, colIndex),
