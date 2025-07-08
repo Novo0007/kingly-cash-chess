@@ -240,7 +240,14 @@ export const ScrabbleLobby: React.FC<ScrabbleLobbyProps> = ({
                     className="border-2 hover:border-blue-300 transition-colors"
                   >
                     <CardContent className="p-4">
-                      <h3 className="font-bold text-lg mb-2">{option.name}</h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="font-bold text-lg">{option.name}</h3>
+                        {option.isSinglePlayer && (
+                          <Badge className="bg-green-100 text-green-800 text-xs">
+                            Practice
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-sm text-gray-600 mb-3">
                         {option.description}
                       </p>
