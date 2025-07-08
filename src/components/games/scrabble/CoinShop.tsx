@@ -200,6 +200,93 @@ export const CoinShop: React.FC<CoinShopProps> = ({
         </CardContent>
       </Card>
 
+      {/* Free Coin Claim - One Time Only */}
+      {!hasClaimedFree && (
+        <Card className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 relative overflow-hidden">
+          {/* Animated background elements */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+
+          <CardHeader className="relative z-10">
+            <CardTitle className="flex items-center justify-center gap-3 text-2xl">
+              <div className="p-3 bg-white/20 rounded-full">
+                <Gift className="h-8 w-8" />
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-black">FREE 300 COINS!</div>
+                <div className="text-green-100 text-sm font-medium">
+                  One-time offer • Limited time
+                </div>
+              </div>
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className="relative z-10 text-center space-y-4">
+            <div className="space-y-2">
+              <p className="text-lg font-medium text-green-100">
+                🎁 Special welcome gift just for you!
+              </p>
+              <p className="text-green-200 text-sm">
+                Claim your free coins now and start playing premium games
+                without spending a penny!
+              </p>
+            </div>
+
+            <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Star className="h-5 w-5 text-yellow-300" />
+                <span className="font-bold text-lg">What you get:</span>
+                <Star className="h-5 w-5 text-yellow-300" />
+              </div>
+              <ul className="text-left space-y-1 text-sm">
+                <li>• 300 bonus coins added instantly</li>
+                <li>• Join premium games with entry fees</li>
+                <li>• Compete for bigger prize pools</li>
+                <li>• No payment required - completely free!</li>
+              </ul>
+            </div>
+
+            <Button
+              onClick={handleClaimFreeCoins}
+              disabled={claimingFree}
+              className="w-full bg-white text-green-600 hover:bg-gray-100 py-4 text-lg font-black rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+            >
+              {claimingFree ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin h-5 w-5 border-2 border-green-600 border-t-transparent rounded-full"></div>
+                  Claiming Your Free Coins...
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Gift className="h-6 w-6" />
+                  CLAIM 300 FREE COINS NOW!
+                  <Sparkles className="h-6 w-6" />
+                </div>
+              )}
+            </Button>
+
+            <div className="text-xs text-green-200 opacity-80">
+              ⏰ This offer expires once claimed • Limited to one per account
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Show confirmation after claiming */}
+      {hasClaimedFree && (
+        <Card className="bg-gradient-to-r from-gray-100 to-gray-200 border-gray-300">
+          <CardContent className="p-4 text-center">
+            <div className="flex items-center justify-center gap-2 text-gray-600">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <span className="font-medium">Free coins already claimed</span>
+            </div>
+            <p className="text-sm text-gray-500 mt-1">
+              You've already received your one-time 300 coin bonus!
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Coin Packages */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
         {coinPackages.map((pkg) => {
