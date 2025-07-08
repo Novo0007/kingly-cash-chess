@@ -29,7 +29,7 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
   const boardRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState(32);
 
-  // Calculate cell size based on container width
+  // Calculate cell size based on container width with better mobile optimization
   useEffect(() => {
     const updateCellSize = () => {
       if (boardRef.current) {
@@ -38,9 +38,10 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
         const availableWidth = containerWidth - padding;
         const calculatedSize = Math.floor(availableWidth / gameState.gridSize);
 
-        // Constrain between min and max sizes
-        const minSize = 20;
-        const maxSize = 50;
+        // Mobile-optimized size constraints
+        const isMobileDevice = window.innerWidth < 768;
+        const minSize = isMobileDevice ? 24 : 20; // Larger minimum for mobile
+        const maxSize = isMobileDevice ? 40 : 50; // Reasonable maximum for mobile
         const finalSize = Math.max(minSize, Math.min(maxSize, calculatedSize));
 
         setCellSize(finalSize);
@@ -49,7 +50,11 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
 
     updateCellSize();
     window.addEventListener("resize", updateCellSize);
-    return () => window.removeEventListener("resize", updateCellSize);
+    window.addEventListener("orientationchange", updateCellSize);
+    return () => {
+      window.removeEventListener("resize", updateCellSize);
+      window.removeEventListener("orientationchange", updateCellSize);
+    };
   }, [gameState.gridSize]);
 
   const getCellPosition = useCallback(
