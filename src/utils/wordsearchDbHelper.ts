@@ -350,14 +350,31 @@ export const getUserCoinBalance = async (
       .limit(1);
 
     if (error) {
-      console.error("Error fetching coin balance:", error);
-      return { success: false, error: error.message };
+      console.error("Error fetching coin balance:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+
+      // Check if table doesn't exist
+      if (error.code === "42P01" || error.message?.includes("does not exist")) {
+        console.warn(
+          "Word Search coin tables not created yet. Please run the migration.",
+        );
+        return { success: true, balance: 100 }; // Default starting balance
+      }
+
+      return { success: false, error: error.message || "Database error" };
     }
 
-    const balance = data && data.length > 0 ? data[0].balance_after : 0;
+    const balance = data && data.length > 0 ? data[0].balance_after : 100; // Default starting balance
     return { success: true, balance };
   } catch (error) {
-    console.error("Unexpected error fetching coin balance:", error);
+    console.error("Unexpected error fetching coin balance:", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return { success: false, error: "Failed to fetch balance" };
   }
 };
