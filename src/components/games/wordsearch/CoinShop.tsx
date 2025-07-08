@@ -33,6 +33,7 @@ interface CoinPackage {
   name: string;
   coins: number;
   price: number;
+  priceINR: number;
   bonus: number;
   popular?: boolean;
   bestValue?: boolean;
@@ -48,8 +49,10 @@ export const CoinShop: React.FC<CoinShopProps> = ({
   onPurchaseComplete,
 }) => {
   const { isMobile } = useDeviceType();
+  const { initiatePayment, isLoading: razorpayLoading } = useRazorpay();
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [lastFreeCoins, setLastFreeCoins] = useState<string | null>(null);
+  const [paymentRegion, setPaymentRegion] = useState<"US" | "IN">("IN"); // Default to India
 
   // Check if user can claim free daily coins
   useEffect(() => {
