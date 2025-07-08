@@ -588,7 +588,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         </div>
 
         {/* Enhanced Game Rules Section */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        <div className="grid grid-cols-2 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
           <Card className="relative bg-gradient-to-br from-blue-500 to-purple-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20"></div>
             <CardContent className="relative p-6">
