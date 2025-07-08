@@ -23,7 +23,7 @@ import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
 
 interface NealFunGameLobbyProps {
   onSelectGame: (
-    gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "scrabble",
+    gameType: "chess" | "ludo" | "maze" | "game2048" | "math",
   ) => void;
 }
 
