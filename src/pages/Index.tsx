@@ -324,6 +324,8 @@ const Index = () => {
         return <Game2048 onBack={handleBackToGameSelection} user={user} />;
       case "math-game":
         return <MathGame onBack={handleBackToGameSelection} user={user} />;
+      case "scrabble-game":
+        return <ScrabbleGame onBack={handleBackToGameSelection} user={user} />;
       case "wallet":
         return <WalletManager />;
       case "friends":
