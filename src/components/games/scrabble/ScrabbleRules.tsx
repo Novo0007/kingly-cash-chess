@@ -23,6 +23,21 @@ import {
 import { useDeviceType } from "@/hooks/use-mobile";
 
 export const ScrabbleRules: React.FC = () => {
+  const { isMobile } = useDeviceType();
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const toggleSection = (section: string) => {
+    const newExpanded = new Set(expandedSections);
+    if (newExpanded.has(section)) {
+      newExpanded.delete(section);
+    } else {
+      newExpanded.add(section);
+    }
+    setExpandedSections(newExpanded);
+  };
+
   const letterValues = [
     { letters: "A, E, I, O, U, L, N, S, T, R", value: 1 },
     { letters: "D, G", value: 2 },
