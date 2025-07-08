@@ -198,11 +198,18 @@ export const VALID_WORDS = new Set([
 
 export class ScrabbleGameLogic {
   private gameState: ScrabbleGameState;
+  private isSinglePlayer: boolean;
 
   constructor(
     gameId: string,
-    settings: { entryCost: number; maxPlayers: number; isPrivate: boolean },
+    settings: {
+      entryCost: number;
+      maxPlayers: number;
+      isPrivate: boolean;
+      isSinglePlayer?: boolean;
+    },
   ) {
+    this.isSinglePlayer = settings.isSinglePlayer || false;
     this.gameState = this.initializeGame(gameId, settings);
   }
 
