@@ -220,6 +220,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
     maxPlayers: number,
     entryFee: number,
     isPrivate: boolean,
+    isSinglePlayer: boolean = false,
   ) => {
     if (userCoins < entryFee) {
       toast.error("Insufficient coins!");
