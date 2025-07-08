@@ -28,7 +28,7 @@ const Index = () => {
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
   const [selectedGameType, setSelectedGameType] = useState<
-    "chess" | "ludo" | "maze" | "game2048" | "math" | "scrabble" | null
+    "chess" | "ludo" | "maze" | "game2048" | "math" | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [useNealFunStyle, setUseNealFunStyle] = useState(true);
