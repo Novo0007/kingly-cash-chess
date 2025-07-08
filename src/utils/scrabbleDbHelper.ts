@@ -517,7 +517,7 @@ export const hasClaimedFreeCoins = async (
       .eq("user_id", userId)
       .eq("transaction_type", "reward")
       .eq("description", "One-time free coin claim - 300 bonus coins!")
-      .single();
+      .maybeSingle();
 
     if (error && error.code !== "PGRST116") {
       console.error("Error checking free coin claim status:", error);
