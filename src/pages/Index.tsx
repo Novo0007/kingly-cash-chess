@@ -172,8 +172,6 @@ const Index = () => {
       setCurrentView("game2048");
     } else if (gameType === "math") {
       setCurrentView("math-game");
-    } else if (gameType === "scrabble") {
-      setCurrentView("scrabble-game");
     }
   };
 
