@@ -167,6 +167,8 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
   const setupGameSubscription = useCallback(() => {
     if (!currentGameId) return;
 
+    console.log(`Setting up subscription for game: ${currentGameId}`);
+
     gameSubscriptionRef.current = supabase
       .channel(`scrabble_game_${currentGameId}`)
       .on(
@@ -178,8 +180,11 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
           filter: `id=eq.${currentGameId}`,
         },
         (payload) => {
+          console.log("Received real-time update:", payload);
+
           if (payload.new && payload.new.game_state) {
             const newGameState = payload.new.game_state as ScrabbleGameState;
+            console.log("Updating game state:", newGameState);
             setGameState(newGameState);
 
             if (gameLogic) {
@@ -228,10 +233,27 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
               handleGameCompletion(newGameState);
             }
           }
+
+          // Also handle when players join (update from scrabble_games table)
+          if (payload.new && payload.eventType === "UPDATE") {
+            const gameRecord = payload.new as ScrabbleGameRecord;
+            console.log("Game record updated:", gameRecord);
+
+            // If we don't have a game state yet, but players have joined, reload
+            if (!gameState && gameRecord.current_players > 1) {
+              console.log("Reloading game due to new players");
+              // Trigger a reload of the game
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            }
+          }
         },
       )
-      .subscribe();
-  }, [currentGameId, gameLogic]);
+      .subscribe((status) => {
+        console.log("Subscription status:", status);
+      });
+  }, [currentGameId, gameLogic, gameState, user.id]);
 
   const handleCreateGame = async (
     gameName: string,
