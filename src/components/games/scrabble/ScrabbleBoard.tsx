@@ -46,7 +46,9 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
   onPass,
   className,
 }) => {
+  const { isMobile } = useDeviceType();
   const [draggedTile, setDraggedTile] = useState<DraggedTile | null>(null);
+  const [selectedTile, setSelectedTile] = useState<ScrabbleTile | null>(null);
   const [placedTiles, setPlacedTiles] = useState<
     { tile: ScrabbleTile; position: { row: number; col: number } }[]
   >([]);
@@ -54,6 +56,7 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
     Set<string>
   >(new Set());
   const [isExchangeMode, setIsExchangeMode] = useState(false);
+  const [touchMode, setTouchMode] = useState<"drag" | "select">("select");
   const boardRef = useRef<HTMLDivElement>(null);
 
   const currentPlayer = gameState.players.find((p) => p.id === currentPlayerId);
