@@ -50,6 +50,13 @@ interface ScrabbleGameProps {
 
 type GameView = "lobby" | "game" | "rules" | "shop" | "gameComplete";
 
+interface UserProfile {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+  full_name: string | null;
+}
+
 export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
   const { isMobile } = useDeviceType();
   const [currentView, setCurrentView] = useState<GameView>("lobby");
@@ -63,6 +70,9 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
     winner: Player;
     finalScores: { player: Player; score: number }[];
   } | null>(null);
+  const [playerProfiles, setPlayerProfiles] = useState<
+    Map<string, UserProfile>
+  >(new Map());
 
   const timerRef = useRef<NodeJS.Timeout>();
   const gameSubscriptionRef = useRef<any>();
