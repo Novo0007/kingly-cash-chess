@@ -20,6 +20,7 @@ import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
 import { Button as ChatButton } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { useTheme } from "@/contexts/ThemeContext";
 
 type Profile = Tables<"profiles">;
 type ChessGame = Tables<"chess_games"> & {
@@ -32,6 +33,7 @@ interface GameLobbyProps {
 }
 
 export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
+  const { currentTheme } = useTheme();
   const [games, setGames] = useState<ChessGame[]>([]);
   const [entryFee, setEntryFee] = useState("10");
   const [gameName, setGameName] = useState("");
@@ -508,8 +510,10 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           isOpen={showMobileChat}
           onClose={() => setShowMobileChat(false)}
         />
-        {/* Header with Wallet Balance - Wood Style */}
-        <Card className="wood-card wood-plank border-amber-700/50">
+        {/* Header with Wallet Balance - Theme Style */}
+        <Card
+          className={`relative backdrop-blur-xl bg-gradient-to-r ${currentTheme.gradients.secondary.replace(/from-(\w+)-(\d+)/, "from-$1-$2/80").replace(/to-(\w+)-(\d+)/, "to-$1-$2/80")} border-2 border-primary/50 shadow-2xl rounded-2xl overflow-hidden`}
+        >
           <CardContent className="p-3 md:p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -538,8 +542,10 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           </CardContent>
         </Card>
 
-        {/* Chess Rules Quick Access - Wood Style */}
-        <Card className="wood-card wood-plank border-green-700/50">
+        {/* Chess Rules Quick Access - Theme Style */}
+        <Card
+          className={`relative backdrop-blur-xl bg-gradient-to-r ${currentTheme.gradients.accent.replace(/from-(\w+)-(\d+)/, "from-$1-$2/80").replace(/to-(\w+)-(\d+)/, "to-$1-$2/80")} border-2 border-primary/50 shadow-2xl rounded-2xl overflow-hidden`}
+        >
           <CardContent className="p-3 md:p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
