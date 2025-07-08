@@ -28,6 +28,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import type { User } from "@supabase/supabase-js";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface WordSearchLobbyProps {
   onJoinGame: (gameId: string) => void;
@@ -43,6 +44,7 @@ export const WordSearchLobby: React.FC<WordSearchLobbyProps> = ({
   coinBalance,
 }) => {
   const { isMobile } = useDeviceType();
+  const { currentTheme } = useTheme();
   const [availableGames, setAvailableGames] = useState<WordSearchGameRecord[]>(
     [],
   );
