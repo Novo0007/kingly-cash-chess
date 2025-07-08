@@ -105,6 +105,30 @@ export const CoinShop: React.FC<CoinShopProps> = ({
     checkFreeClaimStatus();
   }, [userId]);
 
+  const handleClaimFreeCoins = async () => {
+    setClaimingFree(true);
+
+    try {
+      const result = await claimFreeCoins(userId);
+
+      if (result.success) {
+        toast.success("🎉 Successfully claimed 300 free coins!");
+        setHasClaimedFree(true);
+        onPurchaseComplete(); // Refresh coin balance
+      } else if (result.alreadyClaimed) {
+        toast.error("You have already claimed your free coins!");
+        setHasClaimedFree(true);
+      } else {
+        toast.error(result.error || "Failed to claim free coins");
+      }
+    } catch (error) {
+      console.error("Free coin claim error:", error);
+      toast.error("Failed to claim free coins. Please try again.");
+    } finally {
+      setClaimingFree(false);
+    }
+  };
+
   const handlePurchase = async (packageData: (typeof coinPackages)[0]) => {
     setIsLoading(packageData.id);
 
