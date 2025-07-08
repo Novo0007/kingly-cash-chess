@@ -168,6 +168,76 @@ export const ScrabbleBoard: React.FC<ScrabbleBoardProps> = ({
     [draggedTile, isCurrentPlayerTurn, gameState.board, placedTiles],
   );
 
+  // Touch-based tile placement for mobile
+  const handleCellTouch = useCallback(
+    (row: number, col: number) => {
+      if (!isCurrentPlayerTurn || isExchangeMode) return;
+
+      // If we have a selected tile, place it
+      if (selectedTile && touchMode === "select") {
+        // Check if cell is already occupied by a permanent tile
+        const existingTile = gameState.board[row][col].tile;
+        const placedTile = placedTiles.find(
+          (pt) => pt.position.row === row && pt.position.col === col,
+        );
+
+        if (existingTile && !placedTile) {
+          return;
+        }
+
+        // Remove any existing placed tile at this position
+        setPlacedTiles((prev) =>
+          prev.filter(
+            (pt) => !(pt.position.row === row && pt.position.col === col),
+          ),
+        );
+
+        // Add the tile to the new position
+        setPlacedTiles((prev) => [
+          ...prev,
+          {
+            tile: selectedTile,
+            position: { row, col },
+          },
+        ]);
+
+        setSelectedTile(null);
+      }
+    },
+    [
+      isCurrentPlayerTurn,
+      isExchangeMode,
+      selectedTile,
+      touchMode,
+      gameState.board,
+      placedTiles,
+    ],
+  );
+
+  // Handle tile selection for mobile
+  const handleTileSelect = useCallback(
+    (tile: ScrabbleTile, source: "rack" | "board") => {
+      if (!isCurrentPlayerTurn) return;
+
+      if (isExchangeMode && source === "rack") {
+        handleTileClickForExchange(tile);
+        return;
+      }
+
+      if (touchMode === "select") {
+        // In select mode, just select the tile
+        setSelectedTile(selectedTile?.id === tile.id ? null : tile);
+      }
+    },
+    [
+      isCurrentPlayerTurn,
+      isExchangeMode,
+      touchMode,
+      selectedTile,
+      handleTileClickForExchange,
+    ],
+  );
+
   const handleReturnToRack = useCallback((tileId: string) => {
     setPlacedTiles((prev) => prev.filter((pt) => pt.tile.id !== tileId));
   }, []);
