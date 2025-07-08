@@ -86,7 +86,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
 
   // Set up real-time subscription for game updates
   useEffect(() => {
-    if (currentGameId && currentView === "game") {
+    if (currentGameId) {
       setupGameSubscription();
     }
 
@@ -95,7 +95,7 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
         gameSubscriptionRef.current.unsubscribe();
       }
     };
-  }, [currentGameId, currentView]);
+  }, [currentGameId]);
 
   // Timer effect
   useEffect(() => {
