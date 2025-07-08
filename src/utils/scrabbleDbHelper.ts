@@ -348,6 +348,17 @@ export const getUserCoins = async (
         return { success: false, coins: 0, error: createError.message };
       }
 
+      // Log the first-time bonus transaction
+      await supabase.from("coin_transactions").insert([
+        {
+          user_id: userId,
+          amount: firstTimeBonus,
+          transaction_type: "reward",
+          description: `First-time player bonus - Welcome to Scrabble! +${firstTimeBonus} coins`,
+          balance_after: newRecord.coins,
+        },
+      ]);
+
       return {
         success: true,
         coins: newRecord.coins,
