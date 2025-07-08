@@ -317,18 +317,23 @@ export const WordSearchBoard: React.FC<WordSearchBoardProps> = ({
     (row: number, col: number): string => {
       const cell = gameState.grid[row][col];
       let className =
-        "word-cell flex items-center justify-center font-bold text-sm md:text-base border border-gray-300 cursor-pointer select-none transition-all duration-150";
+        "word-cell flex items-center justify-center font-bold text-sm md:text-base border border-gray-300 cursor-pointer select-none transition-all duration-150 touch-manipulation";
+
+      // Enhanced mobile touch targets
+      className += " active:scale-95 active:bg-blue-100";
 
       // Base styling
       if (cell.isFound) {
-        className += " bg-green-200 text-green-800 border-green-400";
+        className += " bg-green-200 text-green-800 border-green-400 shadow-sm";
       } else if (cell.hintHighlight) {
         className +=
-          " bg-yellow-200 text-yellow-800 border-yellow-400 animate-pulse";
+          " bg-yellow-200 text-yellow-800 border-yellow-400 animate-pulse shadow-md";
       } else if (isCellSelected(row, col)) {
-        className += " bg-blue-200 text-blue-800 border-blue-400";
+        className +=
+          " bg-blue-200 text-blue-800 border-blue-400 shadow-sm ring-2 ring-blue-300";
       } else {
-        className += " bg-white text-gray-800 hover:bg-gray-50";
+        className +=
+          " bg-white text-gray-800 hover:bg-gray-50 active:bg-blue-50";
       }
 
       return className;
