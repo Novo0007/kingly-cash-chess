@@ -440,7 +440,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-purple-800">
             <Star className="h-6 w-6 text-purple-600" />
-            Why Buy Coins?
+            {hasClaimedFree ? "Why Buy More Coins?" : "Why Get Coins?"}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -450,6 +450,11 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                 🎮 Premium Games
               </h3>
               <ul className="space-y-2 text-purple-700 text-sm">
+                {!hasClaimedFree && (
+                  <li>
+                    • <strong>Claim 300 free coins above!</strong>
+                  </li>
+                )}
                 <li>• Join high-stakes tournaments</li>
                 <li>• Compete for bigger prize pools</li>
                 <li>• Access exclusive game modes</li>
@@ -464,6 +469,11 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                 <li>• Win back your investment and more</li>
                 <li>• Daily tournaments with mega prizes</li>
                 <li>• Special bonus events</li>
+                {!hasClaimedFree && (
+                  <li>
+                    • <strong>Start with free coins - no risk!</strong>
+                  </li>
+                )}
               </ul>
             </div>
           </div>
