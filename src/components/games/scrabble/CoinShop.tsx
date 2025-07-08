@@ -465,12 +465,16 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       </div>
 
       {/* Payment Methods */}
-      <Card>
+      <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CreditCard className="h-6 w-6 text-green-600" />
-            Secure Payment Methods
+            Secure Payment via Razorpay
           </CardTitle>
+          <p className="text-green-700 text-sm mt-2">
+            🔒 All payments are processed securely through Razorpay, India's
+            leading payment gateway
+          </p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -479,28 +483,38 @@ export const CoinShop: React.FC<CoinShopProps> = ({
               return (
                 <div
                   key={method.id}
-                  className={`flex items-center gap-3 p-4 border rounded-lg ${
-                    method.available
-                      ? "border-green-200 bg-green-50"
-                      : "border-gray-200 bg-gray-50"
-                  }`}
+                  className="flex items-center gap-3 p-4 border-2 border-green-200 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <IconComponent
-                    className={`h-6 w-6 ${method.available ? "text-green-600" : "text-gray-400"}`}
-                  />
+                  <IconComponent className="h-6 w-6 text-green-600" />
                   <div>
-                    <span
-                      className={`font-medium ${method.available ? "text-green-800" : "text-gray-500"}`}
-                    >
+                    <span className="font-medium text-green-800">
                       {method.name}
                     </span>
-                    <div className="text-xs text-gray-600">
-                      {method.available ? "✓ Available" : "Coming Soon"}
+                    <div className="text-xs text-green-600 flex items-center gap-1">
+                      <CheckCircle className="h-3 w-3" />
+                      Available via Razorpay
                     </div>
                   </div>
                 </div>
               );
             })}
+          </div>
+
+          <div className="mt-4 p-3 bg-white rounded-lg border border-green-200">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                <CheckCircle className="h-4 w-4 text-white" />
+              </div>
+              <span className="font-medium text-green-800">
+                Additional Payment Options
+              </span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-green-700">
+              <span>• Net Banking</span>
+              <span>• RTGS/NEFT</span>
+              <span>• PayLater</span>
+              <span>• International Cards</span>
+            </div>
           </div>
         </CardContent>
       </Card>
