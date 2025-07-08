@@ -27,3 +27,30 @@ export const getThemePreview = (id: ThemeId) => {
     description: theme.description,
   };
 };
+
+export const hasSpecialEffects = (id: ThemeId) => {
+  return id === "hackermatrix" || id === "glitchcyber";
+};
+
+export const getThemeCategory = (id: ThemeId) => {
+  if (id === "hackermatrix" || id === "glitchcyber") return "Special Effects";
+  if (id === "pixelnova" || id === "glowyfun") return "Vibrant & Fun";
+  if (id === "mindmaze" || id === "default") return "Professional";
+  if (id === "dreampixels") return "Soft & Dreamy";
+  return "Other";
+};
+
+export const getThemeAnimation = (id: ThemeId) => {
+  switch (id) {
+    case "hackermatrix":
+      return "matrix-rain";
+    case "glitchcyber":
+      return "glitch-effects";
+    case "pixelnova":
+      return "neon-glow";
+    case "glowyfun":
+      return "fun-bounce";
+    default:
+      return "default";
+  }
+};
