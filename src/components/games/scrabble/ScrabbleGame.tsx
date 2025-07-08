@@ -140,6 +140,30 @@ export const ScrabbleGame: React.FC<ScrabbleGameProps> = ({ onBack, user }) => {
     }
   };
 
+  const loadPlayerProfiles = async (playerIds: string[]) => {
+    try {
+      const { data: profiles, error } = await supabase
+        .from("profiles")
+        .select("id, username, avatar_url, full_name")
+        .in("id", playerIds);
+
+      if (error) {
+        console.error("Error loading player profiles:", error);
+        return;
+      }
+
+      if (profiles) {
+        const profileMap = new Map<string, UserProfile>();
+        profiles.forEach((profile) => {
+          profileMap.set(profile.id, profile);
+        });
+        setPlayerProfiles(profileMap);
+      }
+    } catch (error) {
+      console.error("Unexpected error loading player profiles:", error);
+    }
+  };
+
   const setupGameSubscription = useCallback(() => {
     if (!currentGameId) return;
 
