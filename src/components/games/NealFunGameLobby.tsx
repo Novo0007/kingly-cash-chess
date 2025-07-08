@@ -32,7 +32,9 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
   const { isMobile } = useDeviceType();
   const [hoveredGame, setHoveredGame] = useState<string | null>(null);
   const [showGlobalChat, setShowGlobalChat] = useState(false);
-  const [gameFilter, setGameFilter] = useState<"all" | "free" | "earning">("all");
+  const [gameFilter, setGameFilter] = useState<"all" | "free" | "earning">(
+    "all",
+  );
 
   const games = [
     {
@@ -140,9 +142,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
       {/* Header */}
       <div className="text-center py-16 px-6">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-6xl font-light text-black mb-4">
-            NNC Games
-          </h1>
+          <h1 className="text-6xl font-light text-black mb-4">NNC Games</h1>
           <p className="text-xl text-black opacity-70 font-light">
             Games and other stuff
           </p>
@@ -206,7 +206,8 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
           <p className="text-sm text-gray-600">
             {gameFilter === "all" && "Showing all available games"}
             {gameFilter === "free" && "🆓 Free games - play without any cost!"}
-            {gameFilter === "earning" && "💰 Earning games - compete for real money prizes!"}
+            {gameFilter === "earning" &&
+              "💰 Earning games - compete for real money prizes!"}
           </p>
         </div>
       </div>
@@ -232,63 +233,66 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredGames.map((game) => (
-            <div
-              key={game.id}
-              className="group cursor-pointer"
-              onMouseEnter={() => setHoveredGame(game.id)}
-              onMouseLeave={() => setHoveredGame(null)}
-              onClick={() =>
-                handleGameSelect(
-                  game.id as "chess" | "ludo" | "maze" | "game2048" | "math",
-                )
-              }
-            >
-              <Card className="bg-white border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-lg h-full">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors duration-200">
-                        <game.icon className="w-6 h-6 text-gray-700" />
+              <div
+                key={game.id}
+                className="group cursor-pointer"
+                onMouseEnter={() => setHoveredGame(game.id)}
+                onMouseLeave={() => setHoveredGame(null)}
+                onClick={() =>
+                  handleGameSelect(
+                    game.id as "chess" | "ludo" | "maze" | "game2048" | "math",
+                  )
+                }
+              >
+                <Card className="bg-white border border-gray-200 hover:border-gray-300 transition-all duration-200 hover:shadow-lg h-full">
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors duration-200">
+                          <game.icon className="w-6 h-6 text-gray-700" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-lg font-medium text-black truncate">
+                            {game.title}
+                          </h3>
+                          {game.isPopular && (
+                            <Badge className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5">
+                              Popular
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                          {game.description}
+                        </p>
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <Users className="w-3 h-3" />
+                          <span>{game.players}</span>
+                          {game.isPaid && (
+                            <>
+                              <span>•</span>
+                              <Sparkles className="w-3 h-3 text-yellow-500" />
+                              <span className="text-yellow-600">
+                                Earn Money
+                              </span>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-lg font-medium text-black truncate">
-                          {game.title}
-                        </h3>
-                        {game.isPopular && (
-                          <Badge className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5">
-                            Popular
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                        {game.description}
-                      </p>
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <Users className="w-3 h-3" />
-                        <span>{game.players}</span>
-                        {game.isPaid && (
-                          <>
-                            <span>•</span>
-                            <Sparkles className="w-3 h-3 text-yellow-500" />
-                            <span className="text-yellow-600">Earn Money</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="text-right">
-                    <span className="text-blue-600 text-sm font-medium group-hover:underline">
-                      Play Now →
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ))}
-        </div>
+                    <div className="text-right">
+                      <span className="text-blue-600 text-sm font-medium group-hover:underline">
+                        Play Now →
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Coming Soon Section */}
         <div className="mt-16 pt-8 border-t border-gray-200">
@@ -365,7 +369,9 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
           </p>
 
           <p className="text-gray-500 text-sm opacity-50">
-            <a href="#" className="hover:underline">Privacy policy</a>
+            <a href="#" className="hover:underline">
+              Privacy policy
+            </a>
           </p>
         </div>
       </footer>
