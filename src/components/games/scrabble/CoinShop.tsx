@@ -148,6 +148,13 @@ export const CoinShop: React.FC<CoinShopProps> = ({
           <Coins className="h-12 w-12 mx-auto mb-4 text-blue-600" />
           <h2 className="text-3xl font-bold text-blue-800 mb-2">{userCoins}</h2>
           <p className="text-blue-600">Your Current Coins</p>
+          {userCoins >= 1300 && (
+            <div className="mt-3 p-2 bg-green-100 rounded-lg">
+              <p className="text-sm text-green-800">
+                🎉 First-time bonus included! (+300 coins)
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
