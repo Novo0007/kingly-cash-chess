@@ -180,22 +180,55 @@ export const CoinShop: React.FC<CoinShopProps> = ({
     setPurchasing(packageData.id);
 
     try {
-      // Simulate payment processing (in a real app, you'd integrate with a payment provider)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      let paymentSuccess = false;
 
-      const totalCoins = packageData.coins + packageData.bonus;
-      const result = await addCoins(
-        user.id,
-        totalCoins,
-        "purchase",
-        `Purchased ${packageData.name} - ${packageData.coins} coins + ${packageData.bonus} bonus`,
-      );
+      if (paymentRegion === "IN") {
+        // Use Razorpay for Indian users
+        const paymentResult = await initiatePayment({
+          amount: packageData.priceINR,
+          currency: "INR",
+          name: "Word Search Game",
+          description: `${packageData.name} - ${packageData.coins + packageData.bonus} coins`,
+          prefill: {
+            name:
+              user.user_metadata?.full_name || user.email?.split("@")[0] || "",
+            email: user.email || "",
+          },
+        });
 
-      if (result.success) {
-        toast.success(`🎉 You received ${totalCoins} coins!`);
-        onPurchaseComplete();
+        if (paymentResult.success) {
+          paymentSuccess = true;
+          toast.success(
+            `🎉 Payment successful! Transaction ID: ${paymentResult.paymentId}`,
+          );
+        } else if (paymentResult.error === "Payment cancelled by user") {
+          toast.info("Payment cancelled");
+          setPurchasing(null);
+          return;
+        } else {
+          throw new Error(paymentResult.error || "Payment failed");
+        }
       } else {
-        toast.error("Failed to process purchase");
+        // Simulate international payment (for demo purposes)
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        paymentSuccess = true;
+      }
+
+      if (paymentSuccess) {
+        const totalCoins = packageData.coins + packageData.bonus;
+        const result = await addCoins(
+          user.id,
+          totalCoins,
+          "purchase",
+          `Purchased ${packageData.name} - ${packageData.coins} coins + ${packageData.bonus} bonus`,
+        );
+
+        if (result.success) {
+          toast.success(`🎉 You received ${totalCoins} coins!`);
+          onPurchaseComplete();
+        } else {
+          toast.error("Failed to process coin credit");
+        }
       }
     } catch (error) {
       console.error("Error processing purchase:", error);
