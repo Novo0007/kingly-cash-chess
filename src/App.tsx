@@ -33,15 +33,14 @@ const LoadingScreen = ({ loadingProgress }: { loadingProgress: number }) => {
       >
         {/* Floating Particles */}
         <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
+          {[...Array(15)].map((_, i) => (
             <div
               key={i}
-              className={`absolute w-2 h-2 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full opacity-20 animate-pulse`}
+              className={`absolute w-1 h-1 sm:w-2 sm:h-2 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full opacity-30 particle-animation`}
               style={{
                 left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${2 + Math.random() * 3}s`,
+                animationDelay: `${Math.random() * 8}s`,
+                animationDuration: `${6 + Math.random() * 4}s`,
               }}
             />
           ))}
@@ -52,17 +51,17 @@ const LoadingScreen = ({ loadingProgress }: { loadingProgress: number }) => {
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
         <div className="text-center space-y-6 sm:space-y-8 max-w-sm sm:max-w-md mx-auto w-full">
           {/* Themed Logo with Glow Effect */}
-          <div className="relative group">
+          <div className="relative group animate-scaleIn">
             <div
-              className={`absolute -inset-8 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full blur-2xl opacity-20 group-hover:opacity-30 animate-pulse transition-opacity duration-1000`}
+              className={`absolute -inset-6 sm:-inset-8 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full blur-2xl opacity-20 loading-glow`}
             ></div>
             <div
-              className={`relative bg-gradient-to-br ${currentTheme.gradients.secondary}/20 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-primary/20 shadow-2xl`}
+              className={`relative bg-gradient-to-br ${currentTheme.gradients.secondary}/20 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-primary/20 shadow-2xl loading-float`}
             >
               <div
-                className={`w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-gradient-to-br ${currentTheme.gradients.primary} rounded-2xl flex items-center justify-center shadow-xl transform hover:scale-105 transition-transform duration-300`}
+                className={`w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto bg-gradient-to-br ${currentTheme.gradients.primary} rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl transform transition-all duration-500 hover:scale-110 hover:rotate-12`}
               >
-                <div className="text-3xl sm:text-4xl animate-bounce">
+                <div className="text-2xl sm:text-3xl md:text-4xl animate-bounce">
                   {currentTheme.preview}
                 </div>
               </div>
@@ -70,13 +69,15 @@ const LoadingScreen = ({ loadingProgress }: { loadingProgress: number }) => {
           </div>
 
           {/* Themed Typography */}
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-2 sm:space-y-3 md:space-y-4 animate-fadeInUp delay-200">
             <h1
-              className={`text-3xl sm:text-4xl md:text-5xl font-black bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent animate-pulse`}
+              className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent loading-shimmer relative`}
             >
-              {currentTheme.name} GAME HUB
+              <span className="relative z-10">
+                {currentTheme.name} GAME HUB
+              </span>
             </h1>
-            <p className="text-sm sm:text-base text-muted-foreground font-medium">
+            <p className="text-xs sm:text-sm md:text-base text-muted-foreground font-medium px-2">
               BY{" "}
               <span
                 className={`font-bold bg-gradient-to-r ${currentTheme.gradients.primary} bg-clip-text text-transparent`}
@@ -87,36 +88,44 @@ const LoadingScreen = ({ loadingProgress }: { loadingProgress: number }) => {
           </div>
 
           {/* Elegant Loading Animation */}
-          <div className="space-y-4 sm:space-y-6">
-            {/* Spinning Ring */}
-            <div className="relative w-12 h-12 sm:w-16 sm:h-16 mx-auto">
+          <div className="space-y-4 sm:space-y-6 animate-fadeInUp delay-300">
+            {/* Enhanced Spinning Ring */}
+            <div className="relative w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mx-auto">
               <div
-                className={`absolute inset-0 border-4 border-muted/30 rounded-full`}
+                className={`absolute inset-0 border-2 sm:border-3 md:border-4 border-muted/20 rounded-full`}
               ></div>
               <div
-                className={`absolute inset-0 border-4 border-transparent border-t-primary rounded-full animate-spin`}
+                className={`absolute inset-0 border-2 sm:border-3 md:border-4 border-transparent border-t-primary rounded-full animate-spin`}
+                style={{ animationDuration: "1.5s" }}
               ></div>
               <div
-                className={`absolute inset-2 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full opacity-20 animate-pulse`}
+                className={`absolute inset-1 sm:inset-2 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full opacity-20 loading-glow`}
+              ></div>
+              <div
+                className={`absolute inset-0 border border-primary/20 rounded-full animate-ping`}
+                style={{ animationDuration: "3s" }}
               ></div>
             </div>
 
             {/* Beautiful Progress Bar */}
-            <div className="w-full max-w-xs mx-auto space-y-3">
-              <div className="relative h-2 bg-muted/30 rounded-full overflow-hidden backdrop-blur-sm">
+            <div className="w-full max-w-xs mx-auto space-y-2 sm:space-y-3 px-2">
+              <div className="relative h-1.5 sm:h-2 bg-muted/20 rounded-full overflow-hidden backdrop-blur-sm border border-primary/10">
                 <div
-                  className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full opacity-20 animate-pulse`}
+                  className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full opacity-10 animate-pulse`}
                 ></div>
                 <div
-                  className={`h-full bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full relative overflow-hidden transition-all duration-700 ease-out`}
+                  className={`h-full bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full relative overflow-hidden transition-all duration-1000 ease-out shadow-lg`}
                   style={{ width: `${Math.min(loadingProgress, 100)}%` }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+                  <div className="absolute inset-0 loading-shimmer"></div>
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} opacity-50 animate-pulse`}
+                  ></div>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center text-xs sm:text-sm">
-                <span className="text-muted-foreground font-medium">
+              <div className="flex justify-between items-center text-[10px] sm:text-xs md:text-sm px-1">
+                <span className="text-muted-foreground font-medium truncate flex-1 mr-2">
                   {loadingProgress < 25
                     ? `Loading ${currentTheme.name}...`
                     : loadingProgress < 50
@@ -127,7 +136,9 @@ const LoadingScreen = ({ loadingProgress }: { loadingProgress: number }) => {
                           ? "Almost Ready..."
                           : `Welcome to ${currentTheme.name}!`}
                 </span>
-                <span className={`font-bold text-primary text-sm sm:text-base`}>
+                <span
+                  className={`font-bold bg-gradient-to-r ${currentTheme.gradients.primary} bg-clip-text text-transparent text-xs sm:text-sm md:text-base min-w-0 flex-shrink-0`}
+                >
                   {Math.round(loadingProgress)}%
                 </span>
               </div>
@@ -135,7 +146,7 @@ const LoadingScreen = ({ loadingProgress }: { loadingProgress: number }) => {
           </div>
 
           {/* Themed Feature Cards */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-6 sm:mt-8">
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 md:gap-3 mt-4 sm:mt-6 md:mt-8 px-2 animate-fadeInUp delay-400">
             {[
               { icon: "🔒", title: "Secure", desc: "Safe & protected" },
               { icon: "👥", title: "Multiplayer", desc: "Play together" },
@@ -143,23 +154,26 @@ const LoadingScreen = ({ loadingProgress }: { loadingProgress: number }) => {
             ].map((feature, index) => (
               <div
                 key={index}
-                className={`relative group bg-gradient-to-br ${currentTheme.gradients.secondary}/10 backdrop-blur-xl border border-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center hover:scale-105 transition-all duration-300 hover:shadow-lg`}
-                style={{ animationDelay: `${index * 0.2}s` }}
+                className={`relative group bg-gradient-to-br ${currentTheme.gradients.secondary}/5 backdrop-blur-xl border border-primary/10 rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-4 text-center transform transition-all duration-500 hover:scale-105 hover:shadow-lg animate-scaleIn`}
+                style={{ animationDelay: `${0.5 + index * 0.1}s` }}
               >
                 <div
-                  className={`absolute -inset-1 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-xl sm:rounded-2xl blur opacity-0 group-hover:opacity-20 transition-opacity duration-300`}
+                  className={`absolute -inset-0.5 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-lg sm:rounded-xl md:rounded-2xl blur opacity-0 group-hover:opacity-15 transition-all duration-500`}
                 ></div>
                 <div className="relative">
                   <div
-                    className="text-xl sm:text-2xl mb-1 sm:mb-2 animate-bounce"
-                    style={{ animationDelay: `${index * 0.3}s` }}
+                    className="text-base sm:text-lg md:text-xl lg:text-2xl mb-1 loading-float"
+                    style={{
+                      animationDelay: `${index * 0.2}s`,
+                      animationDuration: `${3 + index * 0.5}s`,
+                    }}
                   >
                     {feature.icon}
                   </div>
-                  <h3 className="text-xs sm:text-sm font-bold text-foreground">
+                  <h3 className="text-[10px] sm:text-xs md:text-sm font-bold text-foreground leading-tight">
                     {feature.title}
                   </h3>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+                  <p className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight">
                     {feature.desc}
                   </p>
                 </div>
@@ -169,12 +183,12 @@ const LoadingScreen = ({ loadingProgress }: { loadingProgress: number }) => {
 
           {/* Themed Status Card */}
           <div
-            className={`relative bg-gradient-to-r ${currentTheme.gradients.primary}/10 backdrop-blur-xl border border-primary/30 rounded-xl sm:rounded-2xl p-3 sm:p-4 overflow-hidden`}
+            className={`relative bg-gradient-to-r ${currentTheme.gradients.primary}/5 backdrop-blur-xl border border-primary/20 rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-3 md:p-4 overflow-hidden mx-2 animate-fadeInUp delay-500`}
           >
             <div
-              className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-xl opacity-10 animate-pulse`}
+              className={`absolute -inset-2 sm:-inset-4 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-xl opacity-10 loading-glow`}
             ></div>
-            <p className="relative text-xs sm:text-sm text-foreground font-medium">
+            <p className="relative text-[10px] sm:text-xs md:text-sm text-foreground font-medium text-center">
               {currentTheme.preview} Welcome to {currentTheme.name} Game Hub
             </p>
           </div>
