@@ -241,6 +241,33 @@ export const Header = ({
     }
   };
 
+  const handleDiagnostic = async () => {
+    toast.info("Running connection diagnostic...");
+    try {
+      const results = await runFullDiagnostic();
+
+      if (results.supabaseTest.connected) {
+        toast.success("✅ All connections working properly!");
+        setIsOnline(true);
+        setConnectionRetries(0);
+      } else {
+        toast.error(
+          `❌ Connection issues detected: ${results.supabaseTest.error}`,
+        );
+        setIsOnline(false);
+      }
+    } catch (error) {
+      toast.error("Diagnostic failed to run");
+      console.error("Diagnostic error:", error);
+    }
+  };
+
+  const handleManualRefresh = async () => {
+    toast.info("Refreshing connection...");
+    setConnectionRetries(0);
+    await fetchUserData();
+  };
+
   const handleNavigateToWallet = () => {
     if (onNavigateToWallet) {
       onNavigateToWallet();
