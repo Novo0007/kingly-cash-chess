@@ -262,7 +262,9 @@ const Index = () => {
           </div>
         );
       case "games":
-        return useNealFunStyle ? (
+        return useModernStyle ? (
+          <ModernGameLobby onSelectGame={handleSelectGame} />
+        ) : useNealFunStyle ? (
           <NealFunGameLobby onSelectGame={handleSelectGame} />
         ) : (
           <GameSelection onSelectGame={handleSelectGame} />
