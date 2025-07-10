@@ -78,10 +78,14 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
     onError?.();
   };
 
-  const optimizedSrc = getOptimizedImageUrl(src, { width, height, quality });
+  const optimizedSrc = getOptimizedImageUrl(safeSrc, {
+    width: safeWidth,
+    height: safeHeight,
+    quality: safeQuality,
+  });
   const finalSrc = getOptimalFormat(optimizedSrc);
-  const srcSet = generateSrcSet(src);
-  const placeholderSrc = generatePlaceholder(width, height);
+  const srcSet = generateSrcSet(safeSrc);
+  const placeholderSrc = generatePlaceholder(safeWidth, safeHeight);
 
   const displaySrc = hasError ? fallback || placeholderSrc : finalSrc;
 
