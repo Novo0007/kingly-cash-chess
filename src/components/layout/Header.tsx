@@ -122,7 +122,10 @@ export const Header = ({
           supabase.removeChannel(walletChannel);
         }
       } catch (error) {
-        console.error("Error cleaning up subscription:", error);
+        console.error(
+          "Error cleaning up subscription:",
+          error instanceof Error ? error.message : String(error),
+        );
       }
     };
   }, []);
