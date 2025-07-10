@@ -350,7 +350,7 @@ export const Header = ({
             <Button
               onClick={handleNavigateToWallet}
               size="sm"
-              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0 h-8 px-3"
+              className={`bg-gradient-to-r ${currentTheme.gradients.secondary} hover:opacity-90 text-white border-0 h-8 px-3 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200`}
             >
               <Plus className="w-4 h-4 mr-1.5" />
               <span className="hidden sm:inline">Add Money</span>
