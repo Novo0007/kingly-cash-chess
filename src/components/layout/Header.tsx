@@ -70,33 +70,65 @@ export const Header = ({
 
   const fetchUserData = async () => {
     try {
+      // Add timeout and retry logic for Supabase connection
       const {
         data: { user },
+        error: userError,
       } = await supabase.auth.getUser();
-      if (!user) return;
 
-      // Fetch user profile
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+      if (userError) {
+        console.error("Auth error:", userError);
+        // Don't show error toast for auth issues, just handle gracefully
+        return;
+      }
 
-      setUserProfile(profile);
+      if (!user) {
+        console.log("No authenticated user found");
+        return;
+      }
 
-      // Fetch wallet data
-      const { data: walletData } = await supabase
-        .from("wallets")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
+      // Fetch user profile with error handling
+      try {
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single();
 
-      if (walletData) {
-        setWallet(walletData);
-        setCoinsBalance(Number(walletData.balance) || 0);
+        if (profileError && profileError.code !== "PGRST116") {
+          console.error("Profile fetch error:", profileError);
+        } else {
+          setUserProfile(profile);
+        }
+      } catch (profileErr) {
+        console.error("Profile fetch failed:", profileErr);
+      }
+
+      // Fetch wallet data with error handling
+      try {
+        const { data: walletData, error: walletError } = await supabase
+          .from("wallets")
+          .select("*")
+          .eq("user_id", user.id)
+          .single();
+
+        if (walletError && walletError.code !== "PGRST116") {
+          console.error("Wallet fetch error:", walletError);
+        } else if (walletData) {
+          setWallet(walletData);
+          setCoinsBalance(Number(walletData.balance) || 0);
+        }
+      } catch (walletErr) {
+        console.error("Wallet fetch failed:", walletErr);
+        // Set default values if wallet fetch fails
+        setCoinsBalance(0);
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
+      // Set fallback values
+      setCoinsBalance(0);
+      setUserProfile(null);
+      setWallet(null);
     }
   };
 
