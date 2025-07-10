@@ -21,6 +21,7 @@ import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
 import { ChatSystem } from "@/components/chat/ChatSystem";
 import { AdminPanel } from "@/components/admin/AdminPanel";
+import { GlobalRankings } from "@/components/rankings/GlobalRankings";
 import { toast } from "sonner";
 import type { User } from "@supabase/supabase-js";
 import { ModernLoading } from "@/components/ui/modern-loading";
