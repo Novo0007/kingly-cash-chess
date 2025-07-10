@@ -222,19 +222,7 @@ const Index = () => {
 
   // Optimized loading state
   if (loading) {
-    return (
-      <MobileOptimized className="flex items-center justify-center min-h-screen">
-        <div className="relative">
-          <div className="absolute -inset-4 bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 rounded-full blur-xl opacity-60 animate-pulse"></div>
-          <div className="relative bg-gradient-to-r from-amber-900 to-orange-900 p-6 rounded-full border-2 border-amber-600/50 backdrop-blur-sm wood-plank">
-            <div className="w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
-          </div>
-          <p className="text-white text-center mt-4 font-semibold">
-            Loading Game Platform...
-          </p>
-        </div>
-      </MobileOptimized>
-    );
+    return <ModernLoading message="Loading Game Platform..." />;
   }
 
   if (!user) {
