@@ -681,20 +681,36 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
         </Card>
 
         {/* Game Mode Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardContent className="p-6 text-center">
+              <div className="text-4xl mb-4">🏆</div>
+              <h3 className="text-xl font-bold mb-2">Level Mode</h3>
+              <p className="text-gray-600 mb-4">
+                Progress through 99 unique levels
+              </p>
+              <Button
+                onClick={() => setCurrentView("levels")}
+                className="w-full bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700"
+              >
+                Start Levels
+              </Button>
+            </CardContent>
+          </Card>
+
           <Card className="hover:shadow-lg transition-shadow cursor-pointer">
             <CardContent className="p-6 text-center">
               <div className="text-4xl mb-4">🎯</div>
               <h3 className="text-xl font-bold mb-2">Solo Play</h3>
               <p className="text-gray-600 mb-4">
-                Practice and improve your skills
+                Practice with custom settings
               </p>
               <Button
                 onClick={startSoloGame}
                 disabled={isLoading}
                 className="w-full"
               >
-                {isLoading ? "Starting..." : "Start Solo Game"}
+                {isLoading ? "Starting..." : "Quick Game"}
               </Button>
             </CardContent>
           </Card>
