@@ -327,7 +327,7 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
                     placeholder="blur"
                   />
                   <div
-                    className={`absolute inset-0 bg-gradient-to-t ${game.gradient} opacity-80`}
+                    className={`absolute inset-0 bg-gradient-to-t ${currentTheme.gradients.primary} opacity-60`}
                   ></div>
 
                   {/* Status Badge */}
