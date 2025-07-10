@@ -44,27 +44,48 @@ export const Header = ({
   useEffect(() => {
     fetchUserData();
 
-    // Set up real-time subscriptions for wallet updates
-    const walletChannel = supabase
-      .channel("header_wallet_updates")
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "wallets",
-        },
-        (payload) => {
-          if (payload.new) {
-            setWallet(payload.new as Tables<"wallets">);
-            setCoinsBalance(Number(payload.new.balance) || 0);
+    // Set up real-time subscriptions for wallet updates with error handling
+    let walletChannel: any = null;
+
+    try {
+      walletChannel = supabase
+        .channel("header_wallet_updates")
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "wallets",
+          },
+          (payload) => {
+            try {
+              if (payload.new) {
+                setWallet(payload.new as Tables<"wallets">);
+                setCoinsBalance(Number(payload.new.balance) || 0);
+              }
+            } catch (error) {
+              console.error("Error processing wallet update:", error);
+            }
+          },
+        )
+        .subscribe((status) => {
+          console.log("Header wallet subscription status:", status);
+          if (status === "CHANNEL_ERROR") {
+            console.error("Failed to subscribe to wallet updates");
           }
-        },
-      )
-      .subscribe();
+        });
+    } catch (error) {
+      console.error("Error setting up wallet subscription:", error);
+    }
 
     return () => {
-      supabase.removeChannel(walletChannel);
+      try {
+        if (walletChannel) {
+          supabase.removeChannel(walletChannel);
+        }
+      } catch (error) {
+        console.error("Error cleaning up subscription:", error);
+      }
     };
   }, []);
 
