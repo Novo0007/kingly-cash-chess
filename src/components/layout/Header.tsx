@@ -362,14 +362,16 @@ export const Header = ({
               onClick={handleNavigateToProfile}
               variant="ghost"
               size="sm"
-              className="p-1 h-8 w-8 rounded-full hover:bg-muted"
+              className="p-1 h-8 w-8 rounded-full hover:bg-primary/10 transition-colors duration-200"
             >
               <Avatar className="h-6 w-6">
                 <AvatarImage
                   src={userProfile?.avatar_url}
                   alt={userProfile?.full_name || "Profile"}
                 />
-                <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                <AvatarFallback
+                  className={`text-xs bg-gradient-to-br ${currentTheme.gradients.primary} text-white`}
+                >
                   {getInitials(userProfile?.full_name)}
                 </AvatarFallback>
               </Avatar>
