@@ -197,13 +197,21 @@ export const Header = ({
           .single();
 
         if (walletError && walletError.code !== "PGRST116") {
-          console.error("Wallet fetch error:", walletError);
+          console.error("Wallet fetch error:", {
+            message: walletError.message,
+            code: walletError.code,
+            details: walletError.details,
+            hint: walletError.hint,
+          });
         } else if (walletData) {
           setWallet(walletData);
           setCoinsBalance(Number(walletData.balance) || 0);
         }
       } catch (walletErr) {
-        console.error("Wallet fetch failed:", walletErr);
+        console.error(
+          "Wallet fetch failed:",
+          walletErr instanceof Error ? walletErr.message : String(walletErr),
+        );
         // Set default values if wallet fetch fails
         setCoinsBalance(0);
       }
