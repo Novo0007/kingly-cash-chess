@@ -40,12 +40,7 @@ export const BottomNav = ({
       icon: Wallet,
       gradient: "from-yellow-500 to-orange-600",
     },
-    {
-      id: "profile",
-      label: "Profile",
-      icon: UserCircle,
-      gradient: "from-pink-500 to-rose-600",
-    },
+    // Profile button removed - now accessible through header dropdown
   ];
 
   if (isAdmin) {
