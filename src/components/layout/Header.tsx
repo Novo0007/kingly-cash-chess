@@ -47,6 +47,7 @@ export const Header = ({
   const [coinsBalance, setCoinsBalance] = useState(0);
   const [isOnline, setIsOnline] = useState(true);
   const [connectionRetries, setConnectionRetries] = useState(0);
+  const { currentTheme } = useTheme();
 
   useEffect(() => {
     fetchUserData();
