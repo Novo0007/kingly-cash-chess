@@ -220,7 +220,10 @@ export const Header = ({
         setCoinsBalance(0);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error(
+        "Error fetching user data:",
+        error instanceof Error ? error.message : String(error),
+      );
 
       // Check if it's a network error
       if (
