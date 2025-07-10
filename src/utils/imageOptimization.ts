@@ -216,14 +216,19 @@ export const generateSrcSet = (
   baseUrl: string,
   sizes: number[] = [400, 800, 1200],
 ): string => {
-  if (!baseUrl.includes("unsplash.com")) return "";
+  if (!isValidUrl(baseUrl)) return "";
 
-  return sizes
-    .map((size) => {
-      const url = new URL(baseUrl);
-      url.searchParams.set("w", size.toString());
-      url.searchParams.set("auto", "format");
-      return `${url.toString()} ${size}w`;
-    })
-    .join(", ");
+  try {
+    return sizes
+      .map((size) => {
+        const safeSize = Math.max(1, Math.min(2000, Math.floor(Number(size))));
+        const url = new URL(baseUrl);
+        url.searchParams.set("w", safeSize.toString());
+        url.searchParams.set("auto", "format");
+        return `${url.toString()} ${safeSize}w`;
+      })
+      .join(", ");
+  } catch {
+    return "";
+  }
 };
