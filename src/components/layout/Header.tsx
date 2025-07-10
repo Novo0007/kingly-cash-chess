@@ -308,11 +308,17 @@ export const Header = ({
         <div className="flex items-center justify-between">
           {/* Left: Logo/Brand */}
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">NG</span>
+            <div
+              className={`w-8 h-8 bg-gradient-to-br ${currentTheme.gradients.primary} rounded-lg flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform duration-200`}
+            >
+              <span className="text-white font-bold text-sm">
+                {currentTheme.preview}
+              </span>
             </div>
-            <h1 className="text-lg font-bold text-foreground hidden sm:block">
-              NNC Games
+            <h1
+              className={`text-lg font-bold bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent hidden sm:block`}
+            >
+              {currentTheme.name} Games
             </h1>
           </div>
 
