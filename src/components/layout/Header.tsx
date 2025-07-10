@@ -91,7 +91,7 @@ export const Header = ({
     };
   }, []);
 
-  const fetchUserData = async () => {
+  const fetchUserData = async (retryCount = 0) => {
     try {
       // Add timeout and retry logic for Supabase connection
       const {
@@ -101,9 +101,32 @@ export const Header = ({
 
       if (userError) {
         console.error("Auth error:", userError);
-        // Don't show error toast for auth issues, just handle gracefully
+
+        // If it's a network error and we haven't retried too many times
+        if (userError.message?.includes("Failed to fetch") && retryCount < 3) {
+          console.log(`Retrying connection (attempt ${retryCount + 1}/3)...`);
+          setConnectionRetries(retryCount + 1);
+          setIsOnline(false);
+
+          // Wait before retrying
+          setTimeout(
+            () => {
+              fetchUserData(retryCount + 1);
+            },
+            2000 * (retryCount + 1),
+          ); // Exponential backoff
+
+          return;
+        }
+
+        // Mark as offline if still failing
+        setIsOnline(false);
         return;
       }
+
+      // Success - mark as online
+      setIsOnline(true);
+      setConnectionRetries(0);
 
       if (!user) {
         console.log("No authenticated user found");
@@ -148,10 +171,35 @@ export const Header = ({
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
+
+      // Check if it's a network error
+      if (
+        error instanceof TypeError &&
+        error.message?.includes("Failed to fetch")
+      ) {
+        setIsOnline(false);
+
+        // Retry if we haven't exceeded retry limit
+        if (retryCount < 3) {
+          console.log(
+            `Network error, retrying... (attempt ${retryCount + 1}/3)`,
+          );
+          setConnectionRetries(retryCount + 1);
+          setTimeout(
+            () => {
+              fetchUserData(retryCount + 1);
+            },
+            2000 * (retryCount + 1),
+          );
+          return;
+        }
+      }
+
       // Set fallback values
       setCoinsBalance(0);
       setUserProfile(null);
       setWallet(null);
+      setIsOnline(false);
     }
   };
 
