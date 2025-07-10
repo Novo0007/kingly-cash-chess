@@ -413,7 +413,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
   }
 
   if (currentView === "leaderboard") {
-    return <SimpleLeaderboard onBack={() => setCurrentView("menu")} />;
+    return <EnhancedLeaderboard onBack={() => setCurrentView("menu")} />;
   }
 
   if (currentView === "shop") {
