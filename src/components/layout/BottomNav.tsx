@@ -1,7 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Home, Users, Wallet, UserCircle, Shield } from "lucide-react";
+import {
+  Home,
+  Users,
+  Wallet,
+  UserCircle,
+  Shield,
+  Gamepad2,
+} from "lucide-react";
 
 interface BottomNavProps {
   currentView: string;
