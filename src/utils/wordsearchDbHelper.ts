@@ -576,8 +576,7 @@ export const getWordSearchLeaderboard = async (
     let query = supabase
       .from("word_search_scores")
       .select("*")
-      .order("score", { ascending: false })
-      .limit(limit);
+      .order("score", { ascending: false });
 
     if (difficulty) {
       query = query.eq("difficulty", difficulty);
@@ -608,7 +607,24 @@ export const getWordSearchLeaderboard = async (
       return { success: false, error: error.message || "Database error" };
     }
 
-    return { success: true, scores: data || [] };
+    // Filter to get only the highest score per player
+    const allScores = data || [];
+    const playerBestScores = new Map<string, WordSearchScoreRecord>();
+
+    // Group by user_id and keep only the highest score for each player
+    allScores.forEach((score) => {
+      const existingScore = playerBestScores.get(score.user_id);
+      if (!existingScore || score.score > existingScore.score) {
+        playerBestScores.set(score.user_id, score);
+      }
+    });
+
+    // Convert back to array and sort by score
+    const uniquePlayerScores = Array.from(playerBestScores.values())
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit);
+
+    return { success: true, scores: uniquePlayerScores };
   } catch (error) {
     console.error("Unexpected error fetching Word Search leaderboard:", {
       error: error instanceof Error ? error.message : String(error),
