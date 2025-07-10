@@ -332,7 +332,13 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
 
                   {/* Status Badge */}
                   <div className="absolute top-4 left-4">
-                    <Badge className="bg-white/90 text-gray-800 border-0 font-bold">
+                    <Badge
+                      className={`border-0 font-bold ${
+                        currentTheme.id === "dreampixels"
+                          ? "bg-white/90 text-gray-800"
+                          : "bg-card/90 text-card-foreground"
+                      }`}
+                    >
                       {game.status}
                     </Badge>
                   </div>
