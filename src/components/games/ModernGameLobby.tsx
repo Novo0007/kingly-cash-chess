@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 interface ModernGameLobbyProps {
   onSelectGame: (
