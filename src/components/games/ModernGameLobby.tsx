@@ -290,10 +290,15 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
               <Card className="bg-white/80 backdrop-blur-sm border-white/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 overflow-hidden">
                 {/* Game Image */}
                 <div className="relative h-48 overflow-hidden">
-                  <img
+                  <OptimizedImage
                     src={game.image}
                     alt={game.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    width={400}
+                    height={300}
+                    quality={85}
+                    className="w-full h-full transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
+                    placeholder="blur"
                   />
                   <div
                     className={`absolute inset-0 bg-gradient-to-t ${game.gradient} opacity-80`}
