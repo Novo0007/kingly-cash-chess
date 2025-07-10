@@ -503,11 +503,23 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
 
         {/* Game Board */}
         <WordSearchBoard
-          gameLogic={gameLogic}
           gameState={gameState}
-          onGameStateChange={setGameState}
-          onGameEnd={handleGameEnd}
-          isCurrentPlayer={true}
+          onWordFound={(start, end) => {
+            if (!gameLogic || !gameState) return;
+
+            const result = gameLogic.findWord(user.id, start, end);
+
+            if (result.success && result.word && result.points) {
+              const newState = gameLogic.getGameState();
+              setGameState(newState);
+
+              // Check if game is complete
+              if (gameLogic.isGameComplete()) {
+                handleGameEnd();
+              }
+            }
+          }}
+          isActive={gameState.gameStatus === "active"}
         />
 
         {/* Game Controls */}
