@@ -429,19 +429,19 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
         </div>
 
         {/* Navigation */}
-        {(startLevel > 1 || endLevel < 99) && (
+        {(startLevelIndex > 1 || endLevel < 99) && (
           <div className="flex justify-between items-center">
             <Button
               variant="outline"
-              disabled={startLevel <= 1}
+              disabled={startLevelIndex <= 1}
               onClick={() =>
-                setCurrentLevel(Math.max(1, startLevel - levelsPerPage))
+                setCurrentLevel(Math.max(1, startLevelIndex - levelsPerPage))
               }
             >
               Previous Levels
             </Button>
             <span className="text-sm text-muted-foreground">
-              Levels {startLevel} - {endLevel}
+              Levels {startLevelIndex} - {endLevel}
             </span>
             <Button
               variant="outline"
