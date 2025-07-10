@@ -329,6 +329,8 @@ const Index = () => {
         return <FriendsSystem />;
       case "profile":
         return <ProfileSystem />;
+      case "rankings":
+        return <GlobalRankings user={user} />;
       default:
         return <GameSelection onSelectGame={handleSelectGame} />;
     }
