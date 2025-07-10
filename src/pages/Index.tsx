@@ -336,6 +336,7 @@ const Index = () => {
   if (useModernStyle && currentView === "games") {
     return (
       <MobileOptimized>
+        <Header currentView={currentView} onViewChange={setCurrentView} />
         <ModernGameLobby onSelectGame={handleSelectGame} />
         {/* Bottom Nav for mobile */}
         <div className="md:hidden relative z-30">
@@ -352,6 +353,7 @@ const Index = () => {
   if (useNealFunStyle && currentView === "games") {
     return (
       <MobileOptimized>
+        <Header currentView={currentView} onViewChange={setCurrentView} />
         <NealFunGameLobby onSelectGame={handleSelectGame} />
         {/* Bottom Nav for mobile */}
         <div className="md:hidden relative z-30">
@@ -425,6 +427,9 @@ const Index = () => {
           style={{ animationDelay: "8s", animationDuration: "13s" }}
         ></div>
       </div>
+
+      {/* Header Component - always visible */}
+      <Header currentView={currentView} onViewChange={setCurrentView} />
 
       <div className="hidden md:block relative z-30">
         <Navbar
