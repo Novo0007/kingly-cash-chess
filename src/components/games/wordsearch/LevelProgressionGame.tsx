@@ -454,7 +454,7 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
           <CardContent className="p-4">
             <div className="text-center">
-              <h3 className="font-bold text-blue-800 mb-2">📋 Game Rules</h3>
+              <h3 className="font-bold text-blue-800 mb-2">��� Game Rules</h3>
               <div className="text-sm text-blue-700 space-y-1">
                 <p>
                   🎯 Find all {levelInfo.wordCount}{" "}
@@ -490,14 +490,14 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
                 <p className="text-white/80 text-sm">{levelInfo.theme}</p>
               </div>
               <div className="text-right">
-                <div className="text-sm text-white/80">Time</div>
+                <div className="text-sm text-white/80">Time Remaining</div>
                 <div className="text-xl font-bold">
                   {formatTime(timeRemaining)}
                 </div>
               </div>
             </div>
 
-            <div className="mt-3 grid grid-cols-3 gap-4 text-center">
+            <div className="mt-3 grid grid-cols-4 gap-4 text-center">
               <div>
                 <div className="text-sm text-white/80">Found</div>
                 <div className="font-bold">
@@ -511,8 +511,16 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
                 </div>
               </div>
               <div>
-                <div className="text-sm text-white/80">Hints</div>
-                <div className="font-bold">{gameState.hints}</div>
+                <div className="text-sm text-white/80">Target</div>
+                <div className="font-bold text-yellow-200">
+                  {levelInfo.requiredScore}
+                </div>
+              </div>
+              <div>
+                <div className="text-sm text-white/80">Hints Left</div>
+                <div className="font-bold">
+                  {Math.max(0, 3 - (gameState.players[0]?.hintsUsed || 0))}
+                </div>
               </div>
             </div>
           </CardContent>
