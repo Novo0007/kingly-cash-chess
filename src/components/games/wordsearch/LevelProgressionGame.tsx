@@ -18,7 +18,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { WordSearchBoard } from "./WordSearchBoard";
-import { SimpleLeaderboard } from "./SimpleLeaderboard";
+import { EnhancedLeaderboard } from "./EnhancedLeaderboard";
 import { WordSearchGameLogic, GameState } from "./WordSearchGameLogic";
 import {
   getUserCoinBalance,
