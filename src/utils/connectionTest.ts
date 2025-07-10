@@ -68,7 +68,10 @@ export const checkNetworkConnectivity = async () => {
       return { connected: false, error: `HTTP ${response.status}` };
     }
   } catch (error) {
-    console.error("💥 Network test failed:", error);
+    console.error(
+      "💥 Network test failed:",
+      error instanceof Error ? error.message : String(error),
+    );
     return {
       connected: false,
       error: error instanceof Error ? error.message : String(error),
