@@ -38,7 +38,10 @@ export const testSupabaseConnection = async () => {
       responseTime,
     };
   } catch (error) {
-    console.error("💥 Connection test failed:", error);
+    console.error(
+      "💥 Connection test failed:",
+      error instanceof Error ? error.message : String(error),
+    );
     return {
       connected: false,
       error: error instanceof Error ? error.message : String(error),
