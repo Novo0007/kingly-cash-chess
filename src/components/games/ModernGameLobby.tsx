@@ -307,7 +307,13 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
                 )
               }
             >
-              <Card className="bg-white/80 backdrop-blur-sm border-white/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 overflow-hidden">
+              <Card
+                className={`backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 overflow-hidden ${
+                  currentTheme.id === "dreampixels"
+                    ? "bg-white/80 border-purple-200/30"
+                    : "bg-card/80 border-primary/20"
+                }`}
+              >
                 {/* Game Image */}
                 <div className="relative h-48 overflow-hidden">
                   <OptimizedImage
