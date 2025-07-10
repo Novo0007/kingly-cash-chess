@@ -66,14 +66,15 @@ export const generatePlaceholder = (
   height: number,
   color: string = "e2e8f0",
 ): string => {
-  return `data:image/svg+xml;base64,${btoa(`
-    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-      <rect width="100%" height="100%" fill="#${color}"/>
-      <text x="50%" y="50%" font-family="Arial" font-size="14" fill="#94a3b8" text-anchor="middle" dy=".3em">
-        Loading...
-      </text>
-    </svg>
-  `)}`;
+  // Sanitize inputs to prevent injection
+  const safeWidth = Math.max(1, Math.min(2000, Math.floor(Number(width))));
+  const safeHeight = Math.max(1, Math.min(2000, Math.floor(Number(height))));
+  const safeColor =
+    color.replace(/[^a-fA-F0-9]/g, "").substring(0, 6) || "e2e8f0";
+
+  const svgString = `<svg width="${safeWidth}" height="${safeHeight}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#${safeColor}"/><text x="50%" y="50%" font-family="Arial" font-size="14" fill="#94a3b8" text-anchor="middle" dy=".3em">Loading...</text></svg>`;
+
+  return `data:image/svg+xml;base64,${btoa(svgString)}`;
 };
 
 // Preload critical images
