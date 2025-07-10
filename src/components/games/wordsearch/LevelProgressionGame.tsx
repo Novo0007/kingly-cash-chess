@@ -598,27 +598,62 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
         />
 
         {/* Game Controls */}
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => {
-              setCurrentView("levels");
-              setGameLogic(null);
-              setGameState(null);
-            }}
-            className="flex-1"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Quit Level
-          </Button>
-          <Button
-            onClick={() => gameLogic?.useHint()}
-            disabled={gameState.hints <= 0}
-            className="flex-1"
-          >
-            💡 Use Hint ({gameState.hints})
-          </Button>
-        </div>
+        <Card>
+          <CardContent className="p-4">
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setCurrentView("levels");
+                  setGameLogic(null);
+                  setGameState(null);
+                }}
+                className="w-full"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Quit Level
+              </Button>
+              <Button
+                onClick={() => {
+                  // Find a word that hasn't been found yet
+                  const remainingWords = gameState.words.filter(
+                    (word) =>
+                      !gameState.foundWords.some((fw) => fw.word === word),
+                  );
+                  if (remainingWords.length > 0 && gameLogic) {
+                    const targetWord =
+                      remainingWords[
+                        Math.floor(Math.random() * remainingWords.length)
+                      ];
+                    gameLogic.useHint(user.id, "word_location", targetWord);
+                    setGameState(gameLogic.getGameState());
+
+                    // Clear hints after 3 seconds
+                    setTimeout(() => {
+                      if (gameLogic) {
+                        gameLogic.clearHints();
+                        setGameState(gameLogic.getGameState());
+                      }
+                    }, 3000);
+                  }
+                }}
+                disabled={(gameState.players[0]?.hintsUsed || 0) >= 3}
+                className="w-full"
+              >
+                💡 Use Hint (
+                {Math.max(0, 3 - (gameState.players[0]?.hintsUsed || 0))} left)
+              </Button>
+            </div>
+
+            {/* Help Text */}
+            <div className="mt-3 text-center">
+              <p className="text-xs text-muted-foreground">
+                💡 Tip: Look for words in all directions - horizontal, vertical,
+                and diagonal!
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   };
