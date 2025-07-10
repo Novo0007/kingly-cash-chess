@@ -294,8 +294,8 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
   const renderLevelSelection = () => {
     const levelsPerPage = 12;
     const currentPage = Math.floor((currentLevel - 1) / levelsPerPage);
-    const startLevel = currentPage * levelsPerPage + 1;
-    const endLevel = Math.min(startLevel + levelsPerPage - 1, 99);
+    const startLevelIndex = currentPage * levelsPerPage + 1;
+    const endLevel = Math.min(startLevelIndex + levelsPerPage - 1, 99);
 
     return (
       <div className="space-y-4">
