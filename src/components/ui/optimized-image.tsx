@@ -94,7 +94,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative overflow-hidden ${className}`}
+      className={`relative overflow-hidden ${safeClassName}`}
       style={{ width: safeWidth || "100%", height: safeHeight || "auto" }}
     >
       {/* Placeholder/Loading state */}
