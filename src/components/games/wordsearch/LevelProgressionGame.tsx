@@ -172,8 +172,8 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
       logic.startGame();
 
       setGameLogic(logic);
-      setGameState(newGameState);
-      setTimeRemaining(levelInfo.timeLimit);
+      setGameState(logic.getGameState());
+      setTimeRemaining(logic.getTimeRemaining());
       setCurrentView("playing");
 
       toast.success(
