@@ -427,7 +427,7 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
 
         {/* Trust & Security Section */}
         <div
-          className={`bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 rounded-3xl p-8 sm:p-12 text-center transition-all duration-1000 delay-1000 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          className={`bg-gradient-to-r ${currentTheme.gradients.primary} rounded-3xl p-8 sm:p-12 text-center transition-all duration-1000 delay-1000 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
           <h2 className="text-3xl sm:text-4xl font-black text-white mb-6">
             Why Choose Our Platform?
