@@ -373,7 +373,7 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
 
         {/* Level Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {LEVELS.slice(startLevel - 1, endLevel).map((level) => {
+          {LEVELS.slice(startLevelIndex - 1, endLevel).map((level) => {
             const isUnlocked = unlockedLevels.has(level.level);
             const isCompleted = levelScores.has(level.level);
             const score = levelScores.get(level.level);
