@@ -346,7 +346,9 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
                   {/* Popular Badge */}
                   {game.isPopular && (
                     <div className="absolute top-4 right-4">
-                      <div className="bg-yellow-400 text-yellow-900 rounded-full p-2">
+                      <div
+                        className={`bg-gradient-to-r ${currentTheme.gradients.accent} text-white rounded-full p-2`}
+                      >
                         <Star className="h-4 w-4" />
                       </div>
                     </div>
