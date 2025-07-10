@@ -36,10 +36,16 @@ export const BottomNav = ({
       gradient: "from-green-500 to-emerald-600",
     },
     {
+      id: "rankings",
+      label: "Rankings",
+      icon: Trophy,
+      gradient: "from-amber-500 to-yellow-600",
+    },
+    {
       id: "wallet",
       label: "Wallet",
       icon: Wallet,
-      gradient: "from-yellow-500 to-orange-600",
+      gradient: "from-orange-500 to-red-600",
     },
     // Profile button removed - now accessible through header dropdown
   ];
