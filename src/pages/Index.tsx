@@ -8,6 +8,7 @@ import { GameLobby } from "@/components/chess/GameLobby";
 import { GamePage } from "@/components/chess/GamePage";
 import { GameSelection } from "@/components/games/GameSelection";
 import { NealFunGameLobby } from "@/components/games/NealFunGameLobby";
+import { ModernGameLobby } from "@/components/games/ModernGameLobby";
 import { LudoLobby } from "@/components/games/ludo/LudoLobby";
 import { LudoGame } from "@/components/games/ludo/LudoGame";
 import { MazeGame } from "@/components/games/maze/MazeGame";
