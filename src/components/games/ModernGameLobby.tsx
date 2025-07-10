@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
   Crown,
   Dice1,
@@ -37,6 +38,7 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
   onSelectGame,
 }) => {
   const { isMobile } = useDeviceType();
+  const { currentTheme } = useTheme();
   const [showGlobalChat, setShowGlobalChat] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -168,16 +170,24 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
-      {/* Background Elements */}
+    <div
+      className={`min-h-screen relative overflow-hidden ${
+        currentTheme.id === "dreampixels"
+          ? "bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50"
+          : `bg-gradient-to-br ${currentTheme.gradients.primary}/5 via-background to-${currentTheme.gradients.secondary}/5`
+      }`}
+    >
+      {/* Theme-aware Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
         <div
-          className="absolute top-40 right-10 w-72 h-72 bg-gradient-to-r from-yellow-400 to-red-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"
+          className={`absolute top-20 left-10 w-72 h-72 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse`}
+        ></div>
+        <div
+          className={`absolute top-40 right-10 w-72 h-72 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse`}
           style={{ animationDelay: "2s" }}
         ></div>
         <div
-          className="absolute -bottom-32 left-20 w-72 h-72 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"
+          className={`absolute -bottom-32 left-20 w-72 h-72 bg-gradient-to-r ${currentTheme.gradients.secondary} rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse`}
           style={{ animationDelay: "4s" }}
         ></div>
       </div>
@@ -193,7 +203,7 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
       <div className="fixed bottom-24 right-6 z-50">
         <Button
           onClick={handleChatToggle}
-          className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-4 border-white"
+          className={`w-16 h-16 rounded-full bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-4 border-white`}
         >
           <MessageSquare className="h-7 w-7" />
         </Button>
@@ -205,17 +215,27 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
         <div
           className={`text-center mb-12 transition-all duration-1000 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
-          <div className="inline-flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 mb-6 shadow-lg border border-white/20">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-white" />
+          <div
+            className={`inline-flex items-center gap-3 backdrop-blur-sm rounded-full px-6 py-3 mb-6 shadow-lg border ${
+              currentTheme.id === "dreampixels"
+                ? "bg-white/80 border-purple-200/40"
+                : "bg-card/80 border-primary/20"
+            }`}
+          >
+            <div
+              className={`w-8 h-8 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center`}
+            >
+              <span className="text-white text-lg">{currentTheme.preview}</span>
             </div>
-            <span className="text-sm font-semibold text-gray-700">
-              Premium Gaming Platform
+            <span className="text-sm font-semibold text-foreground">
+              {currentTheme.name} Gaming Platform
             </span>
           </div>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black mb-6">
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span
+              className={`bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent`}
+            >
               Play & Win
             </span>
             <br />
@@ -287,7 +307,13 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
                 )
               }
             >
-              <Card className="bg-white/80 backdrop-blur-sm border-white/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 overflow-hidden">
+              <Card
+                className={`backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 overflow-hidden ${
+                  currentTheme.id === "dreampixels"
+                    ? "bg-white/80 border-purple-200/30"
+                    : "bg-card/80 border-primary/20"
+                }`}
+              >
                 {/* Game Image */}
                 <div className="relative h-48 overflow-hidden">
                   <OptimizedImage
@@ -301,12 +327,18 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
                     placeholder="blur"
                   />
                   <div
-                    className={`absolute inset-0 bg-gradient-to-t ${game.gradient} opacity-80`}
+                    className={`absolute inset-0 bg-gradient-to-t ${currentTheme.gradients.primary} opacity-60`}
                   ></div>
 
                   {/* Status Badge */}
                   <div className="absolute top-4 left-4">
-                    <Badge className="bg-white/90 text-gray-800 border-0 font-bold">
+                    <Badge
+                      className={`border-0 font-bold ${
+                        currentTheme.id === "dreampixels"
+                          ? "bg-white/90 text-gray-800"
+                          : "bg-card/90 text-card-foreground"
+                      }`}
+                    >
                       {game.status}
                     </Badge>
                   </div>
@@ -314,7 +346,9 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
                   {/* Popular Badge */}
                   {game.isPopular && (
                     <div className="absolute top-4 right-4">
-                      <div className="bg-yellow-400 text-yellow-900 rounded-full p-2">
+                      <div
+                        className={`bg-gradient-to-r ${currentTheme.gradients.accent} text-white rounded-full p-2`}
+                      >
                         <Star className="h-4 w-4" />
                       </div>
                     </div>
@@ -338,15 +372,15 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
 
                 <CardContent className="p-6">
                   <div className="mb-4">
-                    <h3 className="text-2xl font-black text-gray-800 mb-1">
+                    <h3 className="text-2xl font-black text-foreground mb-1">
                       {game.title}
                     </h3>
-                    <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                       {game.subtitle}
                     </p>
                   </div>
 
-                  <p className="text-gray-600 mb-6 leading-relaxed">
+                  <p className="text-muted-foreground mb-6 leading-relaxed">
                     {game.description}
                   </p>
 
@@ -379,7 +413,7 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
 
                   {/* Play Button */}
                   <Button
-                    className={`w-full bg-gradient-to-r ${game.gradient} text-white font-bold py-4 rounded-2xl hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] group/btn`}
+                    className={`w-full bg-gradient-to-r ${currentTheme.gradients.secondary} text-white font-bold py-4 rounded-2xl hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] group/btn`}
                   >
                     <Play className="h-5 w-5 mr-2 transition-transform duration-300 group-hover/btn:scale-110" />
                     PLAY NOW
@@ -393,7 +427,7 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
 
         {/* Trust & Security Section */}
         <div
-          className={`bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 rounded-3xl p-8 sm:p-12 text-center transition-all duration-1000 delay-1000 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          className={`bg-gradient-to-r ${currentTheme.gradients.primary} rounded-3xl p-8 sm:p-12 text-center transition-all duration-1000 delay-1000 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
           <h2 className="text-3xl sm:text-4xl font-black text-white mb-6">
             Why Choose Our Platform?

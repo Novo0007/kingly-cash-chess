@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthPage } from "@/components/auth/AuthPage";
 import { Navbar } from "@/components/layout/Navbar";
+import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MobileOptimized } from "@/components/layout/MobileOptimized";
 import { GameLobby } from "@/components/chess/GameLobby";
@@ -20,6 +21,7 @@ import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
 import { ChatSystem } from "@/components/chat/ChatSystem";
 import { AdminPanel } from "@/components/admin/AdminPanel";
+import { GlobalRankings } from "@/components/rankings/GlobalRankings";
 import { toast } from "sonner";
 import type { User } from "@supabase/supabase-js";
 import { ModernLoading } from "@/components/ui/modern-loading";
@@ -327,6 +329,8 @@ const Index = () => {
         return <FriendsSystem />;
       case "profile":
         return <ProfileSystem />;
+      case "rankings":
+        return <GlobalRankings user={user} />;
       default:
         return <GameSelection onSelectGame={handleSelectGame} />;
     }
@@ -335,6 +339,7 @@ const Index = () => {
   if (useModernStyle && currentView === "games") {
     return (
       <MobileOptimized>
+        <Header currentView={currentView} onViewChange={setCurrentView} />
         <ModernGameLobby onSelectGame={handleSelectGame} />
         {/* Bottom Nav for mobile */}
         <div className="md:hidden relative z-30">
@@ -351,6 +356,7 @@ const Index = () => {
   if (useNealFunStyle && currentView === "games") {
     return (
       <MobileOptimized>
+        <Header currentView={currentView} onViewChange={setCurrentView} />
         <NealFunGameLobby onSelectGame={handleSelectGame} />
         {/* Bottom Nav for mobile */}
         <div className="md:hidden relative z-30">
@@ -424,6 +430,9 @@ const Index = () => {
           style={{ animationDelay: "8s", animationDuration: "13s" }}
         ></div>
       </div>
+
+      {/* Header Component - always visible */}
+      <Header currentView={currentView} onViewChange={setCurrentView} />
 
       <div className="hidden md:block relative z-30">
         <Navbar
