@@ -8,6 +8,7 @@ import {
   UserCircle,
   Shield,
   Gamepad2,
+  Trophy,
 } from "lucide-react";
 
 interface BottomNavProps {
