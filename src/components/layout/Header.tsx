@@ -46,6 +46,22 @@ export const Header = ({
   useEffect(() => {
     fetchUserData();
 
+    // Monitor browser online/offline status
+    const handleOnline = () => {
+      console.log("Browser is online, attempting to reconnect...");
+      setIsOnline(true);
+      setConnectionRetries(0);
+      fetchUserData();
+    };
+
+    const handleOffline = () => {
+      console.log("Browser is offline");
+      setIsOnline(false);
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
     // Set up real-time subscriptions for wallet updates with error handling
     let walletChannel: any = null;
 
@@ -64,6 +80,7 @@ export const Header = ({
               if (payload.new) {
                 setWallet(payload.new as Tables<"wallets">);
                 setCoinsBalance(Number(payload.new.balance) || 0);
+                setIsOnline(true); // Mark as online if we receive updates
               }
             } catch (error) {
               console.error("Error processing wallet update:", error);
@@ -72,15 +89,22 @@ export const Header = ({
         )
         .subscribe((status) => {
           console.log("Header wallet subscription status:", status);
-          if (status === "CHANNEL_ERROR") {
+          if (status === "SUBSCRIBED") {
+            setIsOnline(true);
+          } else if (status === "CHANNEL_ERROR") {
             console.error("Failed to subscribe to wallet updates");
+            setIsOnline(false);
           }
         });
     } catch (error) {
       console.error("Error setting up wallet subscription:", error);
+      setIsOnline(false);
     }
 
     return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+
       try {
         if (walletChannel) {
           supabase.removeChannel(walletChannel);
