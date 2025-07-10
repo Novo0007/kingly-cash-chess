@@ -130,7 +130,11 @@ export const Header = ({
       } = await supabase.auth.getUser();
 
       if (userError) {
-        console.error("Auth error:", userError);
+        console.error("Auth error:", {
+          message: userError.message,
+          code: userError.code,
+          details: userError.details,
+        });
 
         // If it's a network error and we haven't retried too many times
         if (userError.message?.includes("Failed to fetch") && retryCount < 3) {
