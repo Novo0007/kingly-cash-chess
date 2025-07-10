@@ -194,8 +194,10 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
     if (!levelInfo) return;
 
     const wordsFound = gameState.foundWords.length;
-    const timeTaken = Math.floor((Date.now() - gameState.startTime) / 1000);
-    const hintsUsed = 3 - gameState.hints;
+    const timeTaken = Math.floor(
+      (Date.now() - (gameState.startTime || Date.now())) / 1000,
+    );
+    const hintsUsed = Math.max(0, 3 - (gameState.hints || 0));
 
     const finalScore = calculateLevelScore(
       levelInfo,
