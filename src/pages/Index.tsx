@@ -22,6 +22,7 @@ import { ChatSystem } from "@/components/chat/ChatSystem";
 import { AdminPanel } from "@/components/admin/AdminPanel";
 import { toast } from "sonner";
 import type { User } from "@supabase/supabase-js";
+import { ModernLoading } from "@/components/ui/modern-loading";
 
 const Index = () => {
   const [user, setUser] = useState<User | null>(null);
