@@ -40,6 +40,8 @@ export const Header = ({
   const [userProfile, setUserProfile] = useState<any>(null);
   const [wallet, setWallet] = useState<Tables<"wallets"> | null>(null);
   const [coinsBalance, setCoinsBalance] = useState(0);
+  const [isOnline, setIsOnline] = useState(true);
+  const [connectionRetries, setConnectionRetries] = useState(0);
 
   useEffect(() => {
     fetchUserData();
