@@ -295,7 +295,10 @@ export const Header = ({
       }
     } catch (error) {
       toast.error("Diagnostic failed to run");
-      console.error("Diagnostic error:", error);
+      console.error(
+        "Diagnostic error:",
+        error instanceof Error ? error.message : String(error),
+      );
     }
   };
 
