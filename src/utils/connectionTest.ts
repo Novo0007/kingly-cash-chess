@@ -18,10 +18,15 @@ export const testSupabaseConnection = async () => {
     const responseTime = Date.now() - startTime;
 
     if (error) {
-      console.error("❌ Supabase connection failed:", error);
+      console.error("❌ Supabase connection failed:", {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
       return {
         connected: false,
-        error: error.message,
+        error: error.message || "Unknown Supabase error",
         responseTime: null,
       };
     }
