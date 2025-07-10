@@ -71,8 +71,8 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
         mathScores,
         wordsearchScores,
       ] = await Promise.all([
-        supabase.from("chess_games").select("user_id, winner_id, score"),
-        supabase.from("ludo_games").select("user_id, winner_id, score"),
+        supabase.from("chess_games").select("white_player_id, black_player_id, winner_id, prize_amount"),
+        supabase.from("ludo_games").select("player1_id, player2_id, player3_id, player4_id, winner_id, prize_amount"),
         supabase.from("maze_scores").select("user_id, score"),
         supabase.from("game2048_scores").select("user_id, score"),
         supabase.from("math_scores").select("user_id, score"),
@@ -84,10 +84,10 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
       // Get user profiles
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("id, full_name");
+        .select("id, username");
 
       const profileMap = new Map(
-        profiles?.map((p) => [p.id, p.full_name]) || [],
+        profiles?.map((p) => [p.id, p.username]) || [],
       );
 
       // Aggregate scores by user
@@ -107,44 +107,52 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
 
       // Process chess scores
       chessScores.data?.forEach((game) => {
-        const userId = game.winner_id || game.user_id;
-        if (!userId) return;
+        // Add scores for both players who participated
+        [game.white_player_id, game.black_player_id].forEach((playerId) => {
+          if (!playerId) return;
 
-        const current = userScores.get(userId) || {
-          chess: 0,
-          ludo: 0,
-          maze: 0,
-          game2048: 0,
-          math: 0,
-          wordsearch: 0,
-          games_played: 0,
-          last_played: new Date().toISOString(),
-        };
+          const current = userScores.get(playerId) || {
+            chess: 0,
+            ludo: 0,
+            maze: 0,
+            game2048: 0,
+            math: 0,
+            wordsearch: 0,
+            games_played: 0,
+            last_played: new Date().toISOString(),
+          };
 
-        current.chess += game.score || 0;
-        current.games_played += 1;
-        userScores.set(userId, current);
+          // Winner gets the full prize, loser gets participation points
+          const isWinner = playerId === game.winner_id;
+          current.chess += isWinner ? (game.prize_amount || 0) : Math.floor((game.prize_amount || 0) * 0.1);
+          current.games_played += 1;
+          userScores.set(playerId, current);
+        });
       });
 
       // Process ludo scores
       ludoScores.data?.forEach((game) => {
-        const userId = game.winner_id || game.user_id;
-        if (!userId) return;
+        // Add scores for all players who participated
+        [game.player1_id, game.player2_id, game.player3_id, game.player4_id].forEach((playerId) => {
+          if (!playerId) return;
 
-        const current = userScores.get(userId) || {
-          chess: 0,
-          ludo: 0,
-          maze: 0,
-          game2048: 0,
-          math: 0,
-          wordsearch: 0,
-          games_played: 0,
-          last_played: new Date().toISOString(),
-        };
+          const current = userScores.get(playerId) || {
+            chess: 0,
+            ludo: 0,
+            maze: 0,
+            game2048: 0,
+            math: 0,
+            wordsearch: 0,
+            games_played: 0,
+            last_played: new Date().toISOString(),
+          };
 
-        current.ludo += game.score || 0;
-        current.games_played += 1;
-        userScores.set(userId, current);
+          // Winner gets the full prize, others get participation points
+          const isWinner = playerId === game.winner_id;
+          current.ludo += isWinner ? (game.prize_amount || 0) : Math.floor((game.prize_amount || 0) * 0.1);
+          current.games_played += 1;
+          userScores.set(playerId, current);
+        });
       });
 
       // Process maze scores
