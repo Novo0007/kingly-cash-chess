@@ -17,7 +17,7 @@ import {
 import { WordSearchBoard } from "./WordSearchBoard";
 import { WordSearchLobby } from "./WordSearchLobby";
 import { WordSearchLeaderboard } from "./WordSearchLeaderboard";
-import { SimpleLeaderboard } from "./SimpleLeaderboard";
+import { EnhancedLeaderboard } from "./EnhancedLeaderboard";
 import { LevelProgressionGame } from "./LevelProgressionGame";
 import { CoinShop } from "./CoinShop";
 import { WordSearchGameLogic, GameState, Player } from "./WordSearchGameLogic";
