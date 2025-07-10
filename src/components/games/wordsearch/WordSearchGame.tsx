@@ -405,8 +405,14 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
     );
   }
 
+  if (currentView === "levels") {
+    return (
+      <LevelProgressionGame onBack={() => setCurrentView("menu")} user={user} />
+    );
+  }
+
   if (currentView === "leaderboard") {
-    return <WordSearchLeaderboard onBack={() => setCurrentView("menu")} />;
+    return <SimpleLeaderboard onBack={() => setCurrentView("menu")} />;
   }
 
   if (currentView === "shop") {
