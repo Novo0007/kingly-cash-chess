@@ -450,6 +450,35 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
 
     return (
       <div className="space-y-4">
+        {/* Game Rules Card */}
+        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <h3 className="font-bold text-blue-800 mb-2">📋 Game Rules</h3>
+              <div className="text-sm text-blue-700 space-y-1">
+                <p>
+                  🎯 Find all {levelInfo.wordCount}{" "}
+                  {levelInfo.theme.toLowerCase()} words in the grid
+                </p>
+                <p>
+                  ⏰ Complete within {Math.floor(levelInfo.timeLimit / 60)}:
+                  {(levelInfo.timeLimit % 60).toString().padStart(2, "0")}{" "}
+                  minutes
+                </p>
+                <p>
+                  ✏️ Drag to select words horizontally, vertically, or
+                  diagonally
+                </p>
+                <p>💡 Use hints if you get stuck (limited to 3 per level)</p>
+                <p>
+                  ⭐ Score {levelInfo.requiredScore}+ points to unlock next
+                  level
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Game Header */}
         <Card
           className={`bg-gradient-to-r ${currentTheme.gradients.primary} text-white`}
