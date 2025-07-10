@@ -297,7 +297,13 @@ export const Header = ({
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/40">
+    <header
+      className={`sticky top-0 z-50 w-full backdrop-blur-md border-b ${
+        currentTheme.id === "dreampixels"
+          ? "bg-gradient-to-r from-purple-50/90 to-pink-50/90 border-purple-200/40"
+          : `bg-gradient-to-r ${currentTheme.gradients.primary}/10 via-background/80 to-${currentTheme.gradients.secondary}/10 border-primary/20`
+      }`}
+    >
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Left: Logo/Brand */}
