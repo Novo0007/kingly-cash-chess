@@ -22,10 +22,30 @@ export const BottomNav = ({
   isAdmin,
 }: BottomNavProps) => {
   const navigationItems = [
-    { id: "games", label: "Games", icon: Home },
-    { id: "friends", label: "Friends", icon: Users },
-    { id: "wallet", label: "Wallet", icon: Wallet },
-    { id: "profile", label: "Profile", icon: UserCircle },
+    {
+      id: "games",
+      label: "Games",
+      icon: Gamepad2,
+      gradient: "from-blue-500 to-purple-600",
+    },
+    {
+      id: "friends",
+      label: "Friends",
+      icon: Users,
+      gradient: "from-green-500 to-emerald-600",
+    },
+    {
+      id: "wallet",
+      label: "Wallet",
+      icon: Wallet,
+      gradient: "from-yellow-500 to-orange-600",
+    },
+    {
+      id: "profile",
+      label: "Profile",
+      icon: UserCircle,
+      gradient: "from-pink-500 to-rose-600",
+    },
   ];
 
   if (isAdmin) {
