@@ -215,17 +215,27 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
         <div
           className={`text-center mb-12 transition-all duration-1000 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
-          <div className="inline-flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 mb-6 shadow-lg border border-white/20">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-white" />
+          <div
+            className={`inline-flex items-center gap-3 backdrop-blur-sm rounded-full px-6 py-3 mb-6 shadow-lg border ${
+              currentTheme.id === "dreampixels"
+                ? "bg-white/80 border-purple-200/40"
+                : "bg-card/80 border-primary/20"
+            }`}
+          >
+            <div
+              className={`w-8 h-8 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center`}
+            >
+              <span className="text-white text-lg">{currentTheme.preview}</span>
             </div>
-            <span className="text-sm font-semibold text-gray-700">
-              Premium Gaming Platform
+            <span className="text-sm font-semibold text-foreground">
+              {currentTheme.name} Gaming Platform
             </span>
           </div>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black mb-6">
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span
+              className={`bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent`}
+            >
               Play & Win
             </span>
             <br />
