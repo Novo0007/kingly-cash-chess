@@ -203,7 +203,7 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
       <div className="fixed bottom-24 right-6 z-50">
         <Button
           onClick={handleChatToggle}
-          className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-4 border-white"
+          className={`w-16 h-16 rounded-full bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-4 border-white`}
         >
           <MessageSquare className="h-7 w-7" />
         </Button>
