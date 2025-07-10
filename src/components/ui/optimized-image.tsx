@@ -36,6 +36,8 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   // Validate and sanitize inputs
   const safeSrc = typeof src === "string" ? src.trim() : "";
   const safeAlt = typeof alt === "string" ? alt.replace(/[<>"']/g, "") : "";
+  const safeClassName =
+    typeof className === "string" ? className.replace(/[<>"']/g, "") : "";
   const safeWidth = Math.max(1, Math.min(2000, Math.floor(Number(width))));
   const safeHeight = Math.max(1, Math.min(2000, Math.floor(Number(height))));
   const safeQuality = Math.max(1, Math.min(100, Math.floor(Number(quality))));
