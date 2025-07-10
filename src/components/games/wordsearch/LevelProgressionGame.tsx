@@ -149,39 +149,27 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
     setCurrentLevel(level);
 
     try {
-      const logic = new WordSearchGameLogic();
+      // Create the game logic with level parameters
+      const logic = new WordSearchGameLogic(
+        levelInfo.difficulty as "easy" | "medium" | "hard",
+        levelInfo.gridSize,
+        levelInfo.wordCount,
+        false, // not multiplayer
+        0, // no entry fee for level mode
+      );
 
-      // Create game state with level configuration
-      const newGameState: GameState = {
-        gameId: `level_${level}_${Date.now()}`,
-        gameStatus: "active",
-        players: [
-          {
-            id: user.id,
-            username: user.email?.split("@")[0] || "Player",
-            score: 0,
-            foundWords: [],
-            isReady: true,
-            lastMove: Date.now(),
-          },
-        ],
-        currentPlayerIndex: 0,
-        grid: [],
-        words: [],
-        wordsToFind: levelInfo.wordsPool.slice(0, levelInfo.wordCount),
-        foundWords: [],
-        gameMode: "solo",
-        difficulty: levelInfo.difficulty,
-        gridSize: levelInfo.gridSize,
-        timeLimit: levelInfo.timeLimit,
-        startTime: Date.now(),
-        hints: 3,
-        theme: levelInfo.theme,
-        level: level,
+      // Add player
+      const player = {
+        id: user.id,
+        username: user.email?.split("@")[0] || "Player",
+        score: 0,
+        wordsFound: [],
+        hintsUsed: 0,
+        isOnline: true,
       };
 
-      // Initialize the game logic with level data
-      logic.initializeGame(newGameState);
+      logic.addPlayer(player);
+      logic.startGame();
 
       setGameLogic(logic);
       setGameState(newGameState);
