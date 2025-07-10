@@ -256,11 +256,25 @@ export const Header = ({
           {/* Right: Coins, Add Money, Profile, Menu */}
           <div className="flex items-center space-x-2 sm:space-x-3">
             {/* Coins Display */}
-            <div className="flex items-center space-x-2 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 border border-yellow-500/20 rounded-full px-3 py-1.5">
-              <Coins className="w-4 h-4 text-yellow-500" />
+            <div
+              className={`flex items-center space-x-2 bg-gradient-to-r rounded-full px-3 py-1.5 ${
+                isOnline
+                  ? "from-yellow-500/10 to-amber-500/10 border border-yellow-500/20"
+                  : "from-gray-500/10 to-gray-500/10 border border-gray-500/20"
+              }`}
+            >
+              <Coins
+                className={`w-4 h-4 ${isOnline ? "text-yellow-500" : "text-gray-500"}`}
+              />
               <span className="text-sm font-semibold text-foreground">
-                ₹{coinsBalance.toFixed(2)}
+                {isOnline ? `₹${coinsBalance.toFixed(2)}` : "Offline"}
               </span>
+              {!isOnline && connectionRetries > 0 && (
+                <div
+                  className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"
+                  title={`Reconnecting... (${connectionRetries}/3)`}
+                />
+              )}
             </div>
 
             {/* Add Money Button */}
