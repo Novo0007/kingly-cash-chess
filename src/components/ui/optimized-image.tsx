@@ -93,7 +93,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
     <div
       ref={containerRef}
       className={`relative overflow-hidden ${className}`}
-      style={{ width: width || "100%", height: height || "auto" }}
+      style={{ width: safeWidth || "100%", height: safeHeight || "auto" }}
     >
       {/* Placeholder/Loading state */}
       {!isLoaded && placeholder === "blur" && (
