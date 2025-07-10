@@ -413,7 +413,7 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
 
                   {/* Play Button */}
                   <Button
-                    className={`w-full bg-gradient-to-r ${game.gradient} text-white font-bold py-4 rounded-2xl hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] group/btn`}
+                    className={`w-full bg-gradient-to-r ${currentTheme.gradients.secondary} text-white font-bold py-4 rounded-2xl hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] group/btn`}
                   >
                     <Play className="h-5 w-5 mr-2 transition-transform duration-300 group-hover/btn:scale-110" />
                     PLAY NOW
