@@ -270,7 +270,10 @@ export const Header = ({
       await supabase.auth.signOut();
       toast.success("Signed out successfully!");
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error(
+        "Error signing out:",
+        error instanceof Error ? error.message : String(error),
+      );
       toast.error("Error signing out");
     }
   };
