@@ -89,7 +89,10 @@ export const Header = ({
                 setIsOnline(true); // Mark as online if we receive updates
               }
             } catch (error) {
-              console.error("Error processing wallet update:", error);
+              console.error(
+                "Error processing wallet update:",
+                error instanceof Error ? error.message : String(error),
+              );
             }
           },
         )
