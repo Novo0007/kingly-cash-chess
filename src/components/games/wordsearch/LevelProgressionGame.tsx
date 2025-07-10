@@ -18,7 +18,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { WordSearchBoard } from "./WordSearchBoard";
-import { SimpleLeaderboard } from "./SimpleLeaderboard";
+import { EnhancedLeaderboard } from "./EnhancedLeaderboard";
 import { WordSearchGameLogic, GameState } from "./WordSearchGameLogic";
 import {
   getUserCoinBalance,
@@ -149,43 +149,31 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
     setCurrentLevel(level);
 
     try {
-      const logic = new WordSearchGameLogic();
+      // Create the game logic with level parameters
+      const logic = new WordSearchGameLogic(
+        levelInfo.difficulty as "easy" | "medium" | "hard",
+        levelInfo.gridSize,
+        levelInfo.wordCount,
+        false, // not multiplayer
+        0, // no entry fee for level mode
+      );
 
-      // Create game state with level configuration
-      const newGameState: GameState = {
-        gameId: `level_${level}_${Date.now()}`,
-        gameStatus: "active",
-        players: [
-          {
-            id: user.id,
-            username: user.email?.split("@")[0] || "Player",
-            score: 0,
-            foundWords: [],
-            isReady: true,
-            lastMove: Date.now(),
-          },
-        ],
-        currentPlayerIndex: 0,
-        grid: [],
-        words: [],
-        wordsToFind: levelInfo.wordsPool.slice(0, levelInfo.wordCount),
-        foundWords: [],
-        gameMode: "solo",
-        difficulty: levelInfo.difficulty,
-        gridSize: levelInfo.gridSize,
-        timeLimit: levelInfo.timeLimit,
-        startTime: Date.now(),
-        hints: 3,
-        theme: levelInfo.theme,
-        level: level,
+      // Add player
+      const player = {
+        id: user.id,
+        username: user.email?.split("@")[0] || "Player",
+        score: 0,
+        wordsFound: [],
+        hintsUsed: 0,
+        isOnline: true,
       };
 
-      // Initialize the game logic with level data
-      logic.initializeGame(newGameState);
+      logic.addPlayer(player);
+      logic.startGame();
 
       setGameLogic(logic);
-      setGameState(newGameState);
-      setTimeRemaining(levelInfo.timeLimit);
+      setGameState(logic.getGameState());
+      setTimeRemaining(logic.getTimeRemaining());
       setCurrentView("playing");
 
       toast.success(
@@ -206,8 +194,10 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
     if (!levelInfo) return;
 
     const wordsFound = gameState.foundWords.length;
-    const timeTaken = Math.floor((Date.now() - gameState.startTime) / 1000);
-    const hintsUsed = 3 - gameState.hints;
+    const timeTaken = Math.floor(
+      (Date.now() - (gameState.startTime || Date.now())) / 1000,
+    );
+    const hintsUsed = Math.max(0, 3 - (gameState.hints || 0));
 
     const finalScore = calculateLevelScore(
       levelInfo,
@@ -254,8 +244,9 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
   };
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const totalSeconds = Math.floor(seconds); // Ensure no decimals
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
@@ -462,6 +453,35 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
 
     return (
       <div className="space-y-4">
+        {/* Game Rules Card */}
+        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <h3 className="font-bold text-blue-800 mb-2">📋 Game Rules</h3>
+              <div className="text-sm text-blue-700 space-y-1">
+                <p>
+                  🎯 Find all {levelInfo.wordCount}{" "}
+                  {levelInfo.theme.toLowerCase()} words in the grid
+                </p>
+                <p>
+                  ⏰ Complete within {Math.floor(levelInfo.timeLimit / 60)}:
+                  {(levelInfo.timeLimit % 60).toString().padStart(2, "0")}{" "}
+                  minutes
+                </p>
+                <p>
+                  ✏️ Drag to select words horizontally, vertically, or
+                  diagonally
+                </p>
+                <p>💡 Use hints if you get stuck (limited to 3 per level)</p>
+                <p>
+                  ⭐ Score {levelInfo.requiredScore}+ points to unlock next
+                  level
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Game Header */}
         <Card
           className={`bg-gradient-to-r ${currentTheme.gradients.primary} text-white`}
@@ -473,14 +493,14 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
                 <p className="text-white/80 text-sm">{levelInfo.theme}</p>
               </div>
               <div className="text-right">
-                <div className="text-sm text-white/80">Time</div>
+                <div className="text-sm text-white/80">Time Remaining</div>
                 <div className="text-xl font-bold">
                   {formatTime(timeRemaining)}
                 </div>
               </div>
             </div>
 
-            <div className="mt-3 grid grid-cols-3 gap-4 text-center">
+            <div className="mt-3 grid grid-cols-4 gap-4 text-center">
               <div>
                 <div className="text-sm text-white/80">Found</div>
                 <div className="font-bold">
@@ -494,8 +514,66 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
                 </div>
               </div>
               <div>
-                <div className="text-sm text-white/80">Hints</div>
-                <div className="font-bold">{gameState.hints}</div>
+                <div className="text-sm text-white/80">Target</div>
+                <div className="font-bold text-yellow-200">
+                  {levelInfo.requiredScore}
+                </div>
+              </div>
+              <div>
+                <div className="text-sm text-white/80">Hints Left</div>
+                <div className="font-bold">
+                  {Math.max(0, 3 - (gameState.players[0]?.hintsUsed || 0))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Words to Find */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              Words to Find ({gameState.foundWords.length}/{levelInfo.wordCount}
+              )
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+              {gameState.words.map((word, index) => {
+                const isFound = gameState.foundWords.some(
+                  (fw) => fw.word === word,
+                );
+                return (
+                  <div
+                    key={index}
+                    className={`p-2 text-center rounded-lg border transition-all duration-200 ${
+                      isFound
+                        ? "bg-green-100 text-green-800 border-green-300 line-through scale-95"
+                        : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
+                    }`}
+                  >
+                    <span className="font-medium">{word}</span>
+                    {isFound && <span className="ml-1">✓</span>}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-3 flex justify-center">
+              <div
+                className={`text-sm px-3 py-1 rounded-full ${
+                  gameState.foundWords.length === levelInfo.wordCount
+                    ? "bg-green-100 text-green-800"
+                    : gameState.foundWords.length >= levelInfo.wordCount * 0.7
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                Progress:{" "}
+                {Math.round(
+                  (gameState.foundWords.length / levelInfo.wordCount) * 100,
+                )}
+                %
               </div>
             </div>
           </CardContent>
@@ -503,35 +581,82 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
 
         {/* Game Board */}
         <WordSearchBoard
-          gameLogic={gameLogic}
           gameState={gameState}
-          onGameStateChange={setGameState}
-          onGameEnd={handleGameEnd}
-          isCurrentPlayer={true}
+          onWordFound={(start, end) => {
+            if (!gameLogic || !gameState) return;
+
+            const result = gameLogic.findWord(user.id, start, end);
+
+            if (result.success && result.word && result.points) {
+              const newState = gameLogic.getGameState();
+              setGameState(newState);
+
+              // Check if game is complete
+              if (gameLogic.isGameComplete()) {
+                handleGameEnd();
+              }
+            }
+          }}
+          isActive={gameState.gameStatus === "active"}
         />
 
         {/* Game Controls */}
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => {
-              setCurrentView("levels");
-              setGameLogic(null);
-              setGameState(null);
-            }}
-            className="flex-1"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Quit Level
-          </Button>
-          <Button
-            onClick={() => gameLogic?.useHint()}
-            disabled={gameState.hints <= 0}
-            className="flex-1"
-          >
-            💡 Use Hint ({gameState.hints})
-          </Button>
-        </div>
+        <Card>
+          <CardContent className="p-4">
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setCurrentView("levels");
+                  setGameLogic(null);
+                  setGameState(null);
+                }}
+                className="w-full"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Quit Level
+              </Button>
+              <Button
+                onClick={() => {
+                  // Find a word that hasn't been found yet
+                  const remainingWords = gameState.words.filter(
+                    (word) =>
+                      !gameState.foundWords.some((fw) => fw.word === word),
+                  );
+                  if (remainingWords.length > 0 && gameLogic) {
+                    const targetWord =
+                      remainingWords[
+                        Math.floor(Math.random() * remainingWords.length)
+                      ];
+                    gameLogic.useHint(user.id, "word_location", targetWord);
+                    setGameState(gameLogic.getGameState());
+
+                    // Clear hints after 3 seconds
+                    setTimeout(() => {
+                      if (gameLogic) {
+                        gameLogic.clearHints();
+                        setGameState(gameLogic.getGameState());
+                      }
+                    }, 3000);
+                  }
+                }}
+                disabled={(gameState.players[0]?.hintsUsed || 0) >= 3}
+                className="w-full"
+              >
+                💡 Use Hint (
+                {Math.max(0, 3 - (gameState.players[0]?.hintsUsed || 0))} left)
+              </Button>
+            </div>
+
+            {/* Help Text */}
+            <div className="mt-3 text-center">
+              <p className="text-xs text-muted-foreground">
+                💡 Tip: Look for words in all directions - horizontal, vertical,
+                and diagonal!
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   };
@@ -541,8 +666,10 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
     if (!levelInfo || !gameState) return null;
 
     const wordsFound = gameState.foundWords.length;
-    const timeTaken = Math.floor((Date.now() - gameState.startTime) / 1000);
-    const hintsUsed = 3 - gameState.hints;
+    const timeTaken = Math.floor(
+      (Date.now() - (gameState.startTime || Date.now())) / 1000,
+    );
+    const hintsUsed = Math.max(0, 3 - (gameState.hints || 0));
     const finalScore = calculateLevelScore(
       levelInfo,
       timeTaken,
@@ -629,7 +756,7 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
       {currentView === "playing" && renderGameplay()}
       {currentView === "completed" && renderCompleted()}
       {currentView === "leaderboard" && (
-        <SimpleLeaderboard onBack={() => setCurrentView("levels")} />
+        <EnhancedLeaderboard onBack={() => setCurrentView("levels")} />
       )}
     </MobileContainer>
   );

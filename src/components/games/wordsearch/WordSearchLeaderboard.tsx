@@ -171,8 +171,9 @@ export const WordSearchLeaderboard: React.FC<WordSearchLeaderboardProps> = ({
   };
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const totalSeconds = Math.floor(seconds); // Ensure no decimals
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
@@ -368,7 +369,7 @@ export const WordSearchLeaderboard: React.FC<WordSearchLeaderboardProps> = ({
                               </div>
                               <div>
                                 <div className="font-bold text-orange-600">
-                                  {Math.round(
+                                  {Math.floor(
                                     (score.score / score.time_taken) * 60,
                                   )}
                                 </div>

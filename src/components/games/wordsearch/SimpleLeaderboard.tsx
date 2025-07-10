@@ -26,13 +26,10 @@ export const SimpleLeaderboard: React.FC<SimpleLeaderboardProps> = ({
 
   const fetchHighScores = useCallback(async () => {
     try {
-      const result = await getWordSearchLeaderboard(undefined, undefined, 50);
+      const result = await getWordSearchLeaderboard(undefined, undefined, 20);
       if (result.success && result.scores) {
-        // Sort by score descending and take top scores
-        const sortedScores = result.scores
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 20);
-        setScores(sortedScores);
+        // Scores are already filtered to show highest per player and sorted
+        setScores(result.scores);
       } else {
         console.error("Failed to fetch leaderboard:", result.error);
       }
@@ -244,8 +241,8 @@ export const SimpleLeaderboard: React.FC<SimpleLeaderboardProps> = ({
                             %)
                           </div>
                           <div>
-                            {Math.floor(score.time_taken / 60)}:
-                            {(score.time_taken % 60)
+                            {Math.floor(Math.floor(score.time_taken) / 60)}:
+                            {(Math.floor(score.time_taken) % 60)
                               .toString()
                               .padStart(2, "0")}
                           </div>

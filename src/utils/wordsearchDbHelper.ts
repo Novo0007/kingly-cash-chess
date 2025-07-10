@@ -561,23 +561,38 @@ export const saveWordSearchScore = async (scoreData: {
 };
 
 /**
- * Get Word Search leaderboard
+ * Get current week number for ranking system
+ */
+const getCurrentWeek = (): string => {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const days = Math.floor(
+    (now.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000),
+  );
+  const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+  return `${now.getFullYear()}-W${weekNumber.toString().padStart(2, "0")}`;
+};
+
+/**
+ * Get Word Search leaderboard with weekly reset support
  */
 export const getWordSearchLeaderboard = async (
   difficulty?: "easy" | "medium" | "hard",
   gameMode?: "solo" | "multiplayer" | "practice",
   limit: number = 50,
+  weeklyOnly: boolean = false,
 ): Promise<{
   success: boolean;
   scores?: WordSearchScoreRecord[];
   error?: string;
+  currentWeek?: string;
 }> => {
   try {
+    const currentWeek = getCurrentWeek();
     let query = supabase
       .from("word_search_scores")
       .select("*")
-      .order("score", { ascending: false })
-      .limit(limit);
+      .order("score", { ascending: false });
 
     if (difficulty) {
       query = query.eq("difficulty", difficulty);
@@ -585,6 +600,12 @@ export const getWordSearchLeaderboard = async (
 
     if (gameMode) {
       query = query.eq("game_mode", gameMode);
+    }
+
+    // If weeklyOnly is true, filter to current week
+    if (weeklyOnly) {
+      const weekStart = getWeekStartDate(currentWeek);
+      query = query.gte("completed_at", weekStart.toISOString());
     }
 
     const { data, error } = await query;
@@ -608,13 +629,143 @@ export const getWordSearchLeaderboard = async (
       return { success: false, error: error.message || "Database error" };
     }
 
-    return { success: true, scores: data || [] };
+    // Filter to get only the highest score per player
+    const allScores = data || [];
+    const playerBestScores = new Map<string, WordSearchScoreRecord>();
+
+    // Group by user_id and keep only the highest score for each player
+    allScores.forEach((score) => {
+      const existingScore = playerBestScores.get(score.user_id);
+      if (!existingScore || score.score > existingScore.score) {
+        playerBestScores.set(score.user_id, score);
+      }
+    });
+
+    // Convert back to array and sort by score
+    const uniquePlayerScores = Array.from(playerBestScores.values())
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit);
+
+    return { success: true, scores: uniquePlayerScores, currentWeek };
   } catch (error) {
     console.error("Unexpected error fetching Word Search leaderboard:", {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     });
     return { success: false, error: "Failed to fetch leaderboard" };
+  }
+};
+
+/**
+ * Get week start date from week string (YYYY-WXX)
+ */
+const getWeekStartDate = (weekString: string): Date => {
+  const [year, week] = weekString.split("-W");
+  const startOfYear = new Date(parseInt(year), 0, 1);
+  const days = (parseInt(week) - 1) * 7;
+  return new Date(startOfYear.getTime() + days * 24 * 60 * 60 * 1000);
+};
+
+/**
+ * Get weekly ranking statistics
+ */
+export const getWeeklyRankingStats = async (): Promise<{
+  success: boolean;
+  stats?: {
+    currentWeek: string;
+    totalPlayers: number;
+    gamesThisWeek: number;
+    topScore: number;
+    averageScore: number;
+  };
+  error?: string;
+}> => {
+  try {
+    const currentWeek = getCurrentWeek();
+    const weekStart = getWeekStartDate(currentWeek);
+
+    const { data, error } = await supabase
+      .from("word_search_scores")
+      .select("*")
+      .gte("completed_at", weekStart.toISOString());
+
+    if (error) {
+      console.error("Error fetching weekly stats:", error);
+      if (error.code === "42P01" || error.message?.includes("does not exist")) {
+        return {
+          success: true,
+          stats: {
+            currentWeek,
+            totalPlayers: 0,
+            gamesThisWeek: 0,
+            topScore: 0,
+            averageScore: 0,
+          },
+        };
+      }
+      return { success: false, error: error.message };
+    }
+
+    const scores = data || [];
+    const uniquePlayers = new Set(scores.map((s) => s.user_id));
+    const topScore =
+      scores.length > 0 ? Math.max(...scores.map((s) => s.score)) : 0;
+    const averageScore =
+      scores.length > 0
+        ? Math.round(
+            scores.reduce((sum, s) => sum + s.score, 0) / scores.length,
+          )
+        : 0;
+
+    return {
+      success: true,
+      stats: {
+        currentWeek,
+        totalPlayers: uniquePlayers.size,
+        gamesThisWeek: scores.length,
+        topScore,
+        averageScore,
+      },
+    };
+  } catch (error) {
+    console.error("Unexpected error fetching weekly stats:", error);
+    return { success: false, error: "Failed to fetch weekly stats" };
+  }
+};
+
+/**
+ * Get all-time leaderboard merged with weekly rankings
+ */
+export const getMergedLeaderboard = async (
+  limit: number = 50,
+): Promise<{
+  success: boolean;
+  allTime?: WordSearchScoreRecord[];
+  weekly?: WordSearchScoreRecord[];
+  error?: string;
+}> => {
+  try {
+    const [allTimeResult, weeklyResult] = await Promise.all([
+      getWordSearchLeaderboard(undefined, undefined, limit, false),
+      getWordSearchLeaderboard(undefined, undefined, limit, true),
+    ]);
+
+    if (!allTimeResult.success) {
+      return { success: false, error: allTimeResult.error };
+    }
+
+    if (!weeklyResult.success) {
+      return { success: false, error: weeklyResult.error };
+    }
+
+    return {
+      success: true,
+      allTime: allTimeResult.scores,
+      weekly: weeklyResult.scores,
+    };
+  } catch (error) {
+    console.error("Error fetching merged leaderboard:", error);
+    return { success: false, error: "Failed to fetch merged leaderboard" };
   }
 };
 

@@ -17,7 +17,7 @@ import {
 import { WordSearchBoard } from "./WordSearchBoard";
 import { WordSearchLobby } from "./WordSearchLobby";
 import { WordSearchLeaderboard } from "./WordSearchLeaderboard";
-import { SimpleLeaderboard } from "./SimpleLeaderboard";
+import { EnhancedLeaderboard } from "./EnhancedLeaderboard";
 import { LevelProgressionGame } from "./LevelProgressionGame";
 import { CoinShop } from "./CoinShop";
 import { WordSearchGameLogic, GameState, Player } from "./WordSearchGameLogic";
@@ -293,7 +293,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
 
     const timeTaken =
       finalState.endTime && finalState.startTime
-        ? Math.round((finalState.endTime - finalState.startTime) / 1000)
+        ? Math.floor((finalState.endTime - finalState.startTime) / 1000)
         : gameState.timeLimit;
 
     const coinsSpent = player.hintsUsed * 5; // 5 coins per hint
@@ -376,8 +376,9 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
   }, []);
 
   const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const totalSeconds = Math.floor(seconds); // Ensure no decimals
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
@@ -412,7 +413,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
   }
 
   if (currentView === "leaderboard") {
-    return <SimpleLeaderboard onBack={() => setCurrentView("menu")} />;
+    return <EnhancedLeaderboard onBack={() => setCurrentView("menu")} />;
   }
 
   if (currentView === "shop") {
