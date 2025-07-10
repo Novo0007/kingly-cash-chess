@@ -198,12 +198,17 @@ export const supportsWebP = (): boolean => {
 
 // Image format optimization
 export const getOptimalFormat = (originalUrl: string): string => {
-  if (supportsWebP() && originalUrl.includes("unsplash.com")) {
+  if (!isValidUrl(originalUrl) || !supportsWebP()) {
+    return originalUrl;
+  }
+
+  try {
     const url = new URL(originalUrl);
     url.searchParams.set("fm", "webp");
     return url.toString();
+  } catch {
+    return originalUrl;
   }
-  return originalUrl;
 };
 
 // Responsive image srcSet generation
