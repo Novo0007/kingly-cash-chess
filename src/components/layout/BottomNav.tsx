@@ -49,7 +49,12 @@ export const BottomNav = ({
   ];
 
   if (isAdmin) {
-    navigationItems.push({ id: "admin", label: "Admin", icon: Shield });
+    navigationItems.push({
+      id: "admin",
+      label: "Admin",
+      icon: Shield,
+      gradient: "from-red-500 to-pink-600",
+    });
   }
 
   return (
