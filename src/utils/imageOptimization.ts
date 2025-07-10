@@ -11,6 +11,20 @@ export interface OptimizedImageProps {
   className?: string;
 }
 
+// Validate URL to prevent malicious URLs
+const isValidUrl = (url: string): boolean => {
+  try {
+    const parsedUrl = new URL(url);
+    return (
+      parsedUrl.protocol === "https:" &&
+      (parsedUrl.hostname === "images.unsplash.com" ||
+        parsedUrl.hostname === "unsplash.com")
+    );
+  } catch {
+    return false;
+  }
+};
+
 // Generate optimized image URL with Unsplash parameters
 export const getOptimizedImageUrl = (
   baseUrl: string,
@@ -21,20 +35,29 @@ export const getOptimizedImageUrl = (
     fit?: "crop" | "scale" | "fill";
   } = {},
 ): string => {
-  const { width = 400, height = 300, quality = 80, fit = "crop" } = options;
-
-  // If it's an Unsplash URL, add optimization parameters
-  if (baseUrl.includes("unsplash.com")) {
-    const url = new URL(baseUrl);
-    url.searchParams.set("w", width.toString());
-    url.searchParams.set("h", height.toString());
-    url.searchParams.set("fit", fit);
-    url.searchParams.set("q", quality.toString());
-    url.searchParams.set("auto", "format");
-    return url.toString();
+  // Validate input URL
+  if (!isValidUrl(baseUrl)) {
+    return baseUrl; // Return original if not valid Unsplash URL
   }
 
-  return baseUrl;
+  const { width = 400, height = 300, quality = 80, fit = "crop" } = options;
+
+  // Validate numeric parameters
+  const safeWidth = Math.max(1, Math.min(2000, Math.floor(Number(width))));
+  const safeHeight = Math.max(1, Math.min(2000, Math.floor(Number(height))));
+  const safeQuality = Math.max(1, Math.min(100, Math.floor(Number(quality))));
+
+  try {
+    const url = new URL(baseUrl);
+    url.searchParams.set("w", safeWidth.toString());
+    url.searchParams.set("h", safeHeight.toString());
+    url.searchParams.set("fit", fit);
+    url.searchParams.set("q", safeQuality.toString());
+    url.searchParams.set("auto", "format");
+    return url.toString();
+  } catch {
+    return baseUrl; // Return original on error
+  }
 };
 
 // Generate placeholder image for loading states
