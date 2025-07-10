@@ -43,6 +43,7 @@ interface WordSearchGameProps {
 type GameView =
   | "menu"
   | "solo"
+  | "levels"
   | "lobby"
   | "multiplayer"
   | "leaderboard"
