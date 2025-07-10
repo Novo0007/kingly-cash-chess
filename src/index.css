@@ -1,9 +1,9 @@
+/* Import modern animations */
+@import "./styles/modern-animations.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import modern animations */
-@import "./styles/modern-animations.css";
 
 @layer base {
   :root {
