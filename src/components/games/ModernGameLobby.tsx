@@ -372,15 +372,15 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
 
                 <CardContent className="p-6">
                   <div className="mb-4">
-                    <h3 className="text-2xl font-black text-gray-800 mb-1">
+                    <h3 className="text-2xl font-black text-foreground mb-1">
                       {game.title}
                     </h3>
-                    <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                       {game.subtitle}
                     </p>
                   </div>
 
-                  <p className="text-gray-600 mb-6 leading-relaxed">
+                  <p className="text-muted-foreground mb-6 leading-relaxed">
                     {game.description}
                   </p>
 
