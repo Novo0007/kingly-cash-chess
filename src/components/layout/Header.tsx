@@ -326,14 +326,14 @@ export const Header = ({
           <div className="flex items-center space-x-2 sm:space-x-3">
             {/* Coins Display */}
             <div
-              className={`flex items-center space-x-2 bg-gradient-to-r rounded-full px-3 py-1.5 ${
+              className={`flex items-center space-x-2 rounded-full px-3 py-1.5 backdrop-blur-sm transition-all duration-300 ${
                 isOnline
-                  ? "from-yellow-500/10 to-amber-500/10 border border-yellow-500/20"
-                  : "from-gray-500/10 to-gray-500/10 border border-gray-500/20"
+                  ? `bg-gradient-to-r ${currentTheme.gradients.accent}/10 border border-primary/20 shadow-sm`
+                  : "bg-gradient-to-r from-gray-500/10 to-gray-500/10 border border-gray-500/20"
               }`}
             >
               <Coins
-                className={`w-4 h-4 ${isOnline ? "text-yellow-500" : "text-gray-500"}`}
+                className={`w-4 h-4 ${isOnline ? "text-primary" : "text-gray-500"}`}
               />
               <span className="text-sm font-semibold text-foreground">
                 {isOnline ? `₹${coinsBalance.toFixed(2)}` : "Offline"}
