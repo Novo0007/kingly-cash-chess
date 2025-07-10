@@ -38,6 +38,7 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
   onSelectGame,
 }) => {
   const { isMobile } = useDeviceType();
+  const { currentTheme } = useTheme();
   const [showGlobalChat, setShowGlobalChat] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
