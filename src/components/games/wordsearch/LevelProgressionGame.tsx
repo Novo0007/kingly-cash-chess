@@ -454,7 +454,7 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
           <CardContent className="p-4">
             <div className="text-center">
-              <h3 className="font-bold text-blue-800 mb-2">��� Game Rules</h3>
+              <h3 className="font-bold text-blue-800 mb-2">📋 Game Rules</h3>
               <div className="text-sm text-blue-700 space-y-1">
                 <p>
                   🎯 Find all {levelInfo.wordCount}{" "}
@@ -521,6 +521,56 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
                 <div className="font-bold">
                   {Math.max(0, 3 - (gameState.players[0]?.hintsUsed || 0))}
                 </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Words to Find */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              Words to Find ({gameState.foundWords.length}/{levelInfo.wordCount}
+              )
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+              {gameState.words.map((word, index) => {
+                const isFound = gameState.foundWords.some(
+                  (fw) => fw.word === word,
+                );
+                return (
+                  <div
+                    key={index}
+                    className={`p-2 text-center rounded-lg border transition-all duration-200 ${
+                      isFound
+                        ? "bg-green-100 text-green-800 border-green-300 line-through scale-95"
+                        : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
+                    }`}
+                  >
+                    <span className="font-medium">{word}</span>
+                    {isFound && <span className="ml-1">✓</span>}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-3 flex justify-center">
+              <div
+                className={`text-sm px-3 py-1 rounded-full ${
+                  gameState.foundWords.length === levelInfo.wordCount
+                    ? "bg-green-100 text-green-800"
+                    : gameState.foundWords.length >= levelInfo.wordCount * 0.7
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                Progress:{" "}
+                {Math.round(
+                  (gameState.foundWords.length / levelInfo.wordCount) * 100,
+                )}
+                %
               </div>
             </div>
           </CardContent>
