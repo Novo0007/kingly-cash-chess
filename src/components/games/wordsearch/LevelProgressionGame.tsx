@@ -756,7 +756,7 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
       {currentView === "playing" && renderGameplay()}
       {currentView === "completed" && renderCompleted()}
       {currentView === "leaderboard" && (
-        <SimpleLeaderboard onBack={() => setCurrentView("levels")} />
+        <EnhancedLeaderboard onBack={() => setCurrentView("levels")} />
       )}
     </MobileContainer>
   );
