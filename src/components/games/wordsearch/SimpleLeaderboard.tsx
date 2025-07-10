@@ -241,8 +241,8 @@ export const SimpleLeaderboard: React.FC<SimpleLeaderboardProps> = ({
                             %)
                           </div>
                           <div>
-                            {Math.floor(score.time_taken / 60)}:
-                            {(score.time_taken % 60)
+                            {Math.floor(Math.floor(score.time_taken) / 60)}:
+                            {(Math.floor(score.time_taken) % 60)
                               .toString()
                               .padStart(2, "0")}
                           </div>
