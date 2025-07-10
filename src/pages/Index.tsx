@@ -8,6 +8,7 @@ import { GameLobby } from "@/components/chess/GameLobby";
 import { GamePage } from "@/components/chess/GamePage";
 import { GameSelection } from "@/components/games/GameSelection";
 import { NealFunGameLobby } from "@/components/games/NealFunGameLobby";
+import { ModernGameLobby } from "@/components/games/ModernGameLobby";
 import { LudoLobby } from "@/components/games/ludo/LudoLobby";
 import { LudoGame } from "@/components/games/ludo/LudoGame";
 import { MazeGame } from "@/components/games/maze/MazeGame";
@@ -21,6 +22,7 @@ import { ChatSystem } from "@/components/chat/ChatSystem";
 import { AdminPanel } from "@/components/admin/AdminPanel";
 import { toast } from "sonner";
 import type { User } from "@supabase/supabase-js";
+import { ModernLoading } from "@/components/ui/modern-loading";
 
 const Index = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -32,7 +34,8 @@ const Index = () => {
     "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch" | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [useNealFunStyle, setUseNealFunStyle] = useState(true);
+  const [useNealFunStyle, setUseNealFunStyle] = useState(false);
+  const [useModernStyle, setUseModernStyle] = useState(true);
 
   // Optimized profile fetching with caching
   const fetchUserProfile = useCallback(async (userId: string) => {
@@ -219,19 +222,7 @@ const Index = () => {
 
   // Optimized loading state
   if (loading) {
-    return (
-      <MobileOptimized className="flex items-center justify-center min-h-screen">
-        <div className="relative">
-          <div className="absolute -inset-4 bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 rounded-full blur-xl opacity-60 animate-pulse"></div>
-          <div className="relative bg-gradient-to-r from-amber-900 to-orange-900 p-6 rounded-full border-2 border-amber-600/50 backdrop-blur-sm wood-plank">
-            <div className="w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
-          </div>
-          <p className="text-white text-center mt-4 font-semibold">
-            Loading Game Platform...
-          </p>
-        </div>
-      </MobileOptimized>
-    );
+    return <ModernLoading message="Loading Game Platform..." />;
   }
 
   if (!user) {
@@ -260,7 +251,9 @@ const Index = () => {
           </div>
         );
       case "games":
-        return useNealFunStyle ? (
+        return useModernStyle ? (
+          <ModernGameLobby onSelectGame={handleSelectGame} />
+        ) : useNealFunStyle ? (
           <NealFunGameLobby onSelectGame={handleSelectGame} />
         ) : (
           <GameSelection onSelectGame={handleSelectGame} />
@@ -338,6 +331,22 @@ const Index = () => {
         return <GameSelection onSelectGame={handleSelectGame} />;
     }
   };
+
+  if (useModernStyle && currentView === "games") {
+    return (
+      <MobileOptimized>
+        <ModernGameLobby onSelectGame={handleSelectGame} />
+        {/* Bottom Nav for mobile */}
+        <div className="md:hidden relative z-30">
+          <BottomNav
+            currentView={currentView}
+            onViewChange={setCurrentView}
+            isAdmin={isAdmin}
+          />
+        </div>
+      </MobileOptimized>
+    );
+  }
 
   if (useNealFunStyle && currentView === "games") {
     return (

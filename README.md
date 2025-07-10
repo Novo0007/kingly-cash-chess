@@ -6,7 +6,7 @@ This project includes a comprehensive theme system with multiple beautiful theme
 
 ### Available Themes:
 
-- **Default**: Clean and minimal design
+- **Default**:  Clean and minimal design
 - **PixelNova** 🌟: Retro pixel-inspired with vibrant neon colors
 - **MindMaze UI** 🧠: Professional dark theme with blue accents for focus
 - **GlowyFun** ✨: Bright and playful theme with glowing elements
