@@ -172,12 +172,20 @@ export const Header = ({
           .single();
 
         if (profileError && profileError.code !== "PGRST116") {
-          console.error("Profile fetch error:", profileError);
+          console.error("Profile fetch error:", {
+            message: profileError.message,
+            code: profileError.code,
+            details: profileError.details,
+            hint: profileError.hint,
+          });
         } else {
           setUserProfile(profile);
         }
       } catch (profileErr) {
-        console.error("Profile fetch failed:", profileErr);
+        console.error(
+          "Profile fetch failed:",
+          profileErr instanceof Error ? profileErr.message : String(profileErr),
+        );
       }
 
       // Fetch wallet data with error handling
