@@ -222,7 +222,8 @@ export const WordSearchLobby: React.FC<WordSearchLobbyProps> = ({
   };
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
+    const totalSeconds = Math.floor(seconds); // Ensure no decimals
+    const mins = Math.floor(totalSeconds / 60);
     return `${mins}m`;
   };
 
