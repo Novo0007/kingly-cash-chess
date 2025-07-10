@@ -106,7 +106,10 @@ export const Header = ({
           }
         });
     } catch (error) {
-      console.error("Error setting up wallet subscription:", error);
+      console.error(
+        "Error setting up wallet subscription:",
+        error instanceof Error ? error.message : String(error),
+      );
       setIsOnline(false);
     }
 
