@@ -413,6 +413,20 @@ export const Header = ({
 
                 <DropdownMenuSeparator />
 
+                <DropdownMenuItem onClick={handleManualRefresh}>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  <span>Refresh Data</span>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={handleDiagnostic}>
+                  {isOnline ? (
+                    <Wifi className="mr-2 h-4 w-4 text-green-500" />
+                  ) : (
+                    <WifiOff className="mr-2 h-4 w-4 text-red-500" />
+                  )}
+                  <span>Connection Test</span>
+                </DropdownMenuItem>
+
                 <DropdownMenuItem>
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
