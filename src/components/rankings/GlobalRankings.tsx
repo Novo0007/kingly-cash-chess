@@ -10,281 +10,136 @@ import {
   Crown,
   RefreshCw,
   TrendingUp,
-  Award,
-  Target,
-  Zap,
+  Calendar,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import { useTheme } from "@/contexts/ThemeContext";
+import { UserProfileDialog } from "@/components/friends/UserProfileDialog";
 import type { User } from "@supabase/supabase-js";
+import type { Tables } from "@/integrations/supabase/types";
 
 interface PlayerRanking {
   user_id: string;
   username: string;
-  total_score: number;
+  highest_score: number;
   games_played: number;
-  avg_score: number;
-  best_score: number;
-  chess_score: number;
-  ludo_score: number;
-  maze_score: number;
-  game2048_score: number;
-  math_score: number;
-  wordsearch_score: number;
   last_played: string;
+  weekly_rank?: number;
+  badge_type?: string;
 }
 
 interface GlobalRankingsProps {
   user: User;
 }
 
-type RankingTab =
-  | "overall"
-  | "chess"
-  | "ludo"
-  | "maze"
-  | "2048"
-  | "math"
-  | "wordsearch";
+type RankingTab = "weekly" | "all-time";
 
 export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
   const { isMobile } = useDeviceType();
   const { currentTheme } = useTheme();
-  const [activeTab, setActiveTab] = useState<RankingTab>("overall");
-  const [rankings, setRankings] = useState<PlayerRanking[]>([]);
+  const [activeTab, setActiveTab] = useState<RankingTab>("weekly");
+  const [weeklyRankings, setWeeklyRankings] = useState<PlayerRanking[]>([]);
+  const [allTimeRankings, setAllTimeRankings] = useState<PlayerRanking[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [userRank, setUserRank] = useState<number | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState<Tables<'profiles'> | null>(null);
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
 
-  const fetchGlobalRankings = useCallback(async () => {
+  const fetchRankings = useCallback(async () => {
     try {
       setLoading(true);
 
-      // Get all scores from different game tables and aggregate
-      const [
-        chessScores,
-        ludoScores,
-        mazeScores,
-        game2048Scores,
-        mathScores,
-        wordsearchScores,
-      ] = await Promise.all([
-        supabase.from("chess_games").select("white_player_id, black_player_id, winner_id, prize_amount"),
-        supabase.from("ludo_games").select("player1_id, player2_id, player3_id, player4_id, winner_id, prize_amount"),
-        supabase.from("maze_scores").select("user_id, score"),
-        supabase.from("game2048_scores").select("user_id, score"),
-        supabase.from("math_scores").select("user_id, score"),
-        supabase
-          .from("word_search_scores")
-          .select("user_id, score, completed_at"),
-      ]);
+      // Get weekly rankings (highest score per player)
+      const { data: weeklyData } = await supabase
+        .from("word_search_scores")
+        .select("user_id, username, score, completed_at")
+        .gte("completed_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+        .order("score", { ascending: false });
 
-      // Get user profiles
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("id, username");
+      // Get all-time rankings (highest score per player)
+      const { data: allTimeData } = await supabase
+        .from("word_search_scores")
+        .select("user_id, username, score, completed_at")
+        .order("score", { ascending: false });
 
-      const profileMap = new Map(
-        profiles?.map((p) => [p.id, p.username]) || [],
-      );
+      // Get badges for weekly rankings
+      const { data: badges } = await supabase
+        .from("weekly_ranking_badges")
+        .select("user_id, badge_type, rank")
+        .gte("week_start", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
 
-      // Aggregate scores by user
-      const userScores = new Map<
-        string,
-        {
-          chess: number;
-          ludo: number;
-          maze: number;
-          game2048: number;
-          math: number;
-          wordsearch: number;
-          games_played: number;
-          last_played: string;
+      const badgeMap = new Map(badges?.map(b => [b.user_id, b]) || []);
+
+      // Process weekly rankings (highest score per player)
+      const weeklyPlayerMap = new Map<string, PlayerRanking>();
+      weeklyData?.forEach((score) => {
+        const existing = weeklyPlayerMap.get(score.user_id);
+        if (!existing || score.score > existing.highest_score) {
+          const badge = badgeMap.get(score.user_id);
+          weeklyPlayerMap.set(score.user_id, {
+            user_id: score.user_id,
+            username: score.username,
+            highest_score: score.score,
+            games_played: 1,
+            last_played: score.completed_at,
+            badge_type: badge?.badge_type,
+            weekly_rank: badge?.rank,
+          });
         }
-      >();
-
-      // Process chess scores
-      chessScores.data?.forEach((game) => {
-        // Add scores for both players who participated
-        [game.white_player_id, game.black_player_id].forEach((playerId) => {
-          if (!playerId) return;
-
-          const current = userScores.get(playerId) || {
-            chess: 0,
-            ludo: 0,
-            maze: 0,
-            game2048: 0,
-            math: 0,
-            wordsearch: 0,
-            games_played: 0,
-            last_played: new Date().toISOString(),
-          };
-
-          // Winner gets the full prize, loser gets participation points
-          const isWinner = playerId === game.winner_id;
-          current.chess += isWinner ? (game.prize_amount || 0) : Math.floor((game.prize_amount || 0) * 0.1);
-          current.games_played += 1;
-          userScores.set(playerId, current);
-        });
       });
 
-      // Process ludo scores
-      ludoScores.data?.forEach((game) => {
-        // Add scores for all players who participated
-        [game.player1_id, game.player2_id, game.player3_id, game.player4_id].forEach((playerId) => {
-          if (!playerId) return;
+      const weeklyRankings = Array.from(weeklyPlayerMap.values())
+        .sort((a, b) => b.highest_score - a.highest_score);
 
-          const current = userScores.get(playerId) || {
-            chess: 0,
-            ludo: 0,
-            maze: 0,
-            game2048: 0,
-            math: 0,
-            wordsearch: 0,
-            games_played: 0,
-            last_played: new Date().toISOString(),
-          };
-
-          // Winner gets the full prize, others get participation points
-          const isWinner = playerId === game.winner_id;
-          current.ludo += isWinner ? (game.prize_amount || 0) : Math.floor((game.prize_amount || 0) * 0.1);
-          current.games_played += 1;
-          userScores.set(playerId, current);
-        });
-      });
-
-      // Process maze scores
-      mazeScores.data?.forEach((score) => {
-        if (!score.user_id) return;
-
-        const current = userScores.get(score.user_id) || {
-          chess: 0,
-          ludo: 0,
-          maze: 0,
-          game2048: 0,
-          math: 0,
-          wordsearch: 0,
-          games_played: 0,
-          last_played: new Date().toISOString(),
-        };
-
-        current.maze = Math.max(current.maze, score.score || 0);
-        current.games_played += 1;
-        userScores.set(score.user_id, current);
-      });
-
-      // Process 2048 scores
-      game2048Scores.data?.forEach((score) => {
-        if (!score.user_id) return;
-
-        const current = userScores.get(score.user_id) || {
-          chess: 0,
-          ludo: 0,
-          maze: 0,
-          game2048: 0,
-          math: 0,
-          wordsearch: 0,
-          games_played: 0,
-          last_played: new Date().toISOString(),
-        };
-
-        current.game2048 = Math.max(current.game2048, score.score || 0);
-        current.games_played += 1;
-        userScores.set(score.user_id, current);
-      });
-
-      // Process math scores
-      mathScores.data?.forEach((score) => {
-        if (!score.user_id) return;
-
-        const current = userScores.get(score.user_id) || {
-          chess: 0,
-          ludo: 0,
-          maze: 0,
-          game2048: 0,
-          math: 0,
-          wordsearch: 0,
-          games_played: 0,
-          last_played: new Date().toISOString(),
-        };
-
-        current.math = Math.max(current.math, score.score || 0);
-        current.games_played += 1;
-        userScores.set(score.user_id, current);
-      });
-
-      // Process wordsearch scores
-      wordsearchScores.data?.forEach((score) => {
-        if (!score.user_id) return;
-
-        const current = userScores.get(score.user_id) || {
-          chess: 0,
-          ludo: 0,
-          maze: 0,
-          game2048: 0,
-          math: 0,
-          wordsearch: 0,
-          games_played: 0,
-          last_played: new Date().toISOString(),
-        };
-
-        current.wordsearch = Math.max(current.wordsearch, score.score || 0);
-        current.games_played += 1;
-        if (score.completed_at) {
-          current.last_played = score.completed_at;
+      // Process all-time rankings (highest score per player)
+      const allTimePlayerMap = new Map<string, PlayerRanking>();
+      allTimeData?.forEach((score) => {
+        const existing = allTimePlayerMap.get(score.user_id);
+        if (!existing || score.score > existing.highest_score) {
+          allTimePlayerMap.set(score.user_id, {
+            user_id: score.user_id,
+            username: score.username,
+            highest_score: score.score,
+            games_played: 1,
+            last_played: score.completed_at,
+          });
         }
-        userScores.set(score.user_id, current);
       });
 
-      // Convert to ranking format
-      const playerRankings: PlayerRanking[] = Array.from(userScores.entries())
-        .map(([userId, scores]) => {
-          const total_score =
-            scores.chess +
-            scores.ludo +
-            scores.maze +
-            scores.game2048 +
-            scores.math +
-            scores.wordsearch;
-          const best_score = Math.max(
-            scores.chess,
-            scores.ludo,
-            scores.maze,
-            scores.game2048,
-            scores.math,
-            scores.wordsearch,
-          );
+      const allTimeRankings = Array.from(allTimePlayerMap.values())
+        .sort((a, b) => b.highest_score - a.highest_score);
 
-          return {
-            user_id: userId,
-            username: profileMap.get(userId) || "Anonymous",
-            total_score,
-            games_played: scores.games_played,
-            avg_score:
-              scores.games_played > 0
-                ? Math.round(total_score / scores.games_played)
-                : 0,
-            best_score,
-            chess_score: scores.chess,
-            ludo_score: scores.ludo,
-            maze_score: scores.maze,
-            game2048_score: scores.game2048,
-            math_score: scores.math,
-            wordsearch_score: scores.wordsearch,
-            last_played: scores.last_played,
-          };
-        })
-        .filter((player) => player.total_score > 0)
-        .sort((a, b) => b.total_score - a.total_score);
+      setWeeklyRankings(weeklyRankings);
+      setAllTimeRankings(allTimeRankings);
 
-      setRankings(playerRankings);
+      // Update weekly badges for top 3 players
+      if (weeklyRankings.length >= 3) {
+        const weekStart = new Date();
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+        const weekStartStr = weekStart.toISOString().split('T')[0];
+
+        const badgePromises = weeklyRankings.slice(0, 3).map((player, index) => {
+          const badgeType = index === 0 ? 'gold' : index === 1 ? 'silver' : 'bronze';
+          return supabase
+            .from("weekly_ranking_badges")
+            .upsert({
+              user_id: player.user_id,
+              week_start: weekStartStr,
+              rank: index + 1,
+              badge_type: badgeType,
+              score: player.highest_score,
+            });
+        });
+
+        await Promise.all(badgePromises);
+      }
 
       // Find user's rank
-      const userRankIndex = playerRankings.findIndex(
-        (p) => p.user_id === user.id,
-      );
+      const currentRankings = activeTab === "weekly" ? weeklyRankings : allTimeRankings;
+      const userRankIndex = currentRankings.findIndex((p) => p.user_id === user.id);
       setUserRank(userRankIndex >= 0 ? userRankIndex + 1 : null);
     } catch (error) {
       console.error("Error fetching rankings:", error);
@@ -292,18 +147,46 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [user.id]);
+  }, [user.id, activeTab]);
 
   useEffect(() => {
-    fetchGlobalRankings();
-  }, [fetchGlobalRankings]);
+    fetchRankings();
+  }, [fetchRankings]);
 
   const handleRefresh = () => {
     setRefreshing(true);
-    fetchGlobalRankings();
+    fetchRankings();
   };
 
-  const getRankIcon = (rank: number) => {
+  const handlePlayerClick = async (userId: string) => {
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (profile) {
+        setSelectedProfile(profile);
+        setShowProfileDialog(true);
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
+
+  const getRankIcon = (rank: number, badgeType?: string) => {
+    if (badgeType) {
+      switch (badgeType) {
+        case 'gold':
+          return <Crown className="h-6 w-6 text-yellow-500" />;
+        case 'silver':
+          return <Trophy className="h-6 w-6 text-gray-400" />;
+        case 'bronze':
+          return <Medal className="h-6 w-6 text-amber-600" />;
+      }
+    }
+
     switch (rank) {
       case 1:
         return <Crown className="h-6 w-6 text-yellow-500" />;
@@ -320,9 +203,20 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
     }
   };
 
-  const getRankClass = (rank: number, isCurrentUser: boolean) => {
+  const getRankClass = (rank: number, isCurrentUser: boolean, badgeType?: string) => {
     if (isCurrentUser) {
       return `bg-gradient-to-r ${currentTheme.gradients.accent} text-white shadow-lg border-2 border-primary`;
+    }
+
+    if (badgeType) {
+      switch (badgeType) {
+        case 'gold':
+          return `bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-lg`;
+        case 'silver':
+          return "bg-gradient-to-r from-gray-100 to-gray-50 border-gray-300";
+        case 'bronze':
+          return "bg-gradient-to-r from-amber-100 to-amber-50 border-amber-300";
+      }
     }
 
     switch (rank) {
@@ -333,70 +227,12 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
       case 3:
         return "bg-gradient-to-r from-amber-100 to-amber-50 border-amber-300";
       default:
-        return "bg-card border-border hover:bg-muted/50";
+        return "bg-card border-border hover:bg-muted/50 cursor-pointer";
     }
   };
 
-  const getFilteredRankings = () => {
-    if (activeTab === "overall") return rankings;
-
-    return [...rankings]
-      .sort((a, b) => {
-        switch (activeTab) {
-          case "chess":
-            return b.chess_score - a.chess_score;
-          case "ludo":
-            return b.ludo_score - a.ludo_score;
-          case "maze":
-            return b.maze_score - a.maze_score;
-          case "2048":
-            return b.game2048_score - a.game2048_score;
-          case "math":
-            return b.math_score - a.math_score;
-          case "wordsearch":
-            return b.wordsearch_score - a.wordsearch_score;
-          default:
-            return 0;
-        }
-      })
-      .filter((player) => {
-        switch (activeTab) {
-          case "chess":
-            return player.chess_score > 0;
-          case "ludo":
-            return player.ludo_score > 0;
-          case "maze":
-            return player.maze_score > 0;
-          case "2048":
-            return player.game2048_score > 0;
-          case "math":
-            return player.math_score > 0;
-          case "wordsearch":
-            return player.wordsearch_score > 0;
-          default:
-            return true;
-        }
-      })
-      .slice(0, 50);
-  };
-
-  const getScoreForTab = (player: PlayerRanking) => {
-    switch (activeTab) {
-      case "chess":
-        return player.chess_score;
-      case "ludo":
-        return player.ludo_score;
-      case "maze":
-        return player.maze_score;
-      case "2048":
-        return player.game2048_score;
-      case "math":
-        return player.math_score;
-      case "wordsearch":
-        return player.wordsearch_score;
-      default:
-        return player.total_score;
-    }
+  const getCurrentRankings = () => {
+    return activeTab === "weekly" ? weeklyRankings : allTimeRankings;
   };
 
   const formatDate = (dateString: string) => {
@@ -404,7 +240,7 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
     return date.toLocaleDateString();
   };
 
-  const filteredRankings = getFilteredRankings();
+  const currentRankings = getCurrentRankings();
 
   return (
     <MobileContainer>
@@ -435,39 +271,41 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
 
             {userRank && (
               <div className="text-center bg-white/10 rounded-lg p-3 mt-2">
-                <p className="text-white/80 text-sm">Your Global Rank</p>
+                <p className="text-white/80 text-sm">Your Rank</p>
                 <p className="text-2xl font-bold text-white">#{userRank}</p>
               </div>
             )}
           </CardHeader>
         </Card>
 
-        {/* Game Tabs */}
+        {/* Weekly Reset Notice */}
+        {activeTab === "weekly" && (
+          <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+            <CardContent className="p-4 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Calendar className="h-5 w-5 text-blue-600" />
+                <h3 className="font-bold text-blue-800">Weekly Rankings</h3>
+              </div>
+              <p className="text-sm text-blue-700">
+                Rankings reset every Monday • Top 3 players get exclusive badges
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Ranking Tabs */}
         <Tabs
           value={activeTab}
           onValueChange={(value) => setActiveTab(value as RankingTab)}
         >
-          <TabsList className="grid w-full grid-cols-4 md:grid-cols-7">
-            <TabsTrigger value="overall" className="text-xs">
-              All
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="weekly" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Weekly
             </TabsTrigger>
-            <TabsTrigger value="chess" className="text-xs">
-              ♟️
-            </TabsTrigger>
-            <TabsTrigger value="ludo" className="text-xs">
-              🎲
-            </TabsTrigger>
-            <TabsTrigger value="maze" className="text-xs">
-              🌀
-            </TabsTrigger>
-            <TabsTrigger value="2048" className="text-xs">
-              🔢
-            </TabsTrigger>
-            <TabsTrigger value="math" className="text-xs">
-              ➕
-            </TabsTrigger>
-            <TabsTrigger value="wordsearch" className="text-xs">
-              🔤
+            <TabsTrigger value="all-time" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              All-Time
             </TabsTrigger>
           </TabsList>
 
@@ -481,7 +319,7 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
                   </div>
                 </CardContent>
               </Card>
-            ) : filteredRankings.length === 0 ? (
+            ) : currentRankings.length === 0 ? (
               <Card>
                 <CardContent className="p-8">
                   <div className="text-center">
@@ -490,28 +328,30 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
                       No Rankings Yet
                     </h3>
                     <p className="text-muted-foreground">
-                      Be the first to play and set a score!
+                      {activeTab === "weekly" 
+                        ? "Be the first to score this week!" 
+                        : "Be the first to set a record!"}
                     </p>
                   </div>
                 </CardContent>
               </Card>
             ) : (
               <div className="space-y-2">
-                {filteredRankings.map((player, index) => {
+                {currentRankings.slice(0, 50).map((player, index) => {
                   const rank = index + 1;
                   const isCurrentUser = player.user_id === user.id;
-                  const score = getScoreForTab(player);
 
                   return (
                     <Card
-                      key={player.user_id}
-                      className={`${getRankClass(rank, isCurrentUser)} transition-all duration-200 hover:shadow-md border`}
+                      key={`${activeTab}-${player.user_id}`}
+                      className={`${getRankClass(rank, isCurrentUser, player.badge_type)} transition-all duration-200 hover:shadow-md border cursor-pointer`}
+                      onClick={() => handlePlayerClick(player.user_id)}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center gap-4">
                           {/* Rank */}
                           <div className="flex-shrink-0">
-                            {getRankIcon(rank)}
+                            {getRankIcon(rank, player.badge_type)}
                           </div>
 
                           {/* Player Info */}
@@ -519,16 +359,21 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
                             <div className="flex items-center gap-2 mb-1">
                               <h3
                                 className={`font-bold text-lg truncate ${
-                                  rank === 1 || isCurrentUser
-                                    ? "text-white"
-                                    : "text-foreground"
+                                  rank === 1 || player.badge_type === 'gold' ? "text-white" : "text-foreground"
                                 }`}
                               >
                                 {player.username}
-                                {isCurrentUser && " (You)"}
                               </h3>
-                              {rank <= 3 && !isCurrentUser && rank !== 1 && (
-                                <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                              {player.badge_type && (
+                                <Badge 
+                                  className={`text-xs ${
+                                    player.badge_type === 'gold' ? 'bg-yellow-500 text-black' :
+                                    player.badge_type === 'silver' ? 'bg-gray-400 text-black' :
+                                    'bg-amber-600 text-white'
+                                  }`}
+                                >
+                                  Week #{player.weekly_rank} 
+                                </Badge>
                               )}
                               {isCurrentUser && (
                                 <Badge variant="secondary" className="text-xs">
@@ -538,24 +383,14 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
                             </div>
 
                             <div className="flex flex-wrap items-center gap-2 text-xs">
-                              <Badge
-                                variant="outline"
-                                className={
-                                  rank === 1 || isCurrentUser
-                                    ? "border-white/30 text-white/80"
-                                    : ""
-                                }
-                              >
-                                {player.games_played} games
-                              </Badge>
                               <span
                                 className={`${
-                                  rank === 1 || isCurrentUser
+                                  rank === 1 || player.badge_type === 'gold'
                                     ? "text-white/60"
                                     : "text-muted-foreground"
                                 }`}
                               >
-                                Avg: {player.avg_score.toLocaleString()}
+                                Last played: {formatDate(player.last_played)}
                               </span>
                             </div>
                           </div>
@@ -564,24 +399,20 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
                           <div className="text-right">
                             <div
                               className={`text-2xl font-bold mb-1 ${
-                                rank === 1 || isCurrentUser
-                                  ? "text-white"
-                                  : "text-primary"
+                                rank === 1 || player.badge_type === 'gold' ? "text-white" : "text-primary"
                               }`}
                             >
-                              {score.toLocaleString()}
+                              {player.highest_score.toLocaleString()}
                             </div>
-                            {activeTab === "overall" && (
-                              <div
-                                className={`text-xs ${
-                                  rank === 1 || isCurrentUser
-                                    ? "text-white/70"
-                                    : "text-muted-foreground"
-                                }`}
-                              >
-                                Best: {player.best_score.toLocaleString()}
-                              </div>
-                            )}
+                            <div
+                              className={`text-xs ${
+                                rank === 1 || player.badge_type === 'gold'
+                                  ? "text-white/70"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              Highest Score
+                            </div>
                           </div>
                         </div>
                       </CardContent>
@@ -592,42 +423,13 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
             )}
           </TabsContent>
         </Tabs>
-
-        {/* Summary Stats */}
-        {filteredRankings.length > 0 && (
-          <Card className="bg-gradient-to-r from-muted/50 to-muted/30 border-primary/20">
-            <CardContent className="p-4">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <div className="text-xl font-bold text-primary">
-                    {filteredRankings.length}
-                  </div>
-                  <div className="text-xs text-muted-foreground">Players</div>
-                </div>
-                <div>
-                  <div className="text-xl font-bold text-primary">
-                    {Math.max(
-                      ...filteredRankings.map((p) => getScoreForTab(p)),
-                    ).toLocaleString()}
-                  </div>
-                  <div className="text-xs text-muted-foreground">Top Score</div>
-                </div>
-                <div>
-                  <div className="text-xl font-bold text-primary">
-                    {Math.round(
-                      filteredRankings.reduce(
-                        (sum, p) => sum + p.avg_score,
-                        0,
-                      ) / filteredRankings.length,
-                    ).toLocaleString()}
-                  </div>
-                  <div className="text-xs text-muted-foreground">Avg Score</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
+
+      <UserProfileDialog
+        profile={selectedProfile}
+        open={showProfileDialog}
+        onOpenChange={setShowProfileDialog}
+      />
     </MobileContainer>
   );
 };

@@ -126,9 +126,9 @@ export const CoinShop: React.FC<CoinShopProps> = ({
     const lastClaimDate = new Date(lastFreeCoins);
     const now = new Date();
     const timeDiff = now.getTime() - lastClaimDate.getTime();
-    const hoursDiff = timeDiff / (1000 * 60 * 60);
+    const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
 
-    return hoursDiff >= 24; // Can claim once per day
+    return daysDiff >= 30; // Can claim once per month
   };
 
   const getNextFreeCoinsTime = () => {
@@ -136,7 +136,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
 
     const lastClaimDate = new Date(lastFreeCoins);
     const nextClaimTime = new Date(
-      lastClaimDate.getTime() + 24 * 60 * 60 * 1000,
+      lastClaimDate.getTime() + 30 * 24 * 60 * 60 * 1000,
     );
 
     return nextClaimTime;
@@ -144,7 +144,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
 
   const handleClaimFreeCoins = async () => {
     if (!canClaimFreeCoins()) {
-      toast.error("You can only claim free coins once per day!");
+      toast.error("You can only claim free coins once per month!");
       return;
     }
 
@@ -153,9 +153,9 @@ export const CoinShop: React.FC<CoinShopProps> = ({
     try {
       const result = await addCoins(
         user.id,
-        50, // Free daily coins
+        200, // Free monthly coins
         "daily_bonus",
-        "Daily free coins bonus",
+        "Monthly free coins bonus",
       );
 
       if (result.success) {
@@ -163,7 +163,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
         localStorage.setItem(`word_search_free_coins_${user.id}`, now);
         setLastFreeCoins(now);
 
-        toast.success("🎉 You received 50 free coins!");
+        toast.success("🎉 You received 200 free coins!");
         onPurchaseComplete();
       } else {
         toast.error("Failed to claim free coins");
@@ -182,36 +182,30 @@ export const CoinShop: React.FC<CoinShopProps> = ({
     try {
       let paymentSuccess = false;
 
-      if (paymentRegion === "IN") {
-        // Use Razorpay for Indian users
-        const paymentResult = await initiatePayment({
-          amount: packageData.priceINR,
-          currency: "INR",
-          name: "Word Search Game",
-          description: `${packageData.name} - ${packageData.coins + packageData.bonus} coins`,
-          prefill: {
-            name:
-              user.user_metadata?.full_name || user.email?.split("@")[0] || "",
-            email: user.email || "",
-          },
-        });
+      // Use Razorpay for Indian users
+      const paymentResult = await initiatePayment({
+        amount: packageData.priceINR,
+        currency: "INR",
+        name: "Word Search Game",
+        description: `${packageData.name} - ${packageData.coins + packageData.bonus} coins`,
+        prefill: {
+          name:
+            user.user_metadata?.full_name || user.email?.split("@")[0] || "",
+          email: user.email || "",
+        },
+      });
 
-        if (paymentResult.success) {
-          paymentSuccess = true;
-          toast.success(
-            `🎉 Payment successful! Transaction ID: ${paymentResult.paymentId}`,
-          );
-        } else if (paymentResult.error === "Payment cancelled by user") {
-          toast.info("Payment cancelled");
-          setPurchasing(null);
-          return;
-        } else {
-          throw new Error(paymentResult.error || "Payment failed");
-        }
-      } else {
-        // Simulate international payment (for demo purposes)
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+      if (paymentResult.success) {
         paymentSuccess = true;
+        toast.success(
+          `🎉 Payment successful! Transaction ID: ${paymentResult.paymentId}`,
+        );
+      } else if (paymentResult.error === "Payment cancelled by user") {
+        toast.info("Payment cancelled");
+        setPurchasing(null);
+        return;
+      } else {
+        throw new Error(paymentResult.error || "Payment failed");
       }
 
       if (paymentSuccess) {
@@ -272,23 +266,10 @@ export const CoinShop: React.FC<CoinShopProps> = ({
               </Button>
 
               <div className="flex items-center gap-4">
-                {/* Region Selector */}
+        {/* Payment Info */}
                 <div className="flex items-center gap-2 bg-white/20 rounded-lg px-3 py-1">
                   <MapPin className="h-4 w-4" />
-                  <select
-                    value={paymentRegion}
-                    onChange={(e) =>
-                      setPaymentRegion(e.target.value as "US" | "IN")
-                    }
-                    className="bg-transparent text-white text-sm border-none outline-none cursor-pointer"
-                  >
-                    <option value="IN" className="text-black">
-                      🇮🇳 India (INR)
-                    </option>
-                    <option value="US" className="text-black">
-                      🇺🇸 International (USD)
-                    </option>
-                  </select>
+                  <span className="text-sm text-white">🇮🇳 India (INR)</span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -312,16 +293,16 @@ export const CoinShop: React.FC<CoinShopProps> = ({
           </CardHeader>
         </Card>
 
-        {/* Free Daily Coins */}
+        {/* Free Monthly Coins */}
         <Card className="border-2 border-dashed border-green-300 bg-green-50">
           <CardContent className="p-6">
             <div className="text-center">
               <div className="text-4xl mb-3">🎁</div>
               <h3 className="text-xl font-bold text-green-800 mb-2">
-                Daily Free Coins
+                Monthly Free Coins
               </h3>
               <p className="text-green-700 mb-4">
-                Get 50 free coins every 24 hours!
+                Get 200 free coins every month!
               </p>
 
               {canClaimFreeCoins() ? (
@@ -333,12 +314,12 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                 >
                   {purchasing === "free"
                     ? "Claiming..."
-                    : "Claim 50 Free Coins"}
+                    : "Claim 200 Free Coins"}
                 </Button>
               ) : (
                 <div>
                   <Button disabled className="mb-2" size="lg">
-                    Already Claimed Today
+                    Already Claimed This Month
                   </Button>
                   <p className="text-sm text-green-600">
                     Next free coins in:{" "}
@@ -358,9 +339,8 @@ export const CoinShop: React.FC<CoinShopProps> = ({
             {coinPackages.map((pkg) => {
               const totalCoins = pkg.coins + pkg.bonus;
               const isPurchasing = purchasing === pkg.id;
-              const displayPrice =
-                paymentRegion === "IN" ? pkg.priceINR : pkg.price;
-              const currency = paymentRegion === "IN" ? "₹" : "$";
+              const displayPrice = pkg.priceINR;
+              const currency = "₹";
 
               return (
                 <Card
@@ -430,22 +410,12 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                         "Processing..."
                       ) : (
                         <div className="flex items-center gap-2">
-                          {paymentRegion === "IN" ? (
-                            <>
-                              <CreditCard className="h-4 w-4" />
-                              {currency}
-                              {displayPrice}
-                              <span className="text-xs opacity-75">
-                                via Razorpay
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              <CreditCard className="h-4 w-4" />
-                              {currency}
-                              {displayPrice}
-                            </>
-                          )}
+                          <CreditCard className="h-4 w-4" />
+                          {currency}
+                          {displayPrice}
+                          <span className="text-xs opacity-75">
+                            via Razorpay
+                          </span>
                         </div>
                       )}
                     </Button>

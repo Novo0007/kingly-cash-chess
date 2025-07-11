@@ -585,6 +585,39 @@ export type Database = {
           },
         ]
       }
+      weekly_ranking_badges: {
+        Row: {
+          badge_type: string
+          created_at: string
+          game_type: string
+          id: string
+          rank: number
+          score: number
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          badge_type: string
+          created_at?: string
+          game_type?: string
+          id?: string
+          rank: number
+          score?: number
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          badge_type?: string
+          created_at?: string
+          game_type?: string
+          id?: string
+          rank?: number
+          score?: number
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
       word_search_coins: {
         Row: {
           amount: number
@@ -859,7 +892,18 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      weekly_leaderboard: {
+        Row: {
+          completed_at: string | null
+          difficulty: string | null
+          rank: number | null
+          score: number | null
+          user_id: string | null
+          username: string | null
+          week_start: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       can_invite_admins: {
