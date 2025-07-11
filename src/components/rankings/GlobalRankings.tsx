@@ -52,10 +52,15 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
     try {
       setLoading(true);
 
-      // Get weekly rankings (highest score per player)
+      // Get weekly rankings with proper usernames
       const { data: weeklyData } = await supabase
         .from("word_search_scores")
-        .select("user_id, username, score, completed_at")
+        .select(`
+          user_id, 
+          username,
+          score, 
+          completed_at
+        `)
         .gte("completed_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
         .order("score", { ascending: false });
 
