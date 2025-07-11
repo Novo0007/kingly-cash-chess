@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instanciate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.2.3 (519615d)"
+  }
   public: {
     Tables: {
       admin_users: {
@@ -111,6 +116,36 @@ export type Database = {
         }
         Relationships: []
       }
+      coin_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string
+          description: string | null
+          id: string
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       friendships: {
         Row: {
           addressee_id: string
@@ -174,6 +209,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "game_invitations_from_user_id_profiles_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "game_invitations_game_id_fkey"
             columns: ["game_id"]
             isOneToOne: false
@@ -181,26 +223,56 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "game_invitations_ludo_game_id_fkey"
-            columns: ["ludo_game_id"]
+            foreignKeyName: "game_invitations_to_user_id_profiles_fkey"
+            columns: ["to_user_id"]
             isOneToOne: false
-            referencedRelation: "ludo_games"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
-      game_reactions: {
+      game2048_scores: {
         Row: {
+          board_size: number
+          completed_at: string
           created_at: string
-          id: number
+          difficulty: string
+          id: string
+          moves: number
+          score: number
+          target_reached: number
+          time_taken: number
+          updated_at: string
+          user_id: string
+          username: string
         }
         Insert: {
+          board_size: number
+          completed_at?: string
           created_at?: string
-          id?: number
+          difficulty: string
+          id?: string
+          moves?: number
+          score?: number
+          target_reached: number
+          time_taken: number
+          updated_at?: string
+          user_id: string
+          username: string
         }
         Update: {
+          board_size?: number
+          completed_at?: string
           created_at?: string
-          id?: number
+          difficulty?: string
+          id?: string
+          moves?: number
+          score?: number
+          target_reached?: number
+          time_taken?: number
+          updated_at?: string
+          user_id?: string
+          username?: string
         }
         Relationships: []
       }
@@ -301,6 +373,99 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      math_scores: {
+        Row: {
+          completed_at: string
+          correct_answers: number
+          created_at: string
+          difficulty: string
+          game_mode: string
+          hints_used: number
+          id: string
+          max_streak: number
+          score: number
+          skips_used: number
+          time_taken: number
+          total_questions: number
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          completed_at?: string
+          correct_answers?: number
+          created_at?: string
+          difficulty: string
+          game_mode: string
+          hints_used?: number
+          id?: string
+          max_streak?: number
+          score?: number
+          skips_used?: number
+          time_taken: number
+          total_questions?: number
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          completed_at?: string
+          correct_answers?: number
+          created_at?: string
+          difficulty?: string
+          game_mode?: string
+          hints_used?: number
+          id?: string
+          max_streak?: number
+          score?: number
+          skips_used?: number
+          time_taken?: number
+          total_questions?: number
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      maze_scores: {
+        Row: {
+          completed_at: string
+          created_at: string
+          difficulty: string
+          id: string
+          maze_size: number
+          score: number
+          time_taken: number
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          difficulty: string
+          id?: string
+          maze_size: number
+          score?: number
+          time_taken: number
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          maze_size?: number
+          score?: number
+          time_taken?: number
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -420,6 +585,278 @@ export type Database = {
           },
         ]
       }
+      word_search_coins: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string
+          description: string
+          game_id: string | null
+          id: string
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          created_at?: string
+          description: string
+          game_id?: string | null
+          id?: string
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string
+          description?: string
+          game_id?: string | null
+          id?: string
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "word_search_coins_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "word_search_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      word_search_games: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          creator_id: string
+          current_players: number
+          difficulty: string
+          entry_fee: number
+          game_name: string | null
+          game_state: Json
+          game_status: string
+          grid_size: number
+          id: string
+          max_players: number
+          player1_id: string | null
+          player2_id: string | null
+          player3_id: string | null
+          player4_id: string | null
+          prize_pool: number
+          started_at: string | null
+          time_limit: number
+          updated_at: string
+          winner_id: string | null
+          word_count: number
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          creator_id: string
+          current_players?: number
+          difficulty?: string
+          entry_fee?: number
+          game_name?: string | null
+          game_state?: Json
+          game_status?: string
+          grid_size?: number
+          id?: string
+          max_players?: number
+          player1_id?: string | null
+          player2_id?: string | null
+          player3_id?: string | null
+          player4_id?: string | null
+          prize_pool?: number
+          started_at?: string | null
+          time_limit?: number
+          updated_at?: string
+          winner_id?: string | null
+          word_count?: number
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          creator_id?: string
+          current_players?: number
+          difficulty?: string
+          entry_fee?: number
+          game_name?: string | null
+          game_state?: Json
+          game_status?: string
+          grid_size?: number
+          id?: string
+          max_players?: number
+          player1_id?: string | null
+          player2_id?: string | null
+          player3_id?: string | null
+          player4_id?: string | null
+          prize_pool?: number
+          started_at?: string | null
+          time_limit?: number
+          updated_at?: string
+          winner_id?: string | null
+          word_count?: number
+        }
+        Relationships: []
+      }
+      word_search_hints: {
+        Row: {
+          coins_spent: number
+          created_at: string
+          game_id: string | null
+          hint_type: string
+          id: string
+          used_at: string
+          user_id: string
+          word_target: string
+        }
+        Insert: {
+          coins_spent?: number
+          created_at?: string
+          game_id?: string | null
+          hint_type: string
+          id?: string
+          used_at?: string
+          user_id: string
+          word_target: string
+        }
+        Update: {
+          coins_spent?: number
+          created_at?: string
+          game_id?: string | null
+          hint_type?: string
+          id?: string
+          used_at?: string
+          user_id?: string
+          word_target?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "word_search_hints_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "word_search_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      word_search_moves: {
+        Row: {
+          created_at: string
+          direction: string
+          end_position: Json
+          game_id: string
+          id: string
+          start_position: Json
+          timestamp: string
+          user_id: string
+          word_found: string
+        }
+        Insert: {
+          created_at?: string
+          direction: string
+          end_position: Json
+          game_id: string
+          id?: string
+          start_position: Json
+          timestamp?: string
+          user_id: string
+          word_found: string
+        }
+        Update: {
+          created_at?: string
+          direction?: string
+          end_position?: Json
+          game_id?: string
+          id?: string
+          start_position?: Json
+          timestamp?: string
+          user_id?: string
+          word_found?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "word_search_moves_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "word_search_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      word_search_scores: {
+        Row: {
+          coins_spent: number
+          coins_won: number
+          completed_at: string
+          created_at: string
+          difficulty: string
+          game_id: string | null
+          game_mode: string
+          grid_size: number
+          hints_used: number
+          id: string
+          is_solo_game: boolean
+          score: number
+          time_taken: number
+          total_words: number
+          updated_at: string
+          user_id: string
+          username: string
+          words_found: number
+        }
+        Insert: {
+          coins_spent?: number
+          coins_won?: number
+          completed_at?: string
+          created_at?: string
+          difficulty: string
+          game_id?: string | null
+          game_mode: string
+          grid_size: number
+          hints_used?: number
+          id?: string
+          is_solo_game?: boolean
+          score?: number
+          time_taken: number
+          total_words: number
+          updated_at?: string
+          user_id: string
+          username: string
+          words_found?: number
+        }
+        Update: {
+          coins_spent?: number
+          coins_won?: number
+          completed_at?: string
+          created_at?: string
+          difficulty?: string
+          game_id?: string | null
+          game_mode?: string
+          grid_size?: number
+          hints_used?: number
+          id?: string
+          is_solo_game?: boolean
+          score?: number
+          time_taken?: number
+          total_words?: number
+          updated_at?: string
+          user_id?: string
+          username?: string
+          words_found?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "word_search_scores_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "word_search_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -469,21 +906,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -501,14 +942,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -524,14 +967,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -547,14 +992,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -562,14 +1009,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never

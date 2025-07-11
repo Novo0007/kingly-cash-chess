@@ -31,6 +31,7 @@ import {
   saveWordSearchMove,
   completeWordSearchGame,
 } from "@/utils/wordsearchDbHelper";
+import { supabase } from "@/integrations/supabase/client";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import type { User } from "@supabase/supabase-js";
@@ -66,6 +67,7 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
   const [selectedGridSize, setSelectedGridSize] = useState<number>(15);
   const [selectedWordCount, setSelectedWordCount] = useState<number>(10);
   const [isLoading, setIsLoading] = useState(false);
+  const [gameChannel, setGameChannel] = useState<any>(null);
 
   // Fetch user's coin balance
   const fetchCoinBalance = useCallback(async () => {
@@ -89,6 +91,15 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
   useEffect(() => {
     fetchCoinBalance();
   }, [fetchCoinBalance]);
+
+  // Cleanup real-time subscription on unmount
+  useEffect(() => {
+    return () => {
+      if (gameChannel) {
+        supabase.removeChannel(gameChannel);
+      }
+    };
+  }, [gameChannel]);
 
   // Timer for countdown
   useEffect(() => {
@@ -370,10 +381,76 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
     }, 1000);
   }, [gameLogic, gameState, user, currentGameId, fetchCoinBalance]);
 
-  const handleJoinGame = useCallback((gameId: string) => {
+  const handleJoinGame = useCallback(async (gameId: string) => {
     setCurrentGameId(gameId);
-    setCurrentView("multiplayer");
-  }, []);
+    setIsLoading(true);
+    
+    try {
+      // Fetch the current game state
+      const gameResult = await getWordSearchGame(gameId);
+      if (!gameResult.success || !gameResult.game) {
+        toast.error("Failed to load game");
+        return;
+      }
+
+      // Initialize game logic with existing state
+      const logic = new WordSearchGameLogic(
+        gameResult.game.difficulty,
+        gameResult.game.grid_size,
+        gameResult.game.word_count,
+        true, // multiplayer
+        gameResult.game.entry_fee,
+      );
+      
+      // Create player for current user
+      const player: Player = {
+        id: user.id,
+        username: user.user_metadata?.username || user.email?.split("@")[0] || "Player",
+        score: 0,
+        wordsFound: [],
+        hintsUsed: 0,
+        isOnline: true,
+      };
+      
+      logic.addPlayer(player);
+
+      setGameLogic(logic);
+      setGameState(logic.getGameState());
+      setCurrentView("multiplayer");
+      setTimeRemaining(logic.getTimeRemaining());
+      
+      // Set up real-time subscription for multiplayer game
+      const channel = supabase
+        .channel(`wordsearch_game_${gameId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "word_search_games",
+            filter: `id=eq.${gameId}`,
+          },
+          (payload) => {
+            console.log("Game state updated:", payload);
+            // Update local game state when database changes
+            if (payload.new && logic) {
+              const newState = payload.new.game_state as GameState;
+              setGameState(newState);
+            }
+          }
+        )
+        .subscribe();
+      
+      setGameChannel(channel);
+      
+      toast.success("Joined game successfully!");
+    } catch (error) {
+      console.error("Error joining game:", error);
+      toast.error("Failed to join game");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
 
   const formatTime = (seconds: number): string => {
     const totalSeconds = Math.floor(seconds); // Ensure no decimals
