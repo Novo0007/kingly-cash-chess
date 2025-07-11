@@ -67,7 +67,7 @@ export const Game2048Leaderboard: React.FC<Game2048LeaderboardProps> = ({
         (data || []).forEach((score) => {
           const existing = userBestScores.get(score.username);
           if (!existing || score.score > existing.score) {
-            userBestScores.set(score.username, score);
+            userBestScores.set(score.username, score as any); // Type assertion for database compatibility
           }
         });
 
@@ -97,7 +97,7 @@ export const Game2048Leaderboard: React.FC<Game2048LeaderboardProps> = ({
       (overallData || []).forEach((score) => {
         const existing = userBestOverallScores.get(score.username);
         if (!existing || score.score > existing.score) {
-          userBestOverallScores.set(score.username, score);
+          userBestOverallScores.set(score.username, score as any); // Type assertion for database compatibility
         }
       });
 

@@ -197,7 +197,7 @@ export const EnhancedLeaderboard: React.FC<EnhancedLeaderboardProps> = ({
                           rank === 1 ? "border-white/30 text-white/80" : ""
                         }
                       >
-                        Level {score.level || 1}
+                        Level {(score as any).level || 1}
                       </Badge>
                       <span
                         className={`${rank === 1 ? "text-white/60" : "text-muted-foreground"}`}

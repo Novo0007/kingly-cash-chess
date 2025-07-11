@@ -97,7 +97,7 @@ export const MathGameBoard: React.FC<MathGameBoardProps> = ({
     setIsAnswering(true);
 
     const correct = onAnswer(answer);
-    setIsCorrect(correct);
+    setIsCorrect(Boolean(correct)); // Convert to boolean properly
     setShowResult(true);
   };
 

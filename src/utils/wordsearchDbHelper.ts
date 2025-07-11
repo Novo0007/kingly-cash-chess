@@ -105,7 +105,7 @@ export const createWordSearchGame = async (
 
     const { data, error } = await supabase
       .from("word_search_games")
-      .insert([gameRecord])
+      .insert(gameRecord as any) // Type assertion for database compatibility
       .select()
       .single();
 
@@ -261,7 +261,7 @@ export const saveWordSearchMove = async (
 
     const { error } = await supabase
       .from("word_search_moves")
-      .insert([moveRecord]);
+      .insert(moveRecord as any) // Type assertion for database compatibility;
 
     if (error) {
       console.error("Error saving Word Search move:", error);
@@ -309,7 +309,7 @@ export const getAvailableWordSearchGames = async (): Promise<{
       return { success: false, error: error.message || "Database error" };
     }
 
-    return { success: true, games: data || [] };
+    return { success: true, games: data as any || [] }; // Type assertion for database compatibility
   } catch (error) {
     console.error("Unexpected error fetching Word Search games:", {
       error: error instanceof Error ? error.message : String(error),
@@ -341,7 +341,7 @@ export const getWordSearchGame = async (
       return { success: false, error: error.message };
     }
 
-    return { success: true, game: data };
+    return { success: true, game: data as any }; // Type assertion for database compatibility
   } catch (error) {
     console.error("Unexpected error fetching Word Search game:", error);
     return { success: false, error: "Failed to fetch game" };
@@ -427,7 +427,7 @@ export const addCoins = async (
 
     const { error } = await supabase
       .from("word_search_coins")
-      .insert([coinRecord]);
+      .insert(coinRecord as any); // Type assertion for database compatibility
 
     if (error) {
       console.error("Error adding coins:", {
@@ -493,7 +493,7 @@ export const deductCoins = async (
 
     const { error } = await supabase
       .from("word_search_coins")
-      .insert([coinRecord]);
+      .insert(coinRecord as any); // Type assertion for database compatibility
 
     if (error) {
       console.error("Error deducting coins:", {
@@ -637,7 +637,7 @@ export const getWordSearchLeaderboard = async (
     allScores.forEach((score) => {
       const existingScore = playerBestScores.get(score.user_id);
       if (!existingScore || score.score > existingScore.score) {
-        playerBestScores.set(score.user_id, score);
+        playerBestScores.set(score.user_id, score as any); // Type assertion for database compatibility
       }
     });
 

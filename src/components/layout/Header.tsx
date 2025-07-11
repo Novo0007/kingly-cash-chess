@@ -142,7 +142,7 @@ export const Header = ({
         console.error("Auth error:", {
           message: userError.message,
           code: userError.code,
-          details: userError.details,
+          details: (userError as any).details, // Type assertion for non-standard property
         });
 
         // If it's a network error and we haven't retried too many times

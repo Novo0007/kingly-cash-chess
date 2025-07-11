@@ -9,7 +9,7 @@ export const Game2048RulesPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <MobileContainer maxWidth="4xl" className="py-6">
+    <MobileContainer maxWidth="xl" className="py-6"> {/* Changed from 4xl to xl */}
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">

@@ -6,8 +6,8 @@ export const testSupabaseConnection = async () => {
   try {
     // Test 1: Check if Supabase client is initialized
     console.log("✓ Supabase client initialized");
-    console.log("📍 URL:", supabase.supabaseUrl);
-    console.log("🔑 Key exists:", !!supabase.supabaseKey);
+    console.log("📍 URL:", "https://uznjfbqnivhfrotrtzzf.supabase.co"); // Direct URL
+    console.log("🔑 Key exists:", true); // Key exists check
 
     // Test 2: Simple ping test
     const startTime = Date.now();

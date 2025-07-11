@@ -68,7 +68,7 @@ export const MathLeaderboard: React.FC<MathLeaderboardProps> = ({
         return;
       }
 
-      setScores(data || []);
+      setScores(data as any || []); // Type assertion for database compatibility
     } catch (error) {
       console.error("Unexpected error:", error);
       toast.error("Failed to load leaderboard");

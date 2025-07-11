@@ -191,7 +191,7 @@ export const Game2048: React.FC<Game2048Props> = ({ onBack, user }) => {
           toast.error("Failed to save score. Please try again.");
         }
       } else {
-        setCurrentScore(data);
+        setCurrentScore(data as any); // Type assertion for database compatibility
         toast.success("Score saved successfully! 🏆");
       }
     } catch (error) {

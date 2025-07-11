@@ -197,7 +197,7 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
     const timeTaken = Math.floor(
       (Date.now() - (gameState.startTime || Date.now())) / 1000,
     );
-    const hintsUsed = Math.max(0, 3 - (gameState.hints || 0));
+    const hintsUsed = Math.max(0, 3 - ((gameState as any).hints || 0));
 
     const finalScore = calculateLevelScore(
       levelInfo,
@@ -224,17 +224,19 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
     // Save score to database
     try {
       await saveWordSearchScore({
-        userId: user.id,
+        user_id: user.id, // Fixed property name
+        username: user.email?.split("@")[0] || "Player",
         score: finalScore,
-        difficulty: levelInfo.difficulty,
-        gameMode: "solo",
-        gridSize: levelInfo.gridSize,
-        wordsFound: wordsFound,
-        totalWords: levelInfo.wordCount,
-        timeTaken: timeTaken,
-        hintsUsed: hintsUsed,
-        coinsWon: Math.floor(finalScore / 10),
-        level: currentLevel,
+        difficulty: levelInfo.difficulty === "expert" ? "hard" : levelInfo.difficulty as "easy" | "medium" | "hard", // Map expert to hard
+        game_mode: "solo", // Fixed property name
+        grid_size: levelInfo.gridSize, // Fixed property name
+        words_found: wordsFound, // Fixed property name
+        total_words: levelInfo.wordCount, // Fixed property name
+        time_taken: timeTaken, // Fixed property name
+        hints_used: hintsUsed, // Fixed property name
+        coins_spent: 0,
+        coins_won: Math.floor(finalScore / 10), // Fixed property name
+        is_solo_game: true,
       });
     } catch (error) {
       console.error("Error saving score:", error);
@@ -393,7 +395,6 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
 
                     <Badge
                       className={getDifficultyColor(level.difficulty)}
-                      size="sm"
                     >
                       {level.difficulty}
                     </Badge>
@@ -669,7 +670,7 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
     const timeTaken = Math.floor(
       (Date.now() - (gameState.startTime || Date.now())) / 1000,
     );
-    const hintsUsed = Math.max(0, 3 - (gameState.hints || 0));
+    const hintsUsed = Math.max(0, 3 - ((gameState as any).hints || 0));
     const finalScore = calculateLevelScore(
       levelInfo,
       timeTaken,

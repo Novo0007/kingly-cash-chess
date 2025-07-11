@@ -77,7 +77,7 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
         supabase.from("game2048_scores").select("user_id, score"),
         supabase.from("math_scores").select("user_id, score"),
         supabase
-          .from("wordsearch_scores")
+          .from("word_search_scores")
           .select("user_id, score, completed_at"),
       ]);
 
