@@ -189,7 +189,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         gradient: "from-emerald-700 via-teal-700 to-green-700",
         lightGradient: "from-emerald-100 via-teal-100 to-green-100",
         features: [
-          "👥 Multiplayer Mode",
+          "��� Multiplayer Mode",
           "🪙 Coin System",
           "💡 Smart Hints",
           "🏆 Leaderboards",
@@ -326,6 +326,20 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 >
                   <Trophy className="h-4 w-4" />
                   💰 Earn Money ({games.filter((g) => g.isMoneyGame).length})
+                </Button>
+
+                <Button
+                  onClick={() => handleFilterChange("tournaments")}
+                  variant={gameFilter === "tournaments" ? "default" : "ghost"}
+                  size="sm"
+                  className={`flex items-center gap-2 transition-all duration-300 ${
+                    gameFilter === "tournaments"
+                      ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 shadow-lg"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <Crown className="h-4 w-4" />
+                  🏆 Tournaments
                 </Button>
               </div>
             </div>
