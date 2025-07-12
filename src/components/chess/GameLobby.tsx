@@ -574,7 +574,19 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
         />
         {/* Header with Wallet Balance - Theme Style */}
         <Card
-          className={`relative backdrop-blur-xl bg-gradient-to-r ${currentTheme.gradients.secondary.replace(/from-(\w+)-(\d+)/, "from-$1-$2/80").replace(/to-(\w+)-(\d+)/, "to-$1-$2/80")} border-2 border-primary/50 shadow-2xl rounded-2xl overflow-hidden`}
+          className={`relative backdrop-blur-xl bg-gradient-to-r ${currentTheme.gradients.secondary.replace(/from-(\w+)-(\d+)/, "from-$1-$2/80").replace(/to-(\w+)-(\d+)/, "to-$1-$2/80")} border-2 border-primary/50 shadow-2xl rounded-2xl overflow-hidden ${
+            currentTheme.id === "goldluxury"
+              ? "luxury-shine crown-effect"
+              : currentTheme.id === "cosmicvoid"
+                ? "cosmic-element"
+                : currentTheme.id === "icecrystal"
+                  ? "crystal-effect frost-overlay"
+                  : currentTheme.id === "oceandeep"
+                    ? "wave-effect bubble-effect"
+                    : currentTheme.id === "lavamolten"
+                      ? "molten-effect fire-particle"
+                      : ""
+          }`}
         >
           <CardContent className="p-3 md:p-4">
             <div className="flex items-center justify-between">
