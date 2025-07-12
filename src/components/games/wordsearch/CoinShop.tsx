@@ -62,11 +62,47 @@ export const CoinShop: React.FC<CoinShopProps> = ({
     "wallet",
   );
 
-  // Check if user can claim free daily coins
+  // Check if user can claim free daily coins and fetch wallet
   useEffect(() => {
     const lastClaim = localStorage.getItem(`word_search_free_coins_${user.id}`);
     setLastFreeCoins(lastClaim);
+    fetchWallet();
   }, [user.id]);
+
+  const fetchWallet = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("wallets")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching wallet:", error);
+        // If wallet doesn't exist, we'll still show wallet option but with 0 balance
+        setWallet({
+          id: "",
+          user_id: user.id,
+          balance: 0,
+          locked_balance: 0,
+          created_at: null,
+          updated_at: null,
+        });
+      } else {
+        setWallet(data);
+      }
+    } catch (error) {
+      console.error("Error fetching wallet:", error);
+      setWallet({
+        id: "",
+        user_id: user.id,
+        balance: 0,
+        locked_balance: 0,
+        created_at: null,
+        updated_at: null,
+      });
+    }
+  };
 
   const coinPackages: CoinPackage[] = [
     {
@@ -483,7 +519,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                     • 🇮🇳 Indian users: Secure payments via Razorpay (UPI, Cards,
                     Net Banking)
                   </li>
-                  <li>• ���� International users: Standard payment gateway</li>
+                  <li>• 🌍 International users: Standard payment gateway</li>
                   <li>• 🔒 All transactions are secure and encrypted</li>
                   <li>• 💰 Get bonus coins with every purchase</li>
                   <li>• 🎁 Free daily coins available every 24 hours</li>
