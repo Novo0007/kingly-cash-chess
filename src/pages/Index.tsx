@@ -333,7 +333,7 @@ const Index = () => {
       case "rankings":
         return <GlobalRankings user={user} />;
       case "tournaments":
-        return <TournamentSection />;
+        return <SimpleTournamentSection />;
       default:
         return <GameSelection onSelectGame={handleSelectGame} />;
     }
