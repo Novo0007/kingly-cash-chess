@@ -1360,6 +1360,7 @@ export const Constants = {
       game_result: ["white_wins", "black_wins", "draw", "abandoned"],
       game_status: ["waiting", "active", "completed", "cancelled"],
       payment_status: ["pending", "completed", "failed", "refunded"],
+      tournament_status: ["upcoming", "active", "completed", "cancelled"],
       transaction_type: [
         "deposit",
         "withdrawal",
