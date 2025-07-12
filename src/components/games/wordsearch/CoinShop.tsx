@@ -657,14 +657,18 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                 <p className="font-medium mb-1">Payment Information:</p>
                 <ul className="space-y-1 text-xs">
                   <li>
-                    • 🇮🇳 Indian users: Secure payments via Razorpay (UPI, Cards,
-                    Net Banking)
+                    • 💰 <strong>Wallet Payment:</strong> Pay instantly from
+                    your wallet balance
                   </li>
-                  <li>• 🌍 International users: Standard payment gateway</li>
+                  <li>
+                    • 💳 <strong>Card Payment:</strong> Secure payments via
+                    Razorpay (UPI, Cards, Net Banking)
+                  </li>
                   <li>• 🔒 All transactions are secure and encrypted</li>
-                  <li>• 💰 Get bonus coins with every purchase</li>
-                  <li>• 🎁 Free daily coins available every 24 hours</li>
+                  <li>• 💎 Get bonus coins with every purchase</li>
+                  <li>• 🎁 Free monthly coins available (200 coins)</li>
                   <li>• 🏆 Win coins back by performing well in games</li>
+                  <li>• 💸 Add money to wallet via the main wallet section</li>
                 </ul>
               </div>
             </div>
