@@ -422,6 +422,13 @@ export const EnhancedLeaderboard: React.FC<EnhancedLeaderboardProps> = ({
             </TabsContent>
           </Tabs>
         )}
+
+        {/* Profile Dialog */}
+        <WordSearchProfileDialog
+          profile={selectedProfile}
+          open={profileDialogOpen}
+          onOpenChange={setProfileDialogOpen}
+        />
       </div>
     </MobileContainer>
   );
