@@ -4,6 +4,9 @@ import {
   Player,
   WordSearchMove,
 } from "@/components/games/wordsearch/WordSearchGameLogic";
+import type { Tables } from "@/integrations/supabase/types";
+
+type Profile = Tables<"profiles">;
 
 export interface WordSearchGameRecord {
   id: string;
@@ -261,7 +264,7 @@ export const saveWordSearchMove = async (
 
     const { error } = await supabase
       .from("word_search_moves")
-      .insert(moveRecord as any) // Type assertion for database compatibility;
+      .insert(moveRecord as any); // Type assertion for database compatibility;
 
     if (error) {
       console.error("Error saving Word Search move:", error);
@@ -309,7 +312,7 @@ export const getAvailableWordSearchGames = async (): Promise<{
       return { success: false, error: error.message || "Database error" };
     }
 
-    return { success: true, games: data as any || [] }; // Type assertion for database compatibility
+    return { success: true, games: (data as any) || [] }; // Type assertion for database compatibility
   } catch (error) {
     console.error("Unexpected error fetching Word Search games:", {
       error: error instanceof Error ? error.message : String(error),
@@ -953,6 +956,130 @@ function calculatePrizeDistribution(
 
   return distribution;
 }
+
+/**
+ * Get user profile by username for leaderboard
+ */
+export const getUserProfileByUsername = async (
+  username: string,
+): Promise<{
+  success: boolean;
+  profile?: Profile;
+  wordSearchStats?: any;
+  error?: string;
+}> => {
+  try {
+    // Get profile by username
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("username", username)
+      .single();
+
+    if (profileError) {
+      console.error("Error fetching profile:", profileError);
+      return { success: false, error: profileError.message };
+    }
+
+    if (!profile) {
+      return { success: false, error: "Profile not found" };
+    }
+
+    // Get word search stats for this user
+    const statsResult = await getUserWordSearchStats(profile.id);
+
+    return {
+      success: true,
+      profile,
+      wordSearchStats: statsResult.success ? statsResult.stats : null,
+    };
+  } catch (error) {
+    console.error("Unexpected error fetching user profile:", error);
+    return { success: false, error: "Failed to fetch profile" };
+  }
+};
+
+/**
+ * Get comprehensive user profile with word search stats
+ */
+export const getEnhancedUserProfile = async (
+  userId: string,
+): Promise<{
+  success: boolean;
+  profile?: Profile & {
+    wordSearchLevel?: number;
+    totalWordSearchScore?: number;
+    totalWordSearchGames?: number;
+    bestWordSearchScore?: number;
+    avgWordSearchScore?: number;
+    wordSearchAccuracy?: number;
+  };
+  error?: string;
+}> => {
+  try {
+    // Get basic profile
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    if (profileError) {
+      return { success: false, error: profileError.message };
+    }
+
+    if (!profile) {
+      return { success: false, error: "Profile not found" };
+    }
+
+    // Get word search stats
+    const statsResult = await getUserWordSearchStats(userId);
+
+    if (statsResult.success && statsResult.stats) {
+      const stats = statsResult.stats;
+      const totalScore = stats.scores.reduce(
+        (sum: number, score: any) => sum + score.score,
+        0,
+      );
+      const totalWordsFound = stats.totalWordsFound || 0;
+      const totalWordsAvailable = stats.totalWordsAvailable || 1;
+
+      // Import calculatePlayerLevel here to avoid circular dependency
+      const { calculatePlayerLevel } = await import("@/utils/levelSystem");
+
+      const enhancedProfile = {
+        ...profile,
+        wordSearchLevel: calculatePlayerLevel(totalScore),
+        totalWordSearchScore: totalScore,
+        totalWordSearchGames: stats.totalGames,
+        bestWordSearchScore: stats.bestScore,
+        avgWordSearchScore: stats.averageScore,
+        wordSearchAccuracy: Math.round(
+          (totalWordsFound / totalWordsAvailable) * 100,
+        ),
+      };
+
+      return { success: true, profile: enhancedProfile };
+    }
+
+    // Return basic profile if no word search stats
+    return {
+      success: true,
+      profile: {
+        ...profile,
+        wordSearchLevel: 1,
+        totalWordSearchScore: 0,
+        totalWordSearchGames: 0,
+        bestWordSearchScore: 0,
+        avgWordSearchScore: 0,
+        wordSearchAccuracy: 0,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching enhanced profile:", error);
+    return { success: false, error: "Failed to fetch profile" };
+  }
+};
 
 /**
  * Record hint usage
