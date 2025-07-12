@@ -167,12 +167,17 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
         gameState.gameStatus = "completed";
         gameState.endTime = Date.now();
 
+        triggerHapticFeedback("heavy"); // Strong vibration for completion
+
         toast.success("🎉 Maze Completed!", {
           description: `Time: ${(timeTaken / 1000).toFixed(1)}s • Score: ${finalScore} • Moves: ${moves + 1}`,
         });
 
         onGameComplete(finalScore, timeTaken);
       }
+    } else if (isMobile) {
+      // Light feedback for blocked movement
+      triggerHapticFeedback("light");
     }
   };
 
