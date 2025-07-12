@@ -465,6 +465,11 @@ export const Header = ({
                   <span>Games</span>
                 </DropdownMenuItem>
 
+                <DropdownMenuItem onClick={() => onViewChange?.("tournaments")}>
+                  <Crown className="mr-2 h-4 w-4" />
+                  <span>Tournaments</span>
+                </DropdownMenuItem>
+
                 <DropdownMenuItem onClick={() => onViewChange?.("friends")}>
                   <Bell className="mr-2 h-4 w-4" />
                   <span>Friends</span>
