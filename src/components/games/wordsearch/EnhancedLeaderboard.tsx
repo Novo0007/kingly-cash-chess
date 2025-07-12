@@ -18,6 +18,7 @@ import {
   getWeeklyRankingStats,
   WordSearchScoreRecord,
 } from "@/utils/wordsearchDbHelper";
+import { calculatePlayerLevel } from "@/utils/levelSystem";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -197,7 +198,7 @@ export const EnhancedLeaderboard: React.FC<EnhancedLeaderboardProps> = ({
                           rank === 1 ? "border-white/30 text-white/80" : ""
                         }
                       >
-                        Level {(score as any).level || 1}
+                        Level {calculatePlayerLevel(score.score)}
                       </Badge>
                       <span
                         className={`${rank === 1 ? "text-white/60" : "text-muted-foreground"}`}
