@@ -14,12 +14,16 @@ import {
   Sparkles,
   History,
   MapPin,
+  Wallet,
+  DollarSign,
 } from "lucide-react";
 import { addCoins, getUserCoinBalance } from "@/utils/wordsearchDbHelper";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import { useRazorpay, convertUSDToINR, formatINR } from "@/hooks/useRazorpay";
+import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import type { Tables } from "@/integrations/supabase/types";
 
 interface CoinShopProps {
   onBack: () => void;
@@ -266,7 +270,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
               </Button>
 
               <div className="flex items-center gap-4">
-        {/* Payment Info */}
+                {/* Payment Info */}
                 <div className="flex items-center gap-2 bg-white/20 rounded-lg px-3 py-1">
                   <MapPin className="h-4 w-4" />
                   <span className="text-sm text-white">🇮🇳 India (INR)</span>
