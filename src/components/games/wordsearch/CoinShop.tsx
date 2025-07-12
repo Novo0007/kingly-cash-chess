@@ -555,23 +555,55 @@ export const CoinShop: React.FC<CoinShopProps> = ({
 
                     <Button
                       onClick={() => handlePurchase(pkg)}
-                      disabled={isPurchasing || razorpayLoading}
-                      className={`w-full bg-gradient-to-r ${pkg.gradient} hover:opacity-90 text-white`}
+                      disabled={
+                        isPurchasing ||
+                        razorpayLoading ||
+                        (paymentMethod === "wallet" &&
+                          (wallet?.balance || 0) < pkg.priceINR)
+                      }
+                      className={`w-full bg-gradient-to-r ${pkg.gradient} hover:opacity-90 text-white ${
+                        paymentMethod === "wallet" &&
+                        (wallet?.balance || 0) < pkg.priceINR
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
                       size="lg"
                     >
                       {isPurchasing ? (
                         "Processing..."
                       ) : (
                         <div className="flex items-center gap-2">
-                          <CreditCard className="h-4 w-4" />
-                          {currency}
-                          {displayPrice}
-                          <span className="text-xs opacity-75">
-                            via Razorpay
-                          </span>
+                          {paymentMethod === "wallet" ? (
+                            <>
+                              <Wallet className="h-4 w-4" />
+                              {currency}
+                              {displayPrice}
+                              <span className="text-xs opacity-75">
+                                from Wallet
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <CreditCard className="h-4 w-4" />
+                              {currency}
+                              {displayPrice}
+                              <span className="text-xs opacity-75">
+                                via Razorpay
+                              </span>
+                            </>
+                          )}
                         </div>
                       )}
                     </Button>
+
+                    {/* Insufficient balance warning */}
+                    {paymentMethod === "wallet" &&
+                      (wallet?.balance || 0) < pkg.priceINR && (
+                        <p className="text-xs text-red-300 mt-1 text-center">
+                          Insufficient wallet balance (₹
+                          {(wallet?.balance || 0).toFixed(2)} available)
+                        </p>
+                      )}
                   </CardContent>
                 </Card>
               );
