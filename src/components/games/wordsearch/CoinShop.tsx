@@ -409,9 +409,37 @@ export const CoinShop: React.FC<CoinShopProps> = ({
               <p className="text-green-100">
                 Get coins to play multiplayer games and buy hints
               </p>
-              {paymentRegion === "IN" && (
-                <p className="text-green-200 text-sm mt-1">
+
+              {/* Payment Method Selector */}
+              <div className="flex items-center justify-center gap-4 mt-4">
+                <Button
+                  variant={paymentMethod === "wallet" ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setPaymentMethod("wallet")}
+                  className={`text-white ${paymentMethod === "wallet" ? "bg-white/20" : "hover:bg-white/10"}`}
+                >
+                  <Wallet className="h-4 w-4 mr-2" />
+                  Pay with Wallet
+                </Button>
+                <Button
+                  variant={paymentMethod === "razorpay" ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setPaymentMethod("razorpay")}
+                  className={`text-white ${paymentMethod === "razorpay" ? "bg-white/20" : "hover:bg-white/10"}`}
+                >
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Pay with Card
+                </Button>
+              </div>
+
+              {paymentMethod === "razorpay" && (
+                <p className="text-green-200 text-sm mt-2">
                   💳 Secure payments powered by Razorpay
+                </p>
+              )}
+              {paymentMethod === "wallet" && (
+                <p className="text-green-200 text-sm mt-2">
+                  💰 Pay directly from your wallet balance
                 </p>
               )}
             </div>
