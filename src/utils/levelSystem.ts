@@ -262,9 +262,8 @@ export const generateLevels = (): Level[] => {
       timeLimit = Math.max(100 - (i - 65), 45);
     }
 
-    // Level 1 starts at 50, then increases from there
-    const requiredScore =
-      i === 1 ? 50 : Math.floor(i * 100 + Math.pow(i, 1.5) * 50);
+    // Level 1 starts at 50, then increases by 50 per level
+    const requiredScore = i * 50;
     const availableWords =
       wordPools[theme as keyof typeof wordPools] || wordPools["Animals"];
 
