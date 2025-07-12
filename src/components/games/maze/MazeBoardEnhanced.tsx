@@ -38,9 +38,12 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
   const [moves, setMoves] = useState(0);
   const [trail, setTrail] = useState<Position[]>([]);
   const [isHorizontalMode, setIsHorizontalMode] = useState(false);
-  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
-    null,
-  );
+  const [touchStart, setTouchStart] = useState<{
+    x: number;
+    y: number;
+    time: number;
+  } | null>(null);
+  const [lastTouchTime, setLastTouchTime] = useState(0);
   const [showMiniMap, setShowMiniMap] = useState(false);
   const mazeContainerRef = useRef<HTMLDivElement>(null);
 
@@ -104,9 +107,23 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [handleKeyPress]);
 
+  const triggerHapticFeedback = (
+    type: "light" | "medium" | "heavy" = "light",
+  ) => {
+    if ("vibrate" in navigator && isMobile) {
+      const vibrationPattern = {
+        light: [10],
+        medium: [20],
+        heavy: [30],
+      };
+      navigator.vibrate(vibrationPattern[type]);
+    }
+  };
+
   const handleMove = (direction: "up" | "down" | "left" | "right") => {
     // In horizontal mode, only allow left/right movement
     if (isHorizontalMode && (direction === "up" || direction === "down")) {
+      triggerHapticFeedback("light");
       toast.info("🔄 Horizontal mode: Only left/right movement allowed!");
       return;
     }
@@ -118,6 +135,7 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
     );
 
     if (newPosition) {
+      triggerHapticFeedback("light");
       // Update game state with new position
       gameState.playerPosition = newPosition;
       setMoves((prev) => prev + 1);
@@ -149,43 +167,93 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
         gameState.gameStatus = "completed";
         gameState.endTime = Date.now();
 
+        triggerHapticFeedback("heavy"); // Strong vibration for completion
+
         toast.success("🎉 Maze Completed!", {
           description: `Time: ${(timeTaken / 1000).toFixed(1)}s • Score: ${finalScore} • Moves: ${moves + 1}`,
         });
 
         onGameComplete(finalScore, timeTaken);
       }
+    } else if (isMobile) {
+      // Light feedback for blocked movement
+      triggerHapticFeedback("light");
     }
   };
 
-  // Touch/swipe gesture handling
+  // Enhanced touch/swipe gesture handling
   const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
     const touch = e.touches[0];
-    setTouchStart({ x: touch.clientX, y: touch.clientY });
+    setTouchStart({
+      x: touch.clientX,
+      y: touch.clientY,
+      time: Date.now(),
+    });
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (!touchStart) return;
+    e.preventDefault();
 
     const touch = e.changedTouches[0];
     const deltaX = touch.clientX - touchStart.x;
     const deltaY = touch.clientY - touchStart.y;
-    const minSwipeDistance = 50;
+    const deltaTime = Date.now() - touchStart.time;
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-    // Determine swipe direction
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      // Horizontal swipe
-      if (Math.abs(deltaX) > minSwipeDistance) {
+    const minSwipeDistance = isMobile ? 30 : 50;
+    const maxTapTime = 300; // ms
+    const maxTapDistance = 20; // pixels
+
+    // Tap detection (quick touch with minimal movement)
+    if (deltaTime < maxTapTime && distance < maxTapDistance) {
+      // Handle tap-to-move: move in the direction of the largest delta
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
         handleMove(deltaX > 0 ? "right" : "left");
-      }
-    } else {
-      // Vertical swipe
-      if (Math.abs(deltaY) > minSwipeDistance) {
+      } else if (Math.abs(deltaY) > 5) {
+        // Minimum threshold for vertical tap
         handleMove(deltaY > 0 ? "down" : "up");
+      }
+    }
+    // Swipe detection
+    else if (distance > minSwipeDistance) {
+      // Determine swipe direction with better sensitivity
+      const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+
+      if (angle >= -45 && angle <= 45) {
+        handleMove("right");
+      } else if (angle >= 45 && angle <= 135) {
+        handleMove("down");
+      } else if (angle >= 135 || angle <= -135) {
+        handleMove("left");
+      } else if (angle >= -135 && angle <= -45) {
+        handleMove("up");
       }
     }
 
     setTouchStart(null);
+    setLastTouchTime(Date.now());
+  };
+
+  // Handle touch move for continuous gesture tracking
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+    e.preventDefault(); // Prevent scrolling while swiping
+  };
+
+  // Double tap detection for special actions
+  const handleDoubleTap = () => {
+    if (Date.now() - lastTouchTime < 300) {
+      // Double tap detected - toggle horizontal mode
+      triggerHapticFeedback("medium");
+      setIsHorizontalMode(!isHorizontalMode);
+      toast.info(
+        isHorizontalMode
+          ? "Normal mode activated"
+          : "Horizontal mode activated",
+      );
+    }
   };
 
   const getCellClasses = (x: number, y: number) => {
@@ -448,15 +516,18 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
             </div>
           )}
 
-          {/* Horizontal Scroll Maze Grid with Swipe Support */}
+          {/* Enhanced Maze Grid with Improved Touch Support */}
           <div
-            className="relative overflow-x-auto overflow-y-hidden"
+            className="relative overflow-x-auto overflow-y-hidden touch-pan-x select-none"
             ref={mazeContainerRef}
             onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
+            onClick={handleDoubleTap}
             style={{
               scrollbarWidth: "thin",
               scrollbarColor: "#d1d5db #f3f4f6",
+              touchAction: "pan-x", // Better touch handling
             }}
           >
             <div className="flex justify-center py-4">
@@ -538,15 +609,18 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
             <div className="mb-2 text-center">
               <div className="bg-black/80 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-xs">
                 {isHorizontalMode
-                  ? "↔️ Swipe left/right only"
-                  : "👆 Swipe in any direction"}
+                  ? "↔️ Swipe/tap left/right only"
+                  : "👆 Swipe/tap in any direction | Double-tap to toggle mode"}
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-3 w-52 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-gray-200 shadow-xl">
               <div></div>
               <Button
-                onTouchStart={() => handleMove("up")}
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  handleMove("up");
+                }}
                 variant="outline"
                 size="sm"
                 className={`aspect-square border-2 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200 ${
@@ -565,7 +639,10 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
               <div></div>
 
               <Button
-                onTouchStart={() => handleMove("left")}
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  handleMove("left");
+                }}
                 variant="outline"
                 size="sm"
                 className={`aspect-square border-2 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200 ${
@@ -597,7 +674,10 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
                 </div>
               </div>
               <Button
-                onTouchStart={() => handleMove("right")}
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  handleMove("right");
+                }}
                 variant="outline"
                 size="sm"
                 className={`aspect-square border-2 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200 ${
@@ -616,7 +696,10 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
 
               <div></div>
               <Button
-                onTouchStart={() => handleMove("down")}
+                onTouchStart={(e) => {
+                  e.preventDefault();
+                  handleMove("down");
+                }}
                 variant="outline"
                 size="sm"
                 className={`aspect-square border-2 shadow-lg text-lg font-bold rounded-xl active:scale-95 h-14 w-14 transition-all duration-200 ${
