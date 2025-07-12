@@ -5,6 +5,7 @@ import {
   WordSearchMove,
 } from "@/components/games/wordsearch/WordSearchGameLogic";
 import type { Tables } from "@/integrations/supabase/types";
+import { calculatePlayerLevel } from "./levelSystem";
 
 type Profile = Tables<"profiles">;
 
