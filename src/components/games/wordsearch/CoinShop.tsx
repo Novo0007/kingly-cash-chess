@@ -244,8 +244,8 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       // Create transaction record
       const transactionData = {
         user_id: user.id,
-        transaction_type: "purchase",
-        amount: packageData.priceINR, // Keep amount positive for coin purchases
+        transaction_type: "game_entry", // Using existing transaction type
+        amount: packageData.priceINR,
         status: "completed",
         description: `Coin purchase: ${packageData.name} - ${packageData.coins + packageData.bonus} coins`,
       };
