@@ -189,7 +189,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         gradient: "from-emerald-700 via-teal-700 to-green-700",
         lightGradient: "from-emerald-100 via-teal-100 to-green-100",
         features: [
-          "��� Multiplayer Mode",
+          "👥 Multiplayer Mode",
           "🪙 Coin System",
           "💡 Smart Hints",
           "🏆 Leaderboards",
@@ -214,7 +214,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   const comingSoonGames = useMemo(
     () => [
       { name: "Carrom", emoji: "🏅", progress: 85, eta: "Next Week" },
-      { name: "Snake & Ladder", emoji: "🐍", progress: 65, eta: "2 Weeks" },
+      { name: "Snake & Ladder", emoji: "����", progress: 65, eta: "2 Weeks" },
       { name: "Teen Patti", emoji: "🃏", progress: 45, eta: "1 Month" },
       { name: "Pool", emoji: "🎱", progress: 25, eta: "2 Months" },
     ],
@@ -353,6 +353,8 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   "🆓 Showing free-to-play games - enjoy without any cost!"}
                 {gameFilter === "money" &&
                   "💰 Showing games where you can earn real money prizes!"}
+                {gameFilter === "tournaments" &&
+                  "🏆 Join tournaments with ₹5 entry fee and ₹50 winner prize!"}
               </p>
             </div>
           </CardContent>
