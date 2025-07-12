@@ -11,6 +11,8 @@ import {
   Trophy,
   Crown,
 } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
+import { getThemeClasses, getThemeHoverEffect } from "@/utils/themeUtils";
 
 interface BottomNavProps {
   currentView: string;
