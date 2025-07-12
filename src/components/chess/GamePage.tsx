@@ -54,6 +54,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const [gameEndType, setGameEndType] = useState<"win" | "draw" | "disconnect">(
     "win",
   );
+  const [autoRedirectCountdown, setAutoRedirectCountdown] = useState(0);
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const { isMobile } = useDeviceType();
