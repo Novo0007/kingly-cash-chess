@@ -85,6 +85,37 @@ export const EnhancedLeaderboard: React.FC<EnhancedLeaderboardProps> = ({
     fetchLeaderboards();
   };
 
+  const handleUsernameClick = async (username: string, userId?: string) => {
+    setLoadingProfile(true);
+    try {
+      let result;
+      if (userId) {
+        // If we have userId, get enhanced profile directly
+        result = await getEnhancedUserProfile(userId);
+      } else {
+        // Otherwise, fetch by username
+        const usernameResult = await getUserProfileByUsername(username);
+        if (usernameResult.success && usernameResult.profile) {
+          result = await getEnhancedUserProfile(usernameResult.profile.id);
+        } else {
+          throw new Error(usernameResult.error || "Profile not found");
+        }
+      }
+
+      if (result.success && result.profile) {
+        setSelectedProfile(result.profile);
+        setProfileDialogOpen(true);
+      } else {
+        toast.error(result.error || "Failed to load profile");
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      toast.error("Failed to load user profile");
+    } finally {
+      setLoadingProfile(false);
+    }
+  };
+
   const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1:
