@@ -62,9 +62,12 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
     [onSelectGame],
   );
 
-  const handleFilterChange = useCallback((filter: "all" | "free" | "money") => {
-    setGameFilter(filter);
-  }, []);
+  const handleFilterChange = useCallback(
+    (filter: "all" | "free" | "money" | "tournaments") => {
+      setGameFilter(filter);
+    },
+    [],
+  );
 
   const handleChatToggle = useCallback(() => {
     setShowGlobalChat((prev) => !prev);
