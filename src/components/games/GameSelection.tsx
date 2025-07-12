@@ -214,7 +214,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   const comingSoonGames = useMemo(
     () => [
       { name: "Carrom", emoji: "🏅", progress: 85, eta: "Next Week" },
-      { name: "Snake & Ladder", emoji: "����", progress: 65, eta: "2 Weeks" },
+      { name: "Snake & Ladder", emoji: "🐍", progress: 65, eta: "2 Weeks" },
       { name: "Teen Patti", emoji: "🃏", progress: 45, eta: "1 Month" },
       { name: "Pool", emoji: "🎱", progress: 25, eta: "2 Months" },
     ],
@@ -314,7 +314,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   🆓 Free Games ({games.filter((g) => !g.isMoneyGame).length})
                 </Button>
 
-                <Button
+                                <Button
                   onClick={() => handleFilterChange("money")}
                   variant={gameFilter === "money" ? "default" : "ghost"}
                   size="sm"
@@ -344,7 +344,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
               </div>
             </div>
 
-            {/* Filter Description */}
+                        {/* Filter Description */}
             <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-blue-800">
                 {gameFilter === "all" &&
@@ -360,8 +360,12 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
           </CardContent>
         </Card>
 
-        {/* Main Games - Enhanced Vibrant Design */}
-        {filteredGames.length === 0 ? (
+                {/* Tournament Section */}
+        {gameFilter === "tournaments" ? (
+          <TournamentSection />
+        ) : (
+          /* Main Games - Enhanced Vibrant Design */
+          filteredGames.length === 0 ? (
           <Card className="col-span-full bg-gradient-to-r from-gray-50 to-blue-50 border-gray-200">
             <CardContent className="p-8 text-center">
               <div className="text-6xl mb-4">🎮</div>
