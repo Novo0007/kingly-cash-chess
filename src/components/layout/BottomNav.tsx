@@ -36,12 +36,7 @@ export const BottomNav = ({
       icon: Crown,
       gradient: "from-purple-500 to-pink-600",
     },
-    {
-      id: "friends",
-      label: "Friends",
-      icon: Users,
-      gradient: "from-green-500 to-emerald-600",
-    },
+
     {
       id: "rankings",
       label: "Rankings",
