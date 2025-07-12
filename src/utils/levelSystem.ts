@@ -339,34 +339,42 @@ export const shouldUnlockNextLevel = (score: number, level: Level): boolean => {
 };
 
 export const calculatePlayerLevel = (totalScore: number): number => {
-  // Calculate player level based on cumulative score
-  // Level 1: 0-499 points
-  // Level 2: 500-1499 points
-  // Level 3: 1500-2999 points
-  // And so on...
+  // Calculate player level based on new scoring progression
+  // Level 1: 100 points
+  // Level 2-15: increases by 75 each level
+  // Level 16-36: increases by 95 each level
+  // Level 37+: increases by 120 each level
 
-  if (totalScore < 500) return 1;
-  if (totalScore < 1500) return 2;
-  if (totalScore < 3000) return 3;
-  if (totalScore < 5000) return 4;
-  if (totalScore < 7500) return 5;
-  if (totalScore < 10500) return 6;
-  if (totalScore < 14000) return 7;
-  if (totalScore < 18000) return 8;
-  if (totalScore < 22500) return 9;
-  if (totalScore < 27500) return 10;
+  if (totalScore < 100) return 1;
 
-  // For levels above 10, use a formula
-  // Each level requires progressively more points
-  let level = 10;
-  let requiredForNext = 27500;
-  let increment = 5500; // Starting increment
-
-  while (totalScore >= requiredForNext) {
-    level++;
-    requiredForNext += increment;
-    increment += 500; // Increment increases by 500 each level
+  // Check levels 1-15 (increases by 75)
+  for (let level = 1; level <= 15; level++) {
+    const requiredScore = 100 + (level - 1) * 75;
+    if (totalScore < requiredScore) {
+      return Math.max(1, level - 1);
+    }
   }
 
-  return Math.min(level, 99); // Cap at level 99
+  // Check levels 16-36 (increases by 95)
+  const level15Score = 100 + 14 * 75; // 1150
+  for (let level = 16; level <= 36; level++) {
+    const requiredScore = level15Score + (level - 15) * 95;
+    if (totalScore < requiredScore) {
+      return level - 1;
+    }
+  }
+
+  // Check levels 37+ (increases by 120)
+  const level36Score = level15Score + 21 * 95; // 3145
+  let level = 37;
+
+  while (level <= 99) {
+    const requiredScore = level36Score + (level - 36) * 120;
+    if (totalScore < requiredScore) {
+      return level - 1;
+    }
+    level++;
+  }
+
+  return 99; // Cap at level 99
 };
