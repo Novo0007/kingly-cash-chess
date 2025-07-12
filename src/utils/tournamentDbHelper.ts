@@ -63,6 +63,16 @@ export const tournamentDbHelper = {
       const { data, error } = await query;
 
       if (error) {
+        // Check if it's a "table doesn't exist" error
+        if (
+          error.message.includes("relation") &&
+          error.message.includes("does not exist")
+        ) {
+          console.warn(
+            "Tournaments table not found - feature not yet available",
+          );
+          return [];
+        }
         console.error("Error fetching tournaments:", error);
         throw new Error(error.message);
       }
