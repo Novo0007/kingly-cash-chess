@@ -411,11 +411,19 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         setGameEndMessage(message);
         setGameEndType(type);
         setShowGameEndDialog(true);
+        setAutoRedirectCountdown(5);
 
-        // Auto-redirect to lobby after 5 seconds
-        setTimeout(() => {
-          onBackToLobby();
-        }, 5000);
+        // Start countdown
+        const countdownInterval = setInterval(() => {
+          setAutoRedirectCountdown((prev) => {
+            if (prev <= 1) {
+              clearInterval(countdownInterval);
+              onBackToLobby();
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
       }
 
       // Auto-start game if both players are present and status is still waiting
