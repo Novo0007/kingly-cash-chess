@@ -26,6 +26,7 @@ import { MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/game-lobby.css";
 import { useTheme } from "@/contexts/ThemeContext";
+import { TournamentSection } from "./tournaments/TournamentSection";
 
 interface GameSelectionProps {
   onSelectGame: (
