@@ -65,12 +65,16 @@ export const BottomNav = ({
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50">
+    <div
+      className={`fixed bottom-0 left-0 right-0 z-50 ${getThemeClasses(currentTheme)}`}
+    >
       {/* Glass background with blur effect */}
       <div className="absolute inset-0 bg-white/80 backdrop-blur-2xl border-t border-white/20 shadow-2xl"></div>
 
-      {/* Gradient overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-t from-blue-50/50 to-transparent"></div>
+      {/* Theme-aware gradient overlay for depth */}
+      <div
+        className={`absolute inset-0 bg-gradient-to-t ${currentTheme.gradients.primary.replace("from-", "from-").replace("-500", "-500/30").replace("to-", "to-").replace("-600", "-600/10")} to-transparent`}
+      ></div>
 
       <div className="relative safe-area-inset-bottom">
         <div className="flex justify-around items-center py-3 px-2">
