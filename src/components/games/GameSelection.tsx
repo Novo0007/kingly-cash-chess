@@ -26,7 +26,6 @@ import { MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/game-lobby.css";
 import { useTheme } from "@/contexts/ThemeContext";
-import { TournamentSection } from "./tournaments/TournamentSection";
 
 interface GameSelectionProps {
   onSelectGame: (
@@ -41,9 +40,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
   const [showGlobalChat, setShowGlobalChat] = React.useState(false);
-  const [gameFilter, setGameFilter] = React.useState<
-    "all" | "free" | "money" | "tournaments"
-  >("all");
+  const [gameFilter, setGameFilter] = React.useState<"all" | "free" | "money">(
+    "all",
+  );
   const [isLoading, setIsLoading] = React.useState(true);
 
   // Simulate initial loading for smooth appearance
@@ -62,12 +61,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
     [onSelectGame],
   );
 
-  const handleFilterChange = useCallback(
-    (filter: "all" | "free" | "money" | "tournaments") => {
-      setGameFilter(filter);
-    },
-    [],
-  );
+  const handleFilterChange = useCallback((filter: "all" | "free" | "money") => {
+    setGameFilter(filter);
+  }, []);
 
   const handleChatToggle = useCallback(() => {
     setShowGlobalChat((prev) => !prev);
@@ -314,7 +310,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   🆓 Free Games ({games.filter((g) => !g.isMoneyGame).length})
                 </Button>
 
-                                <Button
+                <Button
                   onClick={() => handleFilterChange("money")}
                   variant={gameFilter === "money" ? "default" : "ghost"}
                   size="sm"
@@ -327,24 +323,10 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   <Trophy className="h-4 w-4" />
                   💰 Earn Money ({games.filter((g) => g.isMoneyGame).length})
                 </Button>
-
-                <Button
-                  onClick={() => handleFilterChange("tournaments")}
-                  variant={gameFilter === "tournaments" ? "default" : "ghost"}
-                  size="sm"
-                  className={`flex items-center gap-2 transition-all duration-300 ${
-                    gameFilter === "tournaments"
-                      ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 shadow-lg"
-                      : "text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  <Crown className="h-4 w-4" />
-                  🏆 Tournaments
-                </Button>
               </div>
             </div>
 
-                        {/* Filter Description */}
+            {/* Filter Description */}
             <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
               <p className="text-sm text-blue-800">
                 {gameFilter === "all" &&
@@ -353,19 +335,13 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   "🆓 Showing free-to-play games - enjoy without any cost!"}
                 {gameFilter === "money" &&
                   "💰 Showing games where you can earn real money prizes!"}
-                {gameFilter === "tournaments" &&
-                  "🏆 Join tournaments with ₹5 entry fee and ₹50 winner prize!"}
               </p>
             </div>
           </CardContent>
         </Card>
 
-                {/* Tournament Section */}
-        {gameFilter === "tournaments" ? (
-          <TournamentSection />
-        ) : (
-          /* Main Games - Enhanced Vibrant Design */
-          filteredGames.length === 0 ? (
+        {/* Main Games - Enhanced Vibrant Design */}
+        {filteredGames.length === 0 ? (
           <Card className="col-span-full bg-gradient-to-r from-gray-50 to-blue-50 border-gray-200">
             <CardContent className="p-8 text-center">
               <div className="text-6xl mb-4">🎮</div>
@@ -526,13 +502,11 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   </CardContent>
                 </Card>
               </div>
-                        ))}
+            ))}
           </div>
-        ))
-        }
+        )}
 
-        {/* Enhanced Coming Soon Section - Only show when not in tournament view */}
-        {gameFilter !== "tournaments" && (
+        {/* Enhanced Coming Soon Section */}
         <div className="relative overflow-hidden">
           {/* Background Gradient */}
           <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 rounded-3xl opacity-90"></div>
