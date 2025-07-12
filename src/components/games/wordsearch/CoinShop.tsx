@@ -386,15 +386,20 @@ export const CoinShop: React.FC<CoinShopProps> = ({
               </Button>
 
               <div className="flex items-center gap-4">
-                {/* Payment Info */}
+                {/* Wallet Balance */}
                 <div className="flex items-center gap-2 bg-white/20 rounded-lg px-3 py-1">
-                  <MapPin className="h-4 w-4" />
-                  <span className="text-sm text-white">🇮🇳 India (INR)</span>
+                  <Wallet className="h-4 w-4" />
+                  <span className="text-sm text-white">
+                    ₹{wallet?.balance?.toFixed(2) || "0.00"}
+                  </span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <Coins className="h-5 w-5" />
-                  <span className="font-bold text-lg">{currentBalance}</span>
+                {/* Coin Balance */}
+                <div className="flex items-center gap-2 bg-white/20 rounded-lg px-3 py-1">
+                  <Coins className="h-4 w-4" />
+                  <span className="text-sm text-white">
+                    {currentBalance} coins
+                  </span>
                 </div>
               </div>
             </div>
@@ -596,7 +601,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                     Net Banking)
                   </li>
                   <li>• 🌍 International users: Standard payment gateway</li>
-                  <li>��� 🔒 All transactions are secure and encrypted</li>
+                  <li>• 🔒 All transactions are secure and encrypted</li>
                   <li>• 💰 Get bonus coins with every purchase</li>
                   <li>• 🎁 Free daily coins available every 24 hours</li>
                   <li>• 🏆 Win coins back by performing well in games</li>
