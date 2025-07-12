@@ -263,7 +263,10 @@ export const CoinShop: React.FC<CoinShopProps> = ({
           hint: transactionError.hint,
           code: transactionError.code,
         });
-        // Don't throw error here, just log it - coin purchase should still work
+        // Show warning but don't fail the purchase
+        toast.warning(
+          "Purchase successful but failed to record transaction history",
+        );
       } else {
         console.log("Transaction created successfully");
       }
