@@ -135,7 +135,10 @@ export const GlobalRankings: React.FC<GlobalRankingsProps> = ({ user }) => {
               week_start: weekStartStr,
               rank: index + 1,
               badge_type: badgeType,
+             game_type: 'word_search',
               score: player.highest_score,
+            }, {
+              onConflict: 'user_id,week_start,game_type'
             });
         });
 
