@@ -1045,8 +1045,7 @@ export const getEnhancedUserProfile = async (
       const totalWordsFound = stats.totalWordsFound || 0;
       const totalWordsAvailable = stats.totalWordsAvailable || 1;
 
-      // Import calculatePlayerLevel here to avoid circular dependency
-      const { calculatePlayerLevel } = await import("@/utils/levelSystem");
+      // Use the static import
 
       const enhancedProfile = {
         ...profile,
