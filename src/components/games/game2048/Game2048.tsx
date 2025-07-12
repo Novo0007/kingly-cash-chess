@@ -200,6 +200,48 @@ export const Game2048: React.FC<Game2048Props> = ({ onBack, user }) => {
       } else {
         setCurrentScore(data as any); // Type assertion for database compatibility
         toast.success("Score saved successfully! 🏆");
+
+        // Check for active tournaments and submit score
+        try {
+          const activeTournaments =
+            await tournamentDbHelper.getActiveTournaments("game2048");
+
+          if (activeTournaments.length > 0) {
+            for (const tournament of activeTournaments) {
+              // Check if user is registered for this tournament
+              const isRegistered = await tournamentDbHelper.isUserRegistered(
+                user.id,
+                tournament.id,
+              );
+
+              if (isRegistered) {
+                const tournamentResult = await tournamentDbHelper.submitScore(
+                  tournament.id,
+                  user.id,
+                  scoreData.score,
+                  {
+                    moves: scoreData.moves,
+                    time_taken: scoreData.time_taken,
+                    difficulty: scoreData.difficulty,
+                    board_size: scoreData.board_size,
+                    target_reached: scoreData.target_reached,
+                    game_type: "game2048",
+                  },
+                  data.id, // Reference to the original game score
+                );
+
+                if (tournamentResult.success && tournamentResult.is_new_best) {
+                  toast.success(
+                    `🏆 New tournament best! Score: ${tournamentResult.current_best}`,
+                  );
+                }
+              }
+            }
+          }
+        } catch (tournamentError) {
+          console.error("Error submitting tournament score:", tournamentError);
+          // Don't show error to user as regular score was saved successfully
+        }
       }
     } catch (error) {
       console.error("Error saving score:", error);
