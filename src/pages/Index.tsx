@@ -332,6 +332,8 @@ const Index = () => {
         return <ProfileSystem />;
       case "rankings":
         return <GlobalRankings user={user} />;
+      case "tournaments":
+        return <TournamentSection />;
       default:
         return <GameSelection onSelectGame={handleSelectGame} />;
     }
