@@ -212,11 +212,25 @@ export const EnhancedLeaderboard: React.FC<EnhancedLeaderboardProps> = ({
                   {/* Player Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3
-                        className={`font-bold text-lg truncate ${rank === 1 ? "text-white" : "text-foreground"}`}
+                      <button
+                        onClick={() =>
+                          handleUsernameClick(score.username, score.user_id)
+                        }
+                        disabled={loadingProfile}
+                        className={`font-bold text-lg truncate hover:underline focus:outline-none focus:underline transition-all duration-200 ${rank === 1 ? "text-white hover:text-blue-200" : "text-foreground hover:text-blue-600"} ${loadingProfile ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                       >
-                        {score.username}
-                      </h3>
+                        {loadingProfile ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            {score.username}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1">
+                            <User className="h-4 w-4 opacity-60" />
+                            {score.username}
+                          </div>
+                        )}
+                      </button>
                       {rank <= 3 && rank !== 1 && (
                         <Star className="h-4 w-4 text-yellow-500 fill-current" />
                       )}
