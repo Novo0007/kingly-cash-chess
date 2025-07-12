@@ -497,19 +497,58 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
           <div
             className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-2xl blur-xl animate-pulse`}
           ></div>
-          <div className="relative flex items-center gap-4 mb-6 md:mb-8 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10">
+          <div
+            className={`relative flex items-center gap-4 mb-6 md:mb-8 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10 ${
+              // Apply theme-specific classes based on current theme
+              currentTheme.id === "cosmicvoid"
+                ? "cosmic-element"
+                : currentTheme.id === "lavamolten"
+                  ? "molten-effect"
+                  : currentTheme.id === "icecrystal"
+                    ? "crystal-effect"
+                    : currentTheme.id === "forestmystic"
+                      ? "nature-glow"
+                      : currentTheme.id === "goldluxury"
+                        ? "luxury-shine"
+                        : currentTheme.id === "oceandeep"
+                          ? "wave-effect"
+                          : currentTheme.id === "royalpurple"
+                            ? "royal-glow"
+                            : currentTheme.id === "sunsetvibes"
+                              ? "warm-gradient"
+                              : currentTheme.id === "synthwave80s"
+                                ? "neon-glow grid-lines"
+                                : ""
+            }`}
+          >
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div
                   className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
                 ></div>
                 <div
-                  className={`relative w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center`}
+                  className={`relative w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center ${
+                    currentTheme.id === "hackermatrix"
+                      ? "matrix-text"
+                      : currentTheme.id === "glitchcyber"
+                        ? "glitch-text"
+                        : ""
+                  }`}
                 >
                   ♔
                 </div>
               </div>
-              <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
+              <h1
+                className={`text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent ${
+                  currentTheme.id === "synthwave80s"
+                    ? "neon-glow"
+                    : currentTheme.id === "hackermatrix"
+                      ? "matrix-text"
+                      : currentTheme.id === "glitchcyber"
+                        ? "glitch-element"
+                        : ""
+                }`}
+              >
                 {currentTheme.preview} Chess Arena
               </h1>
             </div>
@@ -535,7 +574,19 @@ export const GameLobby = ({ onJoinGame }: GameLobbyProps) => {
         />
         {/* Header with Wallet Balance - Theme Style */}
         <Card
-          className={`relative backdrop-blur-xl bg-gradient-to-r ${currentTheme.gradients.secondary.replace(/from-(\w+)-(\d+)/, "from-$1-$2/80").replace(/to-(\w+)-(\d+)/, "to-$1-$2/80")} border-2 border-primary/50 shadow-2xl rounded-2xl overflow-hidden`}
+          className={`relative backdrop-blur-xl bg-gradient-to-r ${currentTheme.gradients.secondary.replace(/from-(\w+)-(\d+)/, "from-$1-$2/80").replace(/to-(\w+)-(\d+)/, "to-$1-$2/80")} border-2 border-primary/50 shadow-2xl rounded-2xl overflow-hidden ${
+            currentTheme.id === "goldluxury"
+              ? "luxury-shine crown-effect"
+              : currentTheme.id === "cosmicvoid"
+                ? "cosmic-element"
+                : currentTheme.id === "icecrystal"
+                  ? "crystal-effect frost-overlay"
+                  : currentTheme.id === "oceandeep"
+                    ? "wave-effect bubble-effect"
+                    : currentTheme.id === "lavamolten"
+                      ? "molten-effect fire-particle"
+                      : ""
+          }`}
         >
           <CardContent className="p-3 md:p-4">
             <div className="flex items-center justify-between">

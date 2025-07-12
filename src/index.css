@@ -1,5 +1,9 @@
 /* Import modern animations */
 @import "./styles/modern-animations.css";
+/* Import theme-specific effects */
+@import "./styles/theme-effects.css";
+/* Import theme particle effects */
+@import "./styles/theme-particles.css";
 
 @tailwind base;
 @tailwind components;

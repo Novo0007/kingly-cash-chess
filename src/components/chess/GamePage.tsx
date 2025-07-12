@@ -54,6 +54,7 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
   const [gameEndType, setGameEndType] = useState<"win" | "draw" | "disconnect">(
     "win",
   );
+  const [autoRedirectCountdown, setAutoRedirectCountdown] = useState(0);
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const { isMobile } = useDeviceType();
@@ -410,6 +411,19 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
         setGameEndMessage(message);
         setGameEndType(type);
         setShowGameEndDialog(true);
+        setAutoRedirectCountdown(5);
+
+        // Start countdown
+        const countdownInterval = setInterval(() => {
+          setAutoRedirectCountdown((prev) => {
+            if (prev <= 1) {
+              clearInterval(countdownInterval);
+              onBackToLobby();
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
       }
 
       // Auto-start game if both players are present and status is still waiting
@@ -704,14 +718,20 @@ export const GamePage = ({ gameId, onBackToLobby }: GamePageProps) => {
             >
               {gameEndMessage}
             </div>
+            {autoRedirectCountdown > 0 && (
+              <div className="text-center text-sm text-purple-300">
+                Returning to lobby in {autoRedirectCountdown} seconds...
+              </div>
+            )}
             <Button
               onClick={() => {
                 setShowGameEndDialog(false);
+                setAutoRedirectCountdown(0);
                 onBackToLobby();
               }}
               className="w-full bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 font-bold text-sm sm:text-base py-2 rounded-lg border-2 border-yellow-400 text-white shadow-lg"
             >
-              Return to Lobby
+              Return to Lobby Now
             </Button>
           </div>
         </DialogContent>

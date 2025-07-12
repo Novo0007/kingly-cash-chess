@@ -14,12 +14,16 @@ import {
   Sparkles,
   History,
   MapPin,
+  Wallet,
+  DollarSign,
 } from "lucide-react";
 import { addCoins, getUserCoinBalance } from "@/utils/wordsearchDbHelper";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import { useRazorpay, convertUSDToINR, formatINR } from "@/hooks/useRazorpay";
+import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import type { Tables } from "@/integrations/supabase/types";
 
 interface CoinShopProps {
   onBack: () => void;
@@ -53,12 +57,52 @@ export const CoinShop: React.FC<CoinShopProps> = ({
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [lastFreeCoins, setLastFreeCoins] = useState<string | null>(null);
   const [paymentRegion, setPaymentRegion] = useState<"US" | "IN">("IN"); // Default to India
+  const [wallet, setWallet] = useState<Tables<"wallets"> | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"wallet" | "razorpay">(
+    "wallet",
+  );
 
-  // Check if user can claim free daily coins
+  // Check if user can claim free daily coins and fetch wallet
   useEffect(() => {
     const lastClaim = localStorage.getItem(`word_search_free_coins_${user.id}`);
     setLastFreeCoins(lastClaim);
+    fetchWallet();
   }, [user.id]);
+
+  const fetchWallet = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("wallets")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching wallet:", error);
+        // If wallet doesn't exist, we'll still show wallet option but with 0 balance
+        setWallet({
+          id: "",
+          user_id: user.id,
+          balance: 0,
+          locked_balance: 0,
+          created_at: null,
+          updated_at: null,
+        });
+      } else {
+        setWallet(data);
+      }
+    } catch (error) {
+      console.error("Error fetching wallet:", error);
+      setWallet({
+        id: "",
+        user_id: user.id,
+        balance: 0,
+        locked_balance: 0,
+        created_at: null,
+        updated_at: null,
+      });
+    }
+  };
 
   const coinPackages: CoinPackage[] = [
     {
@@ -176,13 +220,101 @@ export const CoinShop: React.FC<CoinShopProps> = ({
     }
   };
 
-  const handlePurchase = async (packageData: CoinPackage) => {
+  const handleWalletPurchase = async (packageData: CoinPackage) => {
+    if (!wallet || (wallet.balance || 0) < packageData.priceINR) {
+      toast.error("Insufficient wallet balance!");
+      return;
+    }
+
     setPurchasing(packageData.id);
 
     try {
-      let paymentSuccess = false;
+      // Deduct money from wallet
+      const { error: walletError } = await supabase
+        .from("wallets")
+        .update({
+          balance: (wallet.balance || 0) - packageData.priceINR,
+        })
+        .eq("user_id", user.id);
 
-      // Use Razorpay for Indian users
+      if (walletError) {
+        throw new Error("Failed to deduct from wallet");
+      }
+
+      // Create transaction record
+      const transactionData = {
+        user_id: user.id,
+        transaction_type: "withdrawal", // Using withdrawal since money is being deducted from wallet
+        amount: packageData.priceINR,
+        status: "completed",
+        description: `Coin purchase: ${packageData.name} - ${packageData.coins + packageData.bonus} coins`,
+      };
+
+      console.log("Creating transaction with data:", transactionData);
+
+      const { error: transactionError } = await supabase
+        .from("transactions")
+        .insert(transactionData);
+
+      if (transactionError) {
+        console.error("Error creating transaction:", {
+          message: transactionError.message,
+          details: transactionError.details,
+          hint: transactionError.hint,
+          code: transactionError.code,
+        });
+        // Show warning but don't fail the purchase
+        toast.warning(
+          "Purchase successful but failed to record transaction history",
+        );
+      } else {
+        console.log("Transaction created successfully");
+      }
+
+      // Add coins to user account
+      const totalCoins = packageData.coins + packageData.bonus;
+      const result = await addCoins(
+        user.id,
+        totalCoins,
+        "purchase",
+        `Purchased ${packageData.name} - ${packageData.coins} coins + ${packageData.bonus} bonus`,
+      );
+
+      if (result.success) {
+        toast.success(
+          `🎉 You received ${totalCoins} coins! ₹${packageData.priceINR} deducted from wallet.`,
+        );
+
+        // Update local wallet state
+        setWallet((prev) =>
+          prev
+            ? { ...prev, balance: (prev.balance || 0) - packageData.priceINR }
+            : null,
+        );
+
+        onPurchaseComplete();
+      } else {
+        toast.error("Failed to process coin credit");
+        // Revert wallet deduction on failure
+        await supabase
+          .from("wallets")
+          .update({
+            balance: wallet.balance || 0,
+          })
+          .eq("user_id", user.id);
+      }
+    } catch (error) {
+      console.error("Error processing wallet purchase:", error);
+      toast.error("Failed to process purchase");
+    } finally {
+      setPurchasing(null);
+    }
+  };
+
+  const handleRazorpayPurchase = async (packageData: CoinPackage) => {
+    setPurchasing(packageData.id);
+
+    try {
       const paymentResult = await initiatePayment({
         amount: packageData.priceINR,
         currency: "INR",
@@ -196,19 +328,10 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       });
 
       if (paymentResult.success) {
-        paymentSuccess = true;
         toast.success(
           `🎉 Payment successful! Transaction ID: ${paymentResult.paymentId}`,
         );
-      } else if (paymentResult.error === "Payment cancelled by user") {
-        toast.info("Payment cancelled");
-        setPurchasing(null);
-        return;
-      } else {
-        throw new Error(paymentResult.error || "Payment failed");
-      }
 
-      if (paymentSuccess) {
         const totalCoins = packageData.coins + packageData.bonus;
         const result = await addCoins(
           user.id,
@@ -223,12 +346,24 @@ export const CoinShop: React.FC<CoinShopProps> = ({
         } else {
           toast.error("Failed to process coin credit");
         }
+      } else if (paymentResult.error === "Payment cancelled by user") {
+        toast.info("Payment cancelled");
+      } else {
+        throw new Error(paymentResult.error || "Payment failed");
       }
     } catch (error) {
-      console.error("Error processing purchase:", error);
+      console.error("Error processing razorpay purchase:", error);
       toast.error("Failed to process purchase");
     } finally {
       setPurchasing(null);
+    }
+  };
+
+  const handlePurchase = async (packageData: CoinPackage) => {
+    if (paymentMethod === "wallet") {
+      await handleWalletPurchase(packageData);
+    } else {
+      await handleRazorpayPurchase(packageData);
     }
   };
 
@@ -266,15 +401,20 @@ export const CoinShop: React.FC<CoinShopProps> = ({
               </Button>
 
               <div className="flex items-center gap-4">
-        {/* Payment Info */}
+                {/* Wallet Balance */}
                 <div className="flex items-center gap-2 bg-white/20 rounded-lg px-3 py-1">
-                  <MapPin className="h-4 w-4" />
-                  <span className="text-sm text-white">🇮🇳 India (INR)</span>
+                  <Wallet className="h-4 w-4" />
+                  <span className="text-sm text-white">
+                    ₹{wallet?.balance?.toFixed(2) || "0.00"}
+                  </span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <Coins className="h-5 w-5" />
-                  <span className="font-bold text-lg">{currentBalance}</span>
+                {/* Coin Balance */}
+                <div className="flex items-center gap-2 bg-white/20 rounded-lg px-3 py-1">
+                  <Coins className="h-4 w-4" />
+                  <span className="text-sm text-white">
+                    {currentBalance} coins
+                  </span>
                 </div>
               </div>
             </div>
@@ -284,9 +424,37 @@ export const CoinShop: React.FC<CoinShopProps> = ({
               <p className="text-green-100">
                 Get coins to play multiplayer games and buy hints
               </p>
-              {paymentRegion === "IN" && (
-                <p className="text-green-200 text-sm mt-1">
+
+              {/* Payment Method Selector */}
+              <div className="flex items-center justify-center gap-4 mt-4">
+                <Button
+                  variant={paymentMethod === "wallet" ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setPaymentMethod("wallet")}
+                  className={`text-white ${paymentMethod === "wallet" ? "bg-white/20" : "hover:bg-white/10"}`}
+                >
+                  <Wallet className="h-4 w-4 mr-2" />
+                  Pay with Wallet
+                </Button>
+                <Button
+                  variant={paymentMethod === "razorpay" ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setPaymentMethod("razorpay")}
+                  className={`text-white ${paymentMethod === "razorpay" ? "bg-white/20" : "hover:bg-white/10"}`}
+                >
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Pay with Card
+                </Button>
+              </div>
+
+              {paymentMethod === "razorpay" && (
+                <p className="text-green-200 text-sm mt-2">
                   💳 Secure payments powered by Razorpay
+                </p>
+              )}
+              {paymentMethod === "wallet" && (
+                <p className="text-green-200 text-sm mt-2">
+                  💰 Pay directly from your wallet balance
                 </p>
               )}
             </div>
@@ -402,23 +570,55 @@ export const CoinShop: React.FC<CoinShopProps> = ({
 
                     <Button
                       onClick={() => handlePurchase(pkg)}
-                      disabled={isPurchasing || razorpayLoading}
-                      className={`w-full bg-gradient-to-r ${pkg.gradient} hover:opacity-90 text-white`}
+                      disabled={
+                        isPurchasing ||
+                        razorpayLoading ||
+                        (paymentMethod === "wallet" &&
+                          (wallet?.balance || 0) < pkg.priceINR)
+                      }
+                      className={`w-full bg-gradient-to-r ${pkg.gradient} hover:opacity-90 text-white ${
+                        paymentMethod === "wallet" &&
+                        (wallet?.balance || 0) < pkg.priceINR
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
                       size="lg"
                     >
                       {isPurchasing ? (
                         "Processing..."
                       ) : (
                         <div className="flex items-center gap-2">
-                          <CreditCard className="h-4 w-4" />
-                          {currency}
-                          {displayPrice}
-                          <span className="text-xs opacity-75">
-                            via Razorpay
-                          </span>
+                          {paymentMethod === "wallet" ? (
+                            <>
+                              <Wallet className="h-4 w-4" />
+                              {currency}
+                              {displayPrice}
+                              <span className="text-xs opacity-75">
+                                from Wallet
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <CreditCard className="h-4 w-4" />
+                              {currency}
+                              {displayPrice}
+                              <span className="text-xs opacity-75">
+                                via Razorpay
+                              </span>
+                            </>
+                          )}
                         </div>
                       )}
                     </Button>
+
+                    {/* Insufficient balance warning */}
+                    {paymentMethod === "wallet" &&
+                      (wallet?.balance || 0) < pkg.priceINR && (
+                        <p className="text-xs text-red-300 mt-1 text-center">
+                          Insufficient wallet balance (₹
+                          {(wallet?.balance || 0).toFixed(2)} available)
+                        </p>
+                      )}
                   </CardContent>
                 </Card>
               );
@@ -472,14 +672,18 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                 <p className="font-medium mb-1">Payment Information:</p>
                 <ul className="space-y-1 text-xs">
                   <li>
-                    • 🇮🇳 Indian users: Secure payments via Razorpay (UPI, Cards,
-                    Net Banking)
+                    • 💰 <strong>Wallet Payment:</strong> Pay instantly from
+                    your wallet balance
                   </li>
-                  <li>• 🌍 International users: Standard payment gateway</li>
+                  <li>
+                    • 💳 <strong>Card Payment:</strong> Secure payments via
+                    Razorpay (UPI, Cards, Net Banking)
+                  </li>
                   <li>• 🔒 All transactions are secure and encrypted</li>
-                  <li>• 💰 Get bonus coins with every purchase</li>
-                  <li>• 🎁 Free daily coins available every 24 hours</li>
+                  <li>• 💎 Get bonus coins with every purchase</li>
+                  <li>• 🎁 Free monthly coins available (200 coins)</li>
                   <li>• 🏆 Win coins back by performing well in games</li>
+                  <li>• 💸 Add money to wallet via the main wallet section</li>
                 </ul>
               </div>
             </div>

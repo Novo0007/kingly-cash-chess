@@ -28,6 +28,7 @@ export const SimpleTournamentSection: React.FC = () => {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [tableExists, setTableExists] = useState(true);
 
   useEffect(() => {
     getCurrentUser();
@@ -48,9 +49,19 @@ export const SimpleTournamentSection: React.FC = () => {
         limit: 10,
       });
       setTournaments(allTournaments);
+      setTableExists(true);
     } catch (error) {
       console.error("Error fetching tournaments:", error);
-      toast.error("Failed to load tournaments");
+      // Check if it's a table not found error
+      if (
+        error instanceof Error &&
+        error.message.includes("relation") &&
+        error.message.includes("does not exist")
+      ) {
+        setTableExists(false);
+      } else {
+        toast.error("Failed to load tournaments");
+      }
     } finally {
       setLoading(false);
     }
@@ -152,6 +163,62 @@ export const SimpleTournamentSection: React.FC = () => {
             </CardContent>
           </Card>
         </div>
+      </div>
+    );
+  }
+
+  if (!tableExists) {
+    return (
+      <div className="space-y-6">
+        {/* Tournament Header */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 rounded-2xl"></div>
+
+          <Card className="relative bg-transparent border-white/20 backdrop-blur-sm">
+            <CardHeader className="text-center pb-6">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="p-3 bg-white/20 rounded-full">
+                  <Trophy className="h-8 w-8 text-white" />
+                </div>
+                <CardTitle className="text-3xl font-black text-white">
+                  🏆 Tournament Arena
+                </CardTitle>
+              </div>
+              <p className="text-white/90 text-lg font-medium">Coming Soon!</p>
+            </CardHeader>
+          </Card>
+        </div>
+
+        {/* Coming Soon Message */}
+        <Card className="md:col-span-2 lg:col-span-3">
+          <CardContent className="p-8 text-center">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <Trophy className="h-12 w-12 text-purple-500" />
+              <Timer className="h-12 w-12 text-orange-500" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              🎮 Tournaments Coming Soon!
+            </h3>
+            <p className="text-gray-600 mb-4">
+              We're preparing exciting tournaments for you. Stay tuned for
+              competitive gaming with real prizes!
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-500">
+              <div className="flex items-center justify-center gap-2">
+                <Crown className="h-4 w-4 text-yellow-500" />
+                <span>Multiple Game Types</span>
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <Coins className="h-4 w-4 text-green-500" />
+                <span>Real Cash Prizes</span>
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <Users className="h-4 w-4 text-blue-500" />
+                <span>Community Competitions</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }

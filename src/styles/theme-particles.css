@@ -1,0 +1,434 @@
+/* Theme-specific particle effects and micro-interactions */
+
+/* Cosmic Void Particles */
+@keyframes cosmic-float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+.cosmic-particles {
+  position: relative;
+  overflow: hidden;
+}
+
+.cosmic-particles::before,
+.cosmic-particles::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, #8b5cf6, transparent);
+  border-radius: 50%;
+  animation: cosmic-float 6s ease-in-out infinite;
+}
+
+.cosmic-particles::before {
+  top: 20%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.cosmic-particles::after {
+  top: 70%;
+  right: 30%;
+  animation-delay: 3s;
+}
+
+/* Fire Particles */
+@keyframes fire-dance {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-40px) scale(0.3) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+.fire-particles {
+  position: relative;
+}
+
+.fire-particles::before,
+.fire-particles::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, #ff4500, #ff6347);
+  border-radius: 50%;
+  animation: fire-dance 2s ease-out infinite;
+}
+
+.fire-particles::before {
+  bottom: 10px;
+  left: 30%;
+  animation-delay: 0s;
+}
+
+.fire-particles::after {
+  bottom: 10px;
+  right: 30%;
+  animation-delay: 1s;
+}
+
+/* Ice Crystals */
+@keyframes ice-twinkle {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.3) rotate(90deg);
+    opacity: 1;
+  }
+}
+
+.ice-particles::before,
+.ice-particles::after {
+  content: "❄";
+  position: absolute;
+  font-size: 12px;
+  color: rgba(6, 182, 212, 0.7);
+  animation: ice-twinkle 4s ease-in-out infinite;
+}
+
+.ice-particles::before {
+  top: 15%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.ice-particles::after {
+  bottom: 20%;
+  right: 25%;
+  animation-delay: 2s;
+}
+
+/* Gold Sparkles */
+@keyframes gold-sparkle {
+  0%,
+  100% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+.gold-particles::before,
+.gold-particles::after {
+  content: "✨";
+  position: absolute;
+  font-size: 10px;
+  animation: gold-sparkle 3s ease-in-out infinite;
+}
+
+.gold-particles::before {
+  top: 20%;
+  right: 20%;
+  animation-delay: 0s;
+}
+
+.gold-particles::after {
+  bottom: 30%;
+  left: 15%;
+  animation-delay: 1.5s;
+}
+
+/* Ocean Bubbles */
+@keyframes bubble-float {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-50px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.bubble-particles::before,
+.bubble-particles::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.6), transparent);
+  border-radius: 50%;
+  animation: bubble-float 4s ease-out infinite;
+}
+
+.bubble-particles::before {
+  bottom: 0;
+  left: 25%;
+  animation-delay: 0s;
+}
+
+.bubble-particles::after {
+  bottom: 0;
+  right: 35%;
+  animation-delay: 2s;
+}
+
+/* Matrix Rain Effect */
+@keyframes matrix-rain {
+  0% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+}
+
+.matrix-particles::before,
+.matrix-particles::after {
+  content: "0101";
+  position: absolute;
+  font-family: "Courier New", monospace;
+  font-size: 8px;
+  color: #00ff00;
+  animation: matrix-rain 5s linear infinite;
+}
+
+.matrix-particles::before {
+  top: 0;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.matrix-particles::after {
+  top: 0;
+  right: 15%;
+  animation-delay: 2.5s;
+}
+
+/* Neon Glow Pulse */
+@keyframes neon-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 5px currentColor;
+  }
+  50% {
+    box-shadow:
+      0 0 10px currentColor,
+      0 0 20px currentColor,
+      0 0 30px currentColor;
+  }
+}
+
+.neon-particles {
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+
+/* Glitch Effects */
+@keyframes glitch-move {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-2px);
+  }
+  40% {
+    transform: translateX(2px);
+  }
+  60% {
+    transform: translateX(-1px);
+  }
+  80% {
+    transform: translateX(1px);
+  }
+}
+
+.glitch-particles {
+  animation: glitch-move 0.3s ease-in-out infinite;
+}
+
+.glitch-particles::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 48%,
+    #ff00ff 49%,
+    #ff00ff 51%,
+    transparent 52%
+  );
+  opacity: 0.1;
+  animation: glitch-move 0.2s ease-in-out infinite reverse;
+}
+
+/* Leaf Particles */
+@keyframes leaf-fall {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(40px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.leaf-particles::before,
+.leaf-particles::after {
+  content: "🍃";
+  position: absolute;
+  font-size: 10px;
+  animation: leaf-fall 6s ease-in-out infinite;
+}
+
+.leaf-particles::before {
+  top: 0;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.leaf-particles::after {
+  top: 0;
+  right: 25%;
+  animation-delay: 3s;
+}
+
+/* Purple Gem Effects */
+@keyframes gem-shine {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.1) rotate(180deg);
+    filter: brightness(1.5);
+  }
+}
+
+.gem-particles::before,
+.gem-particles::after {
+  content: "💎";
+  position: absolute;
+  font-size: 8px;
+  animation: gem-shine 4s ease-in-out infinite;
+}
+
+.gem-particles::before {
+  top: 25%;
+  left: 15%;
+  animation-delay: 0s;
+}
+
+.gem-particles::after {
+  bottom: 25%;
+  right: 20%;
+  animation-delay: 2s;
+}
+
+/* Sun Rays */
+@keyframes sun-beam {
+  0% {
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8) rotate(360deg);
+    opacity: 0.6;
+  }
+}
+
+.sun-particles::before {
+  content: "☀️";
+  position: absolute;
+  top: 10%;
+  right: 10%;
+  font-size: 12px;
+  animation: sun-beam 8s linear infinite;
+}
+
+/* Interactive Hover Effects */
+.theme-card:hover .cosmic-particles::before,
+.theme-card:hover .cosmic-particles::after {
+  animation-duration: 3s;
+}
+
+.theme-card:hover .fire-particles::before,
+.theme-card:hover .fire-particles::after {
+  animation-duration: 1s;
+}
+
+.theme-card:hover .neon-particles {
+  animation-duration: 1s;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .cosmic-particles::before,
+  .cosmic-particles::after,
+  .fire-particles::before,
+  .fire-particles::after,
+  .ice-particles::before,
+  .ice-particles::after,
+  .gold-particles::before,
+  .gold-particles::after,
+  .bubble-particles::before,
+  .bubble-particles::after,
+  .matrix-particles::before,
+  .matrix-particles::after,
+  .leaf-particles::before,
+  .leaf-particles::after,
+  .gem-particles::before,
+  .gem-particles::after {
+    display: none;
+  }
+}
+
+/* Accessibility: Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .cosmic-particles::before,
+  .cosmic-particles::after,
+  .fire-particles::before,
+  .fire-particles::after,
+  .ice-particles::before,
+  .ice-particles::after,
+  .gold-particles::before,
+  .gold-particles::after,
+  .bubble-particles::before,
+  .bubble-particles::after,
+  .matrix-particles::before,
+  .matrix-particles::after,
+  .leaf-particles::before,
+  .leaf-particles::after,
+  .gem-particles::before,
+  .gem-particles::after,
+  .neon-particles,
+  .glitch-particles {
+    animation: none;
+  }
+}

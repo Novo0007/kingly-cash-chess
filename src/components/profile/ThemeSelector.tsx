@@ -1,9 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useTheme } from "@/contexts/ThemeContext";
-import { Check, Palette, Sparkles, Star } from "lucide-react";
+import {
+  Check,
+  Palette,
+  Sparkles,
+  Star,
+  Eye,
+  Zap,
+  Crown,
+  Flame,
+  Snowflake,
+  Waves,
+  Gem,
+  Sun,
+} from "lucide-react";
 import { toast } from "sonner";
 import type { ThemeId } from "@/types/themes";
 
@@ -13,12 +26,54 @@ interface ThemeSelectorProps {
 
 export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onBack }) => {
   const { currentTheme, setTheme, themeId, allThemes } = useTheme();
+  const [previewTheme, setPreviewTheme] = useState<ThemeId | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleThemeChange = (newThemeId: string) => {
-    setTheme(newThemeId as ThemeId);
-    toast.success(
-      `Theme changed to ${allThemes.find((t) => t.id === newThemeId)?.name}!`,
-    );
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setTheme(newThemeId as ThemeId);
+      setPreviewTheme(null);
+      setIsTransitioning(false);
+      toast.success(
+        `🎨 Theme changed to ${allThemes.find((t) => t.id === newThemeId)?.name}!`,
+        {
+          style: {
+            background:
+              "linear-gradient(135deg, rgba(168, 85, 247, 0.9), rgba(59, 130, 246, 0.9))",
+            color: "white",
+            border: "none",
+          },
+        },
+      );
+    }, 300);
+  };
+
+  const handlePreviewTheme = (themeId: ThemeId) => {
+    setPreviewTheme(themeId);
+    setTimeout(() => setPreviewTheme(null), 2000);
+  };
+
+  const getThemeIcon = (themeId: string) => {
+    const icons = {
+      cosmicvoid: "🌌",
+      sunsetvibes: "🌅",
+      forestmystic: "🌲",
+      icecrystal: "❄️",
+      lavamolten: "����",
+      synthwave80s: "🕺",
+      goldluxury: "👑",
+      oceandeep: "🌊",
+      royalpurple: "🔮",
+      glitchcyber: "⚡",
+      hackermatrix: "🔰",
+      glowyfun: "✨",
+      dreampixels: "🌙",
+      mindmaze: "🧠",
+      pixelnova: "🌟",
+      default: "🎯",
+    };
+    return icons[themeId as keyof typeof icons] || "🎨";
   };
 
   return (
@@ -75,39 +130,92 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onBack }) => {
       </Card>
 
       {/* Theme Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div
+        className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-500 ${isTransitioning ? "scale-95 opacity-50" : "scale-100 opacity-100"}`}
+      >
         {allThemes.map((theme, index) => {
           const isSelected = theme.id === themeId;
+          const isPreviewing = previewTheme === theme.id;
 
           return (
             <div key={theme.id} className="relative group">
+              {/* Enhanced Glow Effect */}
               <div
-                className={`absolute -inset-1 bg-gradient-to-r ${theme.gradients.primary} rounded-2xl blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-500 ${
-                  isSelected ? "opacity-100" : ""
+                className={`absolute -inset-2 bg-gradient-to-r ${theme.gradients.primary} rounded-2xl blur-xl transition-all duration-700 ${
+                  isSelected
+                    ? "opacity-80 scale-110"
+                    : isPreviewing
+                      ? "opacity-60 scale-105"
+                      : "opacity-30 group-hover:opacity-60 group-hover:scale-105"
                 }`}
               ></div>
+
               <Card
-                className={`relative backdrop-blur-xl bg-gradient-to-r ${theme.gradients.primary.replace(/from-(\w+)-(\d+)/, "from-$1-$2/80").replace(/to-(\w+)-(\d+)/, "to-$1-$2/80")} cursor-pointer transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] rounded-2xl overflow-hidden border-2 ${
+                className={`relative backdrop-blur-xl bg-gradient-to-br ${theme.gradients.primary.replace(/from-(\w+)-(\d+)/, "from-$1-$2/90").replace(/to-(\w+)-(\d+)/, "to-$1-$2/90")} cursor-pointer transform transition-all duration-500 hover:scale-[1.03] active:scale-[0.97] rounded-2xl overflow-hidden border-2 ${
                   isSelected
-                    ? "border-white/50 shadow-2xl"
-                    : "border-white/20 hover:border-white/40"
+                    ? "border-white/60 shadow-2xl scale-[1.02]"
+                    : isPreviewing
+                      ? "border-white/50 shadow-xl scale-[1.01]"
+                      : "border-white/20 hover:border-white/40"
                 } ${theme.id === "hackermatrix" ? "matrix-card" : ""} ${
                   theme.id === "glitchcyber" ? "glitch-card" : ""
-                }`}
+                } ${theme.id === "cosmicvoid" ? "cosmic-element" : ""} ${
+                  theme.id === "lavamolten" ? "molten-effect" : ""
+                } ${theme.id === "icecrystal" ? "crystal-effect" : ""} ${
+                  theme.id === "forestmystic" ? "nature-glow" : ""
+                } ${theme.id === "goldluxury" ? "luxury-shine" : ""} ${
+                  theme.id === "oceandeep" ? "wave-effect" : ""
+                } ${theme.id === "royalpurple" ? "royal-glow" : ""} ${
+                  theme.id === "sunsetvibes" ? "warm-gradient" : ""
+                } ${theme.id === "synthwave80s" ? "neon-glow" : ""}`}
                 onClick={() => handleThemeChange(theme.id)}
               >
-                {/* Background Effects */}
+                {/* Enhanced Background Effects */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16 group-hover:scale-110 transition-transform duration-700"></div>
+                  <div
+                    className={`absolute top-0 right-0 w-32 h-32 rounded-full -translate-y-16 translate-x-16 transition-all duration-700 ${
+                      theme.id === "cosmicvoid"
+                        ? "bg-purple-400/20"
+                        : theme.id === "lavamolten"
+                          ? "bg-red-400/20 fire-particle"
+                          : theme.id === "icecrystal"
+                            ? "bg-cyan-400/20 frost-overlay"
+                            : theme.id === "forestmystic"
+                              ? "bg-green-400/20 leaf-float"
+                              : theme.id === "goldluxury"
+                                ? "bg-yellow-400/20 crown-effect"
+                                : theme.id === "oceandeep"
+                                  ? "bg-blue-400/20 bubble-effect"
+                                  : theme.id === "royalpurple"
+                                    ? "bg-purple-400/20 gem-sparkle"
+                                    : theme.id === "sunsetvibes"
+                                      ? "bg-orange-400/20 sun-ray"
+                                      : "bg-white/10"
+                    } group-hover:scale-110`}
+                  ></div>
+
                   <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12 group-hover:scale-110 transition-transform duration-700"></div>
 
-                  {/* Animated Sparkles */}
-                  <Star
-                    className="absolute top-4 right-4 h-4 w-4 text-white/20 animate-pulse"
-                    style={{ animationDelay: `${index * 0.2}s` }}
-                  />
+                  {/* Theme-specific animated elements */}
+                  <div
+                    className={`absolute top-4 right-4 transition-all duration-500 ${
+                      isPreviewing
+                        ? "scale-125 rotate-12"
+                        : "scale-100 rotate-0"
+                    }`}
+                  >
+                    <div
+                      className="text-2xl animate-pulse"
+                      style={{ animationDelay: `${index * 0.2}s` }}
+                    >
+                      {getThemeIcon(theme.id)}
+                    </div>
+                  </div>
+
                   <Sparkles
-                    className="absolute bottom-4 left-4 h-3 w-3 text-white/20 animate-pulse"
+                    className={`absolute bottom-4 left-4 h-4 w-4 text-white/30 transition-all duration-500 ${
+                      isPreviewing ? "animate-spin" : "animate-pulse"
+                    }`}
                     style={{ animationDelay: `${index * 0.3}s` }}
                   />
                 </div>
@@ -116,19 +224,23 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onBack }) => {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div
-                        className={`text-3xl ${
+                        className={`text-3xl transition-all duration-300 ${
                           theme.id === "hackermatrix" ? "matrix-text" : ""
-                        } ${theme.id === "glitchcyber" ? "glitch-text" : ""}`}
+                        } ${theme.id === "glitchcyber" ? "glitch-text" : ""} ${
+                          isPreviewing
+                            ? "scale-110 rotate-6"
+                            : "scale-100 rotate-0"
+                        }`}
                       >
                         {theme.preview}
                       </div>
                       <div>
                         <h3
-                          className={`text-white font-bold text-lg ${
+                          className={`text-white font-bold text-lg transition-all duration-300 ${
                             theme.id === "hackermatrix" ? "matrix-text" : ""
                           } ${
                             theme.id === "glitchcyber" ? "glitch-element" : ""
-                          }`}
+                          } ${isPreviewing ? "text-yellow-200" : ""}`}
                         >
                           {theme.name}
                         </h3>
@@ -147,45 +259,63 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onBack }) => {
                     )}
                   </div>
 
-                  {/* Color Preview */}
+                  {/* Enhanced Color Preview */}
                   <div className="flex gap-2 mb-4">
-                    <div
-                      className={`h-4 w-4 rounded-full bg-gradient-to-r ${theme.gradients.primary} border border-white/30`}
-                    ></div>
-                    <div
-                      className={`h-4 w-4 rounded-full bg-gradient-to-r ${theme.gradients.secondary} border border-white/30`}
-                    ></div>
-                    <div
-                      className={`h-4 w-4 rounded-full bg-gradient-to-r ${theme.gradients.accent} border border-white/30`}
-                    ></div>
+                    {[
+                      theme.gradients.primary,
+                      theme.gradients.secondary,
+                      theme.gradients.accent,
+                    ].map((gradient, idx) => (
+                      <div
+                        key={idx}
+                        className={`h-5 w-5 rounded-full bg-gradient-to-r ${gradient} border border-white/30 transition-all duration-300 hover:scale-110 hover:rotate-12 ${
+                          isPreviewing ? "animate-pulse" : ""
+                        }`}
+                      ></div>
+                    ))}
                   </div>
 
-                  {/* Action Button */}
-                  <Button
-                    variant={isSelected ? "secondary" : "outline"}
-                    size="sm"
-                    className={`w-full ${
-                      isSelected
-                        ? "bg-white/20 text-white border-white/30 hover:bg-white/30"
-                        : "bg-white/10 text-white border-white/20 hover:bg-white/20"
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleThemeChange(theme.id);
-                    }}
-                  >
-                    {isSelected ? (
-                      <>
-                        <Check className="h-4 w-4 mr-2" />
-                        Current Theme
-                      </>
-                    ) : (
-                      <>
-                        <Palette className="h-4 w-4 mr-2" />
-                        Apply Theme
-                      </>
-                    )}
-                  </Button>
+                  {/* Action Buttons */}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 bg-white/10 text-white border-white/20 hover:bg-white/20 transition-all duration-300"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePreviewTheme(theme.id);
+                      }}
+                    >
+                      <Eye className="h-3 w-3 mr-1" />
+                      Preview
+                    </Button>
+
+                    <Button
+                      variant={isSelected ? "secondary" : "outline"}
+                      size="sm"
+                      className={`flex-1 transition-all duration-300 ${
+                        isSelected
+                          ? "bg-white/30 text-white border-white/40 hover:bg-white/40"
+                          : "bg-white/10 text-white border-white/20 hover:bg-white/20"
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleThemeChange(theme.id);
+                      }}
+                    >
+                      {isSelected ? (
+                        <>
+                          <Check className="h-3 w-3 mr-1" />
+                          Active
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="h-3 w-3 mr-1" />
+                          Apply
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </div>
