@@ -1,9 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useTheme } from "@/contexts/ThemeContext";
-import { Check, Palette, Sparkles, Star } from "lucide-react";
+import {
+  Check,
+  Palette,
+  Sparkles,
+  Star,
+  Eye,
+  Zap,
+  Crown,
+  Flame,
+  Snowflake,
+  Waves,
+  Gem,
+  Sun,
+} from "lucide-react";
 import { toast } from "sonner";
 import type { ThemeId } from "@/types/themes";
 
