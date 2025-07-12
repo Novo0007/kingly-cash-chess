@@ -262,8 +262,27 @@ export const generateLevels = (): Level[] => {
       timeLimit = Math.max(100 - (i - 65), 45);
     }
 
-    // Level 1 starts at 50, then increases by 50 per level
-    const requiredScore = i * 50;
+    // Calculate required score based on new progression:
+    // Level 1: 100, increases by 75 until level 15
+    // Level 16-36: increases by 95
+    // Level 37+: increases by 120
+    let requiredScore: number;
+
+    if (i === 1) {
+      requiredScore = 100;
+    } else if (i <= 15) {
+      // Levels 2-15: start from 100, increase by 75 each level
+      requiredScore = 100 + (i - 1) * 75;
+    } else if (i <= 36) {
+      // Levels 16-36: continue from level 15, increase by 95 each level
+      const level15Score = 100 + 14 * 75; // 1150
+      requiredScore = level15Score + (i - 15) * 95;
+    } else {
+      // Levels 37+: continue from level 36, increase by 120 each level
+      const level15Score = 100 + 14 * 75; // 1150
+      const level36Score = level15Score + 21 * 95; // 3145
+      requiredScore = level36Score + (i - 36) * 120;
+    }
     const availableWords =
       wordPools[theme as keyof typeof wordPools] || wordPools["Animals"];
 
