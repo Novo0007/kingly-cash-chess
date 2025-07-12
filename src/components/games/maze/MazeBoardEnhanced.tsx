@@ -107,9 +107,23 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [handleKeyPress]);
 
+  const triggerHapticFeedback = (
+    type: "light" | "medium" | "heavy" = "light",
+  ) => {
+    if ("vibrate" in navigator && isMobile) {
+      const vibrationPattern = {
+        light: [10],
+        medium: [20],
+        heavy: [30],
+      };
+      navigator.vibrate(vibrationPattern[type]);
+    }
+  };
+
   const handleMove = (direction: "up" | "down" | "left" | "right") => {
     // In horizontal mode, only allow left/right movement
     if (isHorizontalMode && (direction === "up" || direction === "down")) {
+      triggerHapticFeedback("light");
       toast.info("🔄 Horizontal mode: Only left/right movement allowed!");
       return;
     }
@@ -121,6 +135,7 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
     );
 
     if (newPosition) {
+      triggerHapticFeedback("light");
       // Update game state with new position
       gameState.playerPosition = newPosition;
       setMoves((prev) => prev + 1);
