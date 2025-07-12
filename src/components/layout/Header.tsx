@@ -19,6 +19,7 @@ import {
   LogOut,
   CreditCard,
   Trophy,
+  Crown,
   Bell,
   Wifi,
   WifiOff,
@@ -462,6 +463,11 @@ export const Header = ({
                 <DropdownMenuItem onClick={() => onViewChange?.("games")}>
                   <Trophy className="mr-2 h-4 w-4" />
                   <span>Games</span>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={() => onViewChange?.("tournaments")}>
+                  <Crown className="mr-2 h-4 w-4" />
+                  <span>Tournaments</span>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => onViewChange?.("friends")}>

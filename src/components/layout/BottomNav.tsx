@@ -9,6 +9,7 @@ import {
   Shield,
   Gamepad2,
   Trophy,
+  Crown,
 } from "lucide-react";
 
 interface BottomNavProps {
@@ -28,6 +29,12 @@ export const BottomNav = ({
       label: "Games",
       icon: Gamepad2,
       gradient: "from-blue-500 to-purple-600",
+    },
+    {
+      id: "tournaments",
+      label: "Tournaments",
+      icon: Crown,
+      gradient: "from-purple-500 to-pink-600",
     },
     {
       id: "friends",
