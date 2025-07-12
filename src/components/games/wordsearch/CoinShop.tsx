@@ -57,6 +57,10 @@ export const CoinShop: React.FC<CoinShopProps> = ({
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [lastFreeCoins, setLastFreeCoins] = useState<string | null>(null);
   const [paymentRegion, setPaymentRegion] = useState<"US" | "IN">("IN"); // Default to India
+  const [wallet, setWallet] = useState<Tables<"wallets"> | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"wallet" | "razorpay">(
+    "wallet",
+  );
 
   // Check if user can claim free daily coins
   useEffect(() => {
@@ -479,7 +483,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                     • 🇮🇳 Indian users: Secure payments via Razorpay (UPI, Cards,
                     Net Banking)
                   </li>
-                  <li>• 🌍 International users: Standard payment gateway</li>
+                  <li>• ���� International users: Standard payment gateway</li>
                   <li>• 🔒 All transactions are secure and encrypted</li>
                   <li>• 💰 Get bonus coins with every purchase</li>
                   <li>• 🎁 Free daily coins available every 24 hours</li>
