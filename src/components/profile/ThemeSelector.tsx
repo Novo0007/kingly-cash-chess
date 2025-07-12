@@ -26,12 +26,54 @@ interface ThemeSelectorProps {
 
 export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onBack }) => {
   const { currentTheme, setTheme, themeId, allThemes } = useTheme();
+  const [previewTheme, setPreviewTheme] = useState<ThemeId | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleThemeChange = (newThemeId: string) => {
-    setTheme(newThemeId as ThemeId);
-    toast.success(
-      `Theme changed to ${allThemes.find((t) => t.id === newThemeId)?.name}!`,
-    );
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setTheme(newThemeId as ThemeId);
+      setPreviewTheme(null);
+      setIsTransitioning(false);
+      toast.success(
+        `🎨 Theme changed to ${allThemes.find((t) => t.id === newThemeId)?.name}!`,
+        {
+          style: {
+            background:
+              "linear-gradient(135deg, rgba(168, 85, 247, 0.9), rgba(59, 130, 246, 0.9))",
+            color: "white",
+            border: "none",
+          },
+        },
+      );
+    }, 300);
+  };
+
+  const handlePreviewTheme = (themeId: ThemeId) => {
+    setPreviewTheme(themeId);
+    setTimeout(() => setPreviewTheme(null), 2000);
+  };
+
+  const getThemeIcon = (themeId: string) => {
+    const icons = {
+      cosmicvoid: "🌌",
+      sunsetvibes: "🌅",
+      forestmystic: "🌲",
+      icecrystal: "❄️",
+      lavamolten: "🌋",
+      synthwave80s: "🕺",
+      goldluxury: "👑",
+      oceandeep: "🌊",
+      royalpurple: "🔮",
+      glitchcyber: "⚡",
+      hackermatrix: "🔰",
+      glowyfun: "✨",
+      dreampixels: "🌙",
+      mindmaze: "🧠",
+      pixelnova: "🌟",
+      default: "🎯",
+    };
+    return icons[themeId as keyof typeof icons] || "🎨";
   };
 
   return (
