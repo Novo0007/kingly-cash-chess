@@ -25,6 +25,7 @@ export const BottomNav = ({
   onViewChange,
   isAdmin,
 }: BottomNavProps) => {
+  const { currentTheme } = useTheme();
   const navigationItems = [
     {
       id: "games",
