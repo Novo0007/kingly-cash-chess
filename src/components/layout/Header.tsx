@@ -19,6 +19,7 @@ import {
   LogOut,
   CreditCard,
   Trophy,
+  Crown,
   Bell,
   Wifi,
   WifiOff,
