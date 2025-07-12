@@ -526,11 +526,13 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                   </CardContent>
                 </Card>
               </div>
-            ))}
+                        ))}
           </div>
-        )}
+        ))
+        }
 
-        {/* Enhanced Coming Soon Section */}
+        {/* Enhanced Coming Soon Section - Only show when not in tournament view */}
+        {gameFilter !== "tournaments" && (
         <div className="relative overflow-hidden">
           {/* Background Gradient */}
           <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 rounded-3xl opacity-90"></div>
