@@ -242,21 +242,30 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       }
 
       // Create transaction record
+      const transactionData = {
+        user_id: user.id,
+        transaction_type: "purchase",
+        amount: packageData.priceINR, // Keep amount positive for coin purchases
+        status: "completed",
+        description: `Coin purchase: ${packageData.name} - ${packageData.coins + packageData.bonus} coins`,
+      };
+
+      console.log("Creating transaction with data:", transactionData);
+
       const { error: transactionError } = await supabase
         .from("transactions")
-        .insert({
-          user_id: user.id,
-          transaction_type: "purchase", // Using generic "purchase" type
-          amount: -packageData.priceINR, // Negative amount for spending
-          status: "completed",
-          description: `Coin purchase: ${packageData.name} - ${packageData.coins + packageData.bonus} coins`,
-        });
+        .insert(transactionData);
 
       if (transactionError) {
-        console.error(
-          "Error creating transaction:",
-          transactionError.message || transactionError,
-        );
+        console.error("Error creating transaction:", {
+          message: transactionError.message,
+          details: transactionError.details,
+          hint: transactionError.hint,
+          code: transactionError.code,
+        });
+        // Don't throw error here, just log it - coin purchase should still work
+      } else {
+        console.log("Transaction created successfully");
       }
 
       // Add coins to user account
