@@ -12,15 +12,21 @@ import {
   RefreshCw,
   Calendar,
   TrendingUp,
+  User,
 } from "lucide-react";
 import {
   getMergedLeaderboard,
   getWeeklyRankingStats,
   WordSearchScoreRecord,
+  getUserProfileByUsername,
+  getEnhancedUserProfile,
 } from "@/utils/wordsearchDbHelper";
+import { calculatePlayerLevel } from "@/utils/levelSystem";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import { useTheme } from "@/contexts/ThemeContext";
+import { WordSearchProfileDialog } from "./WordSearchProfileDialog";
+import { toast } from "sonner";
 
 interface EnhancedLeaderboardProps {
   onBack: () => void;
@@ -41,6 +47,9 @@ export const EnhancedLeaderboard: React.FC<EnhancedLeaderboardProps> = ({
   const [weeklyStats, setWeeklyStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<any>(null);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(false);
 
   const fetchLeaderboards = useCallback(async () => {
     try {
@@ -74,6 +83,37 @@ export const EnhancedLeaderboard: React.FC<EnhancedLeaderboardProps> = ({
   const handleRefresh = () => {
     setRefreshing(true);
     fetchLeaderboards();
+  };
+
+  const handleUsernameClick = async (username: string, userId?: string) => {
+    setLoadingProfile(true);
+    try {
+      let result;
+      if (userId) {
+        // If we have userId, get enhanced profile directly
+        result = await getEnhancedUserProfile(userId);
+      } else {
+        // Otherwise, fetch by username
+        const usernameResult = await getUserProfileByUsername(username);
+        if (usernameResult.success && usernameResult.profile) {
+          result = await getEnhancedUserProfile(usernameResult.profile.id);
+        } else {
+          throw new Error(usernameResult.error || "Profile not found");
+        }
+      }
+
+      if (result.success && result.profile) {
+        setSelectedProfile(result.profile);
+        setProfileDialogOpen(true);
+      } else {
+        toast.error(result.error || "Failed to load profile");
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      toast.error("Failed to load user profile");
+    } finally {
+      setLoadingProfile(false);
+    }
   };
 
   const getRankIcon = (rank: number) => {
@@ -172,11 +212,25 @@ export const EnhancedLeaderboard: React.FC<EnhancedLeaderboardProps> = ({
                   {/* Player Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3
-                        className={`font-bold text-lg truncate ${rank === 1 ? "text-white" : "text-foreground"}`}
+                      <button
+                        onClick={() =>
+                          handleUsernameClick(score.username, score.user_id)
+                        }
+                        disabled={loadingProfile}
+                        className={`font-bold text-lg truncate hover:underline focus:outline-none focus:underline transition-all duration-200 ${rank === 1 ? "text-white hover:text-blue-200" : "text-foreground hover:text-blue-600"} ${loadingProfile ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                       >
-                        {score.username}
-                      </h3>
+                        {loadingProfile ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            {score.username}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1">
+                            <User className="h-4 w-4 opacity-60" />
+                            {score.username}
+                          </div>
+                        )}
+                      </button>
                       {rank <= 3 && rank !== 1 && (
                         <Star className="h-4 w-4 text-yellow-500 fill-current" />
                       )}
@@ -197,7 +251,7 @@ export const EnhancedLeaderboard: React.FC<EnhancedLeaderboardProps> = ({
                           rank === 1 ? "border-white/30 text-white/80" : ""
                         }
                       >
-                        Level {(score as any).level || 1}
+                        Level {calculatePlayerLevel(score.score)}
                       </Badge>
                       <span
                         className={`${rank === 1 ? "text-white/60" : "text-muted-foreground"}`}
@@ -368,6 +422,13 @@ export const EnhancedLeaderboard: React.FC<EnhancedLeaderboardProps> = ({
             </TabsContent>
           </Tabs>
         )}
+
+        {/* Profile Dialog */}
+        <WordSearchProfileDialog
+          profile={selectedProfile}
+          open={profileDialogOpen}
+          onOpenChange={setProfileDialogOpen}
+        />
       </div>
     </MobileContainer>
   );

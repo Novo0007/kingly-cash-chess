@@ -262,7 +262,9 @@ export const generateLevels = (): Level[] => {
       timeLimit = Math.max(100 - (i - 65), 45);
     }
 
-    const requiredScore = Math.floor(i * 100 + Math.pow(i, 1.5) * 50);
+    // Level 1 starts at 50, then increases from there
+    const requiredScore =
+      i === 1 ? 50 : Math.floor(i * 100 + Math.pow(i, 1.5) * 50);
     const availableWords =
       wordPools[theme as keyof typeof wordPools] || wordPools["Animals"];
 
@@ -316,4 +318,37 @@ export const calculateLevelScore = (
 
 export const shouldUnlockNextLevel = (score: number, level: Level): boolean => {
   return score >= level.requiredScore;
+};
+
+export const calculatePlayerLevel = (totalScore: number): number => {
+  // Calculate player level based on cumulative score
+  // Level 1: 0-499 points
+  // Level 2: 500-1499 points
+  // Level 3: 1500-2999 points
+  // And so on...
+
+  if (totalScore < 500) return 1;
+  if (totalScore < 1500) return 2;
+  if (totalScore < 3000) return 3;
+  if (totalScore < 5000) return 4;
+  if (totalScore < 7500) return 5;
+  if (totalScore < 10500) return 6;
+  if (totalScore < 14000) return 7;
+  if (totalScore < 18000) return 8;
+  if (totalScore < 22500) return 9;
+  if (totalScore < 27500) return 10;
+
+  // For levels above 10, use a formula
+  // Each level requires progressively more points
+  let level = 10;
+  let requiredForNext = 27500;
+  let increment = 5500; // Starting increment
+
+  while (totalScore >= requiredForNext) {
+    level++;
+    requiredForNext += increment;
+    increment += 500; // Increment increases by 500 each level
+  }
+
+  return Math.min(level, 99); // Cap at level 99
 };
