@@ -338,6 +338,22 @@ export const shouldUnlockNextLevel = (score: number, level: Level): boolean => {
   return score >= level.requiredScore;
 };
 
+export const getScoreRequirement = (level: number): number => {
+  // Helper function to get score requirement for any level
+  if (level === 1) {
+    return 100;
+  } else if (level <= 15) {
+    return 100 + (level - 1) * 75;
+  } else if (level <= 36) {
+    const level15Score = 100 + 14 * 75; // 1150
+    return level15Score + (level - 15) * 95;
+  } else {
+    const level15Score = 100 + 14 * 75; // 1150
+    const level36Score = level15Score + 21 * 95; // 3145
+    return level36Score + (level - 36) * 120;
+  }
+};
+
 export const calculatePlayerLevel = (totalScore: number): number => {
   // Calculate player level based on new scoring progression
   // Level 1: 100 points
