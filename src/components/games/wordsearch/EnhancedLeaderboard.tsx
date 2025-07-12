@@ -47,6 +47,9 @@ export const EnhancedLeaderboard: React.FC<EnhancedLeaderboardProps> = ({
   const [weeklyStats, setWeeklyStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<any>(null);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(false);
 
   const fetchLeaderboards = useCallback(async () => {
     try {
