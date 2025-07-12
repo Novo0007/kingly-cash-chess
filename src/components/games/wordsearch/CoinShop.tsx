@@ -220,13 +220,86 @@ export const CoinShop: React.FC<CoinShopProps> = ({
     }
   };
 
-  const handlePurchase = async (packageData: CoinPackage) => {
+  const handleWalletPurchase = async (packageData: CoinPackage) => {
+    if (!wallet || (wallet.balance || 0) < packageData.priceINR) {
+      toast.error("Insufficient wallet balance!");
+      return;
+    }
+
     setPurchasing(packageData.id);
 
     try {
-      let paymentSuccess = false;
+      // Deduct money from wallet
+      const { error: walletError } = await supabase
+        .from("wallets")
+        .update({
+          balance: (wallet.balance || 0) - packageData.priceINR,
+        })
+        .eq("user_id", user.id);
 
-      // Use Razorpay for Indian users
+      if (walletError) {
+        throw new Error("Failed to deduct from wallet");
+      }
+
+      // Create transaction record
+      const { error: transactionError } = await supabase
+        .from("transactions")
+        .insert({
+          user_id: user.id,
+          transaction_type: "coin_purchase",
+          amount: packageData.priceINR,
+          status: "completed",
+          description: `Purchased ${packageData.name} - ${packageData.coins + packageData.bonus} coins`,
+        });
+
+      if (transactionError) {
+        console.error("Error creating transaction:", transactionError);
+      }
+
+      // Add coins to user account
+      const totalCoins = packageData.coins + packageData.bonus;
+      const result = await addCoins(
+        user.id,
+        totalCoins,
+        "purchase",
+        `Purchased ${packageData.name} - ${packageData.coins} coins + ${packageData.bonus} bonus`,
+      );
+
+      if (result.success) {
+        toast.success(
+          `🎉 You received ${totalCoins} coins! ₹${packageData.priceINR} deducted from wallet.`,
+        );
+
+        // Update local wallet state
+        setWallet((prev) =>
+          prev
+            ? { ...prev, balance: (prev.balance || 0) - packageData.priceINR }
+            : null,
+        );
+
+        onPurchaseComplete();
+      } else {
+        toast.error("Failed to process coin credit");
+        // Revert wallet deduction on failure
+        await supabase
+          .from("wallets")
+          .update({
+            balance: wallet.balance || 0,
+          })
+          .eq("user_id", user.id);
+      }
+    } catch (error) {
+      console.error("Error processing wallet purchase:", error);
+      toast.error("Failed to process purchase");
+    } finally {
+      setPurchasing(null);
+    }
+  };
+
+  const handleRazorpayPurchase = async (packageData: CoinPackage) => {
+    setPurchasing(packageData.id);
+
+    try {
       const paymentResult = await initiatePayment({
         amount: packageData.priceINR,
         currency: "INR",
@@ -240,19 +313,10 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       });
 
       if (paymentResult.success) {
-        paymentSuccess = true;
         toast.success(
           `🎉 Payment successful! Transaction ID: ${paymentResult.paymentId}`,
         );
-      } else if (paymentResult.error === "Payment cancelled by user") {
-        toast.info("Payment cancelled");
-        setPurchasing(null);
-        return;
-      } else {
-        throw new Error(paymentResult.error || "Payment failed");
-      }
 
-      if (paymentSuccess) {
         const totalCoins = packageData.coins + packageData.bonus;
         const result = await addCoins(
           user.id,
@@ -267,12 +331,24 @@ export const CoinShop: React.FC<CoinShopProps> = ({
         } else {
           toast.error("Failed to process coin credit");
         }
+      } else if (paymentResult.error === "Payment cancelled by user") {
+        toast.info("Payment cancelled");
+      } else {
+        throw new Error(paymentResult.error || "Payment failed");
       }
     } catch (error) {
-      console.error("Error processing purchase:", error);
+      console.error("Error processing razorpay purchase:", error);
       toast.error("Failed to process purchase");
     } finally {
       setPurchasing(null);
+    }
+  };
+
+  const handlePurchase = async (packageData: CoinPackage) => {
+    if (paymentMethod === "wallet") {
+      await handleWalletPurchase(packageData);
+    } else {
+      await handleRazorpayPurchase(packageData);
     }
   };
 
@@ -520,7 +596,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
                     Net Banking)
                   </li>
                   <li>• 🌍 International users: Standard payment gateway</li>
-                  <li>• 🔒 All transactions are secure and encrypted</li>
+                  <li>��� 🔒 All transactions are secure and encrypted</li>
                   <li>• 💰 Get bonus coins with every purchase</li>
                   <li>• 🎁 Free daily coins available every 24 hours</li>
                   <li>• 🏆 Win coins back by performing well in games</li>
