@@ -41,9 +41,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
   const [showGlobalChat, setShowGlobalChat] = React.useState(false);
-  const [gameFilter, setGameFilter] = React.useState<"all" | "free" | "money">(
-    "all",
-  );
+  const [gameFilter, setGameFilter] = React.useState<
+    "all" | "free" | "money" | "tournaments"
+  >("all");
   const [isLoading, setIsLoading] = React.useState(true);
 
   // Simulate initial loading for smooth appearance
