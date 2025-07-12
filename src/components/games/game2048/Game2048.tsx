@@ -22,6 +22,7 @@ import {
   Home,
 } from "lucide-react";
 import { Game2048Logic, Game2048State, Game2048Score } from "./Game2048Logic";
+import { tournamentDbHelper } from "@/utils/tournamentDbHelper";
 import { toast } from "sonner";
 import { useDeviceType } from "@/hooks/use-mobile";
 
@@ -34,7 +35,8 @@ type GameView = "lobby" | "game" | "rules" | "leaderboard" | "gameComplete";
 
 // UUID validation function
 const isValidUUID = (uuid: string): boolean => {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   return uuidRegex.test(uuid);
 };
 
@@ -161,18 +163,21 @@ export const Game2048: React.FC<Game2048Props> = ({ onBack, user }) => {
     setIsSubmittingScore(true);
     try {
       const scoreData = gameLogic!.calculateFinalScore();
-      
+
       // Create a new object with only the database-relevant properties, excluding the client-generated id
       const dbScoreData = {
         user_id: user.id,
-        username: user.user_metadata?.username || user.email?.split("@")[0] || "Anonymous",
+        username:
+          user.user_metadata?.username ||
+          user.email?.split("@")[0] ||
+          "Anonymous",
         score: scoreData.score,
         moves: scoreData.moves,
         time_taken: scoreData.time_taken,
         difficulty: scoreData.difficulty,
         board_size: scoreData.board_size,
         target_reached: scoreData.target_reached,
-        completed_at: scoreData.completed_at
+        completed_at: scoreData.completed_at,
       };
 
       console.log("Saving score data:", dbScoreData);
@@ -186,7 +191,9 @@ export const Game2048: React.FC<Game2048Props> = ({ onBack, user }) => {
       if (error) {
         console.error("Error saving score:", error);
         if (error.message.includes("invalid input syntax for type uuid")) {
-          toast.error("Invalid user session. Please sign out and sign in again.");
+          toast.error(
+            "Invalid user session. Please sign out and sign in again.",
+          );
         } else {
           toast.error("Failed to save score. Please try again.");
         }
@@ -337,17 +344,21 @@ export const Game2048: React.FC<Game2048Props> = ({ onBack, user }) => {
             Back to Games
           </Button>
         </div>
-        
+
         <Card className="max-w-md mx-auto">
           <CardHeader>
-            <CardTitle className="text-center text-red-600">Authentication Required</CardTitle>
+            <CardTitle className="text-center text-red-600">
+              Authentication Required
+            </CardTitle>
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <p className="text-gray-600">
-              You need to be signed in with a valid account to play 2048 and save your scores.
+              You need to be signed in with a valid account to play 2048 and
+              save your scores.
             </p>
             <p className="text-sm text-gray-500">
-              Please sign out and sign in again if you continue to see this message.
+              Please sign out and sign in again if you continue to see this
+              message.
             </p>
             <Button onClick={onBack} className="w-full">
               Back to Games
