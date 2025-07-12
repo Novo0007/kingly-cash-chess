@@ -244,7 +244,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       // Create transaction record
       const transactionData = {
         user_id: user.id,
-        transaction_type: "game_entry", // Using existing transaction type
+        transaction_type: "withdrawal", // Using withdrawal since money is being deducted from wallet
         amount: packageData.priceINR,
         status: "completed",
         description: `Coin purchase: ${packageData.name} - ${packageData.coins + packageData.bonus} coins`,
