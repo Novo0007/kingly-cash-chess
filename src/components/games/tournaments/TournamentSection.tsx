@@ -25,9 +25,9 @@ import {
   getTournamentTimeStatus,
 } from "@/utils/tournamentDbHelper";
 import type { Tournament } from "@/utils/tournamentDbHelper";
-import { TournamentCard } from "./TournamentCard.tsx";
-import { TournamentLeaderboard } from "./TournamentLeaderboard.tsx";
-import { CreateTournamentDialog } from "./CreateTournamentDialog.tsx";
+import { TournamentCard } from "./TournamentCard";
+import { TournamentLeaderboard } from "./TournamentLeaderboard";
+import { CreateTournamentDialog } from "./CreateTournamentDialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
