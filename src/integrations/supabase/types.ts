@@ -1157,6 +1157,24 @@ export type Database = {
       };
     };
     Views: {
+      tournament_leaderboard: {
+        Row: {
+          best_score: number | null;
+          end_time: string | null;
+          game_type: string | null;
+          games_played: number | null;
+          joined_at: string | null;
+          last_game_at: string | null;
+          prize_amount: number | null;
+          rank: number | null;
+          tournament_id: string | null;
+          tournament_status: string | null;
+          tournament_title: string | null;
+          user_id: string | null;
+          username: string | null;
+        };
+        Relationships: [];
+      };
       weekly_leaderboard: {
         Row: {
           completed_at: string | null;
