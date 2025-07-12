@@ -9,6 +9,7 @@ import {
   Shield,
   Gamepad2,
   Trophy,
+  Crown,
 } from "lucide-react";
 
 interface BottomNavProps {
