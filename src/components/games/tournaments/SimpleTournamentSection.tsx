@@ -28,6 +28,7 @@ export const SimpleTournamentSection: React.FC = () => {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [tableExists, setTableExists] = useState(true);
 
   useEffect(() => {
     getCurrentUser();
@@ -48,9 +49,19 @@ export const SimpleTournamentSection: React.FC = () => {
         limit: 10,
       });
       setTournaments(allTournaments);
+      setTableExists(true);
     } catch (error) {
       console.error("Error fetching tournaments:", error);
-      toast.error("Failed to load tournaments");
+      // Check if it's a table not found error
+      if (
+        error instanceof Error &&
+        error.message.includes("relation") &&
+        error.message.includes("does not exist")
+      ) {
+        setTableExists(false);
+      } else {
+        toast.error("Failed to load tournaments");
+      }
     } finally {
       setLoading(false);
     }
