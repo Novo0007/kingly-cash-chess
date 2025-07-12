@@ -246,14 +246,17 @@ export const CoinShop: React.FC<CoinShopProps> = ({
         .from("transactions")
         .insert({
           user_id: user.id,
-          transaction_type: "coin_purchase",
-          amount: packageData.priceINR,
+          transaction_type: "purchase", // Using generic "purchase" type
+          amount: -packageData.priceINR, // Negative amount for spending
           status: "completed",
-          description: `Purchased ${packageData.name} - ${packageData.coins + packageData.bonus} coins`,
+          description: `Coin purchase: ${packageData.name} - ${packageData.coins + packageData.bonus} coins`,
         });
 
       if (transactionError) {
-        console.error("Error creating transaction:", transactionError);
+        console.error(
+          "Error creating transaction:",
+          transactionError.message || transactionError,
+        );
       }
 
       // Add coins to user account
