@@ -246,6 +246,7 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
   const handleDoubleTap = () => {
     if (Date.now() - lastTouchTime < 300) {
       // Double tap detected - toggle horizontal mode
+      triggerHapticFeedback("medium");
       setIsHorizontalMode(!isHorizontalMode);
       toast.info(
         isHorizontalMode
