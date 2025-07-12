@@ -12,16 +12,21 @@ import {
   RefreshCw,
   Calendar,
   TrendingUp,
+  User,
 } from "lucide-react";
 import {
   getMergedLeaderboard,
   getWeeklyRankingStats,
   WordSearchScoreRecord,
+  getUserProfileByUsername,
+  getEnhancedUserProfile,
 } from "@/utils/wordsearchDbHelper";
 import { calculatePlayerLevel } from "@/utils/levelSystem";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import { useTheme } from "@/contexts/ThemeContext";
+import { WordSearchProfileDialog } from "./WordSearchProfileDialog";
+import { toast } from "sonner";
 
 interface EnhancedLeaderboardProps {
   onBack: () => void;
