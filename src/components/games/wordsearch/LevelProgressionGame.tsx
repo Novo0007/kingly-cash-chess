@@ -24,6 +24,7 @@ import {
   getUserCoinBalance,
   saveWordSearchScore,
   recordHintUsage,
+  deductCoins,
 } from "@/utils/wordsearchDbHelper";
 import {
   LEVELS,
@@ -55,6 +56,7 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
   const [gameLogic, setGameLogic] = useState<WordSearchGameLogic | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [coinBalance, setCoinBalance] = useState<number>(0);
+  const [hintsRemaining, setHintsRemaining] = useState<number>(3);
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [currentLevel, setCurrentLevel] = useState<number>(1);
   const [unlockedLevels, setUnlockedLevels] = useState<Set<number>>(
@@ -147,6 +149,7 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
 
     setIsLoading(true);
     setCurrentLevel(level);
+    setHintsRemaining(3); // Reset hints for new level
 
     try {
       // Create the game logic with level parameters
@@ -227,7 +230,10 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
         user_id: user.id, // Fixed property name
         username: user.email?.split("@")[0] || "Player",
         score: finalScore,
-        difficulty: levelInfo.difficulty === "expert" ? "hard" : levelInfo.difficulty as "easy" | "medium" | "hard", // Map expert to hard
+        difficulty:
+          levelInfo.difficulty === "expert"
+            ? "hard"
+            : (levelInfo.difficulty as "easy" | "medium" | "hard"), // Map expert to hard
         game_mode: "solo", // Fixed property name
         grid_size: levelInfo.gridSize, // Fixed property name
         words_found: wordsFound, // Fixed property name
@@ -393,9 +399,7 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
                       Level {level.level}
                     </div>
 
-                    <Badge
-                      className={getDifficultyColor(level.difficulty)}
-                    >
+                    <Badge className={getDifficultyColor(level.difficulty)}>
                       {level.difficulty}
                     </Badge>
 
@@ -522,9 +526,7 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
               </div>
               <div>
                 <div className="text-sm text-white/80">Hints Left</div>
-                <div className="font-bold">
-                  {Math.max(0, 3 - (gameState.players[0]?.hintsUsed || 0))}
-                </div>
+                <div className="font-bold">{hintsRemaining}</div>
               </div>
             </div>
           </CardContent>
@@ -618,43 +620,124 @@ export const LevelProgressionGame: React.FC<LevelProgressionGameProps> = ({
                 Quit Level
               </Button>
               <Button
-                onClick={() => {
-                  // Find a word that hasn't been found yet
-                  const remainingWords = gameState.words.filter(
-                    (word) =>
-                      !gameState.foundWords.some((fw) => fw.word === word),
-                  );
-                  if (remainingWords.length > 0 && gameLogic) {
-                    const targetWord =
-                      remainingWords[
-                        Math.floor(Math.random() * remainingWords.length)
-                      ];
-                    gameLogic.useHint(user.id, "word_location", targetWord);
-                    setGameState(gameLogic.getGameState());
+                onClick={async () => {
+                  if (hintsRemaining > 0) {
+                    // Use regular hint
+                    const remainingWords = gameState.words.filter(
+                      (word) =>
+                        !gameState.foundWords.some((fw) => fw.word === word),
+                    );
+                    if (remainingWords.length > 0 && gameLogic) {
+                      const targetWord =
+                        remainingWords[
+                          Math.floor(Math.random() * remainingWords.length)
+                        ];
+                      gameLogic.useHint(user.id, "word_location", targetWord);
+                      setGameState(gameLogic.getGameState());
+                      setHintsRemaining((prev) => prev - 1);
 
-                    // Clear hints after 3 seconds
-                    setTimeout(() => {
-                      if (gameLogic) {
-                        gameLogic.clearHints();
-                        setGameState(gameLogic.getGameState());
+                      // Record hint usage
+                      await recordHintUsage(
+                        user.id,
+                        null, // level mode, no game ID
+                        "word_location",
+                        targetWord,
+                        0, // free hint
+                      );
+
+                      // Clear hints after 3 seconds
+                      setTimeout(() => {
+                        if (gameLogic) {
+                          gameLogic.clearHints();
+                          setGameState(gameLogic.getGameState());
+                        }
+                      }, 3000);
+                    }
+                  } else {
+                    // Buy hint with coins
+                    if (coinBalance >= 5) {
+                      const result = await deductCoins(
+                        user.id,
+                        5,
+                        null, // level mode
+                        "Purchased hint in level mode",
+                        "hint_purchase",
+                      );
+
+                      if (result.success) {
+                        setCoinBalance(result.newBalance || 0);
+                        const remainingWords = gameState.words.filter(
+                          (word) =>
+                            !gameState.foundWords.some(
+                              (fw) => fw.word === word,
+                            ),
+                        );
+                        if (remainingWords.length > 0 && gameLogic) {
+                          const targetWord =
+                            remainingWords[
+                              Math.floor(Math.random() * remainingWords.length)
+                            ];
+                          gameLogic.useHint(
+                            user.id,
+                            "word_location",
+                            targetWord,
+                          );
+                          setGameState(gameLogic.getGameState());
+
+                          // Record hint usage
+                          await recordHintUsage(
+                            user.id,
+                            null,
+                            "word_location",
+                            targetWord,
+                            5,
+                          );
+
+                          toast.success("💡 Hint purchased and used!");
+
+                          // Clear hints after 3 seconds
+                          setTimeout(() => {
+                            if (gameLogic) {
+                              gameLogic.clearHints();
+                              setGameState(gameLogic.getGameState());
+                            }
+                          }, 3000);
+                        }
+                      } else {
+                        toast.error(result.error || "Failed to purchase hint");
                       }
-                    }, 3000);
+                    } else {
+                      toast.error(
+                        "Not enough coins! You need 5 coins to buy a hint.",
+                      );
+                    }
                   }
                 }}
-                disabled={(gameState.players[0]?.hintsUsed || 0) >= 3}
                 className="w-full"
               >
-                💡 Use Hint (
-                {Math.max(0, 3 - (gameState.players[0]?.hintsUsed || 0))} left)
+                {hintsRemaining > 0 ? (
+                  <>💡 Use Hint ({hintsRemaining} left)</>
+                ) : (
+                  <>💰 Buy Hint (5 coins)</>
+                )}
               </Button>
             </div>
 
-            {/* Help Text */}
-            <div className="mt-3 text-center">
+            {/* Coin Balance & Hint Info */}
+            <div className="mt-3 text-center space-y-2">
+              <div className="flex items-center justify-center gap-2 text-sm">
+                <span className="text-yellow-600">💰</span>
+                <span className="font-medium">{coinBalance} coins</span>
+              </div>
               <p className="text-xs text-muted-foreground">
                 💡 Tip: Look for words in all directions - horizontal, vertical,
                 and diagonal!
               </p>
+              {hintsRemaining === 0 && (
+                <p className="text-xs text-orange-600">
+                  💰 Out of free hints? Buy more for 5 coins each!
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
