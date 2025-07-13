@@ -102,48 +102,48 @@ export const CodeLearnLanguageSelector: React.FC<
           >
             <div className="text-center">
               <div
-                className={`font-bold text-white ${isMobile ? "text-lg" : "text-2xl"}`}
+                className={`font-bold text-foreground ${isMobile ? "text-lg" : "text-2xl"}`}
               >
                 {userProgress.totalXP.toLocaleString()}
               </div>
               <div
-                className={`text-white/60 ${isMobile ? "text-xs" : "text-sm"}`}
+                className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
               >
                 Total XP
               </div>
             </div>
             <div className="text-center">
               <div
-                className={`font-bold text-white ${isMobile ? "text-lg" : "text-2xl"}`}
+                className={`font-bold text-foreground ${isMobile ? "text-lg" : "text-2xl"}`}
               >
                 {userProgress.level}
               </div>
               <div
-                className={`text-white/60 ${isMobile ? "text-xs" : "text-sm"}`}
+                className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
               >
                 Level
               </div>
             </div>
             <div className="text-center">
               <div
-                className={`font-bold text-white ${isMobile ? "text-lg" : "text-2xl"}`}
+                className={`font-bold text-foreground ${isMobile ? "text-lg" : "text-2xl"}`}
               >
                 {userProgress.completedLessons}
               </div>
               <div
-                className={`text-white/60 ${isMobile ? "text-xs" : "text-sm"}`}
+                className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
               >
                 Lessons
               </div>
             </div>
             <div className="text-center">
               <div
-                className={`font-bold text-white ${isMobile ? "text-lg" : "text-2xl"}`}
+                className={`font-bold text-foreground ${isMobile ? "text-lg" : "text-2xl"}`}
               >
                 {userProgress.currentStreak}
               </div>
               <div
-                className={`text-white/60 ${isMobile ? "text-xs" : "text-sm"}`}
+                className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
               >
                 Streak
               </div>
