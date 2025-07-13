@@ -358,8 +358,8 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                   <Button
                     className={`w-full transition-all duration-200 font-semibold ${
                       unitProgress.isCompleted
-                        ? "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg shadow-emerald-500/25"
-                        : "bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg shadow-violet-500/25"
+                        ? "bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg"
+                        : "bg-primary hover:bg-primary/90 shadow-lg"
                     }`}
                     size={isMobile ? "default" : "lg"}
                   >
