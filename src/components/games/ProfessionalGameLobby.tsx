@@ -265,19 +265,19 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
           </div>
         </div>
 
-        {/* Games Grid - Mobile First 1x1 Layout */}
-        <div className={`grid ${getGridCols()} gap-4 lg:gap-6`}>
-          {filteredGames.map((game, index) => (
+        {/* Games Grid - Mobile Optimized 2x2 Layout */}
+        <div className={`grid ${getGridCols()} gap-3 md:gap-4 lg:gap-6`}>
+          {filteredGames.slice(0, 4).map((game, index) => (
             <Card
               key={game.id}
-              className={`professional-card interactive group cursor-pointer ${
+              className={`professional-card interactive group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
                 game.highlight ? "ring-2 ring-blue-200 ring-opacity-50" : ""
-              }`}
+              } ${isMobile ? "min-h-[280px]" : "min-h-[320px]"}`}
               onClick={() => handleGameSelect(game.id)}
             >
               {/* Card Header with gradient */}
               <div
-                className={`h-24 lg:h-32 bg-gradient-to-r ${game.gradient} relative overflow-hidden`}
+                className={`${isMobile ? "h-20" : "h-24 lg:h-32"} bg-gradient-to-r ${game.gradient} relative overflow-hidden rounded-t-lg`}
               >
                 <div className="absolute inset-0 bg-black/10"></div>
 
