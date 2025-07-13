@@ -444,6 +444,14 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
           />
         );
 
+      case "leaderboard":
+        return (
+          <CodeLearnLeaderboard
+            currentUserId={user?.id}
+            onClose={() => setCurrentView("languages")}
+          />
+        );
+
       default:
         return null;
     }
