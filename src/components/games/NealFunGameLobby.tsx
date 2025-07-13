@@ -17,6 +17,7 @@ import {
   DollarSign,
   Gift,
   BookOpen,
+  Code,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
