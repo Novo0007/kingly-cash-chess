@@ -357,8 +357,8 @@ export const ProfessionalCodeLearnLanguageSelector: React.FC<
                 Coding Challenges
               </h4>
               <p className="text-gray-600">
-                Test your skills with real-world problems and fun coding
-                challenges. Earn points, level up, and compete!
+                Test your skills with real-world problems and fun challenges.
+                Earn points, level up, and compete with fellow learners.
               </p>
             </div>
 
