@@ -474,7 +474,17 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
             Exercise {currentExerciseIndex + 1}
           </CardTitle>
         </CardHeader>
-        <CardContent>{renderExercise(currentExercise)}</CardContent>
+        <CardContent>
+          {currentExercise ? (
+            renderExercise(currentExercise)
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">
+                No exercises available for this lesson.
+              </p>
+            </div>
+          )}
+        </CardContent>
       </Card>
 
       {/* Hints */}
