@@ -70,10 +70,10 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                   {language.icon}
                 </div>
                 <div className="flex-1">
-                  <CardTitle className="text-lg text-white mb-1">
+                  <CardTitle className="text-lg text-foreground mb-1">
                     {language.name} Course
                   </CardTitle>
-                  <p className="text-white/80 text-xs">
+                  <p className="text-muted-foreground text-xs">
                     {language.description}
                   </p>
                 </div>
