@@ -476,22 +476,24 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
             {userProgress && (
               <div className="hidden sm:flex items-center gap-6">
                 <div className="text-center">
-                  <div className="text-sm font-bold text-indigo-600">
+                  <div className="text-sm font-bold text-primary">
                     Level {userProgress.level}
                   </div>
-                  <div className="text-xs text-gray-500">Current Level</div>
+                  <div className="text-xs text-muted-foreground">
+                    Current Level
+                  </div>
                 </div>
                 <div className="text-center">
                   <div className="text-sm font-bold text-amber-600">
                     {userProgress.availableCoins}
                   </div>
-                  <div className="text-xs text-gray-500">Coins</div>
+                  <div className="text-xs text-muted-foreground">Coins</div>
                 </div>
                 <div className="text-center">
                   <div className="text-sm font-bold text-emerald-600">
                     {userProgress.totalXP}
                   </div>
-                  <div className="text-xs text-gray-500">Total XP</div>
+                  <div className="text-xs text-muted-foreground">Total XP</div>
                 </div>
               </div>
             )}
