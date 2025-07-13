@@ -344,12 +344,12 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
 
                 {/* Action Button */}
                 {isLocked ? (
-                  <div className="flex items-center justify-center py-3 px-4 bg-white/10 rounded-lg backdrop-blur-sm">
+                  <div className="flex items-center justify-center py-3 px-4 bg-muted/50 rounded-lg backdrop-blur-sm">
                     <Lock
-                      className={`text-white/60 mr-2 ${isMobile ? "w-3 h-3" : "w-4 h-4"}`}
+                      className={`text-muted-foreground mr-2 ${isMobile ? "w-3 h-3" : "w-4 h-4"}`}
                     />
                     <span
-                      className={`text-white/60 font-medium ${isMobile ? "text-xs" : "text-sm"}`}
+                      className={`text-muted-foreground font-medium ${isMobile ? "text-xs" : "text-sm"}`}
                     >
                       Complete previous unit to unlock
                     </span>
