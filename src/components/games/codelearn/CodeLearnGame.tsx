@@ -408,12 +408,13 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
           />
         )}
 
-        {currentView === "lesson" && selectedLesson && (
+        {currentView === "lesson" && selectedLesson && selectedUnit && (
           <CodeLearnLessonView
             lesson={selectedLesson}
+            unit={selectedUnit}
             userProgress={userProgress}
-            onComplete={handleLessonComplete}
-            onBack={handleBackToUnits}
+            onLessonComplete={handleLessonComplete}
+            onBackToUnits={handleBackToUnits}
           />
         )}
 
