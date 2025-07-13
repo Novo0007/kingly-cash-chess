@@ -269,15 +269,15 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
             <span
               className={`bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent`}
             >
-              Play & Win
+              Where Dreams Become Play
             </span>
             <br />
-            <span className="text-gray-800">Real Money</span>
+            <span className="text-gray-800">Where legends are born</span>
           </h1>
 
           <p className="text-xl sm:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Join thousands of players competing in skill-based games with
-            <span className="font-bold text-green-600"> real cash prizes</span>
+            ✨ Crafting moments of pure magic, 
+            <span className="font-bold text-green-600"> one game at a time ✨</span>
           </p>
 
           {/* Stats Bar */}
