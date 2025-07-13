@@ -108,6 +108,16 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
       isPopular: true,
       isPaid: true,
     },
+    {
+      id: "codelearn",
+      title: "CodeLearn Academy",
+      description: "Learn programming with interactive lessons",
+      icon: Code,
+      emoji: "👨‍💻",
+      players: "1.2K+ learning",
+      isPopular: true,
+      isPaid: false,
+    },
   ];
 
   const comingSoon = [
@@ -121,7 +131,14 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
 
   const handleGameSelect = useCallback(
     (
-      gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
+      gameType:
+        | "chess"
+        | "ludo"
+        | "maze"
+        | "game2048"
+        | "math"
+        | "wordsearch"
+        | "codelearn",
     ) => {
       onSelectGame(gameType);
     },
