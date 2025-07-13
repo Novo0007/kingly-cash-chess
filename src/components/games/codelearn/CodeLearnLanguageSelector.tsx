@@ -378,18 +378,18 @@ export const CodeLearnLanguageSelector: React.FC<
       <div
         className={`grid gap-4 ${isMobile ? "grid-cols-1 mt-6" : "grid-cols-1 md:grid-cols-3 gap-6 mt-12"}`}
       >
-        <Card className="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border-emerald-400/30 backdrop-blur-sm">
+        <Card className="bg-gradient-to-br from-primary/20 to-accent/20 border-primary/30 backdrop-blur-sm">
           <CardContent className={`text-center ${isMobile ? "p-4" : "p-6"}`}>
             <div className={`mb-3 ${isMobile ? "text-3xl" : "text-4xl"}`}>
               🎯
             </div>
             <h3
-              className={`font-bold text-emerald-200 mb-2 ${isMobile ? "text-sm" : ""}`}
+              className={`font-bold text-foreground mb-2 ${isMobile ? "text-sm" : ""}`}
             >
               Interactive Learning
             </h3>
             <p
-              className={`text-emerald-100/80 ${isMobile ? "text-xs" : "text-sm"}`}
+              className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
             >
               Practice with real code examples and instant feedback on your
               progress.
@@ -397,18 +397,18 @@ export const CodeLearnLanguageSelector: React.FC<
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border-blue-400/30 backdrop-blur-sm">
+        <Card className="bg-gradient-to-br from-primary/20 to-accent/20 border-primary/30 backdrop-blur-sm">
           <CardContent className={`text-center ${isMobile ? "p-4" : "p-6"}`}>
             <div className={`mb-3 ${isMobile ? "text-3xl" : "text-4xl"}`}>
               🏆
             </div>
             <h3
-              className={`font-bold text-blue-200 mb-2 ${isMobile ? "text-sm" : ""}`}
+              className={`font-bold text-foreground mb-2 ${isMobile ? "text-sm" : ""}`}
             >
               Achievements & Streaks
             </h3>
             <p
-              className={`text-blue-100/80 ${isMobile ? "text-xs" : "text-sm"}`}
+              className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
             >
               Earn badges, maintain streaks, and unlock new challenges as you
               progress.
@@ -416,18 +416,18 @@ export const CodeLearnLanguageSelector: React.FC<
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-violet-500/20 to-purple-500/20 border-violet-400/30 backdrop-blur-sm">
+        <Card className="bg-gradient-to-br from-primary/20 to-accent/20 border-primary/30 backdrop-blur-sm">
           <CardContent className={`text-center ${isMobile ? "p-4" : "p-6"}`}>
             <div className={`mb-3 ${isMobile ? "text-3xl" : "text-4xl"}`}>
               📈
             </div>
             <h3
-              className={`font-bold text-violet-200 mb-2 ${isMobile ? "text-sm" : ""}`}
+              className={`font-bold text-foreground mb-2 ${isMobile ? "text-sm" : ""}`}
             >
               Personalized Path
             </h3>
             <p
-              className={`text-violet-100/80 ${isMobile ? "text-xs" : "text-sm"}`}
+              className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
             >
               Adaptive learning that adjusts to your pace and learning style.
             </p>
