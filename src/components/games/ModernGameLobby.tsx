@@ -180,7 +180,14 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
 
   const handleGameSelect = useCallback(
     (
-      gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
+      gameType:
+        | "chess"
+        | "ludo"
+        | "maze"
+        | "game2048"
+        | "math"
+        | "wordsearch"
+        | "codelearn",
     ) => {
       onSelectGame(gameType);
     },
