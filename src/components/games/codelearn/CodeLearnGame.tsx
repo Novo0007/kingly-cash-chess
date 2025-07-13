@@ -192,28 +192,28 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
         {userProgress && dailyGoal && levelInfo && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {/* Daily XP Goal Progress */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
+            <Card className="bg-card border border-border shadow-sm">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
                       <Target className="w-4 h-4 text-emerald-600" />
                     </div>
-                    <span className="text-sm font-semibold text-gray-700">
+                    <span className="text-sm font-semibold text-foreground">
                       Daily XP Goal
                     </span>
                   </div>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-muted-foreground">
                     {dailyGoal.current}/{dailyGoal.goal} XP
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-muted rounded-full h-2">
                   <div
                     className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${dailyGoal.percentage}%` }}
                   ></div>
                 </div>
-                <div className="mt-2 text-xs text-gray-600">
+                <div className="mt-2 text-xs text-muted-foreground">
                   {dailyGoal.percentage}% complete
                 </div>
               </CardContent>
