@@ -235,27 +235,27 @@ export const CodeLearnLanguageSelector: React.FC<
                   <div className={isMobile ? "space-y-2" : "space-y-3"}>
                     <div className="flex justify-between items-center">
                       <span
-                        className={`font-medium text-white/90 ${isMobile ? "text-xs" : "text-sm"}`}
+                        className={`font-medium text-foreground ${isMobile ? "text-xs" : "text-sm"}`}
                       >
                         Progress
                       </span>
                       <span
-                        className={`font-bold text-cyan-300 ${isMobile ? "text-xs" : "text-sm"}`}
+                        className={`font-bold text-primary ${isMobile ? "text-xs" : "text-sm"}`}
                       >
                         {langProgress.completedLessons}/
                         {langProgress.totalLessons} lessons
                       </span>
                     </div>
 
-                    <div className="w-full bg-white/20 rounded-full h-2">
+                    <div className="w-full bg-muted rounded-full h-2">
                       <div
-                        className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-300 shadow-lg"
+                        className="bg-gradient-to-r from-primary to-accent h-2 rounded-full transition-all duration-300 shadow-lg"
                         style={{ width: `${langProgress.progress}%` }}
                       />
                     </div>
 
                     <div
-                      className={`flex justify-between text-white/70 ${isMobile ? "text-xs" : "text-xs"}`}
+                      className={`flex justify-between text-muted-foreground ${isMobile ? "text-xs" : "text-xs"}`}
                     >
                       <span>{langProgress.progress}% complete</span>
                       <span>Level {langProgress.level}</span>
