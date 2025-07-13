@@ -46,7 +46,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
   const { currentTheme } = useTheme();
   const [hoveredGame, setHoveredGame] = useState<string | null>(null);
   const [showGlobalChat, setShowGlobalChat] = useState(false);
-  const [gameFilter, setGameFilter] = useState<"all" | "free" | "earning">(
+  const [gameFilter, setGameFilter] = useState<"all" | "free" | "featured">(
     "all",
   );
 
@@ -92,7 +92,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
       title: "2048 Puzzle",
       description: "Small numbers, infinite possibilities",
       icon: Gamepad2,
-      emoji: "🎯",
+      emoji: "����",
       players: "300+ thinkers",
       isPopular: false,
       isPaid: false,
@@ -173,7 +173,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
   // Filter games based on selected filter
   const filteredGames = games.filter((game) => {
     if (gameFilter === "free") return !game.isPaid;
-    if (gameFilter === "earning") return game.isPaid;
+    if (gameFilter === "featured") return game.isPaid;
     return true; // "all" shows everything
   });
 
@@ -298,17 +298,17 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
               </Button>
 
               <Button
-                onClick={() => setGameFilter("earning")}
+                onClick={() => setGameFilter("featured")}
                 variant="ghost"
                 size={isMobile ? "sm" : "default"}
                 className={`flex items-center gap-1 transition-all duration-300 rounded-xl font-semibold ${
-                  gameFilter === "earning"
+                  gameFilter === "featured"
                     ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg transform scale-105"
                     : "text-white/70 hover:text-white hover:bg-white/10"
                 }`}
               >
                 <Sparkles className="w-3 h-3" />
-                🏆 Premium ({games.filter((g) => g.isPaid).length})
+                🌟 Featured ({games.filter((g) => g.isPaid).length})
               </Button>
             </div>
           </div>
@@ -317,11 +317,11 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
           <div className="text-center">
             <p className={`text-white/80 ${isMobile ? "text-xs" : "text-sm"}`}>
               {gameFilter === "all" &&
-                `🌟 Every game is a new adventure waiting to unfold`}
+                `🌟 Every game is a new adventure waiting to unfold - your story starts here`}
               {gameFilter === "free" &&
-                `💝 Pure joy, zero cost - because happiness should be free`}
-              {gameFilter === "earning" &&
-                `🎯 Where skill meets reward - play with passion, win with pride`}
+                `💝 Pure joy, zero cost - because true happiness should always be free to share`}
+              {gameFilter === "featured" &&
+                `✨ Handpicked experiences crafted with love - where passion meets perfection`}
             </p>
           </div>
         </div>
@@ -425,7 +425,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
                           {game.isPaid && (
                             <div className="flex items-center gap-1 text-amber-300">
                               <Sparkles className="w-3 h-3" />
-                              <span>Premium</span>
+                              <span>Featured</span>
                             </div>
                           )}
                         </div>
