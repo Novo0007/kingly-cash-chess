@@ -397,6 +397,9 @@ export const Header = ({
               <span className="sm:hidden">Add</span>
             </Button>
 
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
             {/* Profile Avatar */}
             <Button
               onClick={handleNavigateToProfile}
