@@ -52,7 +52,15 @@ export const FourPicsGame: React.FC<FourPicsGameProps> = ({
   const [gameLogic, setGameLogic] = useState<FourPicsGameLogic | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [currentLevel, setCurrentLevel] = useState<FourPicsLevel | null>(null);
-  const [userProgress, setUserProgress] = useState<any>(null);
+  const [userProgress, setUserProgress] = useState<{
+    current_level: number;
+    total_levels_completed: number;
+    total_coins_earned: number;
+    total_coins_spent: number;
+    total_hints_used: number;
+    total_time_played: number;
+    highest_level_reached: number;
+  } | null>(null);
   const [userInput, setUserInput] = useState("");
   const [coinBalance, setCoinBalance] = useState(100); // This would come from your coin system
   const [isLoading, setIsLoading] = useState(false);
@@ -203,23 +211,26 @@ export const FourPicsGame: React.FC<FourPicsGameProps> = ({
       }
 
       try {
-        // Deduct coins and record hint usage
-        const hintResult = await useFourPicsHint(
-          user.id,
-          currentLevel.id,
-          hintType,
-        );
+        // Use hint in game logic first
+        const result = gameLogic.useHint(hintType);
 
-        if (hintResult.success) {
-          // Use hint in game logic
-          const result = gameLogic.useHint(hintType);
+        if (result.success) {
+          // Then record hint usage in database
+          const hintResult = await useFourPicsHint(
+            user.id,
+            currentLevel.id,
+            hintType,
+          );
 
-          if (result.success) {
+          if (hintResult.success) {
             setCoinBalance((prev) => prev - result.cost);
             toast.success(result.message);
+          } else {
+            // If database call fails, we still show the hint but warn user
+            console.warn("Failed to record hint usage:", hintResult.error);
+            setCoinBalance((prev) => prev - result.cost);
+            toast.success(result.message + " (Progress may not be saved)");
           }
-        } else {
-          toast.error("Failed to use hint: " + hintResult.error);
         }
       } catch (error) {
         console.error("Error using hint:", error);
