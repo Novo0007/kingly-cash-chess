@@ -596,18 +596,57 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
   };
 
   return (
-    <div
-      className={`min-h-screen ${isMobile ? "p-2 pb-20" : "p-4"}`}
-      style={{
-        background: isMobile
-          ? `linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)`
-          : `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
-      }}
-    >
-      <div className={`${isMobile ? "max-w-full" : "max-w-7xl"} mx-auto`}>
-        {renderHeader()}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Professional Header */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 lg:h-20">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
+                  <Code className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900">
+                    CodeLearn Academy
+                  </h1>
+                  <p className="text-sm text-gray-500">
+                    Professional Programming Education
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* User Progress Stats */}
+            {userProgress && (
+              <div className="hidden sm:flex items-center gap-6">
+                <div className="text-center">
+                  <div className="text-sm font-bold text-indigo-600">
+                    Level {userProgress.level}
+                  </div>
+                  <div className="text-xs text-gray-500">Current Level</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-bold text-amber-600">
+                    {userProgress.availableCoins}
+                  </div>
+                  <div className="text-xs text-gray-500">Coins</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-bold text-emerald-600">
+                    {userProgress.totalXP}
+                  </div>
+                  <div className="text-xs text-gray-500">Total XP</div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
         {renderNavigation()}
-        <div className={isMobile ? "space-y-4" : ""}>{renderContent()}</div>
+        <div className="mt-6">{renderContent()}</div>
       </div>
     </div>
   );
