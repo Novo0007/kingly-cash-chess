@@ -328,6 +328,12 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
                 setCurrentView("units");
               } else if (currentView === "units") {
                 setCurrentView("languages");
+              } else if (
+                currentView === "achievements" ||
+                currentView === "profile" ||
+                currentView === "leaderboard"
+              ) {
+                setCurrentView("languages");
               } else {
                 onBack();
               }
