@@ -154,6 +154,14 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   };
 
   const renderExercise = (exercise: Exercise) => {
+    if (!exercise || !exercise.id) {
+      return (
+        <div className="text-center py-4">
+          <p className="text-muted-foreground">Invalid exercise data</p>
+        </div>
+      );
+    }
+
     const userAnswer = exerciseAnswers[exercise.id] || "";
     const hasAnswered = exerciseResults.hasOwnProperty(exercise.id);
     const isCorrect = exerciseResults[exercise.id];
