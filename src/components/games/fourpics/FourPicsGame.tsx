@@ -73,6 +73,29 @@ export const FourPicsGame: React.FC<FourPicsGameProps> = ({
     try {
       setIsLoading(true);
 
+      // First check if database is set up
+      const dbCheck = await checkFourPicsDatabase();
+      setDatabaseSetup(dbCheck.isSetup);
+
+      if (!dbCheck.isSetup) {
+        console.warn("4 Pics 1 Word database not set up:", dbCheck.error);
+        toast.error(
+          "Database not set up. Please check console for migration instructions.",
+        );
+        // Set default values for demo
+        setUserProgress({
+          current_level: 1,
+          total_levels_completed: 0,
+          total_coins_earned: 0,
+          total_coins_spent: 0,
+          total_hints_used: 0,
+          total_time_played: 0,
+          highest_level_reached: 1,
+        });
+        setAvailableLevels([]);
+        return;
+      }
+
       // Fetch user progress
       const progressResult = await getFourPicsProgress(user.id);
       if (progressResult.success) {
