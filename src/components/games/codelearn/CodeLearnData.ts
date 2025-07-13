@@ -28,6 +28,9 @@ export class CodeLearnDataService {
     this.initializePythonCourse();
     this.initializeJavaCourse();
     this.initializeReactCourse();
+    this.initializeCppCourse();
+    this.initializeTypeScriptCourse();
+    this.initializeStudyGuideUnit();
 
     // Setup coin rewards for all courses
     setupCoinRewards();
