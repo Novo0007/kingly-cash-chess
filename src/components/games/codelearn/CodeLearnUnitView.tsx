@@ -196,10 +196,10 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
               key={unit.id}
               className={`group relative overflow-hidden transition-all duration-300 backdrop-blur-sm ${
                 isLocked
-                  ? "opacity-60 cursor-not-allowed bg-white/10 border-white/20"
+                  ? "opacity-60 cursor-not-allowed bg-muted/50 border-border"
                   : unitProgress.isCompleted
-                    ? "cursor-pointer bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border-emerald-400/30 hover:from-emerald-500/30 hover:to-teal-500/30"
-                    : "cursor-pointer bg-white/10 border-white/20 hover:border-cyan-300/50 hover:bg-white/20"
+                    ? "cursor-pointer bg-gradient-to-br from-primary/20 to-accent/20 border-primary/30 hover:from-primary/30 hover:to-accent/30"
+                    : "cursor-pointer bg-card border-border hover:border-primary/50 hover:bg-card/80"
               } ${isMobile ? "hover:scale-[1.02]" : "hover:scale-105 hover:shadow-xl"}`}
               onClick={() => !isLocked && onUnitSelect(unit)}
             >
