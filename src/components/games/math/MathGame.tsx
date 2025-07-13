@@ -72,6 +72,8 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
   const [isSubmittingScore, setIsSubmittingScore] = useState(false);
   const [gameTimer, setGameTimer] = useState(0);
   const [levelSystem, setLevelSystem] = useState<MathLevelSystem | null>(null);
+  const [supabaseLevelSystem, setSupabaseLevelSystem] =
+    useState<MathLevelSystemSupabase | null>(null);
 
   // Initialize math_scores table and level system
   useEffect(() => {
