@@ -370,8 +370,8 @@ export const ProfessionalCodeLearnLanguageSelector: React.FC<
                 Community Support
               </h4>
               <p className="text-gray-600">
-                Join a thriving community of coders. Share progress, ask
-                questions, and learn together!
+                Join a thriving community of coders from around the globe. Share
+                progress, ask questions, and learn together!
               </p>
             </div>
           </div>
