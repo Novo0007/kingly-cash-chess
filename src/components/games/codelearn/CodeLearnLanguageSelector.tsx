@@ -84,12 +84,12 @@ export const CodeLearnLanguageSelector: React.FC<
           👨‍💻
         </div>
         <h2
-          className={`font-bold text-white mb-2 ${isMobile ? "text-2xl" : "text-4xl"}`}
+          className={`font-bold text-foreground mb-2 ${isMobile ? "text-2xl" : "text-4xl"}`}
         >
           Choose Your Programming Language
         </h2>
         <p
-          className={`text-white/80 max-w-2xl mx-auto ${isMobile ? "text-sm px-2" : "text-lg"}`}
+          className={`text-muted-foreground max-w-2xl mx-auto ${isMobile ? "text-sm px-2" : "text-lg"}`}
         >
           Start your coding journey with interactive lessons, practice
           exercises, and real-world projects. Master programming languages step
