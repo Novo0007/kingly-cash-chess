@@ -51,6 +51,7 @@ export interface Exercise {
   correctAnswer: string | string[];
   explanation?: string;
   points: number;
+  coinReward: number;
 }
 
 export interface Resource {
