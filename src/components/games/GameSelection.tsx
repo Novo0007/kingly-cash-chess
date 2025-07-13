@@ -96,7 +96,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         description:
           "Classic strategy game with timed matches and real money prizes",
         icon: Crown,
-        emoji: "♛",
+        emoji: "��",
         color: "amber",
         gradient: "from-amber-700 via-orange-700 to-yellow-700",
         lightGradient: "from-amber-100 via-orange-100 to-yellow-100",
@@ -211,9 +211,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
       },
       {
         id: "codelearn",
-        title: "CodeLearn Academy",
+        title: "CodeMaster",
         description:
-          "Learn programming languages with interactive lessons and achievements!",
+          "Master programming with interactive lessons, coding challenges, and a supportive community!",
         icon: Code,
         emoji: "👨‍💻",
         color: "indigo",
