@@ -23,6 +23,7 @@ import { CodeLearnUnitView } from "./CodeLearnUnitView";
 import { CodeLearnLessonView } from "./CodeLearnLessonView";
 import { CodeLearnAchievements } from "./CodeLearnAchievements";
 import { CodeLearnProfile } from "./CodeLearnProfile";
+import { CodeLearnLeaderboard } from "./CodeLearnLeaderboard";
 import { CodeLearnDataService } from "./CodeLearnData";
 import { CodeLearnProgressManager } from "./CodeLearnProgress";
 import {
