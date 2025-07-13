@@ -59,7 +59,7 @@ export const StudyMaterials: React.FC<StudyMaterialsProps> = ({ onBack }) => {
       duration: "3-4 hours",
       rating: 4.8,
       downloads: 15420,
-      url: "/pdfs/javascript-fundamentals.pdf",
+      url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide",
       topics: ["Variables", "Functions", "Objects", "Arrays", "Control Flow"],
     },
     {
@@ -73,7 +73,7 @@ export const StudyMaterials: React.FC<StudyMaterialsProps> = ({ onBack }) => {
       duration: "4-5 hours",
       rating: 4.9,
       downloads: 12800,
-      url: "/pdfs/python-essentials.pdf",
+      url: "https://docs.python.org/3/tutorial/index.html",
       topics: ["Syntax", "Data Types", "Functions", "Classes", "Modules"],
     },
     {
