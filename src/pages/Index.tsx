@@ -366,6 +366,22 @@ const Index = () => {
     }
   };
 
+  if (useProfessionalStyle && currentView === "games") {
+    return (
+      <MobileOptimized>
+        <ProfessionalGameLobby onSelectGame={handleSelectGame} />
+        {/* Bottom Nav for mobile */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-30">
+          <BottomNav
+            currentView={currentView}
+            onViewChange={setCurrentView}
+            isAdmin={isAdmin}
+          />
+        </div>
+      </MobileOptimized>
+    );
+  }
+
   if (useModernStyle && currentView === "games") {
     return (
       <MobileOptimized>
