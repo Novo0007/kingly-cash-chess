@@ -404,7 +404,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                   unitProgress.progress > 0 &&
                   unitProgress.progress < 100 && (
                     <div
-                      className={`text-white/60 text-center pt-2 ${isMobile ? "text-xs" : "text-xs"}`}
+                      className={`text-muted-foreground text-center pt-2 ${isMobile ? "text-xs" : "text-xs"}`}
                     >
                       Next: Lesson {unitProgress.completedLessons + 1}
                     </div>
