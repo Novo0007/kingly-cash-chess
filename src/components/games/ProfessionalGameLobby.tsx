@@ -175,7 +175,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       iconBg: "bg-teal-100",
       iconColor: "text-teal-600",
       players: "150+ Hunting",
-      status: "💰 COINS",
+      status: "���� COINS",
       earning: "Coin Rewards",
       features: ["Multiplayer Mode", "Smart Hints", "Daily Rewards"],
       highlight: false,
@@ -268,6 +268,34 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Quick Access Section - Mobile Only */}
+      {isMobile && (
+        <div className="bg-card border border-border rounded-2xl p-4 shadow-sm">
+          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+            <Zap className="w-5 h-5 text-primary" />
+            Quick Access
+          </h3>
+          <div className="grid grid-cols-4 gap-3">
+            {games.slice(0, 4).map((game) => (
+              <button
+                key={game.id}
+                onClick={() => handleGameSelect(game.id)}
+                className="flex flex-col items-center p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
+              >
+                <div
+                  className={`w-10 h-10 ${game.iconBg} rounded-lg flex items-center justify-center mb-2`}
+                >
+                  <game.icon className={`w-5 h-5 ${game.iconColor}`} />
+                </div>
+                <span className="text-xs font-medium text-foreground text-center leading-tight">
+                  {game.title.split(" ")[0]}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-8">
         {/* Category Filter */}
