@@ -29,7 +29,7 @@ import {
   getFourPicsLevels,
   getFourPicsProgress,
   completeFourPicsLevel,
-  useFourPicsHint,
+  recordFourPicsHint,
   canAccessFourPicsLevel,
 } from "@/utils/fourpicsDbHelper";
 import type { User } from "@supabase/supabase-js";
@@ -216,7 +216,7 @@ export const FourPicsGame: React.FC<FourPicsGameProps> = ({
 
         if (result.success) {
           // Then record hint usage in database
-          const hintResult = await useFourPicsHint(
+          const hintResult = await recordFourPicsHint(
             user.id,
             currentLevel.id,
             hintType,
