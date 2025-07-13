@@ -92,7 +92,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
       title: "2048 Puzzle",
       description: "Small numbers, infinite possibilities",
       icon: Gamepad2,
-      emoji: "����",
+      emoji: "🎯",
       players: "300+ thinkers",
       isPopular: false,
       isPaid: false,
@@ -221,16 +221,23 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
 
             {/* Main Title */}
             <h1
-              className={`font-black bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent mb-4 ${isMobile ? "text-3xl" : "text-6xl"}`}
+              className={`font-black bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent mb-2 ${isMobile ? "text-3xl" : "text-6xl"}`}
             >
               {currentTheme.preview} NNC Games
             </h1>
+
+            {/* Unique Slogan */}
+            <div
+              className={`font-bold text-transparent bg-gradient-to-r from-purple-300 via-pink-300 to-cyan-300 bg-clip-text mb-4 ${isMobile ? "text-lg" : "text-2xl"}`}
+            >
+              "Where Dreams Become Play"
+            </div>
 
             {/* Emotional Subtitle */}
             <p
               className={`text-white/80 font-light mb-6 ${isMobile ? "text-sm px-4" : "text-xl"}`}
             >
-              ✨ Where every click sparks joy, every game tells a story ✨
+              ✨ Crafting moments of pure magic, one game at a time ✨
             </p>
 
             {/* Modern Stats */}
