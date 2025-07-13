@@ -565,7 +565,7 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
       )}
 
       {/* Explanation */}
-      {showExplanation && currentExercise.explanation && (
+      {showExplanation && currentExercise && currentExercise.explanation && (
         <Card className="bg-green-50 border-green-200">
           <CardHeader>
             <CardTitle className="text-green-800">Explanation</CardTitle>
