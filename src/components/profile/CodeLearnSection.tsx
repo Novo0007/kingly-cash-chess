@@ -132,7 +132,7 @@ export const CodeLearnSection: React.FC<CodeLearnSectionProps> = ({
             >
               <Code className="w-5 h-5 text-white" />
             </div>
-            CodeLearn Academy Progress
+            CodeMaster Progress
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
