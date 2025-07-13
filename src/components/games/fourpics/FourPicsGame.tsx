@@ -75,12 +75,51 @@ export const FourPicsGame: React.FC<FourPicsGameProps> = ({
       const progressResult = await getFourPicsProgress(user.id);
       if (progressResult.success) {
         setUserProgress(progressResult.data);
+      } else {
+        console.warn("Failed to fetch 4 Pics progress:", progressResult.error);
+        // Set default progress if database not set up
+        setUserProgress({
+          current_level: 1,
+          total_levels_completed: 0,
+          total_coins_earned: 0,
+          total_coins_spent: 0,
+          total_hints_used: 0,
+          total_time_played: 0,
+          highest_level_reached: 1,
+        });
       }
 
       // Fetch available levels
       const levelsResult = await getFourPicsLevels();
       if (levelsResult.success) {
         setAvailableLevels(levelsResult.data || []);
+      } else {
+        console.warn("Failed to fetch 4 Pics levels:", levelsResult.error);
+        // Show error but allow demo with fallback levels
+        toast.error(
+          "Game database not set up yet. Please run the migration first.",
+        );
+        // Create fallback demo levels
+        setAvailableLevels([
+          {
+            id: "demo-1",
+            level_number: 1,
+            word: "DEMO",
+            image_urls: [
+              "https://images.unsplash.com/photo-1619546813926-a78fa6372cd2?w=300&h=300&fit=crop",
+              "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=300&h=300&fit=crop",
+              "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=300&h=300&fit=crop",
+              "https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?w=300&h=300&fit=crop",
+            ],
+            difficulty: "easy" as const,
+            hint_letter_cost: 5,
+            hint_image_cost: 10,
+            hint_word_cost: 15,
+            coins_reward: 5,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+        ]);
       }
     } catch (error) {
       console.error("Error fetching game data:", error);
