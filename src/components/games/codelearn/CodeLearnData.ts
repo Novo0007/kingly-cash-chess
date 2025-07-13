@@ -202,7 +202,7 @@ console.log(age);  // 25`,
         order: 2,
         prerequisiteIds: ["js-variables"],
         isCompleted: false,
-        isUnlocked: false,
+        isUnlocked: true,
         attempts: 0,
         content: {
           explanation:
