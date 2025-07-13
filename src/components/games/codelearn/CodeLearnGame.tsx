@@ -35,6 +35,7 @@ import { CodeLearnLeaderboard } from "./CodeLearnLeaderboard";
 import { CodeLearnDataService } from "./CodeLearnData";
 import { CodeLearnProgressManager } from "./CodeLearnProgress";
 import { StudyMaterials } from "./StudyMaterials";
+import { CodeLearnUnitLessonsView } from "./CodeLearnUnitLessonsView";
 import {
   CodeLanguage,
   UserProgress,
