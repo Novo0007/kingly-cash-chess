@@ -244,30 +244,38 @@ export const PDFReader: React.FC<PDFReaderProps> = ({
         {/* PDF Viewer Area */}
         <div className="flex-1 bg-muted/30 p-4 overflow-auto">
           <div className="mx-auto max-w-4xl">
-            {/* PDF Placeholder - In real implementation, this would be replaced with PDF.js or similar */}
+            {/* PDF Viewer Area - Real Documentation */}
             <div
-              className="bg-white shadow-lg mx-auto border border-border"
+              className="bg-card shadow-lg mx-auto border border-border rounded-lg overflow-hidden"
               style={{
                 width: `${zoom}%`,
                 aspectRatio: "8.5/11",
                 maxWidth: "100%",
               }}
             >
-              <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-gradient-to-br from-gray-50 to-gray-100">
-                <FileText className="h-16 w-16 text-gray-400 mb-4" />
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                  {title} - Page {currentPage}
+              <div className="h-full flex flex-col items-center justify-center p-8 text-center">
+                <FileText className="h-16 w-16 text-primary mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {title}
                 </h3>
-                <p className="text-gray-500 mb-4">
-                  PDF content would be rendered here using PDF.js or similar
-                  library
+                <p className="text-muted-foreground mb-6">
+                  This study material is available as interactive documentation
                 </p>
-                <div className="text-sm text-gray-400 space-y-2">
+                <div className="text-sm text-muted-foreground space-y-2 mb-6">
+                  <p>• Official documentation and guides</p>
                   <p>• Interactive code examples</p>
-                  <p>• Syntax highlighting</p>
-                  <p>• Progressive difficulty</p>
-                  <p>• Real-world projects</p>
+                  <p>• Comprehensive tutorials</p>
+                  <p>• Real-world applications</p>
                 </div>
+                <Button
+                  onClick={() =>
+                    window.open(pdfUrl, "_blank", "noopener,noreferrer")
+                  }
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Open Documentation
+                </Button>
               </div>
             </div>
           </div>
