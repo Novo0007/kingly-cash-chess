@@ -30,7 +30,14 @@ import { OptimizedImage } from "@/components/ui/optimized-image";
 
 interface ModernGameLobbyProps {
   onSelectGame: (
-    gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
+    gameType:
+      | "chess"
+      | "ludo"
+      | "maze"
+      | "game2048"
+      | "math"
+      | "wordsearch"
+      | "codelearn",
   ) => void;
 }
 
