@@ -114,7 +114,7 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
 
   const handleUnitSelect = (unit: CodeUnit) => {
     setSelectedUnit(unit);
-    setCurrentView("lesson");
+    setCurrentView("unit-lessons");
     setIsMobileMenuOpen(false);
   };
 
