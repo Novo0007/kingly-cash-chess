@@ -41,6 +41,33 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   onLessonComplete,
   onBackToUnits,
 }) => {
+  // Early return if lesson data is invalid
+  if (
+    !lesson ||
+    !lesson.content ||
+    !lesson.content.exercises ||
+    lesson.content.exercises.length === 0
+  ) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <div className="text-muted-foreground mb-4">
+              <BookOpen className="w-12 h-12 mx-auto mb-2" />
+              <h3 className="text-lg font-semibold">Lesson Not Available</h3>
+              <p className="text-sm">
+                This lesson doesn't have any exercises yet.
+              </p>
+            </div>
+            <Button onClick={onBackToUnits} variant="outline">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Units
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [exerciseAnswers, setExerciseAnswers] = useState<
     Record<string, string>
