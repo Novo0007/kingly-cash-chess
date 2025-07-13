@@ -339,10 +339,11 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   };
 
   if (showResults && isComplete) {
-    const correctAnswers = lesson.content.exercises.filter(
-      (ex) => exerciseResults[ex.id],
+    const exercises = lesson?.content?.exercises ?? [];
+    const correctAnswers = exercises.filter(
+      (ex) => ex?.id && exerciseResults[ex.id],
     ).length;
-    const totalExercises = lesson.content.exercises.length;
+    const totalExercises = exercises.length;
     const accuracy = correctAnswers / totalExercises;
     const score = accuracy * 100;
 
