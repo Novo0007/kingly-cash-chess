@@ -94,20 +94,36 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
       }
     };
 
-    const initializeLevelSystem = () => {
+    const initializeLevelSystem = async () => {
       try {
-        // Load level progress from localStorage
-        const savedProgress = localStorage.getItem(
-          `math_level_progress_${user?.id}`,
-        );
-        const progressData = savedProgress ? JSON.parse(savedProgress) : {};
-        const system = new MathLevelSystem(progressData);
-        setLevelSystem(system);
+        // Initialize Supabase level system
+        const supabaseSystem = new MathLevelSystemSupabase(user.id);
+        setSupabaseLevelSystem(supabaseSystem);
+
+        // Try to initialize user progress in database
+        const progress = await supabaseSystem.initializeUserProgress();
+
+        if (progress) {
+          // Create local system with Supabase data
+          const localSystem = new MathLevelSystem(progress);
+          setLevelSystem(localSystem);
+          toast.success("Level system connected to database! 🎯");
+        } else {
+          // Fallback to local system
+          const savedProgress = localStorage.getItem(
+            `math_level_progress_${user?.id}`,
+          );
+          const progressData = savedProgress ? JSON.parse(savedProgress) : {};
+          const system = new MathLevelSystem(progressData);
+          setLevelSystem(system);
+          toast.info("Using local level system. Database sync unavailable.");
+        }
       } catch (error) {
         console.error("Error initializing level system:", error);
         // Create new level system on error
         const system = new MathLevelSystem();
         setLevelSystem(system);
+        toast.warning("Level system initialized locally only.");
       }
     };
 
