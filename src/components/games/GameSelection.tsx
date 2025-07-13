@@ -18,6 +18,7 @@ import {
   Clock,
   Brain,
   Code,
+  Image,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
@@ -37,7 +38,8 @@ interface GameSelectionProps {
       | "game2048"
       | "math"
       | "wordsearch"
-      | "codelearn",
+      | "codelearn"
+      | "fourpics",
   ) => void;
 }
 
@@ -69,7 +71,8 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         | "game2048"
         | "math"
         | "wordsearch"
-        | "codelearn",
+        | "codelearn"
+        | "fourpics",
     ) => {
       onSelectGame(gameType);
     },
@@ -228,6 +231,26 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         status: "LEARN",
         players: "1.2K+ Learning",
         isMoneyGame: false,
+      },
+      {
+        id: "fourpics",
+        title: "4 Pics 1 Word",
+        description:
+          "Guess the word from four pictures - challenging visual puzzles with coin rewards!",
+        icon: Image,
+        emoji: "🖼️",
+        color: "orange",
+        gradient: "from-orange-700 via-red-700 to-pink-700",
+        lightGradient: "from-orange-100 via-red-100 to-pink-100",
+        features: [
+          "🖼️ Visual Puzzles",
+          "🪙 Coin System",
+          "💡 Smart Hints",
+          "📈 99 Levels",
+        ],
+        status: "NEW",
+        players: "80+ Playing",
+        isMoneyGame: true,
       },
     ],
     [],
@@ -496,7 +519,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                             | "maze"
                             | "game2048"
                             | "math"
-                            | "wordsearch",
+                            | "wordsearch"
+                            | "codelearn"
+                            | "fourpics",
                         )
                       }
                       className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:from-opacity-90 text-white border-0 py-4 md:py-5 lg:py-6 text-sm md:text-base lg:text-lg font-bold rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 ease-out transform hover:scale-[1.03] hover:-translate-y-1 group/btn will-change-transform`}
