@@ -304,12 +304,53 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
       const scoreData = currentLogic!.calculateFinalScore();
 
       // Save level progress if it's a level game
-      if (gameType === "level" && levelSystem) {
-        const progress = levelSystem.getProgress();
-        localStorage.setItem(
-          `math_level_progress_${user.id}`,
-          JSON.stringify(progress),
-        );
+      if (gameType === "level" && levelSystem && supabaseLevelSystem) {
+        try {
+          const levelState = finalState as LevelGameState;
+          const levelNumber = levelState.currentLevel.level;
+          const accuracy =
+            scoreData.correct_answers / scoreData.total_questions;
+
+          // Try to save to Supabase first
+          const levelCompleted = await supabaseLevelSystem.completeLevel(
+            levelNumber,
+            scoreData.score,
+            scoreData.total_questions,
+            scoreData.correct_answers,
+            scoreData.time_taken,
+          );
+
+          if (levelCompleted) {
+            toast.success(
+              `Level ${levelNumber} progress saved to database! 🎯`,
+            );
+
+            // Update local level system with fresh data
+            const updatedProgress =
+              await supabaseLevelSystem.fetchUserProgress();
+            if (updatedProgress) {
+              const updatedLocalSystem = new MathLevelSystem(updatedProgress);
+              setLevelSystem(updatedLocalSystem);
+            }
+          } else {
+            // Fallback to local storage
+            const progress = levelSystem.getProgress();
+            localStorage.setItem(
+              `math_level_progress_${user.id}`,
+              JSON.stringify(progress),
+            );
+            toast.info("Level progress saved locally only.");
+          }
+        } catch (error) {
+          console.error("Error saving level progress:", error);
+          // Fallback to local storage
+          const progress = levelSystem.getProgress();
+          localStorage.setItem(
+            `math_level_progress_${user.id}`,
+            JSON.stringify(progress),
+          );
+          toast.warning("Level progress saved locally only.");
+        }
       }
 
       // Create a new object with only the database-relevant properties
