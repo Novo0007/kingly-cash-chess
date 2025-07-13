@@ -241,13 +241,13 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
 
         {/* Progress Bars */}
         {userProgress && dailyGoal && levelInfo && (
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Daily Goal Progress */}
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Daily XP Goal Progress */}
             <Card className="bg-gradient-to-r from-green-900/30 to-blue-900/30 border border-green-400/30">
               <CardContent className="p-3">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-green-300 text-sm font-medium">
-                    Daily Goal
+                    Daily XP Goal
                   </span>
                   <span className="text-green-100 text-sm">
                     {dailyGoal.current}/{dailyGoal.goal} XP
@@ -257,6 +257,28 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
                   <div
                     className="bg-gradient-to-r from-green-400 to-blue-400 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${dailyGoal.percentage}%` }}
+                  ></div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Daily Coin Goal Progress */}
+            <Card className="bg-gradient-to-r from-amber-900/30 to-orange-900/30 border border-amber-400/30">
+              <CardContent className="p-3">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-amber-300 text-sm font-medium">
+                    Daily Coins
+                  </span>
+                  <span className="text-amber-100 text-sm">
+                    {userProgress.todayCoins}/{userProgress.dailyGoalCoins}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div
+                    className="bg-gradient-to-r from-amber-400 to-orange-400 h-2 rounded-full transition-all duration-300"
+                    style={{
+                      width: `${Math.min((userProgress.todayCoins / userProgress.dailyGoalCoins) * 100, 100)}%`,
+                    }}
                   ></div>
                 </div>
               </CardContent>
