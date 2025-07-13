@@ -35,6 +35,20 @@ export async function getFourPicsLevels(
         hint: error.hint,
         code: error.code,
       });
+
+      // Check if it's a missing table error
+      if (
+        error.code === "42P01" ||
+        error.message.includes("relation") ||
+        error.message.includes("does not exist")
+      ) {
+        return {
+          success: false,
+          error:
+            "4 Pics 1 Word database not set up. Please run the migration: supabase/migrations/20250130000000_create_fourpics_system.sql",
+        };
+      }
+
       return {
         success: false,
         error: `Database error: ${error.message}. ${error.hint || ""}`,
