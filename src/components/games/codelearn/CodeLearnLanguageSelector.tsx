@@ -164,8 +164,8 @@ export const CodeLearnLanguageSelector: React.FC<
               key={language.id}
               className={`group relative overflow-hidden transition-all duration-300 cursor-pointer border-2 backdrop-blur-sm ${
                 langProgress.isStarted
-                  ? "border-blue-400/50 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 hover:from-blue-500/30 hover:to-indigo-500/30"
-                  : "border-white/20 bg-white/10 hover:border-blue-300/50 hover:bg-white/20"
+                  ? "border-primary/50 bg-gradient-to-br from-primary/20 to-accent/20 hover:from-primary/30 hover:to-accent/30"
+                  : "border-border bg-card hover:border-primary/50 hover:bg-card/80"
               } ${isMobile ? "hover:scale-[1.02]" : "hover:scale-105 hover:shadow-2xl"}`}
               onClick={() => onLanguageSelect(language)}
             >
