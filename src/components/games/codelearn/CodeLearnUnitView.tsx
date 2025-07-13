@@ -57,7 +57,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
   return (
     <div className={isMobile ? "space-y-4" : "space-y-6"}>
       {/* Language Header */}
-      <Card className="bg-gradient-to-r from-white/10 to-white/5 border border-white/20 backdrop-blur-sm">
+      <Card className="bg-gradient-to-r from-card/90 to-card/70 border border-border backdrop-blur-sm">
         <CardHeader className={isMobile ? "p-4" : ""}>
           {isMobile ? (
             /* Mobile Layout */
@@ -70,10 +70,10 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                   {language.icon}
                 </div>
                 <div className="flex-1">
-                  <CardTitle className="text-lg text-white mb-1">
+                  <CardTitle className="text-lg text-foreground mb-1">
                     {language.name} Course
                   </CardTitle>
-                  <p className="text-white/80 text-xs">
+                  <p className="text-muted-foreground text-xs">
                     {language.description}
                   </p>
                 </div>
@@ -82,16 +82,16 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
               {languageProgress && (
                 <div className="flex justify-between items-center">
                   <div className="text-center">
-                    <div className="text-lg font-bold text-white">
+                    <div className="text-lg font-bold text-foreground">
                       Level {languageProgress.level}
                     </div>
-                    <div className="text-white/60 text-xs">
+                    <div className="text-muted-foreground text-xs">
                       {languageProgress.completedLessons}/
                       {languageProgress.totalLessons} lessons
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-emerald-300">
+                    <div className="text-lg font-bold text-primary">
                       {Math.round(
                         (languageProgress.completedLessons /
                           languageProgress.totalLessons) *
@@ -99,7 +99,9 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                       )}
                       %
                     </div>
-                    <div className="text-white/60 text-xs">Complete</div>
+                    <div className="text-muted-foreground text-xs">
+                      Complete
+                    </div>
                   </div>
                 </div>
               )}
@@ -107,9 +109,9 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
               {/* Mobile Progress Bar */}
               {languageProgress && (
                 <div>
-                  <div className="w-full bg-white/20 rounded-full h-2">
+                  <div className="w-full bg-muted rounded-full h-2">
                     <div
-                      className="bg-gradient-to-r from-emerald-400 to-cyan-400 h-2 rounded-full transition-all duration-300 shadow-lg"
+                      className="bg-gradient-to-r from-primary to-accent h-2 rounded-full transition-all duration-300 shadow-lg"
                       style={{
                         width: `${(languageProgress.completedLessons / languageProgress.totalLessons) * 100}%`,
                       }}
@@ -129,20 +131,20 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                   {language.icon}
                 </div>
                 <div className="flex-1">
-                  <CardTitle className="text-2xl text-white mb-1">
+                  <CardTitle className="text-2xl text-foreground mb-1">
                     {language.name} Course
                   </CardTitle>
-                  <p className="text-white/80 text-sm">
+                  <p className="text-muted-foreground text-sm">
                     {language.description}
                   </p>
                 </div>
 
                 {languageProgress && (
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-white">
+                    <div className="text-2xl font-bold text-foreground">
                       Level {languageProgress.level}
                     </div>
-                    <div className="text-white/60 text-sm">
+                    <div className="text-muted-foreground text-sm">
                       {languageProgress.completedLessons}/
                       {languageProgress.totalLessons} lessons
                     </div>
@@ -154,10 +156,10 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
               {languageProgress && (
                 <div className="mt-4">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-white/80 text-sm">
+                    <span className="text-muted-foreground text-sm">
                       Course Progress
                     </span>
-                    <span className="text-white text-sm font-semibold">
+                    <span className="text-foreground text-sm font-semibold">
                       {Math.round(
                         (languageProgress.completedLessons /
                           languageProgress.totalLessons) *
@@ -166,9 +168,9 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                       %
                     </span>
                   </div>
-                  <div className="w-full bg-white/20 rounded-full h-3">
+                  <div className="w-full bg-muted rounded-full h-3">
                     <div
-                      className="bg-gradient-to-r from-emerald-400 to-cyan-400 h-3 rounded-full transition-all duration-300 shadow-lg"
+                      className="bg-gradient-to-r from-primary to-accent h-3 rounded-full transition-all duration-300 shadow-lg"
                       style={{
                         width: `${(languageProgress.completedLessons / languageProgress.totalLessons) * 100}%`,
                       }}
@@ -194,17 +196,17 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
               key={unit.id}
               className={`group relative overflow-hidden transition-all duration-300 backdrop-blur-sm ${
                 isLocked
-                  ? "opacity-60 cursor-not-allowed bg-white/10 border-white/20"
+                  ? "opacity-60 cursor-not-allowed bg-muted/50 border-border"
                   : unitProgress.isCompleted
-                    ? "cursor-pointer bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border-emerald-400/30 hover:from-emerald-500/30 hover:to-teal-500/30"
-                    : "cursor-pointer bg-white/10 border-white/20 hover:border-cyan-300/50 hover:bg-white/20"
+                    ? "cursor-pointer bg-gradient-to-br from-primary/20 to-accent/20 border-primary/30 hover:from-primary/30 hover:to-accent/30"
+                    : "cursor-pointer bg-card border-border hover:border-primary/50 hover:bg-card/80"
               } ${isMobile ? "hover:scale-[1.02]" : "hover:scale-105 hover:shadow-xl"}`}
               onClick={() => !isLocked && onUnitSelect(unit)}
             >
               {/* Progress Indicator */}
               {!isLocked && (
                 <div
-                  className="absolute top-0 left-0 h-1 bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 shadow-lg"
+                  className="absolute top-0 left-0 h-1 bg-gradient-to-r from-primary to-accent shadow-lg"
                   style={{ width: `${unitProgress.progress}%` }}
                 />
               )}
@@ -250,17 +252,19 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                     <CardTitle
                       className={`mb-1 ${
                         isLocked
-                          ? "text-white/60"
+                          ? "text-muted-foreground"
                           : unitProgress.isCompleted
-                            ? "text-emerald-200"
-                            : "text-white"
+                            ? "text-primary"
+                            : "text-foreground"
                       } ${isMobile ? "text-base" : "text-lg"}`}
                     >
                       {unit.title}
                     </CardTitle>
                     <p
                       className={`${
-                        isLocked ? "text-white/40" : "text-white/80"
+                        isLocked
+                          ? "text-muted-foreground/60"
+                          : "text-muted-foreground"
                       } ${isMobile ? "text-xs" : "text-sm"}`}
                     >
                       {unit.description}
@@ -277,27 +281,27 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span
-                        className={`font-medium text-white/90 ${isMobile ? "text-xs" : "text-sm"}`}
+                        className={`font-medium text-foreground ${isMobile ? "text-xs" : "text-sm"}`}
                       >
                         Progress
                       </span>
                       <span
-                        className={`font-bold text-cyan-300 ${isMobile ? "text-xs" : "text-sm"}`}
+                        className={`font-bold text-primary ${isMobile ? "text-xs" : "text-sm"}`}
                       >
                         {unitProgress.completedLessons}/
                         {unitProgress.totalLessons}
                       </span>
                     </div>
 
-                    <div className="w-full bg-white/20 rounded-full h-2">
+                    <div className="w-full bg-muted rounded-full h-2">
                       <div
-                        className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-300 shadow-lg"
+                        className="bg-gradient-to-r from-primary to-accent h-2 rounded-full transition-all duration-300 shadow-lg"
                         style={{ width: `${unitProgress.progress}%` }}
                       />
                     </div>
 
                     <div
-                      className={`text-white/70 ${isMobile ? "text-xs" : "text-xs"}`}
+                      className={`text-muted-foreground ${isMobile ? "text-xs" : "text-xs"}`}
                     >
                       {unitProgress.progress}% complete
                     </div>
@@ -311,7 +315,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                   <div
                     className={`flex items-center ${isMobile ? "gap-3" : "gap-4"}`}
                   >
-                    <div className="flex items-center gap-1 text-white/80">
+                    <div className="flex items-center gap-1 text-muted-foreground">
                       <BookOpen
                         className={`${isMobile ? "w-3 h-3" : "w-4 h-4"}`}
                       />
@@ -319,7 +323,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                     </div>
 
                     {!isLocked && unitProgress.isCompleted && (
-                      <div className="flex items-center gap-1 text-emerald-400">
+                      <div className="flex items-center gap-1 text-primary">
                         <Trophy
                           className={`${isMobile ? "w-3 h-3" : "w-4 h-4"}`}
                         />
@@ -329,7 +333,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                   </div>
 
                   {!isLocked && !unitProgress.isCompleted && (
-                    <div className="flex items-center gap-1 text-cyan-300">
+                    <div className="flex items-center gap-1 text-accent">
                       <Clock
                         className={`${isMobile ? "w-3 h-3" : "w-4 h-4"}`}
                       />
@@ -340,12 +344,12 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
 
                 {/* Action Button */}
                 {isLocked ? (
-                  <div className="flex items-center justify-center py-3 px-4 bg-white/10 rounded-lg backdrop-blur-sm">
+                  <div className="flex items-center justify-center py-3 px-4 bg-muted/50 rounded-lg backdrop-blur-sm">
                     <Lock
-                      className={`text-white/60 mr-2 ${isMobile ? "w-3 h-3" : "w-4 h-4"}`}
+                      className={`text-muted-foreground mr-2 ${isMobile ? "w-3 h-3" : "w-4 h-4"}`}
                     />
                     <span
-                      className={`text-white/60 font-medium ${isMobile ? "text-xs" : "text-sm"}`}
+                      className={`text-muted-foreground font-medium ${isMobile ? "text-xs" : "text-sm"}`}
                     >
                       Complete previous unit to unlock
                     </span>
@@ -354,8 +358,8 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                   <Button
                     className={`w-full transition-all duration-200 font-semibold ${
                       unitProgress.isCompleted
-                        ? "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg shadow-emerald-500/25"
-                        : "bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg shadow-violet-500/25"
+                        ? "bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg"
+                        : "bg-primary hover:bg-primary/90 shadow-lg"
                     }`}
                     size={isMobile ? "default" : "lg"}
                   >
@@ -400,7 +404,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                   unitProgress.progress > 0 &&
                   unitProgress.progress < 100 && (
                     <div
-                      className={`text-white/60 text-center pt-2 ${isMobile ? "text-xs" : "text-xs"}`}
+                      className={`text-muted-foreground text-center pt-2 ${isMobile ? "text-xs" : "text-xs"}`}
                     >
                       Next: Lesson {unitProgress.completedLessons + 1}
                     </div>
@@ -419,10 +423,10 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
       </div>
 
       {/* Course Stats */}
-      <Card className="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border-indigo-400/30 backdrop-blur-sm">
+      <Card className="bg-gradient-to-r from-card/80 to-card/60 border border-border backdrop-blur-sm">
         <CardContent className={isMobile ? "p-4" : "p-6"}>
           <h3
-            className={`font-bold text-indigo-200 mb-4 text-center ${isMobile ? "text-base" : "text-lg"}`}
+            className={`font-bold text-foreground mb-4 text-center ${isMobile ? "text-base" : "text-lg"}`}
           >
             Course Overview
           </h3>
@@ -432,12 +436,12 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
           >
             <div className="text-center">
               <div
-                className={`font-bold text-indigo-300 ${isMobile ? "text-xl" : "text-2xl"}`}
+                className={`font-bold text-primary ${isMobile ? "text-xl" : "text-2xl"}`}
               >
                 {units.length}
               </div>
               <div
-                className={`text-indigo-200/80 ${isMobile ? "text-xs" : "text-sm"}`}
+                className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
               >
                 Units
               </div>
@@ -445,12 +449,12 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
 
             <div className="text-center">
               <div
-                className={`font-bold text-purple-300 ${isMobile ? "text-xl" : "text-2xl"}`}
+                className={`font-bold text-accent ${isMobile ? "text-xl" : "text-2xl"}`}
               >
                 {units.reduce((total, unit) => total + unit.totalLessons, 0)}
               </div>
               <div
-                className={`text-purple-200/80 ${isMobile ? "text-xs" : "text-sm"}`}
+                className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
               >
                 Total Lessons
               </div>
@@ -458,12 +462,12 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
 
             <div className="text-center">
               <div
-                className={`font-bold text-cyan-300 ${isMobile ? "text-xl" : "text-2xl"}`}
+                className={`font-bold text-primary ${isMobile ? "text-xl" : "text-2xl"}`}
               >
                 {language.estimatedHours}h
               </div>
               <div
-                className={`text-cyan-200/80 ${isMobile ? "text-xs" : "text-sm"}`}
+                className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
               >
                 Estimated Time
               </div>
@@ -471,7 +475,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
 
             <div className="text-center">
               <div
-                className={`font-bold text-emerald-300 ${isMobile ? "text-xl" : "text-2xl"}`}
+                className={`font-bold text-accent ${isMobile ? "text-xl" : "text-2xl"}`}
               >
                 {language.difficulty === "beginner"
                   ? "🌱"
@@ -480,7 +484,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                     : "⚡"}
               </div>
               <div
-                className={`text-emerald-200/80 capitalize ${isMobile ? "text-xs" : "text-sm"}`}
+                className={`text-muted-foreground capitalize ${isMobile ? "text-xs" : "text-sm"}`}
               >
                 {language.difficulty}
               </div>

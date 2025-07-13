@@ -56,7 +56,7 @@ export interface Exercise {
 
 export interface Resource {
   title: string;
-  type: "article" | "video" | "documentation" | "example";
+  type: "article" | "video" | "documentation" | "example" | "pdf";
   url: string;
 }
 
@@ -291,27 +291,46 @@ export interface CodeLearnGameState {
   showExplanation: boolean;
 }
 
+// Study Materials
+export interface StudyMaterial {
+  id: string;
+  title: string;
+  description: string;
+  type: "pdf" | "video" | "article" | "interactive";
+  language: string;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  duration: string;
+  rating: number;
+  downloads: number;
+  url: string;
+  thumbnail?: string;
+  topics: string[];
+  fileSize?: string;
+  lastUpdated?: string;
+}
+
 export const LANGUAGES: CodeLanguage[] = [
   {
     id: "study-guide",
-    name: "Study Guide",
+    name: "Programming Fundamentals",
     icon: "📖",
     color: "#9C27B0",
     description:
       "Essential programming concepts and best practices for beginners",
     difficulty: "beginner",
-    totalLessons: 15,
-    estimatedHours: 8,
+    totalLessons: 25,
+    estimatedHours: 12,
   },
   {
     id: "javascript",
     name: "JavaScript",
     icon: "⚡",
     color: "#F7DF1E",
-    description: "Learn the language of the web with interactive exercises",
+    description:
+      "Learn the language of the web with interactive exercises and modern ES6+ features",
     difficulty: "beginner",
-    totalLessons: 120,
-    estimatedHours: 40,
+    totalLessons: 150,
+    estimatedHours: 45,
   },
   {
     id: "python",
@@ -319,10 +338,10 @@ export const LANGUAGES: CodeLanguage[] = [
     icon: "🐍",
     color: "#3776AB",
     description:
-      "Master Python for data science, web development, and automation",
+      "Master Python for data science, web development, AI, and automation",
     difficulty: "beginner",
-    totalLessons: 100,
-    estimatedHours: 35,
+    totalLessons: 140,
+    estimatedHours: 40,
   },
   {
     id: "java",
@@ -330,40 +349,179 @@ export const LANGUAGES: CodeLanguage[] = [
     icon: "☕",
     color: "#ED8B00",
     description:
-      "Build robust applications with Java's object-oriented programming",
+      "Build robust enterprise applications with Java's object-oriented programming",
     difficulty: "intermediate",
-    totalLessons: 110,
-    estimatedHours: 50,
+    totalLessons: 130,
+    estimatedHours: 55,
   },
   {
     id: "cpp",
     name: "C++",
     icon: "⚙️",
     color: "#00599C",
-    description: "Master system programming and high-performance applications",
+    description:
+      "Master system programming, game development, and high-performance applications",
     difficulty: "advanced",
-    totalLessons: 130,
-    estimatedHours: 60,
+    totalLessons: 160,
+    estimatedHours: 70,
+  },
+  {
+    id: "csharp",
+    name: "C#",
+    icon: "🔷",
+    color: "#239120",
+    description:
+      "Develop desktop, web, and mobile applications with Microsoft's C#",
+    difficulty: "intermediate",
+    totalLessons: 120,
+    estimatedHours: 50,
   },
   {
     id: "react",
     name: "React",
     icon: "⚛️",
     color: "#61DAFB",
-    description: "Build modern web applications with React and JSX",
+    description:
+      "Build modern, responsive web applications with React and hooks",
+    difficulty: "intermediate",
+    totalLessons: 100,
+    estimatedHours: 35,
+  },
+  {
+    id: "typescript",
+    name: "TypeScript",
+    icon: "📘",
+    color: "#007ACC",
+    description:
+      "Add type safety to JavaScript with TypeScript for better development",
+    difficulty: "intermediate",
+    totalLessons: 90,
+    estimatedHours: 30,
+  },
+  {
+    id: "nodejs",
+    name: "Node.js",
+    icon: "🟢",
+    color: "#68A063",
+    description: "Build server-side applications and APIs with JavaScript",
+    difficulty: "intermediate",
+    totalLessons: 85,
+    estimatedHours: 32,
+  },
+  {
+    id: "go",
+    name: "Go",
+    icon: "🔵",
+    color: "#00ADD8",
+    description:
+      "Learn Google's Go language for efficient concurrent programming",
+    difficulty: "intermediate",
+    totalLessons: 75,
+    estimatedHours: 28,
+  },
+  {
+    id: "rust",
+    name: "Rust",
+    icon: "🦀",
+    color: "#CE422B",
+    description: "Master memory-safe systems programming with Rust",
+    difficulty: "advanced",
+    totalLessons: 95,
+    estimatedHours: 45,
+  },
+  {
+    id: "swift",
+    name: "Swift",
+    icon: "🍃",
+    color: "#FA7343",
+    description: "Develop iOS and macOS applications with Apple's Swift",
+    difficulty: "intermediate",
+    totalLessons: 110,
+    estimatedHours: 42,
+  },
+  {
+    id: "kotlin",
+    name: "Kotlin",
+    icon: "🔶",
+    color: "#7F52FF",
+    description: "Modern Android development with Kotlin's concise syntax",
+    difficulty: "intermediate",
+    totalLessons: 105,
+    estimatedHours: 38,
+  },
+  {
+    id: "php",
+    name: "PHP",
+    icon: "🐘",
+    color: "#777BB4",
+    description:
+      "Build dynamic web applications with PHP and popular frameworks",
+    difficulty: "beginner",
+    totalLessons: 95,
+    estimatedHours: 35,
+  },
+  {
+    id: "ruby",
+    name: "Ruby",
+    icon: "💎",
+    color: "#CC342D",
+    description: "Learn elegant programming with Ruby and Ruby on Rails",
+    difficulty: "beginner",
+    totalLessons: 85,
+    estimatedHours: 32,
+  },
+  {
+    id: "vue",
+    name: "Vue.js",
+    icon: "💚",
+    color: "#4FC08D",
+    description: "Build progressive web applications with Vue.js framework",
     difficulty: "intermediate",
     totalLessons: 80,
     estimatedHours: 30,
   },
   {
-    id: "typescript",
-    name: "TypeScript",
-    icon: "���",
-    color: "#007ACC",
-    description: "Add type safety to JavaScript with TypeScript",
-    difficulty: "intermediate",
-    totalLessons: 90,
+    id: "angular",
+    name: "Angular",
+    icon: "🅰️",
+    color: "#DD0031",
+    description: "Develop enterprise-scale applications with Angular framework",
+    difficulty: "advanced",
+    totalLessons: 120,
+    estimatedHours: 48,
+  },
+  {
+    id: "sql",
+    name: "SQL & Databases",
+    icon: "🗄️",
+    color: "#336791",
+    description:
+      "Master database design, queries, and data management with SQL",
+    difficulty: "beginner",
+    totalLessons: 70,
     estimatedHours: 25,
+  },
+  {
+    id: "algorithms",
+    name: "Algorithms & Data Structures",
+    icon: "🧮",
+    color: "#FF6B6B",
+    description:
+      "Essential computer science concepts for problem-solving and interviews",
+    difficulty: "advanced",
+    totalLessons: 100,
+    estimatedHours: 50,
+  },
+  {
+    id: "machine-learning",
+    name: "Machine Learning",
+    icon: "🤖",
+    color: "#FF9500",
+    description:
+      "Introduction to AI and machine learning with practical projects",
+    difficulty: "advanced",
+    totalLessons: 90,
+    estimatedHours: 60,
   },
 ];
 
