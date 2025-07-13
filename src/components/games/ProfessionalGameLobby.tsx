@@ -445,6 +445,29 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
           )}
         </div>
 
+        {/* Show More/Less Button */}
+        {filteredGames.length > 4 && (
+          <div className="text-center mt-6">
+            <Button
+              onClick={() => setShowAllGames(!showAllGames)}
+              variant="outline"
+              className="bg-card border-border text-foreground hover:bg-accent px-8 py-3 rounded-full"
+            >
+              {showAllGames ? (
+                <>
+                  <Menu className="w-4 h-4 mr-2" />
+                  Show Less Games
+                </>
+              ) : (
+                <>
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  Show All Games ({filteredGames.length})
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+
         {/* Empty State */}
         {filteredGames.length === 0 && (
           <div className="text-center py-12">
