@@ -447,6 +447,7 @@ print("Height:", height)`,
               explanation:
                 "The main method is the entry point of every Java application.",
               points: 20,
+              coinReward: 10,
             },
           ],
           hints: [
