@@ -4,6 +4,8 @@ import {
   Achievement,
   CodeSession,
   DEFAULT_ACHIEVEMENTS,
+  CoinTransaction,
+  CoinReward,
 } from "./CodeLearnTypes";
 
 export class CodeLearnProgressManager {
@@ -25,6 +27,9 @@ export class CodeLearnProgressManager {
       currentStreak: 0,
       longestStreak: 0,
       totalXP: 0,
+      totalCoins: 0,
+      availableCoins: 0,
+      coinsSpent: 0,
       level: 1,
       completedLessons: 0,
       totalTimeSpent: 0,
@@ -35,6 +40,8 @@ export class CodeLearnProgressManager {
       })),
       dailyGoalXP: 100,
       todayXP: 0,
+      dailyGoalCoins: 50,
+      todayCoins: 0,
     };
 
     this.loadProgressFromStorage(userId);
@@ -70,12 +77,18 @@ export class CodeLearnProgressManager {
 
       this.userProgress.lastActiveDate = today;
       this.userProgress.todayXP = 0;
+      this.userProgress.todayCoins = 0;
     }
 
     // Update XP and level
     this.userProgress.totalXP += session.xpEarned;
     this.userProgress.todayXP += session.xpEarned;
     this.userProgress.level = this.calculateLevel(this.userProgress.totalXP);
+
+    // Update coins
+    this.userProgress.totalCoins += session.coinsEarned;
+    this.userProgress.availableCoins += session.coinsEarned;
+    this.userProgress.todayCoins += session.coinsEarned;
 
     // Update session stats
     this.userProgress.completedLessons++;
@@ -104,6 +117,7 @@ export class CodeLearnProgressManager {
         languageId,
         level: 1,
         xp: 0,
+        coins: 0,
         completedUnits: 0,
         totalUnits: this.getTotalUnitsForLanguage(languageId),
         completedLessons: 0,
@@ -118,6 +132,7 @@ export class CodeLearnProgressManager {
 
     const langProgress = this.userProgress.languageProgress[languageId];
     langProgress.xp += session.xpEarned;
+    langProgress.coins += session.coinsEarned;
     langProgress.completedLessons++;
     langProgress.timeSpent += session.timeSpent;
     langProgress.lastActiveDate = new Date().toISOString().split("T")[0];
