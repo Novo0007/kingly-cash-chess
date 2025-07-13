@@ -57,7 +57,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
   return (
     <div className={isMobile ? "space-y-4" : "space-y-6"}>
       {/* Language Header */}
-      <Card className="bg-gradient-to-r from-white/10 to-white/5 border border-white/20 backdrop-blur-sm">
+      <Card className="bg-gradient-to-r from-card/90 to-card/70 border border-border backdrop-blur-sm">
         <CardHeader className={isMobile ? "p-4" : ""}>
           {isMobile ? (
             /* Mobile Layout */
