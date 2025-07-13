@@ -10,6 +10,11 @@ import { GamePage } from "@/components/chess/GamePage";
 import { GameSelection } from "@/components/games/GameSelection";
 import { NealFunGameLobby } from "@/components/games/NealFunGameLobby";
 import { ModernGameLobby } from "@/components/games/ModernGameLobby";
+import { ProfessionalGameLobby } from "@/components/games/ProfessionalGameLobby";
+import {
+  ProfessionalAppLayout,
+  ProfessionalMobileOptimized,
+} from "@/components/layout/ProfessionalAppLayout";
 import { LudoLobby } from "@/components/games/ludo/LudoLobby";
 import { LudoGame } from "@/components/games/ludo/LudoGame";
 import { MazeGame } from "@/components/games/maze/MazeGame";
@@ -46,7 +51,9 @@ const Index = () => {
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [useNealFunStyle, setUseNealFunStyle] = useState(false);
-  const [useModernStyle, setUseModernStyle] = useState(true);
+  const [useModernStyle, setUseModernStyle] = useState(false);
+  const [useProfessionalStyle, setUseProfessionalStyle] = useState(true);
+  const [useProfessionalLayout, setUseProfessionalLayout] = useState(true);
 
   // Optimized profile fetching with caching
   const fetchUserProfile = useCallback(async (userId: string) => {
@@ -275,7 +282,9 @@ const Index = () => {
           </div>
         );
       case "games":
-        return useModernStyle ? (
+        return useProfessionalStyle ? (
+          <ProfessionalGameLobby onSelectGame={handleSelectGame} />
+        ) : useModernStyle ? (
           <ModernGameLobby onSelectGame={handleSelectGame} />
         ) : useNealFunStyle ? (
           <NealFunGameLobby onSelectGame={handleSelectGame} />
@@ -361,6 +370,39 @@ const Index = () => {
         return <GameSelection onSelectGame={handleSelectGame} />;
     }
   };
+
+  // Professional Layout Handler
+  if (useProfessionalLayout) {
+    return (
+      <ProfessionalMobileOptimized>
+        <ProfessionalAppLayout
+          currentView={currentView}
+          onViewChange={setCurrentView}
+          isAdmin={isAdmin}
+          showHeader={currentView !== "games" || !useProfessionalStyle}
+          showBottomNav={true}
+        >
+          {renderCurrentView()}
+        </ProfessionalAppLayout>
+      </ProfessionalMobileOptimized>
+    );
+  }
+
+  if (useProfessionalStyle && currentView === "games") {
+    return (
+      <MobileOptimized>
+        <ProfessionalGameLobby onSelectGame={handleSelectGame} />
+        {/* Bottom Nav for mobile */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-30">
+          <BottomNav
+            currentView={currentView}
+            onViewChange={setCurrentView}
+            isAdmin={isAdmin}
+          />
+        </div>
+      </MobileOptimized>
+    );
+  }
 
   if (useModernStyle && currentView === "games") {
     return (

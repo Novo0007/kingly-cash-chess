@@ -1,5 +1,5 @@
--- Create CodeLearn system tables
--- This migration adds comprehensive support for the CodeLearn Academy with coins, achievements, and progress tracking
+-- Create CodeMaster system tables
+-- This migration adds comprehensive support for CodeMaster with coins, achievements, and progress tracking
 
 -- User progress table for CodeLearn
 CREATE TABLE codelearn_user_progress (

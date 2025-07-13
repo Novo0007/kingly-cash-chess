@@ -1,45 +1,52 @@
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
+import React from "react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
-export function ThemeToggle() {
-  const { setTheme } = useTheme();
+export const ThemeToggle: React.FC = () => {
+  const { currentTheme, setTheme } = useTheme();
+
+  const toggleTheme = () => {
+    // Toggle between light and dark themes
+    const isDarkTheme =
+      currentTheme.id === "charcoal" ||
+      currentTheme.id === "mindmaze" ||
+      currentTheme.id === "hackermatrix" ||
+      currentTheme.id === "glitchcyber" ||
+      currentTheme.id === "pixelnova" ||
+      currentTheme.id === "glowyfun";
+
+    if (isDarkTheme) {
+      // Switch to light theme
+      setTheme("softsunrise");
+    } else {
+      // Switch to dark theme
+      setTheme("charcoal");
+    }
+  };
+
+  const isDark =
+    currentTheme.id === "charcoal" ||
+    currentTheme.id === "mindmaze" ||
+    currentTheme.id === "hackermatrix" ||
+    currentTheme.id === "glitchcyber" ||
+    currentTheme.id === "pixelnova" ||
+    currentTheme.id === "glowyfun";
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="rounded-full">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="rounded-xl">
-        <DropdownMenuItem
-          onClick={() => setTheme("light")}
-          className="rounded-lg"
-        >
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => setTheme("dark")}
-          className="rounded-lg"
-        >
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => setTheme("system")}
-          className="rounded-lg"
-        >
-          System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button
+      onClick={toggleTheme}
+      variant="ghost"
+      size="sm"
+      className="h-8 w-8 p-0 hover:bg-primary/10 transition-colors duration-200"
+      title={isDark ? "Switch to light theme" : "Switch to dark theme"}
+    >
+      {isDark ? (
+        <Sun className="h-4 w-4 text-yellow-500" />
+      ) : (
+        <Moon className="h-4 w-4 text-slate-600" />
+      )}
+      <span className="sr-only">Toggle theme</span>
+    </Button>
   );
-}
+};

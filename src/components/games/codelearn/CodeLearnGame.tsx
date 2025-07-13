@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CodeLearnLanguageSelector } from "./CodeLearnLanguageSelector";
+import { ProfessionalCodeLearnLanguageSelector } from "./ProfessionalCodeLearnLanguageSelector";
 import { CodeLearnUnitView } from "./CodeLearnUnitView";
 import { CodeLearnLessonView } from "./CodeLearnLessonView";
 import { CodeLearnAchievements } from "./CodeLearnAchievements";
@@ -186,207 +187,93 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
       : null;
 
     return (
-      <div className="relative mb-4 md:mb-6">
-        {/* Mobile-friendly Background Effect */}
-        <div
-          className={`absolute -inset-2 md:-inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-xl md:rounded-2xl blur-xl animate-pulse`}
-        ></div>
-
-        <div className="relative p-3 md:p-4 backdrop-blur-sm bg-white/5 rounded-xl md:rounded-2xl border border-white/10">
-          {/* Mobile Header Layout */}
-          {isMobile ? (
-            <div className="space-y-3">
-              {/* Top Row - Icon and Title */}
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
-                  ></div>
-                  <div
-                    className={`relative w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center text-lg`}
-                  >
-                    💻
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <h1 className="text-xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
-                    CodeLearn Academy
-                  </h1>
-                  <p className="text-white/80 text-xs">
-                    Learn programming interactively
-                  </p>
-                </div>
-              </div>
-
-              {/* Stats Row */}
-              {userProgress && (
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1 bg-purple-500/20 px-2 py-1 rounded-full">
-                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs">
-                      Lv.{userProgress.level}
-                    </Badge>
-                  </div>
-
-                  {streakInfo && streakInfo.current > 0 && (
-                    <div className="flex items-center gap-1 bg-orange-500/20 px-2 py-1 rounded-full">
-                      <Flame className="w-3 h-3 text-orange-400" />
-                      <span className="text-orange-100 font-bold text-xs">
-                        {streakInfo.current}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-1 bg-yellow-500/20 px-2 py-1 rounded-full">
-                    <Star className="w-3 h-3 text-yellow-400" />
-                    <span className="text-yellow-100 font-bold text-xs">
-                      {userProgress.totalXP.toLocaleString()}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1 bg-amber-500/20 px-2 py-1 rounded-full">
-                    <Coins className="w-3 h-3 text-amber-400" />
-                    <span className="text-amber-100 font-bold text-xs">
-                      {userProgress.availableCoins.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            /* Desktop Header Layout */
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
-                  ></div>
-                  <div
-                    className={`relative w-12 h-12 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center text-2xl`}
-                  >
-                    💻
-                  </div>
-                </div>
-                <div>
-                  <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
-                    CodeLearn Academy
-                  </h1>
-                  <p className="text-white/80 text-sm">
-                    Learn programming languages interactively
-                  </p>
-                </div>
-              </div>
-
-              {userProgress && (
-                <div className="flex items-center gap-4 ml-auto">
-                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1">
-                    Level {userProgress.level}
-                  </Badge>
-
-                  {streakInfo && streakInfo.current > 0 && (
-                    <div className="flex items-center gap-1 bg-orange-500/20 px-3 py-1 rounded-full">
-                      <Flame className="w-4 h-4 text-orange-400" />
-                      <span className="text-orange-100 font-bold">
-                        {streakInfo.current}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-1 bg-yellow-500/20 px-3 py-1 rounded-full">
-                    <Star className="w-4 h-4 text-yellow-400" />
-                    <span className="text-yellow-100 font-bold">
-                      {userProgress.totalXP.toLocaleString()}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1 bg-amber-500/20 px-3 py-1 rounded-full">
-                    <Coins className="w-4 h-4 text-amber-400" />
-                    <span className="text-amber-100 font-bold">
-                      {userProgress.availableCoins.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Mobile-friendly Progress Bars */}
+      <div className="mb-6">
+        {/* Progress Cards */}
         {userProgress && dailyGoal && levelInfo && (
-          <div
-            className={`mt-3 md:mt-4 grid gap-3 md:gap-4 ${isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-3"}`}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {/* Daily XP Goal Progress */}
-            <Card className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-400/30 backdrop-blur-sm">
-              <CardContent className={`${isMobile ? "p-3" : "p-4"}`}>
-                <div className="flex justify-between items-center mb-2">
-                  <span
-                    className={`text-emerald-300 font-medium ${isMobile ? "text-xs" : "text-sm"}`}
-                  >
-                    Daily XP Goal
-                  </span>
-                  <span
-                    className={`text-emerald-100 ${isMobile ? "text-xs" : "text-sm"}`}
-                  >
+            <Card className="bg-card border border-border shadow-sm">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                      <Target className="w-4 h-4 text-emerald-600" />
+                    </div>
+                    <span className="text-sm font-semibold text-foreground">
+                      Daily XP Goal
+                    </span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
                     {dailyGoal.current}/{dailyGoal.goal} XP
                   </span>
                 </div>
-                <div className="w-full bg-white/20 rounded-full h-2">
+                <div className="w-full bg-muted rounded-full h-2">
                   <div
-                    className="bg-gradient-to-r from-emerald-400 to-teal-400 h-2 rounded-full transition-all duration-300"
+                    className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${dailyGoal.percentage}%` }}
                   ></div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Daily Coin Goal Progress */}
-            <Card className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/30 backdrop-blur-sm">
-              <CardContent className={`${isMobile ? "p-3" : "p-4"}`}>
-                <div className="flex justify-between items-center mb-2">
-                  <span
-                    className={`text-amber-300 font-medium ${isMobile ? "text-xs" : "text-sm"}`}
-                  >
-                    Daily Coins
-                  </span>
-                  <span
-                    className={`text-amber-100 ${isMobile ? "text-xs" : "text-sm"}`}
-                  >
-                    {userProgress.todayCoins}/{userProgress.dailyGoalCoins}
-                  </span>
-                </div>
-                <div className="w-full bg-white/20 rounded-full h-2">
-                  <div
-                    className="bg-gradient-to-r from-amber-400 to-orange-400 h-2 rounded-full transition-all duration-300"
-                    style={{
-                      width: `${Math.min((userProgress.todayCoins / userProgress.dailyGoalCoins) * 100, 100)}%`,
-                    }}
-                  ></div>
+                <div className="mt-2 text-xs text-muted-foreground">
+                  {dailyGoal.percentage}% complete
                 </div>
               </CardContent>
             </Card>
 
             {/* Level Progress */}
-            <Card className="bg-gradient-to-r from-violet-500/20 to-purple-500/20 border border-violet-400/30 backdrop-blur-sm">
-              <CardContent className={`${isMobile ? "p-3" : "p-4"}`}>
-                <div className="flex justify-between items-center mb-2">
-                  <span
-                    className={`text-violet-300 font-medium ${isMobile ? "text-xs" : "text-sm"}`}
-                  >
-                    Level {userProgress.level}
-                  </span>
-                  <span
-                    className={`text-violet-100 ${isMobile ? "text-xs" : "text-sm"}`}
-                  >
+            <Card className="bg-card border border-border shadow-sm">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
+                      <Trophy className="w-4 h-4 text-primary" />
+                    </div>
+                    <span className="text-sm font-semibold text-foreground">
+                      Level {userProgress.level}
+                    </span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
                     {levelInfo.current}/{levelInfo.total} XP
                   </span>
                 </div>
-                <div className="w-full bg-white/20 rounded-full h-2">
+                <div className="w-full bg-muted rounded-full h-2">
                   <div
-                    className="bg-gradient-to-r from-violet-400 to-purple-400 h-2 rounded-full transition-all duration-300"
+                    className={`bg-gradient-to-r ${currentTheme.gradients.primary} h-2 rounded-full transition-all duration-300`}
                     style={{
                       width: `${(levelInfo.current / levelInfo.total) * 100}%`,
                     }}
                   ></div>
+                </div>
+                <div className="mt-2 text-xs text-muted-foreground">
+                  {Math.round((levelInfo.current / levelInfo.total) * 100)}% to
+                  next level
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Streak & Coins */}
+            <Card className="bg-card border border-border shadow-sm">
+              <CardContent className="p-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Flame className="w-4 h-4 text-orange-500" />
+                      <span className="text-sm font-bold text-foreground">
+                        {streakInfo?.current || 0}
+                      </span>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Day Streak
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Coins className="w-4 h-4 text-amber-500" />
+                      <span className="text-sm font-bold text-foreground">
+                        {userProgress.availableCoins}
+                      </span>
+                    </div>
+                    <div className="text-xs text-muted-foreground">Coins</div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -398,11 +285,9 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
 
   const renderNavigation = () => {
     return (
-      <div
-        className={`mb-4 md:mb-6 ${isMobile ? "space-y-3" : "flex items-center justify-between"}`}
-      >
+      <div className="flex items-center justify-between mb-6">
         {/* Back Button and Breadcrumbs */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-3">
           <Button
             onClick={() => {
               if (currentView === "lesson") {
@@ -420,112 +305,82 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
               }
             }}
             variant="outline"
-            size={isMobile ? "sm" : "sm"}
-            className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20"
+            size="sm"
+            className="flex items-center gap-2 bg-card border-border text-foreground hover:bg-accent"
           >
-            <ArrowLeft className={`${isMobile ? "w-3 h-3" : "w-4 h-4"}`} />
-            <span className={isMobile ? "text-xs" : "text-sm"}>
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm">
               {currentView === "lesson"
-                ? "Units"
+                ? "Back to Units"
                 : currentView === "units"
-                  ? "Languages"
+                  ? "Back to Languages"
                   : currentView === "achievements" ||
                       currentView === "profile" ||
                       currentView === "leaderboard"
-                    ? "Languages"
-                    : "Games"}
+                    ? "Back to Languages"
+                    : "Back to Games"}
             </span>
           </Button>
 
-          {selectedLanguage && (
-            <Badge className="bg-white/10 text-white border border-white/20 text-xs">
-              {selectedLanguage.icon}{" "}
-              {isMobile
-                ? selectedLanguage.name.substring(0, 8) +
-                  (selectedLanguage.name.length > 8 ? "..." : "")
-                : selectedLanguage.name}
-            </Badge>
-          )}
-
-          {selectedUnit && (
-            <Badge className="bg-white/10 text-white border border-white/20 text-xs">
-              {selectedUnit.icon}{" "}
-              {isMobile
-                ? selectedUnit.title.substring(0, 10) +
-                  (selectedUnit.title.length > 10 ? "..." : "")
-                : selectedUnit.title}
-            </Badge>
-          )}
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            {selectedLanguage && (
+              <>
+                <span>/</span>
+                <Badge
+                  variant="secondary"
+                  className="bg-secondary text-secondary-foreground text-xs"
+                >
+                  {selectedLanguage.icon} {selectedLanguage.name}
+                </Badge>
+              </>
+            )}
+            {selectedUnit && (
+              <>
+                <span>/</span>
+                <Badge
+                  variant="secondary"
+                  className="bg-secondary text-secondary-foreground text-xs"
+                >
+                  {selectedUnit.icon} {selectedUnit.title}
+                </Badge>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Action Buttons */}
-        {isMobile ? (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => setCurrentView("leaderboard")}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20 px-3"
-              >
-                <TrendingUp className="w-3 h-3" />
-                <span className="text-xs">Ranks</span>
-              </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => setCurrentView("leaderboard")}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 bg-card border-border text-foreground hover:bg-accent"
+          >
+            <TrendingUp className="w-4 h-4" />
+            {isMobile ? "Ranks" : "Leaderboard"}
+          </Button>
 
-              <Button
-                onClick={() => setCurrentView("achievements")}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20 px-3"
-              >
-                <Trophy className="w-3 h-3" />
-                <span className="text-xs">Awards</span>
-              </Button>
+          <Button
+            onClick={() => setCurrentView("achievements")}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 bg-card border-border text-foreground hover:bg-accent"
+          >
+            <Trophy className="w-4 h-4" />
+            {isMobile ? "Awards" : "Achievements"}
+          </Button>
 
-              <Button
-                onClick={() => setCurrentView("profile")}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20 px-3"
-              >
-                <Target className="w-3 h-3" />
-                <span className="text-xs">Profile</span>
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={() => setCurrentView("leaderboard")}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20"
-            >
-              <TrendingUp className="w-4 h-4" />
-              Leaderboard
-            </Button>
-
-            <Button
-              onClick={() => setCurrentView("achievements")}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20"
-            >
-              <Trophy className="w-4 h-4" />
-              Achievements
-            </Button>
-
-            <Button
-              onClick={() => setCurrentView("profile")}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20"
-            >
-              <Target className="w-4 h-4" />
-              Profile
-            </Button>
-          </div>
-        )}
+          <Button
+            onClick={() => setCurrentView("profile")}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 bg-card border-border text-foreground hover:bg-accent"
+          >
+            <Target className="w-4 h-4" />
+            Profile
+          </Button>
+        </div>
       </div>
     );
   };
@@ -534,7 +389,7 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
     switch (currentView) {
       case "languages":
         return (
-          <CodeLearnLanguageSelector
+          <ProfessionalCodeLearnLanguageSelector
             languages={dataService.getLanguages()}
             userProgress={userProgress}
             onLanguageSelect={handleLanguageSelect}
@@ -596,18 +451,61 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
   };
 
   return (
-    <div
-      className={`min-h-screen ${isMobile ? "p-2 pb-20" : "p-4"}`}
-      style={{
-        background: isMobile
-          ? `linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)`
-          : `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
-      }}
-    >
-      <div className={`${isMobile ? "max-w-full" : "max-w-7xl"} mx-auto`}>
-        {renderHeader()}
+    <div className="min-h-screen bg-background">
+      {/* Professional Header */}
+      <div className="bg-card border-b border-border shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 lg:h-20">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-xl flex items-center justify-center`}
+                >
+                  <Code className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-foreground">
+                    CodeMaster
+                  </h1>
+                  <p className="text-sm text-muted-foreground">
+                    Unlock the world of programming, one lesson at a time
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* User Progress Stats */}
+            {userProgress && (
+              <div className="hidden sm:flex items-center gap-6">
+                <div className="text-center">
+                  <div className="text-sm font-bold text-primary">
+                    Level {userProgress.level}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    Current Level
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-bold text-amber-600">
+                    {userProgress.availableCoins}
+                  </div>
+                  <div className="text-xs text-muted-foreground">Coins</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-bold text-emerald-600">
+                    {userProgress.totalXP}
+                  </div>
+                  <div className="text-xs text-muted-foreground">Total XP</div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
         {renderNavigation()}
-        <div className={isMobile ? "space-y-4" : ""}>{renderContent()}</div>
+        <div className="mt-6">{renderContent()}</div>
       </div>
     </div>
   );

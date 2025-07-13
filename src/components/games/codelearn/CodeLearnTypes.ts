@@ -293,6 +293,17 @@ export interface CodeLearnGameState {
 
 export const LANGUAGES: CodeLanguage[] = [
   {
+    id: "study-guide",
+    name: "Study Guide",
+    icon: "📖",
+    color: "#9C27B0",
+    description:
+      "Essential programming concepts and best practices for beginners",
+    difficulty: "beginner",
+    totalLessons: 15,
+    estimatedHours: 8,
+  },
+  {
     id: "javascript",
     name: "JavaScript",
     icon: "⚡",

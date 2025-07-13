@@ -41,6 +41,33 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   onLessonComplete,
   onBackToUnits,
 }) => {
+  // Early return if lesson data is invalid
+  if (
+    !lesson ||
+    !lesson.content ||
+    !lesson.content.exercises ||
+    lesson.content.exercises.length === 0
+  ) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <div className="text-muted-foreground mb-4">
+              <BookOpen className="w-12 h-12 mx-auto mb-2" />
+              <h3 className="text-lg font-semibold">Lesson Not Available</h3>
+              <p className="text-sm">
+                This lesson doesn't have any exercises yet.
+              </p>
+            </div>
+            <Button onClick={onBackToUnits} variant="outline">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Units
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [exerciseAnswers, setExerciseAnswers] = useState<
     Record<string, string>
@@ -56,12 +83,13 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   const [isComplete, setIsComplete] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
-  const currentExercise = lesson.content.exercises[currentExerciseIndex];
+  const currentExercise = lesson?.content?.exercises?.[currentExerciseIndex];
   const isLastExercise =
-    currentExerciseIndex === lesson.content.exercises.length - 1;
-  const allExercisesAnswered = lesson.content.exercises.every(
-    (ex) => exerciseAnswers[ex.id],
-  );
+    currentExerciseIndex === (lesson?.content?.exercises?.length ?? 0) - 1;
+  const allExercisesAnswered =
+    lesson?.content?.exercises?.every(
+      (ex) => ex?.id && exerciseAnswers[ex.id],
+    ) ?? false;
 
   // Update time spent
   useEffect(() => {
@@ -132,11 +160,12 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   };
 
   const handleLessonComplete = () => {
-    const correctAnswers = lesson.content.exercises.filter(
-      (ex) => exerciseResults[ex.id],
+    const exercises = lesson?.content?.exercises ?? [];
+    const correctAnswers = exercises.filter(
+      (ex) => ex?.id && exerciseResults[ex.id],
     ).length;
 
-    const totalExercises = lesson.content.exercises.length;
+    const totalExercises = exercises.length;
     const accuracy = correctAnswers / totalExercises;
     const score = accuracy * 100;
 
@@ -155,6 +184,14 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   };
 
   const renderExercise = (exercise: Exercise) => {
+    if (!exercise || !exercise.id) {
+      return (
+        <div className="text-center py-4">
+          <p className="text-muted-foreground">Invalid exercise data</p>
+        </div>
+      );
+    }
+
     const userAnswer = exerciseAnswers[exercise.id] || "";
     const hasAnswered = exerciseResults.hasOwnProperty(exercise.id);
     const isCorrect = exerciseResults[exercise.id];
@@ -302,10 +339,11 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   };
 
   if (showResults && isComplete) {
-    const correctAnswers = lesson.content.exercises.filter(
-      (ex) => exerciseResults[ex.id],
+    const exercises = lesson?.content?.exercises ?? [];
+    const correctAnswers = exercises.filter(
+      (ex) => ex?.id && exerciseResults[ex.id],
     ).length;
-    const totalExercises = lesson.content.exercises.length;
+    const totalExercises = exercises.length;
     const accuracy = correctAnswers / totalExercises;
     const score = accuracy * 100;
 
@@ -475,7 +513,17 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
             Exercise {currentExerciseIndex + 1}
           </CardTitle>
         </CardHeader>
-        <CardContent>{renderExercise(currentExercise)}</CardContent>
+        <CardContent>
+          {currentExercise ? (
+            renderExercise(currentExercise)
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">
+                No exercises available for this lesson.
+              </p>
+            </div>
+          )}
+        </CardContent>
       </Card>
 
       {/* Hints */}
@@ -518,7 +566,7 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
       )}
 
       {/* Explanation */}
-      {showExplanation && currentExercise.explanation && (
+      {showExplanation && currentExercise && currentExercise.explanation && (
         <Card className="bg-green-50 border-green-200">
           <CardHeader>
             <CardTitle className="text-green-800">Explanation</CardTitle>
@@ -542,7 +590,8 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
         </Button>
 
         <div className="flex items-center gap-3">
-          {exerciseAnswers[currentExercise.id] &&
+          {currentExercise &&
+            exerciseAnswers[currentExercise.id] &&
             !exerciseResults.hasOwnProperty(currentExercise.id) && (
               <Button
                 onClick={handleSubmitAnswer}
@@ -552,7 +601,8 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
               </Button>
             )}
 
-          {exerciseResults.hasOwnProperty(currentExercise.id) &&
+          {currentExercise &&
+            exerciseResults.hasOwnProperty(currentExercise.id) &&
             !isLastExercise && (
               <Button
                 onClick={handleNextExercise}
@@ -563,7 +613,8 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
               </Button>
             )}
 
-          {exerciseResults.hasOwnProperty(currentExercise.id) &&
+          {currentExercise &&
+            exerciseResults.hasOwnProperty(currentExercise.id) &&
             isLastExercise && (
               <Button
                 onClick={handleLessonComplete}
