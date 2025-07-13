@@ -79,6 +79,9 @@ export interface UserProgress {
   currentStreak: number;
   longestStreak: number;
   totalXP: number;
+  totalCoins: number;
+  availableCoins: number;
+  coinsSpent: number;
   level: number;
   completedLessons: number;
   totalTimeSpent: number; // in minutes
@@ -87,6 +90,8 @@ export interface UserProgress {
   achievements: Achievement[];
   dailyGoalXP: number;
   todayXP: number;
+  dailyGoalCoins: number;
+  todayCoins: number;
 }
 
 export interface LanguageProgress {
