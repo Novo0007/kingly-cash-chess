@@ -440,68 +440,7 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
         )}
 
         {currentView === "study-pdfs" && (
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Study Materials & PDF Reader
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  Access comprehensive study materials and use our built-in PDF
-                  reader to learn programming concepts at your own pace.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card className="p-4">
-                    <h3 className="font-semibold mb-2">
-                      JavaScript Fundamentals
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Complete guide to JavaScript basics
-                    </p>
-                    <Button size="sm" className="w-full">
-                      <FileText className="h-4 w-4 mr-2" />
-                      Open PDF
-                    </Button>
-                  </Card>
-                  <Card className="p-4">
-                    <h3 className="font-semibold mb-2">Python Essentials</h3>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Python programming from scratch
-                    </p>
-                    <Button size="sm" className="w-full">
-                      <FileText className="h-4 w-4 mr-2" />
-                      Open PDF
-                    </Button>
-                  </Card>
-                  <Card className="p-4">
-                    <h3 className="font-semibold mb-2">React Development</h3>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Modern React development guide
-                    </p>
-                    <Button size="sm" className="w-full">
-                      <FileText className="h-4 w-4 mr-2" />
-                      Open PDF
-                    </Button>
-                  </Card>
-                  <Card className="p-4">
-                    <h3 className="font-semibold mb-2">
-                      Algorithms & Data Structures
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Essential CS concepts
-                    </p>
-                    <Button size="sm" className="w-full">
-                      <FileText className="h-4 w-4 mr-2" />
-                      Open PDF
-                    </Button>
-                  </Card>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <StudyMaterials onBack={handleBackToLanguages} />
         )}
       </div>
     </div>
