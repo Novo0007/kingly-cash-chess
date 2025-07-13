@@ -213,6 +213,69 @@ export interface ExerciseResult {
   answer: string;
 }
 
+// Coin system interfaces
+export interface CoinTransaction {
+  id: string;
+  userId: string;
+  type: "earned" | "spent" | "bonus" | "penalty";
+  amount: number;
+  source:
+    | "lesson"
+    | "exercise"
+    | "achievement"
+    | "daily_bonus"
+    | "purchase"
+    | "hint"
+    | "skip";
+  sourceId: string;
+  description: string;
+  timestamp: string;
+}
+
+export interface CoinReward {
+  amount: number;
+  source: string;
+  multiplier?: number;
+  bonus?: boolean;
+}
+
+export interface ShopItem {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  cost: number;
+  type: "hint" | "skip" | "unlock" | "theme" | "boost" | "cosmetic";
+  category: string;
+  isUnlocked: boolean;
+  isPurchased: boolean;
+  effect?: {
+    type: string;
+    value: number;
+    duration?: number;
+  };
+}
+
+export interface PowerUp {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  cost: number;
+  effect: {
+    type:
+      | "xp_multiplier"
+      | "coin_multiplier"
+      | "hint_reveal"
+      | "skip_exercise"
+      | "unlock_lesson";
+    value: number;
+    duration?: number; // in minutes, for temporary effects
+  };
+  isActive: boolean;
+  expiresAt?: string;
+}
+
 // Game state interfaces
 export interface CodeLearnGameState {
   currentLanguage: CodeLanguage | null;
