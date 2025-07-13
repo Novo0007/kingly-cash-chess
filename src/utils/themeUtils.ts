@@ -9,33 +9,6 @@ export const getThemeClasses = (theme: ThemeDefinition): string => {
 
   // Add theme-specific effect classes
   switch (theme.id) {
-    case "cosmicvoid":
-      baseClasses.push("cosmic-element");
-      break;
-    case "lavamolten":
-      baseClasses.push("molten-effect", "fire-particle");
-      break;
-    case "icecrystal":
-      baseClasses.push("crystal-effect", "frost-overlay");
-      break;
-    case "forestmystic":
-      baseClasses.push("nature-glow", "leaf-float");
-      break;
-    case "goldluxury":
-      baseClasses.push("luxury-shine", "crown-effect");
-      break;
-    case "oceandeep":
-      baseClasses.push("wave-effect", "bubble-effect");
-      break;
-    case "royalpurple":
-      baseClasses.push("royal-glow", "gem-sparkle");
-      break;
-    case "sunsetvibes":
-      baseClasses.push("warm-gradient", "sun-ray");
-      break;
-    case "synthwave80s":
-      baseClasses.push("neon-glow", "grid-lines");
-      break;
     case "hackermatrix":
       baseClasses.push("matrix-text");
       break;
@@ -69,8 +42,6 @@ export const getThemeTextClasses = (theme: ThemeDefinition): string => {
   const baseText = "transition-all duration-300";
 
   switch (theme.id) {
-    case "synthwave80s":
-      return `${baseText} neon-glow`;
     case "hackermatrix":
       return `${baseText} matrix-text`;
     case "glitchcyber":
@@ -108,24 +79,6 @@ export const getThemeIconClasses = (theme: ThemeDefinition): string => {
   const baseIcon = "transition-all duration-300";
 
   switch (theme.id) {
-    case "cosmicvoid":
-      return `${baseIcon} text-purple-300`;
-    case "lavamolten":
-      return `${baseIcon} text-orange-300`;
-    case "icecrystal":
-      return `${baseIcon} text-cyan-300`;
-    case "forestmystic":
-      return `${baseIcon} text-green-300`;
-    case "goldluxury":
-      return `${baseIcon} text-yellow-300`;
-    case "oceandeep":
-      return `${baseIcon} text-blue-300`;
-    case "royalpurple":
-      return `${baseIcon} text-purple-300`;
-    case "sunsetvibes":
-      return `${baseIcon} text-orange-300`;
-    case "synthwave80s":
-      return `${baseIcon} text-pink-300 neon-glow`;
     case "hackermatrix":
       return `${baseIcon} text-green-300`;
     case "glitchcyber":
@@ -144,24 +97,6 @@ export const getThemeGradientOverlay = (
 
 export const getThemeParticleEffect = (theme: ThemeDefinition): string => {
   switch (theme.id) {
-    case "cosmicvoid":
-      return "cosmic-particles";
-    case "lavamolten":
-      return "fire-particles";
-    case "icecrystal":
-      return "ice-particles";
-    case "forestmystic":
-      return "leaf-particles";
-    case "goldluxury":
-      return "gold-particles";
-    case "oceandeep":
-      return "bubble-particles";
-    case "royalpurple":
-      return "gem-particles";
-    case "sunsetvibes":
-      return "sun-particles";
-    case "synthwave80s":
-      return "neon-particles";
     case "hackermatrix":
       return "matrix-particles";
     case "glitchcyber":
@@ -175,24 +110,6 @@ export const getThemeHoverEffect = (theme: ThemeDefinition): string => {
   const baseHover = "transition-all duration-300 hover:shadow-2xl";
 
   switch (theme.id) {
-    case "cosmicvoid":
-      return `${baseHover} hover:shadow-purple-500/50`;
-    case "lavamolten":
-      return `${baseHover} hover:shadow-red-500/50`;
-    case "icecrystal":
-      return `${baseHover} hover:shadow-cyan-500/50`;
-    case "forestmystic":
-      return `${baseHover} hover:shadow-green-500/50`;
-    case "goldluxury":
-      return `${baseHover} hover:shadow-yellow-500/50`;
-    case "oceandeep":
-      return `${baseHover} hover:shadow-blue-500/50`;
-    case "royalpurple":
-      return `${baseHover} hover:shadow-purple-500/50`;
-    case "sunsetvibes":
-      return `${baseHover} hover:shadow-orange-500/50`;
-    case "synthwave80s":
-      return `${baseHover} hover:shadow-pink-500/50`;
     case "hackermatrix":
       return `${baseHover} hover:shadow-green-500/50`;
     case "glitchcyber":
@@ -205,14 +122,6 @@ export const getThemeHoverEffect = (theme: ThemeDefinition): string => {
 // Animation utility
 export const getThemeAnimation = (theme: ThemeDefinition): string => {
   switch (theme.id) {
-    case "cosmicvoid":
-      return "animate-pulse";
-    case "lavamolten":
-      return "animate-bounce";
-    case "icecrystal":
-      return "animate-pulse";
-    case "synthwave80s":
-      return "animate-pulse";
     case "glitchcyber":
       return "animate-ping";
     default:
