@@ -156,10 +156,10 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
               {languageProgress && (
                 <div className="mt-4">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-white/80 text-sm">
+                    <span className="text-muted-foreground text-sm">
                       Course Progress
                     </span>
-                    <span className="text-white text-sm font-semibold">
+                    <span className="text-foreground text-sm font-semibold">
                       {Math.round(
                         (languageProgress.completedLessons /
                           languageProgress.totalLessons) *
@@ -168,9 +168,9 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                       %
                     </span>
                   </div>
-                  <div className="w-full bg-white/20 rounded-full h-3">
+                  <div className="w-full bg-muted rounded-full h-3">
                     <div
-                      className="bg-gradient-to-r from-emerald-400 to-cyan-400 h-3 rounded-full transition-all duration-300 shadow-lg"
+                      className="bg-gradient-to-r from-primary to-accent h-3 rounded-full transition-all duration-300 shadow-lg"
                       style={{
                         width: `${(languageProgress.completedLessons / languageProgress.totalLessons) * 100}%`,
                       }}
