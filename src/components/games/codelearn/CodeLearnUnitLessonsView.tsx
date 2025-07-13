@@ -117,7 +117,12 @@ export const CodeLearnUnitLessonsView: React.FC<
                 {unit.completedLessons}/{unit.totalLessons} lessons completed
               </span>
             </div>
-            <Progress value={unitProgress} className="h-3" />
+            <div className="w-full bg-muted rounded-full h-3">
+              <div
+                className="bg-gradient-to-r from-primary to-accent h-3 rounded-full transition-all duration-300 shadow-lg"
+                style={{ width: `${unitProgress}%` }}
+              />
+            </div>
           </div>
         </CardHeader>
       </Card>
