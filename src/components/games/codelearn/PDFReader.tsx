@@ -244,39 +244,28 @@ export const PDFReader: React.FC<PDFReaderProps> = ({
         {/* PDF Viewer Area */}
         <div className="flex-1 bg-muted/30 p-4 overflow-auto">
           <div className="mx-auto max-w-4xl">
-            {/* PDF Viewer Area - Real Documentation */}
+            {/* PDF Viewer Area - Embedded Documentation */}
             <div
               className="bg-card shadow-lg mx-auto border border-border rounded-lg overflow-hidden"
               style={{
                 width: `${zoom}%`,
-                aspectRatio: "8.5/11",
+                minHeight: "600px",
                 maxWidth: "100%",
               }}
             >
-              <div className="h-full flex flex-col items-center justify-center p-8 text-center">
-                <FileText className="h-16 w-16 text-primary mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  {title}
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  This study material is available as interactive documentation
-                </p>
-                <div className="text-sm text-muted-foreground space-y-2 mb-6">
-                  <p>• Official documentation and guides</p>
-                  <p>• Interactive code examples</p>
-                  <p>• Comprehensive tutorials</p>
-                  <p>• Real-world applications</p>
-                </div>
-                <Button
-                  onClick={() =>
-                    window.open(pdfUrl, "_blank", "noopener,noreferrer")
-                  }
-                  className="bg-primary hover:bg-primary/90"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Open Documentation
-                </Button>
-              </div>
+              <iframe
+                src={pdfUrl}
+                title={title}
+                className="w-full h-full min-h-[600px] border-0"
+                style={{
+                  transform: `scale(${zoom / 100})`,
+                  transformOrigin: "top left",
+                  width: `${100 / (zoom / 100)}%`,
+                  height: `${100 / (zoom / 100)}%`,
+                }}
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                loading="lazy"
+              />
             </div>
           </div>
         </div>
