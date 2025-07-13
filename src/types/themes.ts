@@ -32,38 +32,40 @@ export interface ThemeDefinition {
 }
 
 export const themes: ThemeDefinition[] = [
-  {
+  
+   {
     id: "light",
     name: "Beautiful Light",
     description: "Elegant light theme with modern aesthetics",
     preview: "☀️",
     colors: {
-      background: "0 0% 100%",
-      foreground: "240 10% 3.9%",
-      card: "0 0% 100%",
-      cardForeground: "240 10% 3.9%",
-      popover: "0 0% 100%",
-      popoverForeground: "240 10% 3.9%",
-      primary: "221 83% 53%",
-      primaryForeground: "210 40% 98%",
-      secondary: "210 40% 96%",
-      secondaryForeground: "215 25% 27%",
-      muted: "210 40% 96%",
-      mutedForeground: "215 16% 47%",
-      accent: "216 100% 97%",
-      accentForeground: "215 25% 27%",
-      destructive: "0 84% 60%",
-      destructiveForeground: "210 40% 98%",
-      border: "214 32% 91%",
-      input: "214 32% 91%",
-      ring: "221 83% 53%",
+      background: "0 0% 98%", // Light beige background
+      foreground: "240 10% 10%", // Dark slate text color for contrast
+      card: "0 0% 100%", // White card background
+      cardForeground: "240 10% 10%", // Dark slate text for cards
+      popover: "0 0% 100%", // Soft white for popovers
+      popoverForeground: "240 10% 10%", // Dark slate text in popovers
+      primary: "10 90% 60%", // Vibrant Coral (for buttons and highlights)
+      primaryForeground: "0 0% 100%", // White text on primary elements
+      secondary: "240 60% 80%", // Soft Lavender (for secondary elements)
+      secondaryForeground: "240 10% 10%", // Dark slate text on secondary elements
+      muted: "210 20% 95%", // Light Slate Gray (for muted/disabled elements)
+      mutedForeground: "30 20% 60%", // Warm Taupe (for muted text)
+      accent: "197 100% 70%", // Sky Blue (for links and accent elements)
+      accentForeground: "240 10% 10%", // Dark slate text on accent elements
+      destructive: "0 80% 55%", // Strong Red (for errors and warnings)
+      destructiveForeground: "350 60% 85%", // Light Pink text on destructive elements
+      border: "210 10% 85%", // Cool Silver border color
+      input: "210 25% 92%", // Light Grayish Blue for input fields
+      ring: "10 90% 60%", // Vibrant Coral ring (focus states)
     },
     gradients: {
-      primary: "from-blue-500 to-violet-600",
-      secondary: "from-slate-50 to-slate-100",
-      accent: "from-blue-50 to-indigo-50",
+      primary: "from-cyan-400 to-rose-400", // Gradient from cyan to rose for primary elements
+      secondary: "from-slate-50 to-slate-200", // Light gradient for secondary elements
+      accent: "from-lightblue-100 to-indigo-200", // Soft gradient for accent elements
     },
-  },
+  }
+
   {
     id: "dark",
     name: "Beautiful Dark",
