@@ -204,32 +204,66 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
 
   return (
     <div className="space-y-8">
-      {/* Welcome Section */}
-      <div className="text-center space-y-4">
-        <h1 className="text-professional-primary text-3xl lg:text-4xl font-bold">
-          Welcome to Game Hub
+      {/* Welcome Section - Mobile Optimized */}
+      <div className="text-center space-y-4 px-4">
+        <div
+          className={`w-16 h-16 mx-auto bg-gradient-to-r ${currentTheme.gradients.primary} rounded-2xl flex items-center justify-center shadow-lg mb-4`}
+        >
+          <Gamepad2 className="w-8 h-8 text-white" />
+        </div>
+
+        <h1
+          className={`${isMobile ? "text-2xl" : "text-3xl lg:text-4xl"} font-bold bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent`}
+        >
+          Game Hub
         </h1>
-        <p className="text-professional-secondary text-lg max-w-2xl mx-auto">
-          Choose from our collection of exciting games and start playing now!
+        <p
+          className={`${isMobile ? "text-sm" : "text-lg"} text-muted-foreground max-w-2xl mx-auto`}
+        >
+          {isMobile
+            ? "Choose from exciting games and start playing!"
+            : "Choose from our collection of exciting games and start playing now!"}
         </p>
 
-        {/* Stats */}
-        <div className="flex justify-center items-center gap-8 mt-6">
+        {/* Stats - Mobile Responsive */}
+        <div
+          className={`flex justify-center items-center ${isMobile ? "gap-4" : "gap-8"} mt-6`}
+        >
           <div className="text-center">
-            <div className="text-2xl font-bold text-professional-primary">
+            <div
+              className={`${isMobile ? "text-lg" : "text-2xl"} font-bold text-foreground`}
+            >
               5.2K+
             </div>
-            <div className="text-professional-muted text-sm">
-              Active Players
+            <div
+              className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
+            >
+              {isMobile ? "Players" : "Active Players"}
             </div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">₹10L+</div>
-            <div className="text-professional-muted text-sm">Prizes Won</div>
+            <div
+              className={`${isMobile ? "text-lg" : "text-2xl"} font-bold text-green-600`}
+            >
+              ₹10L+
+            </div>
+            <div
+              className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
+            >
+              {isMobile ? "Prizes" : "Prizes Won"}
+            </div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">24/7</div>
-            <div className="text-professional-muted text-sm">Support</div>
+            <div
+              className={`${isMobile ? "text-lg" : "text-2xl"} font-bold text-blue-600`}
+            >
+              24/7
+            </div>
+            <div
+              className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
+            >
+              Support
+            </div>
           </div>
         </div>
       </div>
