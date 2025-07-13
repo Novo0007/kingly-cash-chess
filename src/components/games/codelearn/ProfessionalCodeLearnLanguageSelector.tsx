@@ -70,28 +70,32 @@ export const ProfessionalCodeLearnLanguageSelector: React.FC<
         {userProgress && (
           <div className="flex justify-center items-center gap-8 mt-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-professional-primary">
                 {userProgress.totalXP.toLocaleString()}
               </div>
-              <div className="text-sm text-gray-500">Total XP</div>
+              <div className="text-sm text-professional-muted">Total XP</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-indigo-600">
                 Level {userProgress.level}
               </div>
-              <div className="text-sm text-gray-500">Current Level</div>
+              <div className="text-sm text-professional-muted">
+                Current Level
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-emerald-600">
                 {userProgress.completedLessons}
               </div>
-              <div className="text-sm text-gray-500">Lessons Completed</div>
+              <div className="text-sm text-professional-muted">
+                Lessons Completed
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-orange-600">
                 {userProgress.currentStreak}
               </div>
-              <div className="text-sm text-gray-500">Day Streak</div>
+              <div className="text-sm text-professional-muted">Day Streak</div>
             </div>
           </div>
         )}
