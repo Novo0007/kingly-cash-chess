@@ -523,6 +523,7 @@ function App() {
               explanation:
                 "React components are functions that return JSX elements.",
               points: 25,
+              coinReward: 12,
             },
           ],
           hints: [
