@@ -281,11 +281,11 @@ export const ProfessionalCodeLearnLanguageSelector: React.FC<
                 <Target className="w-8 h-8 text-green-600" />
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                Progress Tracking
+                Coding Challenges
               </h4>
               <p className="text-gray-600">
-                Monitor your learning journey with detailed analytics and
-                insights
+                Test your skills with real-world problems and fun coding
+                challenges. Earn points, level up, and compete!
               </p>
             </div>
 
