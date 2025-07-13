@@ -277,7 +277,9 @@ const Index = () => {
           </div>
         );
       case "games":
-        return useModernStyle ? (
+        return useProfessionalStyle ? (
+          <ProfessionalGameLobby onSelectGame={handleSelectGame} />
+        ) : useModernStyle ? (
           <ModernGameLobby onSelectGame={handleSelectGame} />
         ) : useNealFunStyle ? (
           <NealFunGameLobby onSelectGame={handleSelectGame} />
