@@ -341,9 +341,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
             (game, index) => (
               <Card
                 key={game.id}
-                className={`professional-card interactive group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
-                  game.highlight ? "ring-2 ring-blue-200 ring-opacity-50" : ""
-                } ${isMobile ? "min-h-[280px]" : "min-h-[320px]"}`}
+                className="professional-card interactive group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg bg-card border border-border rounded-xl overflow-hidden"
                 onClick={() => handleGameSelect(game.id)}
               >
                 {/* Card Header with gradient */}
