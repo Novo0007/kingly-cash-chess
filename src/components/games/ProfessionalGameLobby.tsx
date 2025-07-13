@@ -55,9 +55,10 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
   const games = [
     {
       id: "codelearn",
-      title: "CodeLearn Academy",
-      subtitle: "Learn Programming",
-      description: "Master coding with interactive lessons and real projects",
+      title: "CodeMaster",
+      subtitle: "Master Programming",
+      description:
+        "Unlock the world of programming with interactive lessons and real-world challenges",
       icon: Code,
       category: "free",
       gradient: "from-violet-500 to-purple-600",
