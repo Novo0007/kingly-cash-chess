@@ -306,7 +306,7 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
             }}
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+            className="flex items-center gap-2 bg-card border-border text-foreground hover:bg-accent"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm">
