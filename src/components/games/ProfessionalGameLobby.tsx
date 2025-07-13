@@ -548,6 +548,9 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Floating Action Button for Mobile */}
+      <FloatingActionButton onGameSelect={handleGameSelect} />
     </div>
   );
 };
