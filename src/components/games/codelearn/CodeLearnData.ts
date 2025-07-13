@@ -269,7 +269,7 @@ let eitherTrue = true || false; // true`,
         order: 1,
         prerequisiteIds: ["js-operators"],
         isCompleted: false,
-        isUnlocked: false,
+        isUnlocked: true,
         attempts: 0,
         content: {
           explanation:
