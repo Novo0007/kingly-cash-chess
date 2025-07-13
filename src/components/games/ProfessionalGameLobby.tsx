@@ -175,7 +175,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       iconBg: "bg-teal-100",
       iconColor: "text-teal-600",
       players: "150+ Hunting",
-      status: "���� COINS",
+      status: "💰 COINS",
       earning: "Coin Rewards",
       features: ["Multiplayer Mode", "Smart Hints", "Daily Rewards"],
       highlight: false,
@@ -298,9 +298,11 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       )}
 
       <div className="space-y-8">
-        {/* Category Filter */}
-        <div className="mb-8">
-          <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+        {/* Category Filter - Mobile Optimized */}
+        <div className="mb-6">
+          <div
+            className={`flex ${isMobile ? "justify-center" : "flex-wrap gap-3 justify-center lg:justify-start"} ${isMobile ? "gap-2" : "gap-3"}`}
+          >
             {categories.map((category) => (
               <Button
                 key={category.id}
@@ -308,15 +310,19 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
                 variant={
                   selectedCategory === category.id ? "default" : "outline"
                 }
-                className={`professional-button size-md flex items-center gap-2 rounded-full ${
+                className={`flex items-center gap-2 ${isMobile ? "rounded-full px-4 py-2 text-sm" : "rounded-full"} ${
                   selectedCategory === category.id
-                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                    : "bg-white border-gray-200 text-professional-primary hover:bg-gray-50"
+                    ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white border-0 shadow-lg`
+                    : "bg-card border-border text-foreground hover:bg-accent"
                 }`}
               >
-                <category.icon className="w-4 h-4" />
-                {category.label}
-                <Badge className="ml-1 bg-white/20 text-xs px-2">
+                <category.icon
+                  className={`${isMobile ? "w-3 h-3" : "w-4 h-4"}`}
+                />
+                {isMobile ? category.label.split(" ")[0] : category.label}
+                <Badge
+                  className={`ml-1 ${selectedCategory === category.id ? "bg-white/20" : "bg-muted"} text-xs px-2`}
+                >
                   {category.id === "all"
                     ? games.length
                     : category.id === "free"
