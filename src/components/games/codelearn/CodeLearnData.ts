@@ -241,6 +241,7 @@ let eitherTrue = true || false; // true`,
               explanation:
                 "Use && (AND) to combine two conditions: x >= 10 AND x <= 20.",
               points: 20,
+              coinReward: 10,
             },
           ],
           hints: [
