@@ -19,6 +19,7 @@ import { MathRulesPage } from "./pages/MathRulesPage";
 import WordSearchRulesPage from "./pages/WordSearchRulesPage";
 import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { DraggableMusicControl } from "@/components/music/DraggableMusicControl";
+import { AppLoadingScreen } from "@/components/ui/app-loading-screen";
 
 const queryClient = new QueryClient();
 
