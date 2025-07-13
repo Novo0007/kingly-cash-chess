@@ -162,7 +162,7 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   const handleLessonComplete = () => {
     const exercises = lesson?.content?.exercises ?? [];
     const correctAnswers = exercises.filter(
-      (ex) => exerciseResults[ex.id],
+      (ex) => ex?.id && exerciseResults[ex.id],
     ).length;
 
     const totalExercises = exercises.length;
