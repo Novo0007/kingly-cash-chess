@@ -287,9 +287,11 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
                     ? onBack
                     : currentView === "units"
                       ? handleBackToLanguages
-                      : currentView === "lesson"
+                      : currentView === "unit-lessons"
                         ? handleBackToUnits
-                        : handleBackToLanguages
+                        : currentView === "lesson"
+                          ? () => setCurrentView("unit-lessons")
+                          : handleBackToLanguages
                 }
               >
                 <ArrowLeft className="h-4 w-4" />
