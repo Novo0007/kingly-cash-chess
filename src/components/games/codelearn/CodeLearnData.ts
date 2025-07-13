@@ -380,6 +380,7 @@ print("Height:", height)`,
               explanation:
                 "Python variables don't need special keywords. Just assign with =",
               points: 15,
+              coinReward: 8,
             },
           ],
           hints: [
