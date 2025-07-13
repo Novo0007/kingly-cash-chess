@@ -401,9 +401,10 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
         {currentView === "units" && selectedLanguage && (
           <CodeLearnUnitView
             language={selectedLanguage}
+            units={dataService.getUnitsForLanguage(selectedLanguage.id)}
             userProgress={userProgress}
             onUnitSelect={handleUnitSelect}
-            onBack={handleBackToLanguages}
+            onBackToLanguages={handleBackToLanguages}
           />
         )}
 
