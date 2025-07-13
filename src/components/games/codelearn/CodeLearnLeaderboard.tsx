@@ -22,7 +22,6 @@ import {
 import { LeaderboardEntry, LANGUAGES } from "./CodeLearnTypes";
 import { CodeLearnProgressManager } from "./CodeLearnProgress";
 import { useTheme } from "@/contexts/ThemeContext";
-import { motion } from "framer-motion";
 
 interface CodeLearnLeaderboardProps {
   currentUserId?: string;
