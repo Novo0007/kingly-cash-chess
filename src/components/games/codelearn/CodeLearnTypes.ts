@@ -18,6 +18,7 @@ export interface CodeLesson {
   type: "concept" | "practice" | "challenge" | "project" | "quiz";
   difficulty: number; // 1-5
   xpReward: number;
+  coinReward: number;
   order: number;
   prerequisiteIds: string[];
   content: LessonContent;
