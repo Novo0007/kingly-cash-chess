@@ -15,6 +15,7 @@ import { ContactSection } from "./ContactSection";
 import { PrivacyPolicySection } from "./PrivacyPolicySection";
 import { UserGuideSection } from "./UserGuideSection";
 import { MoreGamesSection } from "./MoreGamesSection";
+import { CodeLearnSection } from "./CodeLearnSection";
 import { useTheme } from "@/contexts/ThemeContext";
 import {
   User,
@@ -33,6 +34,7 @@ import {
   Save,
   X,
   LogOut,
+  Code,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
@@ -320,7 +322,7 @@ export const ProfileSystem = () => {
 
       {/* Profile Tabs */}
       <Tabs defaultValue="history" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-muted p-2 rounded-2xl">
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-7 bg-muted p-2 rounded-2xl">
           <TabsTrigger
             value="history"
             className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl"
@@ -363,6 +365,13 @@ export const ProfileSystem = () => {
             <Gamepad2 className="h-4 w-4 mr-2" />
             Games
           </TabsTrigger>
+          <TabsTrigger
+            value="codelearn"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl"
+          >
+            <Code className="h-4 w-4 mr-2" />
+            CodeLearn
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="history" className="mt-6">
@@ -387,6 +396,10 @@ export const ProfileSystem = () => {
 
         <TabsContent value="games" className="mt-6">
           <MoreGamesSection onBack={() => {}} />
+        </TabsContent>
+
+        <TabsContent value="codelearn" className="mt-6">
+          <CodeLearnSection userId={profile.id} />
         </TabsContent>
       </Tabs>
     </div>
