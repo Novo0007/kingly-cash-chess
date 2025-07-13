@@ -658,24 +658,61 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
     );
   }
 
-  if (currentView === "game" && gameState) {
+  if (currentView === "levels") {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            onClick={() => setCurrentView("lobby")}
+            variant="outline"
+            size="sm"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Lobby
+          </Button>
+        </div>
+
+        {levelSystem && (
+          <MathLevelSelector
+            levelSystem={levelSystem}
+            onSelectLevel={handleStartLevelGame}
+            onBack={() => setCurrentView("lobby")}
+          />
+        )}
+      </div>
+    );
+  }
+
+  if ((currentView === "game" || currentView === "levelGame") && gameState) {
     return (
       <div className="space-y-2 sm:space-y-4 w-full min-h-screen">
         {/* Header - Mobile Optimized */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 mb-4 sm:mb-6 px-2 sm:px-0">
           <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
             <Button
-              onClick={() => setCurrentView("lobby")}
+              onClick={() =>
+                setCurrentView(gameType === "level" ? "levels" : "lobby")
+              }
               variant="outline"
               size="sm"
               className="text-xs sm:text-sm"
             >
               <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Back to </span>Lobby
+              <span className="hidden sm:inline">Back to </span>
+              {gameType === "level" ? "Levels" : "Lobby"}
             </Button>
-            <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs">
-              {gameState.difficulty} • {gameState.gameMode}
-            </Badge>
+            {gameType === "level" ? (
+              <Badge className="bg-gradient-to-r from-yellow-100 to-red-100 text-red-800 border-red-200 text-xs">
+                Level {(gameState as LevelGameState).currentLevel.level} •{" "}
+                {(gameState as LevelGameState).currentLevel.difficulty}
+                {(gameState as LevelGameState).currentLevel.eliminationMode &&
+                  " • Elimination"}
+              </Badge>
+            ) : (
+              <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs">
+                {gameState.difficulty} • {gameState.gameMode}
+              </Badge>
+            )}
           </div>
 
           <div className="flex items-center gap-1 sm:gap-2 w-full sm:w-auto justify-end">
@@ -749,13 +786,15 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
           </Button>
 
           <Button
-            onClick={() => setCurrentView("lobby")}
+            onClick={() =>
+              setCurrentView(gameType === "level" ? "levels" : "lobby")
+            }
             variant="outline"
             size="sm"
             className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
           >
             <Home className="h-3 w-3 sm:h-4 sm:w-4" />
-            Lobby
+            {gameType === "level" ? "Levels" : "Lobby"}
           </Button>
 
           <Button
