@@ -343,29 +343,49 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
   };
 
   const handleRestartGame = useCallback(() => {
-    if (!gameLogic) return;
+    if (gameType === "level") {
+      // For level games, restart the current level
+      if (!levelGameLogic || !levelSystem) return;
 
-    const newState = gameLogic.restartGame();
-    setGameState(newState);
-    setGameTimer(0);
-    gameLogic.startGame();
-    setGameState(gameLogic.getState());
-    toast.success("Game restarted! 🎮");
-  }, [gameLogic]);
+      const currentLevel = (gameState as LevelGameState)?.currentLevel.level;
+      if (currentLevel) {
+        handleStartLevelGame(currentLevel);
+        toast.success("Level restarted! 🎯");
+      }
+    } else {
+      // For classic games, use existing restart logic
+      if (!gameLogic) return;
+
+      const newState = gameLogic.restartGame();
+      setGameState(newState);
+      setGameTimer(0);
+      gameLogic.startGame();
+      setGameState(gameLogic.getState());
+      toast.success("Game restarted! 🎮");
+    }
+  }, [
+    gameLogic,
+    levelGameLogic,
+    levelSystem,
+    gameType,
+    gameState,
+    handleStartLevelGame,
+  ]);
 
   const handlePauseGame = useCallback(() => {
-    if (!gameLogic) return;
+    const currentLogic = gameType === "level" ? levelGameLogic : gameLogic;
+    if (!currentLogic) return;
 
     if (gameState?.gameStatus === "playing") {
-      gameLogic.pauseGame();
+      currentLogic.pauseGame();
       toast.info("Game paused! ⏸️");
     } else if (gameState?.gameStatus === "paused") {
-      gameLogic.resumeGame();
+      currentLogic.resumeGame();
       toast.info("Game resumed! ▶️");
     }
 
-    setGameState(gameLogic.getState());
-  }, [gameLogic, gameState]);
+    setGameState(currentLogic.getState());
+  }, [gameLogic, levelGameLogic, gameState, gameType]);
 
   const renderGameStats = () => {
     if (!gameState) return null;
