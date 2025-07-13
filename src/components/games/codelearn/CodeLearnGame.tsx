@@ -186,207 +186,91 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
       : null;
 
     return (
-      <div className="relative mb-4 md:mb-6">
-        {/* Mobile-friendly Background Effect */}
-        <div
-          className={`absolute -inset-2 md:-inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-xl md:rounded-2xl blur-xl animate-pulse`}
-        ></div>
-
-        <div className="relative p-3 md:p-4 backdrop-blur-sm bg-white/5 rounded-xl md:rounded-2xl border border-white/10">
-          {/* Mobile Header Layout */}
-          {isMobile ? (
-            <div className="space-y-3">
-              {/* Top Row - Icon and Title */}
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
-                  ></div>
-                  <div
-                    className={`relative w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center text-lg`}
-                  >
-                    💻
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <h1 className="text-xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
-                    CodeLearn Academy
-                  </h1>
-                  <p className="text-white/80 text-xs">
-                    Learn programming interactively
-                  </p>
-                </div>
-              </div>
-
-              {/* Stats Row */}
-              {userProgress && (
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1 bg-purple-500/20 px-2 py-1 rounded-full">
-                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs">
-                      Lv.{userProgress.level}
-                    </Badge>
-                  </div>
-
-                  {streakInfo && streakInfo.current > 0 && (
-                    <div className="flex items-center gap-1 bg-orange-500/20 px-2 py-1 rounded-full">
-                      <Flame className="w-3 h-3 text-orange-400" />
-                      <span className="text-orange-100 font-bold text-xs">
-                        {streakInfo.current}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-1 bg-yellow-500/20 px-2 py-1 rounded-full">
-                    <Star className="w-3 h-3 text-yellow-400" />
-                    <span className="text-yellow-100 font-bold text-xs">
-                      {userProgress.totalXP.toLocaleString()}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1 bg-amber-500/20 px-2 py-1 rounded-full">
-                    <Coins className="w-3 h-3 text-amber-400" />
-                    <span className="text-amber-100 font-bold text-xs">
-                      {userProgress.availableCoins.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            /* Desktop Header Layout */
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
-                  ></div>
-                  <div
-                    className={`relative w-12 h-12 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center text-2xl`}
-                  >
-                    💻
-                  </div>
-                </div>
-                <div>
-                  <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
-                    CodeLearn Academy
-                  </h1>
-                  <p className="text-white/80 text-sm">
-                    Learn programming languages interactively
-                  </p>
-                </div>
-              </div>
-
-              {userProgress && (
-                <div className="flex items-center gap-4 ml-auto">
-                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1">
-                    Level {userProgress.level}
-                  </Badge>
-
-                  {streakInfo && streakInfo.current > 0 && (
-                    <div className="flex items-center gap-1 bg-orange-500/20 px-3 py-1 rounded-full">
-                      <Flame className="w-4 h-4 text-orange-400" />
-                      <span className="text-orange-100 font-bold">
-                        {streakInfo.current}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-1 bg-yellow-500/20 px-3 py-1 rounded-full">
-                    <Star className="w-4 h-4 text-yellow-400" />
-                    <span className="text-yellow-100 font-bold">
-                      {userProgress.totalXP.toLocaleString()}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1 bg-amber-500/20 px-3 py-1 rounded-full">
-                    <Coins className="w-4 h-4 text-amber-400" />
-                    <span className="text-amber-100 font-bold">
-                      {userProgress.availableCoins.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Mobile-friendly Progress Bars */}
+      <div className="mb-6">
+        {/* Progress Cards */}
         {userProgress && dailyGoal && levelInfo && (
-          <div
-            className={`mt-3 md:mt-4 grid gap-3 md:gap-4 ${isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-3"}`}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {/* Daily XP Goal Progress */}
-            <Card className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-400/30 backdrop-blur-sm">
-              <CardContent className={`${isMobile ? "p-3" : "p-4"}`}>
-                <div className="flex justify-between items-center mb-2">
-                  <span
-                    className={`text-emerald-300 font-medium ${isMobile ? "text-xs" : "text-sm"}`}
-                  >
-                    Daily XP Goal
-                  </span>
-                  <span
-                    className={`text-emerald-100 ${isMobile ? "text-xs" : "text-sm"}`}
-                  >
+            <Card className="bg-white border border-gray-200 shadow-sm">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                      <Target className="w-4 h-4 text-emerald-600" />
+                    </div>
+                    <span className="text-sm font-semibold text-gray-700">
+                      Daily XP Goal
+                    </span>
+                  </div>
+                  <span className="text-xs text-gray-500">
                     {dailyGoal.current}/{dailyGoal.goal} XP
                   </span>
                 </div>
-                <div className="w-full bg-white/20 rounded-full h-2">
+                <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-gradient-to-r from-emerald-400 to-teal-400 h-2 rounded-full transition-all duration-300"
+                    className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${dailyGoal.percentage}%` }}
                   ></div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Daily Coin Goal Progress */}
-            <Card className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/30 backdrop-blur-sm">
-              <CardContent className={`${isMobile ? "p-3" : "p-4"}`}>
-                <div className="flex justify-between items-center mb-2">
-                  <span
-                    className={`text-amber-300 font-medium ${isMobile ? "text-xs" : "text-sm"}`}
-                  >
-                    Daily Coins
-                  </span>
-                  <span
-                    className={`text-amber-100 ${isMobile ? "text-xs" : "text-sm"}`}
-                  >
-                    {userProgress.todayCoins}/{userProgress.dailyGoalCoins}
-                  </span>
-                </div>
-                <div className="w-full bg-white/20 rounded-full h-2">
-                  <div
-                    className="bg-gradient-to-r from-amber-400 to-orange-400 h-2 rounded-full transition-all duration-300"
-                    style={{
-                      width: `${Math.min((userProgress.todayCoins / userProgress.dailyGoalCoins) * 100, 100)}%`,
-                    }}
-                  ></div>
+                <div className="mt-2 text-xs text-gray-600">
+                  {dailyGoal.percentage}% complete
                 </div>
               </CardContent>
             </Card>
 
             {/* Level Progress */}
-            <Card className="bg-gradient-to-r from-violet-500/20 to-purple-500/20 border border-violet-400/30 backdrop-blur-sm">
-              <CardContent className={`${isMobile ? "p-3" : "p-4"}`}>
-                <div className="flex justify-between items-center mb-2">
-                  <span
-                    className={`text-violet-300 font-medium ${isMobile ? "text-xs" : "text-sm"}`}
-                  >
-                    Level {userProgress.level}
-                  </span>
-                  <span
-                    className={`text-violet-100 ${isMobile ? "text-xs" : "text-sm"}`}
-                  >
+            <Card className="bg-white border border-gray-200 shadow-sm">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                      <Trophy className="w-4 h-4 text-indigo-600" />
+                    </div>
+                    <span className="text-sm font-semibold text-gray-700">
+                      Level {userProgress.level}
+                    </span>
+                  </div>
+                  <span className="text-xs text-gray-500">
                     {levelInfo.current}/{levelInfo.total} XP
                   </span>
                 </div>
-                <div className="w-full bg-white/20 rounded-full h-2">
+                <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-gradient-to-r from-violet-400 to-purple-400 h-2 rounded-full transition-all duration-300"
+                    className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full transition-all duration-300"
                     style={{
                       width: `${(levelInfo.current / levelInfo.total) * 100}%`,
                     }}
                   ></div>
+                </div>
+                <div className="mt-2 text-xs text-gray-600">
+                  {Math.round((levelInfo.current / levelInfo.total) * 100)}% to
+                  next level
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Streak & Coins */}
+            <Card className="bg-white border border-gray-200 shadow-sm">
+              <CardContent className="p-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Flame className="w-4 h-4 text-orange-500" />
+                      <span className="text-sm font-bold text-gray-900">
+                        {streakInfo?.current || 0}
+                      </span>
+                    </div>
+                    <div className="text-xs text-gray-500">Day Streak</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Coins className="w-4 h-4 text-amber-500" />
+                      <span className="text-sm font-bold text-gray-900">
+                        {userProgress.availableCoins}
+                      </span>
+                    </div>
+                    <div className="text-xs text-gray-500">Coins</div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
