@@ -197,10 +197,9 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
     [onSelectGame],
   );
 
-  // Grid layout: 1x1 for mobile, 2x2 for tablet, 3+ for desktop
+  // Grid layout: 2x2 for all screen sizes with mobile optimization
   const getGridCols = () => {
-    if (isMobile) return "grid-cols-1"; // 1x1 for mobile
-    return "grid-cols-2 lg:grid-cols-3"; // 2x2 for tablet, 3+ for desktop
+    return "grid-cols-2"; // 2x2 grid for all screen sizes
   };
 
   return (
