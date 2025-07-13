@@ -387,7 +387,7 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
     switch (currentView) {
       case "languages":
         return (
-          <CodeLearnLanguageSelector
+          <ProfessionalCodeLearnLanguageSelector
             languages={dataService.getLanguages()}
             userProgress={userProgress}
             onLanguageSelect={handleLanguageSelect}
