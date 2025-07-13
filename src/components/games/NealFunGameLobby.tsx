@@ -125,8 +125,8 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
     },
     {
       id: "codelearn",
-      title: "CodeLearn Academy",
-      description: "Where dreams become code, code becomes reality",
+      title: "CodeMaster",
+      description: "Where coding dreams become digital reality",
       icon: Code,
       emoji: "👨‍💻",
       players: "1.2K+ dreamers",
