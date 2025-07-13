@@ -36,12 +36,16 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
   onClose,
 }) => {
   const { currentTheme } = useTheme();
-  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>(
+    [],
+  );
   const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
   const [leaderboardType, setLeaderboardType] = useState<LeaderboardType>("xp");
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("all-time");
   const [loading, setLoading] = useState(false);
-  const [progressManager] = useState(() => CodeLearnProgressManager.getInstance());
+  const [progressManager] = useState(() =>
+    CodeLearnProgressManager.getInstance(),
+  );
 
   useEffect(() => {
     generateMockLeaderboard();
@@ -50,19 +54,89 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
   // Generate mock leaderboard data (in real app, this would come from Supabase)
   const generateMockLeaderboard = () => {
     setLoading(true);
-    
+
     // Mock data - in real app, this would be fetched from the database
     const mockUsers = [
-      { username: "CodeMaster", totalXP: 12500, coins: 3200, streak: 25, accuracy: 0.95, lessons: 85 },
-      { username: "PyProgrammer", totalXP: 11800, coins: 2900, streak: 18, accuracy: 0.92, lessons: 78 },
-      { username: "JSNinja", totalXP: 11200, coins: 2750, streak: 22, accuracy: 0.89, lessons: 72 },
-      { username: "ReactDev", totalXP: 10900, coins: 2600, streak: 15, accuracy: 0.94, lessons: 69 },
-      { username: "CppGuru", totalXP: 10500, coins: 2400, streak: 12, accuracy: 0.88, lessons: 65 },
-      { username: "TypeScriptPro", totalXP: 10200, coins: 2350, streak: 19, accuracy: 0.91, lessons: 63 },
-      { username: "JavaExpert", totalXP: 9800, coins: 2200, streak: 14, accuracy: 0.87, lessons: 58 },
-      { username: "WebDevWiz", totalXP: 9500, coins: 2100, streak: 16, accuracy: 0.90, lessons: 55 },
-      { username: "CodeNewbie", totalXP: 9200, coins: 2000, streak: 11, accuracy: 0.85, lessons: 52 },
-      { username: "AlgoAce", totalXP: 8900, coins: 1900, streak: 13, accuracy: 0.86, lessons: 49 },
+      {
+        username: "CodeMaster",
+        totalXP: 12500,
+        coins: 3200,
+        streak: 25,
+        accuracy: 0.95,
+        lessons: 85,
+      },
+      {
+        username: "PyProgrammer",
+        totalXP: 11800,
+        coins: 2900,
+        streak: 18,
+        accuracy: 0.92,
+        lessons: 78,
+      },
+      {
+        username: "JSNinja",
+        totalXP: 11200,
+        coins: 2750,
+        streak: 22,
+        accuracy: 0.89,
+        lessons: 72,
+      },
+      {
+        username: "ReactDev",
+        totalXP: 10900,
+        coins: 2600,
+        streak: 15,
+        accuracy: 0.94,
+        lessons: 69,
+      },
+      {
+        username: "CppGuru",
+        totalXP: 10500,
+        coins: 2400,
+        streak: 12,
+        accuracy: 0.88,
+        lessons: 65,
+      },
+      {
+        username: "TypeScriptPro",
+        totalXP: 10200,
+        coins: 2350,
+        streak: 19,
+        accuracy: 0.91,
+        lessons: 63,
+      },
+      {
+        username: "JavaExpert",
+        totalXP: 9800,
+        coins: 2200,
+        streak: 14,
+        accuracy: 0.87,
+        lessons: 58,
+      },
+      {
+        username: "WebDevWiz",
+        totalXP: 9500,
+        coins: 2100,
+        streak: 16,
+        accuracy: 0.9,
+        lessons: 55,
+      },
+      {
+        username: "CodeNewbie",
+        totalXP: 9200,
+        coins: 2000,
+        streak: 11,
+        accuracy: 0.85,
+        lessons: 52,
+      },
+      {
+        username: "AlgoAce",
+        totalXP: 8900,
+        coins: 1900,
+        streak: 13,
+        accuracy: 0.86,
+        lessons: 49,
+      },
     ];
 
     // Add current user if provided
@@ -115,10 +189,10 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
     }));
 
     setLeaderboardData(entries);
-    
+
     // Find current user rank
     if (currentUserId) {
-      const userEntry = entries.find(entry => entry.username === "You");
+      const userEntry = entries.find((entry) => entry.username === "You");
       setCurrentUserRank(userEntry?.rank || null);
     }
 
@@ -146,7 +220,7 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
     if (isCurrentUser) {
       return "bg-primary/20 border-primary/30";
     }
-    
+
     switch (rank) {
       case 1:
         return "bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/20";
@@ -194,11 +268,15 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <Card className={`bg-gradient-to-r ${currentTheme.gradients.primary}/10 border border-primary/20 rounded-2xl`}>
+      <Card
+        className={`bg-gradient-to-r ${currentTheme.gradients.primary}/10 border border-primary/20 rounded-2xl`}
+      >
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-xl flex items-center justify-center`}>
+              <div
+                className={`w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-xl flex items-center justify-center`}
+              >
                 <Trophy className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -215,7 +293,9 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
                 size="sm"
                 disabled={loading}
               >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                />
               </Button>
               {onClose && (
                 <Button onClick={onClose} variant="outline" size="sm">
@@ -241,7 +321,9 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
                   </div>
                 </div>
               </div>
-              <Badge className={`bg-gradient-to-r ${currentTheme.gradients.primary} text-white text-lg px-3 py-1`}>
+              <Badge
+                className={`bg-gradient-to-r ${currentTheme.gradients.primary} text-white text-lg px-3 py-1`}
+              >
                 #{currentUserRank}
               </Badge>
             </div>
@@ -250,7 +332,10 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
       )}
 
       {/* Leaderboard Tabs */}
-      <Tabs value={leaderboardType} onValueChange={(value) => setLeaderboardType(value as LeaderboardType)}>
+      <Tabs
+        value={leaderboardType}
+        onValueChange={(value) => setLeaderboardType(value as LeaderboardType)}
+      >
         <TabsList className="grid w-full grid-cols-5 bg-muted p-2 rounded-2xl">
           <TabsTrigger value="xp" className="flex items-center gap-1">
             <Star className="w-4 h-4" />
@@ -279,14 +364,19 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 {getLeaderboardIcon(leaderboardType)}
-                Top Learners by {leaderboardType.charAt(0).toUpperCase() + leaderboardType.slice(1)}
+                Top Learners by{" "}
+                {leaderboardType.charAt(0).toUpperCase() +
+                  leaderboardType.slice(1)}
               </CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (
                 <div className="space-y-3">
                   {Array.from({ length: 10 }).map((_, i) => (
-                    <div key={i} className="flex items-center gap-4 p-4 rounded-lg bg-muted/20 animate-pulse">
+                    <div
+                      key={i}
+                      className="flex items-center gap-4 p-4 rounded-lg bg-muted/20 animate-pulse"
+                    >
                       <div className="w-10 h-10 bg-muted rounded-full" />
                       <div className="flex-1 space-y-2">
                         <div className="h-4 bg-muted rounded w-1/3" />
@@ -300,8 +390,8 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
                 <div className="space-y-2">
                   {leaderboardData.map((entry, index) => {
                     const isCurrentUser = entry.username === "You";
-                    
-                                        return (
+
+                    return (
                       <div
                         key={entry.userId}
                         className={`flex items-center gap-4 p-4 rounded-lg border ${getRankBgColor(entry.rank, isCurrentUser)} hover:shadow-md transition-all duration-200`}
@@ -320,7 +410,9 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <div className={`font-medium ${isCurrentUser ? 'text-primary' : 'text-foreground'}`}>
+                            <div
+                              className={`font-medium ${isCurrentUser ? "text-primary" : "text-foreground"}`}
+                            >
                               {entry.username}
                               {isCurrentUser && (
                                 <Badge className="ml-2 bg-primary/20 text-primary text-xs">
@@ -352,7 +444,7 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
                             <ChevronDown className="w-4 h-4 text-red-500" />
                           ) : null}
                         </div>
-                      </motion.div>
+                      </div>
                     );
                   })}
                 </div>
@@ -370,19 +462,35 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
               <div className="text-2xl font-bold text-foreground">
                 {leaderboardData.length}
               </div>
-              <div className="text-sm text-muted-foreground">Total Learners</div>
+              <div className="text-sm text-muted-foreground">
+                Total Learners
+              </div>
             </div>
             <div>
               <div className="text-2xl font-bold text-foreground">
-                {leaderboardData.reduce((sum, entry) => sum + entry.xp, 0).toLocaleString()}
+                {leaderboardData
+                  .reduce((sum, entry) => sum + entry.xp, 0)
+                  .toLocaleString()}
               </div>
-              <div className="text-sm text-muted-foreground">Total XP Earned</div>
+              <div className="text-sm text-muted-foreground">
+                Total XP Earned
+              </div>
             </div>
             <div>
               <div className="text-2xl font-bold text-foreground">
-                {Math.round(leaderboardData.reduce((sum, entry) => sum + entry.accuracy, 0) / leaderboardData.length * 100)}%
+                {Math.round(
+                  (leaderboardData.reduce(
+                    (sum, entry) => sum + entry.accuracy,
+                    0,
+                  ) /
+                    leaderboardData.length) *
+                    100,
+                )}
+                %
               </div>
-              <div className="text-sm text-muted-foreground">Average Accuracy</div>
+              <div className="text-sm text-muted-foreground">
+                Average Accuracy
+              </div>
             </div>
           </div>
         </CardContent>
