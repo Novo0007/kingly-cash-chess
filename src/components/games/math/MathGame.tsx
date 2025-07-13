@@ -23,6 +23,13 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { MathGameLogic, MathGameState, MathGameScore } from "./MathGameLogic";
+import {
+  MathLevelGameLogic,
+  LevelGameState,
+  LevelGameScore,
+} from "./MathLevelGameLogic";
+import { MathLevelSystem, LevelProgress } from "./MathLevelSystem";
+import { MathLevelSelector } from "./MathLevelSelector";
 import { toast } from "sonner";
 import { useDeviceType } from "@/hooks/use-mobile";
 
@@ -31,7 +38,15 @@ interface MathGameProps {
   user: any;
 }
 
-type GameView = "lobby" | "game" | "rules" | "leaderboard" | "gameComplete";
+type GameView =
+  | "lobby"
+  | "game"
+  | "rules"
+  | "leaderboard"
+  | "gameComplete"
+  | "levels"
+  | "levelGame";
+type GameType = "classic" | "level";
 
 // UUID validation function
 const isValidUUID = (uuid: string): boolean => {
@@ -43,13 +58,21 @@ const isValidUUID = (uuid: string): boolean => {
 export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
   const { isMobile } = useDeviceType();
   const [currentView, setCurrentView] = useState<GameView>("lobby");
+  const [gameType, setGameType] = useState<GameType>("classic");
   const [gameLogic, setGameLogic] = useState<MathGameLogic | null>(null);
-  const [gameState, setGameState] = useState<MathGameState | null>(null);
-  const [currentScore, setCurrentScore] = useState<MathGameScore | null>(null);
+  const [levelGameLogic, setLevelGameLogic] =
+    useState<MathLevelGameLogic | null>(null);
+  const [gameState, setGameState] = useState<
+    MathGameState | LevelGameState | null
+  >(null);
+  const [currentScore, setCurrentScore] = useState<
+    MathGameScore | LevelGameScore | null
+  >(null);
   const [isSubmittingScore, setIsSubmittingScore] = useState(false);
   const [gameTimer, setGameTimer] = useState(0);
+  const [levelSystem, setLevelSystem] = useState<MathLevelSystem | null>(null);
 
-  // Initialize math_scores table if it doesn't exist
+  // Initialize math_scores table and level system
   useEffect(() => {
     const initializeMathTable = async () => {
       try {
@@ -68,8 +91,28 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
       }
     };
 
+    const initializeLevelSystem = () => {
+      try {
+        // Load level progress from localStorage
+        const savedProgress = localStorage.getItem(
+          `math_level_progress_${user?.id}`,
+        );
+        const progressData = savedProgress ? JSON.parse(savedProgress) : {};
+        const system = new MathLevelSystem(progressData);
+        setLevelSystem(system);
+      } catch (error) {
+        console.error("Error initializing level system:", error);
+        // Create new level system on error
+        const system = new MathLevelSystem();
+        setLevelSystem(system);
+      }
+    };
+
     initializeMathTable();
-  }, []);
+    if (user?.id) {
+      initializeLevelSystem();
+    }
+  }, [user?.id]);
 
   // Game timer
   useEffect(() => {
@@ -104,7 +147,9 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
     ) => {
       const logic = new MathGameLogic(difficulty, gameMode);
       setGameLogic(logic);
+      setLevelGameLogic(null);
       setGameState(logic.getState());
+      setGameType("classic");
       setCurrentView("game");
       setGameTimer(0);
       logic.startGame();
@@ -114,20 +159,57 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
     [],
   );
 
+  const handleStartLevelGame = useCallback(
+    (levelNumber: number) => {
+      if (!levelSystem) {
+        toast.error("Level system not initialized!");
+        return;
+      }
+
+      try {
+        const logic = new MathLevelGameLogic(levelSystem, levelNumber);
+        setLevelGameLogic(logic);
+        setGameLogic(null);
+        setGameState(logic.getState());
+        setGameType("level");
+        setCurrentView("levelGame");
+        setGameTimer(0);
+        logic.startGame();
+        setGameState(logic.getState());
+
+        const level = levelSystem.getLevel(levelNumber);
+        toast.success(
+          `Level ${levelNumber}: ${level?.name.replace(`Level ${levelNumber}: `, "")} started! 🎯`,
+        );
+      } catch (error) {
+        console.error("Error starting level game:", error);
+        toast.error("Could not start level. Please try again.");
+      }
+    },
+    [levelSystem],
+  );
+
   const handleAnswer = useCallback(
     (answer: number) => {
-      if (!gameLogic || !gameState) return false;
+      const currentLogic = gameType === "level" ? levelGameLogic : gameLogic;
+      if (!currentLogic || !gameState) return false;
 
-      const isCorrect = gameLogic.answerQuestion(answer);
-      const newState = gameLogic.getState();
+      const isCorrect = currentLogic.answerQuestion(answer);
+      const newState = currentLogic.getState();
       setGameState(newState);
 
       if (isCorrect) {
         toast.success("Correct! 🎉");
       } else {
-        toast.error(
-          `Wrong! The answer was ${gameState.currentQuestion?.correctAnswer}`,
-        );
+        if (gameType === "level" && (newState as LevelGameState).isEliminated) {
+          toast.error(
+            `Wrong! You've been eliminated! The answer was ${gameState.currentQuestion?.correctAnswer}`,
+          );
+        } else {
+          toast.error(
+            `Wrong! The answer was ${gameState.currentQuestion?.correctAnswer}`,
+          );
+        }
       }
 
       // Check for game end
@@ -136,8 +218,8 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
       } else {
         // Move to next question after a delay
         setTimeout(() => {
-          const hasNextQuestion = gameLogic.nextQuestion();
-          const updatedState = gameLogic.getState();
+          const hasNextQuestion = currentLogic.nextQuestion();
+          const updatedState = currentLogic.getState();
           setGameState(updatedState);
 
           // Check if game ended after moving to next question
@@ -149,39 +231,42 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
 
       return isCorrect;
     },
-    [gameLogic, gameState],
+    [gameLogic, levelGameLogic, gameState, gameType],
   );
 
   const handleUseHint = useCallback((): string | null => {
-    if (!gameLogic) return null;
-    return gameLogic.useHint();
-  }, [gameLogic]);
+    const currentLogic = gameType === "level" ? levelGameLogic : gameLogic;
+    if (!currentLogic) return null;
+    return currentLogic.useHint();
+  }, [gameLogic, levelGameLogic, gameType]);
 
   const handleSkipQuestion = useCallback((): boolean => {
-    if (!gameLogic) return false;
-    const skipped = gameLogic.skipQuestion();
+    const currentLogic = gameType === "level" ? levelGameLogic : gameLogic;
+    if (!currentLogic) return false;
+    const skipped = currentLogic.skipQuestion();
     if (skipped) {
-      setGameState(gameLogic.getState());
+      setGameState(currentLogic.getState());
       toast.info("Question skipped! ⏭️");
     }
     return skipped;
-  }, [gameLogic]);
+  }, [gameLogic, levelGameLogic, gameType]);
 
   const handleTimeUpdate = useCallback(
     (timeRemaining: number) => {
-      if (!gameLogic) return;
-      gameLogic.updateTime(timeRemaining);
-      const newState = gameLogic.getState();
+      const currentLogic = gameType === "level" ? levelGameLogic : gameLogic;
+      if (!currentLogic) return;
+      currentLogic.updateTime(timeRemaining);
+      const newState = currentLogic.getState();
       setGameState(newState);
 
       if (newState.gameStatus === "finished") {
         handleGameEnd(newState);
       }
     },
-    [gameLogic],
+    [gameLogic, levelGameLogic, gameType],
   );
 
-  const handleGameEnd = async (finalState: MathGameState) => {
+  const handleGameEnd = async (finalState: MathGameState | LevelGameState) => {
     // Validate user and user ID
     if (!user) {
       toast.error("Please sign in to save your score!");
@@ -196,7 +281,17 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
 
     setIsSubmittingScore(true);
     try {
-      const scoreData = gameLogic!.calculateFinalScore();
+      const currentLogic = gameType === "level" ? levelGameLogic : gameLogic;
+      const scoreData = currentLogic!.calculateFinalScore();
+
+      // Save level progress if it's a level game
+      if (gameType === "level" && levelSystem) {
+        const progress = levelSystem.getProgress();
+        localStorage.setItem(
+          `math_level_progress_${user.id}`,
+          JSON.stringify(progress),
+        );
+      }
 
       // Create a new object with only the database-relevant properties
       const dbScoreData = {
@@ -423,6 +518,7 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
           onStartGame={handleStartGame}
           onShowRules={() => setCurrentView("rules")}
           onShowLeaderboard={() => setCurrentView("leaderboard")}
+          onShowLevels={() => setCurrentView("levels")}
         />
       </div>
     );
