@@ -32,6 +32,7 @@ import {
   recordFourPicsHint,
   canAccessFourPicsLevel,
 } from "@/utils/fourpicsDbHelper";
+import { checkFourPicsDatabase } from "@/utils/fourpicsDbCheck";
 import type { User } from "@supabase/supabase-js";
 
 interface FourPicsGameProps {
@@ -65,6 +66,7 @@ export const FourPicsGame: React.FC<FourPicsGameProps> = ({
   const [coinBalance, setCoinBalance] = useState(100); // This would come from your coin system
   const [isLoading, setIsLoading] = useState(false);
   const [availableLevels, setAvailableLevels] = useState<FourPicsLevel[]>([]);
+  const [databaseSetup, setDatabaseSetup] = useState<boolean | null>(null);
 
   // Fetch user progress and available levels
   const fetchGameData = useCallback(async () => {
