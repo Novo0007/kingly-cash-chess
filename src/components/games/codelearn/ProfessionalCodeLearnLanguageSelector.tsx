@@ -374,6 +374,79 @@ export const ProfessionalCodeLearnLanguageSelector: React.FC<
                 progress, ask questions, and learn together!
               </p>
             </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <TrendingUp className="w-8 h-8 text-orange-600" />
+              </div>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                Progress Tracker
+              </h4>
+              <p className="text-gray-600">
+                Stay motivated with personalized learning paths and visual
+                stats. Track your journey to becoming a coding expert.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Code className="w-8 h-8 text-indigo-600" />
+              </div>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                Interactive Playground
+              </h4>
+              <p className="text-gray-600">
+                Practice real code in our interactive coding playground with
+                instant feedback and real coding environments.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Star className="w-8 h-8 text-yellow-600" />
+              </div>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                Certificates & Badges
+              </h4>
+              <p className="text-gray-600">
+                Complete courses and earn certificates to showcase your skills.
+                Share them with employers or on social media!
+              </p>
+            </div>
+          </div>
+
+          {/* Additional Benefits Section */}
+          <div className="mt-12 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6">
+            <h4 className="text-xl font-semibold text-gray-900 mb-4 text-center">
+              Perfect for All Skill Levels
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+              <div>
+                <h5 className="font-semibold text-indigo-600 mb-2">
+                  Beginners
+                </h5>
+                <p className="text-sm text-gray-600">
+                  Start with easy-to-understand lessons and progress at your own
+                  pace. No experience required!
+                </p>
+              </div>
+              <div>
+                <h5 className="font-semibold text-purple-600 mb-2">
+                  Intermediate
+                </h5>
+                <p className="text-sm text-gray-600">
+                  Build real projects and tackle advanced challenges to
+                  strengthen your programming skills.
+                </p>
+              </div>
+              <div>
+                <h5 className="font-semibold text-pink-600 mb-2">Advanced</h5>
+                <p className="text-sm text-gray-600">
+                  Master cutting-edge technologies and contribute to our expert
+                  community knowledge base.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
