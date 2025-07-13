@@ -268,11 +268,11 @@ export const ProfessionalCodeLearnLanguageSelector: React.FC<
                 <BookOpen className="w-8 h-8 text-blue-600" />
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                Interactive Lessons
+                Interactive Learning
               </h4>
               <p className="text-gray-600">
-                Learn by doing with hands-on coding exercises and real-time
-                feedback
+                Get hands-on with bite-sized, interactive coding lessons in
+                popular languages. No prior experience needed!
               </p>
             </div>
 
