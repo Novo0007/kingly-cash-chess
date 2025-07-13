@@ -147,6 +147,7 @@ export interface CodeChallenge {
   solution: string;
   testCases: TestCase[];
   xpReward: number;
+  coinReward: number;
   hints: string[];
   isCompleted: boolean;
   bestTime?: number;
