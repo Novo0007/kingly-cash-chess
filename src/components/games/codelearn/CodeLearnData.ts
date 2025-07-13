@@ -73,7 +73,7 @@ export class CodeLearnDataService {
         lessons: [],
         isUnlocked: true,
         completedLessons: 0,
-        totalLessons: 8,
+        totalLessons: 9,
       },
       {
         id: "js-functions",
