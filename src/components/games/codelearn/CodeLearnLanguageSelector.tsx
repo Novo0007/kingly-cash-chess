@@ -331,28 +331,28 @@ export const CodeLearnLanguageSelector: React.FC<
                 {/* Quick Stats */}
                 {langProgress.isStarted && (
                   <div
-                    className={`grid grid-cols-2 gap-3 pt-3 border-t border-white/20 ${isMobile ? "mt-3" : "mt-4"}`}
+                    className={`grid grid-cols-2 gap-3 pt-3 border-t border-border ${isMobile ? "mt-3" : "mt-4"}`}
                   >
                     <div className="text-center">
                       <div
-                        className={`font-bold text-cyan-300 ${isMobile ? "text-base" : "text-lg"}`}
+                        className={`font-bold text-primary ${isMobile ? "text-base" : "text-lg"}`}
                       >
                         {langProgress.level}
                       </div>
                       <div
-                        className={`text-white/60 ${isMobile ? "text-xs" : "text-xs"}`}
+                        className={`text-muted-foreground ${isMobile ? "text-xs" : "text-xs"}`}
                       >
                         Level
                       </div>
                     </div>
                     <div className="text-center">
                       <div
-                        className={`font-bold text-emerald-300 ${isMobile ? "text-base" : "text-lg"}`}
+                        className={`font-bold text-accent ${isMobile ? "text-base" : "text-lg"}`}
                       >
                         {Math.round(langProgress.accuracy * 100)}%
                       </div>
                       <div
-                        className={`text-white/60 ${isMobile ? "text-xs" : "text-xs"}`}
+                        className={`text-muted-foreground ${isMobile ? "text-xs" : "text-xs"}`}
                       >
                         Accuracy
                       </div>
