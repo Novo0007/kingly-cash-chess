@@ -109,9 +109,9 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
               {/* Mobile Progress Bar */}
               {languageProgress && (
                 <div>
-                  <div className="w-full bg-white/20 rounded-full h-2">
+                  <div className="w-full bg-muted rounded-full h-2">
                     <div
-                      className="bg-gradient-to-r from-emerald-400 to-cyan-400 h-2 rounded-full transition-all duration-300 shadow-lg"
+                      className="bg-gradient-to-r from-primary to-accent h-2 rounded-full transition-all duration-300 shadow-lg"
                       style={{
                         width: `${(languageProgress.completedLessons / languageProgress.totalLessons) * 100}%`,
                       }}
