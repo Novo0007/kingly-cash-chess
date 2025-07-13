@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { LudoBoardEnhanced } from "./LudoBoardEnhanced";
+import { LudoBoardModern } from "./LudoBoardModern";
 import { LudoGameReactions } from "./LudoGameReactions";
 import { ChatSystem } from "../../chat/ChatSystem";
 import { Button } from "@/components/ui/button";
@@ -317,15 +318,17 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
         console.log(
           "🚀 Auto-starting Ludo game with",
           gameWithPlayers.current_players,
-          "players"
+          "players",
         );
-        
+
         setAutoStartAttempted(true); // Prevent multiple attempts
-        
+
         try {
           // Initialize game state properly
-          const initialGameState = initializeGameState(gameWithPlayers.current_players);
-          
+          const initialGameState = initializeGameState(
+            gameWithPlayers.current_players,
+          );
+
           const { error: startError } = await supabase
             .from("ludo_games")
             .update({
@@ -354,7 +357,6 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
       if (gameWithPlayers.game_status !== "waiting" && autoStartAttempted) {
         setAutoStartAttempted(false);
       }
-      
     } catch (error) {
       console.error("Error fetching ludo game:", error);
       toast.error("Error loading game");
@@ -364,11 +366,15 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
   };
 
   const initializeGameState = (playerCount: number) => {
-    console.log("🔧 Initializing enhanced game state for", playerCount, "players");
-    
+    console.log(
+      "🔧 Initializing enhanced game state for",
+      playerCount,
+      "players",
+    );
+
     const availableColors = ["red", "blue", "green", "yellow"];
     const activeColors = availableColors.slice(0, playerCount);
-    
+
     const pieces: any = {};
 
     activeColors.forEach((color) => {
@@ -423,68 +429,278 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
 
   const COLOR_PATHS: Record<string, [number, number][]> = {
     red: [
-      [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6],
-      [5, 6], [4, 6], [3, 6], [2, 6], [1, 6], [1, 7], [1, 8],
-      [2, 8], [3, 8], [4, 8], [5, 8], [6, 8], [6, 9], [6, 10], [6, 11], [6, 12], [6, 13],
-      [7, 13], [8, 13], [8, 12], [8, 11], [8, 10], [8, 9], [8, 8],
-      [9, 8], [10, 8], [11, 8], [12, 8], [13, 8], [13, 7], [13, 6],
-      [12, 6], [11, 6], [10, 6], [9, 6], [8, 6], [8, 5], [8, 4], [8, 3], [8, 2], [8, 1],
-      [7, 1], [7, 2], [7, 3], [7, 4], [7, 5], [7, 6], [7, 7]
+      [6, 1],
+      [6, 2],
+      [6, 3],
+      [6, 4],
+      [6, 5],
+      [6, 6],
+      [5, 6],
+      [4, 6],
+      [3, 6],
+      [2, 6],
+      [1, 6],
+      [1, 7],
+      [1, 8],
+      [2, 8],
+      [3, 8],
+      [4, 8],
+      [5, 8],
+      [6, 8],
+      [6, 9],
+      [6, 10],
+      [6, 11],
+      [6, 12],
+      [6, 13],
+      [7, 13],
+      [8, 13],
+      [8, 12],
+      [8, 11],
+      [8, 10],
+      [8, 9],
+      [8, 8],
+      [9, 8],
+      [10, 8],
+      [11, 8],
+      [12, 8],
+      [13, 8],
+      [13, 7],
+      [13, 6],
+      [12, 6],
+      [11, 6],
+      [10, 6],
+      [9, 6],
+      [8, 6],
+      [8, 5],
+      [8, 4],
+      [8, 3],
+      [8, 2],
+      [8, 1],
+      [7, 1],
+      [7, 2],
+      [7, 3],
+      [7, 4],
+      [7, 5],
+      [7, 6],
+      [7, 7],
     ],
     blue: [
-      [1, 8], [2, 8], [3, 8], [4, 8], [5, 8], [6, 8],
-      [6, 9], [6, 10], [6, 11], [6, 12], [6, 13], [7, 13], [8, 13],
-      [8, 12], [8, 11], [8, 10], [8, 9], [8, 8], [9, 8], [10, 8], [11, 8], [12, 8], [13, 8],
-      [13, 7], [13, 6], [12, 6], [11, 6], [10, 6], [9, 6], [8, 6],
-      [8, 5], [8, 4], [8, 3], [8, 2], [8, 1], [7, 1], [6, 1],
-      [6, 2], [6, 3], [6, 4], [6, 5], [6, 6], [5, 6], [4, 6], [3, 6], [2, 6], [1, 6],
-      [1, 7], [2, 7], [3, 7], [4, 7], [5, 7], [6, 7], [7, 7]
+      [1, 8],
+      [2, 8],
+      [3, 8],
+      [4, 8],
+      [5, 8],
+      [6, 8],
+      [6, 9],
+      [6, 10],
+      [6, 11],
+      [6, 12],
+      [6, 13],
+      [7, 13],
+      [8, 13],
+      [8, 12],
+      [8, 11],
+      [8, 10],
+      [8, 9],
+      [8, 8],
+      [9, 8],
+      [10, 8],
+      [11, 8],
+      [12, 8],
+      [13, 8],
+      [13, 7],
+      [13, 6],
+      [12, 6],
+      [11, 6],
+      [10, 6],
+      [9, 6],
+      [8, 6],
+      [8, 5],
+      [8, 4],
+      [8, 3],
+      [8, 2],
+      [8, 1],
+      [7, 1],
+      [6, 1],
+      [6, 2],
+      [6, 3],
+      [6, 4],
+      [6, 5],
+      [6, 6],
+      [5, 6],
+      [4, 6],
+      [3, 6],
+      [2, 6],
+      [1, 6],
+      [1, 7],
+      [2, 7],
+      [3, 7],
+      [4, 7],
+      [5, 7],
+      [6, 7],
+      [7, 7],
     ],
     green: [
-      [8, 13], [8, 12], [8, 11], [8, 10], [8, 9], [8, 8],
-      [9, 8], [10, 8], [11, 8], [12, 8], [13, 8], [13, 7], [13, 6],
-      [12, 6], [11, 6], [10, 6], [9, 6], [8, 6], [8, 5], [8, 4], [8, 3], [8, 2], [8, 1],
-      [7, 1], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6],
-      [5, 6], [4, 6], [3, 6], [2, 6], [1, 6], [1, 7], [1, 8],
-      [2, 8], [3, 8], [4, 8], [5, 8], [6, 8], [6, 9], [6, 10], [6, 11], [6, 12], [6, 13],
-      [7, 13], [7, 12], [7, 11], [7, 10], [7, 9], [7, 8], [7, 7]
+      [8, 13],
+      [8, 12],
+      [8, 11],
+      [8, 10],
+      [8, 9],
+      [8, 8],
+      [9, 8],
+      [10, 8],
+      [11, 8],
+      [12, 8],
+      [13, 8],
+      [13, 7],
+      [13, 6],
+      [12, 6],
+      [11, 6],
+      [10, 6],
+      [9, 6],
+      [8, 6],
+      [8, 5],
+      [8, 4],
+      [8, 3],
+      [8, 2],
+      [8, 1],
+      [7, 1],
+      [6, 1],
+      [6, 2],
+      [6, 3],
+      [6, 4],
+      [6, 5],
+      [6, 6],
+      [5, 6],
+      [4, 6],
+      [3, 6],
+      [2, 6],
+      [1, 6],
+      [1, 7],
+      [1, 8],
+      [2, 8],
+      [3, 8],
+      [4, 8],
+      [5, 8],
+      [6, 8],
+      [6, 9],
+      [6, 10],
+      [6, 11],
+      [6, 12],
+      [6, 13],
+      [7, 13],
+      [7, 12],
+      [7, 11],
+      [7, 10],
+      [7, 9],
+      [7, 8],
+      [7, 7],
     ],
     yellow: [
-      [13, 6], [12, 6], [11, 6], [10, 6], [9, 6], [8, 6],
-      [8, 5], [8, 4], [8, 3], [8, 2], [8, 1], [7, 1], [6, 1],
-      [6, 2], [6, 3], [6, 4], [6, 5], [6, 6], [5, 6], [4, 6], [3, 6], [2, 6], [1, 6],
-      [1, 7], [1, 8], [2, 8], [3, 8], [4, 8], [5, 8], [6, 8],
-      [6, 9], [6, 10], [6, 11], [6, 12], [6, 13], [7, 13], [8, 13],
-      [8, 12], [8, 11], [8, 10], [8, 9], [8, 8], [9, 8], [10, 8], [11, 8], [12, 8], [13, 8],
-      [13, 7], [12, 7], [11, 7], [10, 7], [9, 7], [8, 7], [7, 7]
+      [13, 6],
+      [12, 6],
+      [11, 6],
+      [10, 6],
+      [9, 6],
+      [8, 6],
+      [8, 5],
+      [8, 4],
+      [8, 3],
+      [8, 2],
+      [8, 1],
+      [7, 1],
+      [6, 1],
+      [6, 2],
+      [6, 3],
+      [6, 4],
+      [6, 5],
+      [6, 6],
+      [5, 6],
+      [4, 6],
+      [3, 6],
+      [2, 6],
+      [1, 6],
+      [1, 7],
+      [1, 8],
+      [2, 8],
+      [3, 8],
+      [4, 8],
+      [5, 8],
+      [6, 8],
+      [6, 9],
+      [6, 10],
+      [6, 11],
+      [6, 12],
+      [6, 13],
+      [7, 13],
+      [8, 13],
+      [8, 12],
+      [8, 11],
+      [8, 10],
+      [8, 9],
+      [8, 8],
+      [9, 8],
+      [10, 8],
+      [11, 8],
+      [12, 8],
+      [13, 8],
+      [13, 7],
+      [12, 7],
+      [11, 7],
+      [10, 7],
+      [9, 7],
+      [8, 7],
+      [7, 7],
     ],
   };
 
-  const calculateNewPosition = (color: string, currentPathPosition: number, steps: number): [number, number] | null => {
+  const calculateNewPosition = (
+    color: string,
+    currentPathPosition: number,
+    steps: number,
+  ): [number, number] | null => {
     const path = COLOR_PATHS[color];
     const newPathPosition = currentPathPosition + steps;
-    
+
     if (newPathPosition >= path.length) {
       return null; // Can't move beyond finish
     }
-    
+
     return path[newPathPosition];
   };
 
-  const canCapture = (fromPos: [number, number], toPos: [number, number], targetColor: string, movingColor: string): boolean => {
+  const canCapture = (
+    fromPos: [number, number],
+    toPos: [number, number],
+    targetColor: string,
+    movingColor: string,
+  ): boolean => {
     if (targetColor === movingColor) return false; // Can't capture own piece
-    
+
     // Safe positions
     const SAFE_POSITIONS = [
-      [1, 6], [6, 1], [8, 1], [13, 6],
-      [13, 8], [8, 13], [6, 13], [1, 8],
-      [6, 2], [2, 8], [8, 12], [12, 6]
+      [1, 6],
+      [6, 1],
+      [8, 1],
+      [13, 6],
+      [13, 8],
+      [8, 13],
+      [6, 13],
+      [1, 8],
+      [6, 2],
+      [2, 8],
+      [8, 12],
+      [12, 6],
     ];
-    
+
     return !SAFE_POSITIONS.some(([r, c]) => r === toPos[0] && c === toPos[1]);
   };
 
-  const handleMove = async (playerId: string, pieceId: number, steps: number) => {
+  const handleMove = async (
+    playerId: string,
+    pieceId: number,
+    steps: number,
+  ) => {
     if (!game || !currentUser || !game.game_state) return;
 
     if (game.current_turn !== getPlayerColor()) {
@@ -493,11 +709,13 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
     }
 
     try {
-      console.log(`🎯 Enhanced move: ${playerId} piece ${pieceId} by ${steps} steps`);
-      
+      console.log(
+        `🎯 Enhanced move: ${playerId} piece ${pieceId} by ${steps} steps`,
+      );
+
       const newGameState = JSON.parse(JSON.stringify(game.game_state)); // Deep clone
       const piece = newGameState.pieces[playerId]?.[pieceId];
-      
+
       if (!piece) {
         toast.error("Invalid piece!");
         return;
@@ -509,49 +727,57 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
       // Handle moving out of home
       if (piece.position === "home" && steps === 6) {
         const startPos = getStartPosition(playerId);
-        
+
         // Check if start position is occupied by opponent
-        const occupant = findPieceAtPosition(newGameState, startPos[0], startPos[1]);
+        const occupant = findPieceAtPosition(
+          newGameState,
+          startPos[0],
+          startPos[1],
+        );
         if (occupant && occupant.color !== playerId) {
           // Capture the piece
           sendPieceHome(newGameState, occupant);
           capturedPiece = true;
           toast.success(`Captured ${occupant.color} piece!`);
         }
-        
+
         piece.position = "active";
         piece.row = startPos[0];
         piece.col = startPos[1];
         piece.pathPosition = 0;
         piece.isOut = true;
-        
+
         toast.success("Moved piece out of home!");
-      } 
+      }
       // Handle moving active pieces
       else if (piece.position === "active") {
-        const newPos = calculateNewPosition(playerId, piece.pathPosition, steps);
-        
+        const newPos = calculateNewPosition(
+          playerId,
+          piece.pathPosition,
+          steps,
+        );
+
         if (!newPos) {
           toast.error("Cannot move beyond finish line!");
           return;
         }
-        
+
         const newPathPosition = piece.pathPosition + steps;
-        
+
         // Check if reached home (center)
         if (newPathPosition >= COLOR_PATHS[playerId].length - 1) {
           piece.position = "finished";
           piece.row = 7;
           piece.col = 7;
           piece.pathPosition = COLOR_PATHS[playerId].length - 1;
-          
+
           toast.success("🏠 Piece reached home!");
-          
+
           // Check win condition
           const finishedCount = newGameState.pieces[playerId].filter(
-            (p: any) => p.position === "finished"
+            (p: any) => p.position === "finished",
           ).length;
-          
+
           if (finishedCount === 4) {
             await completeGame(currentUser, "normal");
             toast.success("🎉 You won the game!");
@@ -559,14 +785,22 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
           }
         } else {
           // Check for capture
-          const occupant = findPieceAtPosition(newGameState, newPos[0], newPos[1]);
-          if (occupant && occupant.color !== playerId && canCapture([piece.row, piece.col], newPos, occupant.color, playerId)) {
+          const occupant = findPieceAtPosition(
+            newGameState,
+            newPos[0],
+            newPos[1],
+          );
+          if (
+            occupant &&
+            occupant.color !== playerId &&
+            canCapture([piece.row, piece.col], newPos, occupant.color, playerId)
+          ) {
             sendPieceHome(newGameState, occupant);
             capturedPiece = true;
             bonusTurn = true; // Capturing gives bonus turn
             toast.success(`💥 Captured ${occupant.color} piece!`);
           }
-          
+
           // Move piece to new position
           piece.pathPosition = newPathPosition;
           piece.row = newPos[0];
@@ -580,8 +814,9 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
       // Handle bonus turns
       if (steps === 6) {
         bonusTurn = true;
-        newGameState.consecutiveSixes = (newGameState.consecutiveSixes || 0) + 1;
-        
+        newGameState.consecutiveSixes =
+          (newGameState.consecutiveSixes || 0) + 1;
+
         if (newGameState.consecutiveSixes >= 3) {
           bonusTurn = false;
           newGameState.consecutiveSixes = 0;
@@ -596,7 +831,9 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
       // Determine next player
       let nextPlayer = playerId;
       if (!bonusTurn) {
-        const activeColors = newGameState.playerColors || ["red", "blue", "green", "yellow"].slice(0, game.current_players);
+        const activeColors =
+          newGameState.playerColors ||
+          ["red", "blue", "green", "yellow"].slice(0, game.current_players);
         const currentIndex = activeColors.indexOf(game.current_turn);
         nextPlayer = activeColors[(currentIndex + 1) % activeColors.length];
       }
@@ -641,7 +878,9 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
     if (!game || !currentUser || !game.game_state) return;
 
     try {
-      const activeColors = game.game_state?.playerColors || ["red", "blue", "green", "yellow"].slice(0, game.current_players);
+      const activeColors =
+        game.game_state?.playerColors ||
+        ["red", "blue", "green", "yellow"].slice(0, game.current_players);
       const currentIndex = activeColors.indexOf(game.current_turn);
       const nextPlayer = activeColors[(currentIndex + 1) % activeColors.length];
 
@@ -666,12 +905,17 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
 
   const findPieceAtPosition = (gameState: any, row: number, col: number) => {
     if (!gameState?.pieces) return null;
-    
+
     for (const [color, pieces] of Object.entries(gameState.pieces)) {
       if (!Array.isArray(pieces)) continue;
-      
+
       for (const [index, piece] of pieces.entries()) {
-        if (piece && piece.row === row && piece.col === col && piece.position === "active") {
+        if (
+          piece &&
+          piece.row === row &&
+          piece.col === col &&
+          piece.position === "active"
+        ) {
           return { ...piece, color, index };
         }
       }
@@ -680,11 +924,12 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
   };
 
   const sendPieceHome = (gameState: any, capturedPiece: any) => {
-    if (!gameState?.pieces?.[capturedPiece.color]?.[capturedPiece.index]) return;
-    
+    if (!gameState?.pieces?.[capturedPiece.color]?.[capturedPiece.index])
+      return;
+
     const piece = gameState.pieces[capturedPiece.color][capturedPiece.index];
     const homePos = getHomePosition(capturedPiece.color);
-    
+
     piece.position = "home";
     piece.row = homePos[0] + Math.floor(capturedPiece.index / 2);
     piece.col = homePos[1] + (capturedPiece.index % 2);
@@ -698,7 +943,7 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
     console.log("🎯 Starting Ludo game completion process", {
       winnerId,
       gameResult,
-      prizeAmount: game.prize_amount
+      prizeAmount: game.prize_amount,
     });
 
     try {
@@ -731,7 +976,10 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
           .single();
 
         if (profileFetchError) {
-          console.error("❌ Error fetching Ludo winner profile:", profileFetchError);
+          console.error(
+            "❌ Error fetching Ludo winner profile:",
+            profileFetchError,
+          );
         } else {
           console.log("📊 Current Ludo winner stats:", winnerProfile);
 
@@ -740,13 +988,17 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
             .update({
               games_played: (winnerProfile.games_played || 0) + 1,
               games_won: (winnerProfile.games_won || 0) + 1,
-              total_earnings: (winnerProfile.total_earnings || 0) + game.prize_amount,
+              total_earnings:
+                (winnerProfile.total_earnings || 0) + game.prize_amount,
               updated_at: new Date().toISOString(),
             })
             .eq("id", winnerId);
 
           if (profileUpdateError) {
-            console.error("❌ Error updating Ludo winner profile:", profileUpdateError);
+            console.error(
+              "❌ Error updating Ludo winner profile:",
+              profileUpdateError,
+            );
           } else {
             console.log("✅ Ludo winner profile updated successfully");
           }
@@ -760,10 +1012,16 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
           .single();
 
         if (walletFetchError) {
-          console.error("❌ Error fetching Ludo winner wallet:", walletFetchError);
+          console.error(
+            "❌ Error fetching Ludo winner wallet:",
+            walletFetchError,
+          );
           toast.error("Failed to update wallet");
         } else {
-          console.log("💳 Current Ludo winner wallet balance:", winnerWallet.balance);
+          console.log(
+            "💳 Current Ludo winner wallet balance:",
+            winnerWallet.balance,
+          );
 
           const newBalance = (winnerWallet.balance || 0) + game.prize_amount;
           const { error: walletUpdateError } = await supabase
@@ -775,40 +1033,54 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
             .eq("user_id", winnerId);
 
           if (walletUpdateError) {
-            console.error("❌ Error updating Ludo winner wallet:", walletUpdateError);
+            console.error(
+              "❌ Error updating Ludo winner wallet:",
+              walletUpdateError,
+            );
             toast.error("Failed to add Ludo winnings to wallet");
           } else {
-            console.log("✅ Ludo winner wallet updated successfully. New balance:", newBalance);
-            
+            console.log(
+              "✅ Ludo winner wallet updated successfully. New balance:",
+              newBalance,
+            );
+
             if (winnerId === currentUser) {
-              toast.success(`🎉 ₹${game.prize_amount} added to your wallet from Ludo win!`);
+              toast.success(
+                `🎉 ₹${game.prize_amount} added to your wallet from Ludo win!`,
+              );
             }
           }
         }
 
         // Create winning transaction
-        const { error: transactionError } = await supabase.from("transactions").insert({
-          user_id: winnerId,
-          transaction_type: "game_winning",
-          amount: game.prize_amount,
-          status: "completed",
-          description: `Won Ludo game: ${game.game_name || "Ludo Game"}`,
-        });
+        const { error: transactionError } = await supabase
+          .from("transactions")
+          .insert({
+            user_id: winnerId,
+            transaction_type: "game_winning",
+            amount: game.prize_amount,
+            status: "completed",
+            description: `Won Ludo game: ${game.game_name || "Ludo Game"}`,
+          });
 
         if (transactionError) {
-          console.error("❌ Error creating Ludo winning transaction:", transactionError);
+          console.error(
+            "❌ Error creating Ludo winning transaction:",
+            transactionError,
+          );
         } else {
           console.log("✅ Ludo winning transaction created successfully");
         }
       }
 
       console.log("🎉 Ludo game completion processing finished successfully");
-      
+
       // Show success message
       if (winnerId === currentUser) {
-        toast.success(`🏆 Congratulations! You won ₹${game.prize_amount} in Ludo!`);
+        toast.success(
+          `🏆 Congratulations! You won ₹${game.prize_amount} in Ludo!`,
+        );
       }
-
     } catch (error) {
       console.error("💥 Error processing Ludo game completion:", error);
       toast.error("Failed to process Ludo game completion");
@@ -1031,9 +1303,9 @@ export const LudoGame = ({ gameId, onBackToLobby }: LudoGameProps) => {
         </CardContent>
       </Card>
 
-      {/* Enhanced Ludo Board */}
+      {/* Modern Ludo Board */}
       {game.game_status === "active" && game.game_state && (
-        <LudoBoardEnhanced
+        <LudoBoardModern
           gameState={game.game_state}
           onMove={handleMove}
           onTurnEnd={handleTurnEnd}
