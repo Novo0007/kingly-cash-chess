@@ -111,7 +111,7 @@ export const ProfessionalCodeLearnLanguageSelector: React.FC<
           return (
             <Card
               key={language.id}
-              className="group cursor-pointer border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] overflow-hidden bg-white"
+              className="professional-card interactive group cursor-pointer"
               onClick={() => onLanguageSelect(language)}
             >
               {/* Card Header with Language Color */}
