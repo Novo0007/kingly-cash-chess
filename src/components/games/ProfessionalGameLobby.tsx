@@ -302,145 +302,147 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
 
         {/* Games Grid - Mobile Optimized 2x2 Layout */}
         <div className={`grid ${getGridCols()} gap-3 md:gap-4 lg:gap-6`}>
-          {filteredGames.slice(0, 4).map((game, index) => (
-            <Card
-              key={game.id}
-              className={`professional-card interactive group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
-                game.highlight ? "ring-2 ring-blue-200 ring-opacity-50" : ""
-              } ${isMobile ? "min-h-[280px]" : "min-h-[320px]"}`}
-              onClick={() => handleGameSelect(game.id)}
-            >
-              {/* Card Header with gradient */}
-              <div
-                className={`${isMobile ? "h-20" : "h-24 lg:h-32"} bg-gradient-to-r ${game.gradient} relative overflow-hidden rounded-t-lg`}
+          {(showAllGames ? filteredGames : filteredGames.slice(0, 4)).map(
+            (game, index) => (
+              <Card
+                key={game.id}
+                className={`professional-card interactive group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
+                  game.highlight ? "ring-2 ring-blue-200 ring-opacity-50" : ""
+                } ${isMobile ? "min-h-[280px]" : "min-h-[320px]"}`}
+                onClick={() => handleGameSelect(game.id)}
               >
-                <div className="absolute inset-0 bg-black/10"></div>
-
-                {/* Status Badge */}
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-white/90 text-gray-800 text-xs font-medium px-2 py-1">
-                    {game.status}
-                  </Badge>
-                </div>
-
-                {/* Player Count */}
-                <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2 py-1">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="text-white text-xs font-medium">
-                    {game.players.split("+")[0]}+
-                  </span>
-                </div>
-
-                {/* Game Icon */}
-                <div className="absolute bottom-3 left-3">
-                  <div
-                    className={`w-12 h-12 lg:w-14 lg:h-14 ${game.iconBg} rounded-xl flex items-center justify-center shadow-lg`}
-                  >
-                    <game.icon
-                      className={`w-6 h-6 lg:w-7 lg:h-7 ${game.iconColor}`}
-                    />
-                  </div>
-                </div>
-
-                {/* Highlight indicator */}
-                {game.highlight && (
-                  <div className="absolute top-0 right-0 w-0 h-0 border-l-[20px] border-l-transparent border-t-[20px] border-t-yellow-400">
-                    <Star className="absolute -top-4 -left-3 w-3 h-3 text-white" />
-                  </div>
-                )}
-              </div>
-
-              <CardContent
-                className={`${isMobile ? "p-3" : "p-4 lg:p-6"} flex flex-col h-full`}
-              >
-                {/* Game Title */}
-                <div className={`${isMobile ? "mb-2" : "mb-3"}`}>
-                  <h3
-                    className={`${isMobile ? "text-base" : "text-lg lg:text-xl"} font-bold text-gray-900 mb-1 leading-tight`}
-                  >
-                    {game.title}
-                  </h3>
-                  <p
-                    className={`${isMobile ? "text-xs" : "text-sm"} text-gray-500 font-medium`}
-                  >
-                    {game.subtitle}
-                  </p>
-                </div>
-
-                {/* Game Description - Truncated for mobile */}
-                <p
-                  className={`${isMobile ? "text-xs" : "text-sm lg:text-base"} text-gray-600 mb-3 leading-relaxed ${isMobile ? "line-clamp-2" : ""}`}
-                >
-                  {isMobile
-                    ? game.description.substring(0, 50) + "..."
-                    : game.description}
-                </p>
-
-                {/* Features */}
-                <div className="mb-3 flex-grow">
-                  <div className="flex flex-wrap gap-1">
-                    {game.features
-                      .slice(0, isMobile ? 1 : 2)
-                      .map((feature, idx) => (
-                        <span
-                          key={idx}
-                          className={`inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 ${isMobile ? "text-xs" : "text-xs"} font-medium rounded-md`}
-                        >
-                          {feature}
-                        </span>
-                      ))}
-                    {game.features.length > (isMobile ? 1 : 2) && (
-                      <span
-                        className={`inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 ${isMobile ? "text-xs" : "text-xs"} font-medium rounded-md`}
-                      >
-                        +{game.features.length - (isMobile ? 1 : 2)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Earning Info - Compact for mobile */}
+                {/* Card Header with gradient */}
                 <div
-                  className={`flex items-center justify-between ${isMobile ? "mb-2 p-2" : "mb-4 p-3"} bg-gray-50 rounded-lg`}
+                  className={`${isMobile ? "h-20" : "h-24 lg:h-32"} bg-gradient-to-r ${game.gradient} relative overflow-hidden rounded-t-lg`}
                 >
-                  <div className="flex items-center gap-1">
-                    <Trophy
-                      className={`${isMobile ? "w-3 h-3" : "w-4 h-4"} text-yellow-500`}
-                    />
-                    <span
-                      className={`${isMobile ? "text-xs" : "text-sm"} font-medium text-gray-600`}
-                    >
-                      {isMobile ? "Prize" : "Prize Pool"}
+                  <div className="absolute inset-0 bg-black/10"></div>
+
+                  {/* Status Badge */}
+                  <div className="absolute top-3 left-3">
+                    <Badge className="bg-white/90 text-gray-800 text-xs font-medium px-2 py-1">
+                      {game.status}
+                    </Badge>
+                  </div>
+
+                  {/* Player Count */}
+                  <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2 py-1">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-white text-xs font-medium">
+                      {game.players.split("+")[0]}+
                     </span>
                   </div>
-                  <span
-                    className={`${isMobile ? "text-xs" : "text-sm"} font-bold ${
-                      game.category === "earn"
-                        ? "text-green-600"
-                        : "text-blue-600"
-                    }`}
-                  >
-                    {isMobile && game.earning.length > 10
-                      ? game.earning.substring(0, 8) + "..."
-                      : game.earning}
-                  </span>
+
+                  {/* Game Icon */}
+                  <div className="absolute bottom-3 left-3">
+                    <div
+                      className={`w-12 h-12 lg:w-14 lg:h-14 ${game.iconBg} rounded-xl flex items-center justify-center shadow-lg`}
+                    >
+                      <game.icon
+                        className={`w-6 h-6 lg:w-7 lg:h-7 ${game.iconColor}`}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Highlight indicator */}
+                  {game.highlight && (
+                    <div className="absolute top-0 right-0 w-0 h-0 border-l-[20px] border-l-transparent border-t-[20px] border-t-yellow-400">
+                      <Star className="absolute -top-4 -left-3 w-3 h-3 text-white" />
+                    </div>
+                  )}
                 </div>
 
-                {/* Play Button - Compact for mobile */}
-                <Button
-                  className={`w-full bg-gradient-to-r ${game.gradient} text-white font-semibold ${isMobile ? "py-2 text-sm" : "py-3"} rounded-xl hover:opacity-90 transition-all duration-200 group/btn mt-auto`}
+                <CardContent
+                  className={`${isMobile ? "p-3" : "p-4 lg:p-6"} flex flex-col h-full`}
                 >
-                  <Play
-                    className={`${isMobile ? "w-3 h-3 mr-1" : "w-4 h-4 mr-2"} transition-transform duration-200 group-hover/btn:scale-110`}
-                  />
-                  {isMobile ? "PLAY" : "PLAY NOW"}
-                  <ArrowRight
-                    className={`${isMobile ? "w-3 h-3 ml-1" : "w-4 h-4 ml-2"} transition-transform duration-200 group-hover/btn:translate-x-1`}
-                  />
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  {/* Game Title */}
+                  <div className={`${isMobile ? "mb-2" : "mb-3"}`}>
+                    <h3
+                      className={`${isMobile ? "text-base" : "text-lg lg:text-xl"} font-bold text-gray-900 mb-1 leading-tight`}
+                    >
+                      {game.title}
+                    </h3>
+                    <p
+                      className={`${isMobile ? "text-xs" : "text-sm"} text-gray-500 font-medium`}
+                    >
+                      {game.subtitle}
+                    </p>
+                  </div>
+
+                  {/* Game Description - Truncated for mobile */}
+                  <p
+                    className={`${isMobile ? "text-xs" : "text-sm lg:text-base"} text-gray-600 mb-3 leading-relaxed ${isMobile ? "line-clamp-2" : ""}`}
+                  >
+                    {isMobile
+                      ? game.description.substring(0, 50) + "..."
+                      : game.description}
+                  </p>
+
+                  {/* Features */}
+                  <div className="mb-3 flex-grow">
+                    <div className="flex flex-wrap gap-1">
+                      {game.features
+                        .slice(0, isMobile ? 1 : 2)
+                        .map((feature, idx) => (
+                          <span
+                            key={idx}
+                            className={`inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 ${isMobile ? "text-xs" : "text-xs"} font-medium rounded-md`}
+                          >
+                            {feature}
+                          </span>
+                        ))}
+                      {game.features.length > (isMobile ? 1 : 2) && (
+                        <span
+                          className={`inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 ${isMobile ? "text-xs" : "text-xs"} font-medium rounded-md`}
+                        >
+                          +{game.features.length - (isMobile ? 1 : 2)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Earning Info - Compact for mobile */}
+                  <div
+                    className={`flex items-center justify-between ${isMobile ? "mb-2 p-2" : "mb-4 p-3"} bg-gray-50 rounded-lg`}
+                  >
+                    <div className="flex items-center gap-1">
+                      <Trophy
+                        className={`${isMobile ? "w-3 h-3" : "w-4 h-4"} text-yellow-500`}
+                      />
+                      <span
+                        className={`${isMobile ? "text-xs" : "text-sm"} font-medium text-gray-600`}
+                      >
+                        {isMobile ? "Prize" : "Prize Pool"}
+                      </span>
+                    </div>
+                    <span
+                      className={`${isMobile ? "text-xs" : "text-sm"} font-bold ${
+                        game.category === "earn"
+                          ? "text-green-600"
+                          : "text-blue-600"
+                      }`}
+                    >
+                      {isMobile && game.earning.length > 10
+                        ? game.earning.substring(0, 8) + "..."
+                        : game.earning}
+                    </span>
+                  </div>
+
+                  {/* Play Button - Compact for mobile */}
+                  <Button
+                    className={`w-full bg-gradient-to-r ${game.gradient} text-white font-semibold ${isMobile ? "py-2 text-sm" : "py-3"} rounded-xl hover:opacity-90 transition-all duration-200 group/btn mt-auto`}
+                  >
+                    <Play
+                      className={`${isMobile ? "w-3 h-3 mr-1" : "w-4 h-4 mr-2"} transition-transform duration-200 group-hover/btn:scale-110`}
+                    />
+                    {isMobile ? "PLAY" : "PLAY NOW"}
+                    <ArrowRight
+                      className={`${isMobile ? "w-3 h-3 ml-1" : "w-4 h-4 ml-2"} transition-transform duration-200 group-hover/btn:translate-x-1`}
+                    />
+                  </Button>
+                </CardContent>
+              </Card>
+            ),
+          )}
         </div>
 
         {/* Empty State */}
