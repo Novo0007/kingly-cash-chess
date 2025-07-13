@@ -26,12 +26,14 @@ interface MathLobbyProps {
   ) => void;
   onShowRules: () => void;
   onShowLeaderboard: () => void;
+  onShowLevels?: () => void;
 }
 
 export const MathLobby: React.FC<MathLobbyProps> = ({
   onStartGame,
   onShowRules,
   onShowLeaderboard,
+  onShowLevels,
 }) => {
   const { currentTheme } = useTheme();
   const difficulties = [
@@ -121,6 +123,24 @@ export const MathLobby: React.FC<MathLobbyProps> = ({
       color: "bg-purple-500",
       questions: "Unlimited",
       time: "Until first error",
+    },
+  ];
+
+  const specialModes = [
+    {
+      id: "level" as const,
+      title: "Level Mode",
+      description:
+        "Progress through 99 challenging levels with elimination rounds",
+      icon: Trophy,
+      color: "bg-gradient-to-r from-yellow-500 to-red-500",
+      features: [
+        "🎯 99 Progressive Levels",
+        "🔥 Elimination Mode (Levels 21+)",
+        "⭐ Increasing Difficulty",
+        "🏆 Unlock System",
+        "📊 Track Progress",
+      ],
     },
   ];
 
@@ -310,6 +330,62 @@ export const MathLobby: React.FC<MathLobbyProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Special Game Mode - Level System */}
+      {onShowLevels && (
+        <div className="space-y-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">
+            🚀 Special Challenge Mode
+          </h2>
+          {specialModes.map((mode) => (
+            <Card
+              key={mode.id}
+              className="relative overflow-hidden border-2 border-yellow-300 bg-gradient-to-br from-yellow-50 to-red-50 hover:shadow-2xl transition-all duration-300 group"
+            >
+              {/* Highlight Effect */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-yellow-200/50 to-red-200/50 rounded-bl-[100px] opacity-60"></div>
+
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`p-4 ${mode.color} rounded-2xl shadow-lg`}>
+                    <mode.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <Badge className="bg-gradient-to-r from-yellow-400 to-red-400 text-white border-0 px-3 py-1 font-bold">
+                    ⭐ FEATURED
+                  </Badge>
+                </div>
+
+                <CardTitle className="text-2xl text-gray-800 mb-2">
+                  {mode.title}
+                </CardTitle>
+                <p className="text-gray-700 font-medium">{mode.description}</p>
+              </CardHeader>
+
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {mode.features.map((feature, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-2 text-sm font-medium"
+                    >
+                      <div className="w-2 h-2 bg-gradient-to-r from-yellow-400 to-red-400 rounded-full"></div>
+                      <span className="text-gray-700">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <Button
+                  onClick={onShowLevels}
+                  className="w-full h-12 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 hover:from-yellow-600 hover:via-orange-600 hover:to-red-600 text-white font-bold border-0 transition-all duration-200 hover:scale-[1.02] shadow-lg"
+                >
+                  <Trophy className="h-5 w-5 mr-2" />
+                  🎯 Start Level Challenge
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {/* Action Buttons - Mobile Full Width */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
