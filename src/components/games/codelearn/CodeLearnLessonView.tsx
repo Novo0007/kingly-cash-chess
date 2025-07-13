@@ -56,12 +56,11 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   const [isComplete, setIsComplete] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
-  const currentExercise = lesson.content.exercises[currentExerciseIndex];
+  const currentExercise = lesson?.content?.exercises?.[currentExerciseIndex];
   const isLastExercise =
-    currentExerciseIndex === lesson.content.exercises.length - 1;
-  const allExercisesAnswered = lesson.content.exercises.every(
-    (ex) => exerciseAnswers[ex.id],
-  );
+    currentExerciseIndex === (lesson?.content?.exercises?.length ?? 0) - 1;
+  const allExercisesAnswered =
+    lesson?.content?.exercises?.every((ex) => exerciseAnswers[ex.id]) ?? false;
 
   // Update time spent
   useEffect(() => {
