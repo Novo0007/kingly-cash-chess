@@ -275,7 +275,7 @@ export const CodeLearnLanguageSelector: React.FC<
                 ) : (
                   <div className={isMobile ? "space-y-2" : "space-y-3"}>
                     <div
-                      className={`flex items-center justify-between text-white/80 ${isMobile ? "text-xs" : "text-sm"}`}
+                      className={`flex items-center justify-between text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
                     >
                       <div className="flex items-center gap-2">
                         <BookOpen
@@ -290,7 +290,7 @@ export const CodeLearnLanguageSelector: React.FC<
                     </div>
 
                     <div
-                      className={`text-white/60 ${isMobile ? "text-xs" : "text-xs"}`}
+                      className={`text-muted-foreground ${isMobile ? "text-xs" : "text-xs"}`}
                     >
                       Start your journey with interactive coding exercises
                     </div>
