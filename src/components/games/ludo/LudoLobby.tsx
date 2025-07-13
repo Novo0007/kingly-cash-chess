@@ -456,7 +456,7 @@ export const LudoLobby = ({
                 </div>
               </div>
               <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
-                {currentTheme.preview} Ludo Arena
+                {currentTheme.preview} Ludo King Arena
               </h1>
             </div>
           </div>
