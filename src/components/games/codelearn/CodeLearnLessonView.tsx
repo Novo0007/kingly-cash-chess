@@ -587,7 +587,8 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
         </Button>
 
         <div className="flex items-center gap-3">
-          {exerciseAnswers[currentExercise.id] &&
+          {currentExercise &&
+            exerciseAnswers[currentExercise.id] &&
             !exerciseResults.hasOwnProperty(currentExercise.id) && (
               <Button
                 onClick={handleSubmitAnswer}
@@ -597,7 +598,8 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
               </Button>
             )}
 
-          {exerciseResults.hasOwnProperty(currentExercise.id) &&
+          {currentExercise &&
+            exerciseResults.hasOwnProperty(currentExercise.id) &&
             !isLastExercise && (
               <Button
                 onClick={handleNextExercise}
@@ -608,7 +610,8 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
               </Button>
             )}
 
-          {exerciseResults.hasOwnProperty(currentExercise.id) &&
+          {currentExercise &&
+            exerciseResults.hasOwnProperty(currentExercise.id) &&
             isLastExercise && (
               <Button
                 onClick={handleLessonComplete}
