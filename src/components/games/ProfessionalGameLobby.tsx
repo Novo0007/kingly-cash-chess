@@ -315,69 +315,93 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
                 )}
               </div>
 
-              <CardContent className="p-4 lg:p-6">
+              <CardContent
+                className={`${isMobile ? "p-3" : "p-4 lg:p-6"} flex flex-col h-full`}
+              >
                 {/* Game Title */}
-                <div className="mb-3">
-                  <h3 className="text-lg lg:text-xl font-bold text-gray-900 mb-1">
+                <div className={`${isMobile ? "mb-2" : "mb-3"}`}>
+                  <h3
+                    className={`${isMobile ? "text-base" : "text-lg lg:text-xl"} font-bold text-gray-900 mb-1 leading-tight`}
+                  >
                     {game.title}
                   </h3>
-                  <p className="text-sm text-gray-500 font-medium">
+                  <p
+                    className={`${isMobile ? "text-xs" : "text-sm"} text-gray-500 font-medium`}
+                  >
                     {game.subtitle}
                   </p>
                 </div>
 
-                {/* Game Description */}
-                <p className="text-sm lg:text-base text-gray-600 mb-4 leading-relaxed">
-                  {game.description}
+                {/* Game Description - Truncated for mobile */}
+                <p
+                  className={`${isMobile ? "text-xs" : "text-sm lg:text-base"} text-gray-600 mb-3 leading-relaxed ${isMobile ? "line-clamp-2" : ""}`}
+                >
+                  {isMobile
+                    ? game.description.substring(0, 50) + "..."
+                    : game.description}
                 </p>
 
                 {/* Features */}
-                <div className="mb-4">
-                  <div className="flex flex-wrap gap-2">
+                <div className="mb-3 flex-grow">
+                  <div className="flex flex-wrap gap-1">
                     {game.features
-                      .slice(0, isMobile ? 2 : 3)
+                      .slice(0, isMobile ? 1 : 2)
                       .map((feature, idx) => (
                         <span
                           key={idx}
-                          className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-md"
+                          className={`inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 ${isMobile ? "text-xs" : "text-xs"} font-medium rounded-md`}
                         >
                           {feature}
                         </span>
                       ))}
-                    {game.features.length > (isMobile ? 2 : 3) && (
-                      <span className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-md">
-                        +{game.features.length - (isMobile ? 2 : 3)} more
+                    {game.features.length > (isMobile ? 1 : 2) && (
+                      <span
+                        className={`inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 ${isMobile ? "text-xs" : "text-xs"} font-medium rounded-md`}
+                      >
+                        +{game.features.length - (isMobile ? 1 : 2)}
                       </span>
                     )}
                   </div>
                 </div>
 
-                {/* Earning Info */}
-                <div className="flex items-center justify-between mb-4 p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="w-4 h-4 text-yellow-500" />
-                    <span className="text-sm font-medium text-gray-600">
-                      Prize Pool
+                {/* Earning Info - Compact for mobile */}
+                <div
+                  className={`flex items-center justify-between ${isMobile ? "mb-2 p-2" : "mb-4 p-3"} bg-gray-50 rounded-lg`}
+                >
+                  <div className="flex items-center gap-1">
+                    <Trophy
+                      className={`${isMobile ? "w-3 h-3" : "w-4 h-4"} text-yellow-500`}
+                    />
+                    <span
+                      className={`${isMobile ? "text-xs" : "text-sm"} font-medium text-gray-600`}
+                    >
+                      {isMobile ? "Prize" : "Prize Pool"}
                     </span>
                   </div>
                   <span
-                    className={`text-sm font-bold ${
+                    className={`${isMobile ? "text-xs" : "text-sm"} font-bold ${
                       game.category === "earn"
                         ? "text-green-600"
                         : "text-blue-600"
                     }`}
                   >
-                    {game.earning}
+                    {isMobile && game.earning.length > 10
+                      ? game.earning.substring(0, 8) + "..."
+                      : game.earning}
                   </span>
                 </div>
 
-                {/* Play Button */}
+                {/* Play Button - Compact for mobile */}
                 <Button
-                  className={`w-full bg-gradient-to-r ${game.gradient} text-white font-semibold py-3 rounded-xl hover:opacity-90 transition-all duration-200 group/btn`}
+                  className={`w-full bg-gradient-to-r ${game.gradient} text-white font-semibold ${isMobile ? "py-2 text-sm" : "py-3"} rounded-xl hover:opacity-90 transition-all duration-200 group/btn mt-auto`}
                 >
-                  <Play className="w-4 h-4 mr-2 transition-transform duration-200 group-hover/btn:scale-110" />
-                  PLAY NOW
-                  <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-200 group-hover/btn:translate-x-1" />
+                  <Play
+                    className={`${isMobile ? "w-3 h-3 mr-1" : "w-4 h-4 mr-2"} transition-transform duration-200 group-hover/btn:scale-110`}
+                  />
+                  {isMobile ? "PLAY" : "PLAY NOW"}
+                  <ArrowRight
+                    className={`${isMobile ? "w-3 h-3 ml-1" : "w-4 h-4 ml-2"} transition-transform duration-200 group-hover/btn:translate-x-1`}
+                  />
                 </Button>
               </CardContent>
             </Card>
