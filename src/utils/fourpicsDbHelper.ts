@@ -142,7 +142,7 @@ export async function completeFourPicsLevel(params: {
 }
 
 // Use a hint
-export async function useFourPicsHint(
+export async function recordFourPicsHint(
   userId: string,
   levelId: string,
   hintType: HintType,
