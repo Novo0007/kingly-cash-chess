@@ -45,6 +45,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
     "all" | "free" | "earn"
   >("all");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showAllGames, setShowAllGames] = useState(false);
 
   const categories = [
     { id: "all", label: "All Games", icon: Menu, color: "slate" },
