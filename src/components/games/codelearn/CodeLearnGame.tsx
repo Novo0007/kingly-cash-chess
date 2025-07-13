@@ -52,6 +52,7 @@ interface CodeLearnGameProps {
 type GameView =
   | "languages"
   | "units"
+  | "unit-lessons"
   | "lesson"
   | "achievements"
   | "profile"
