@@ -252,17 +252,19 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                     <CardTitle
                       className={`mb-1 ${
                         isLocked
-                          ? "text-white/60"
+                          ? "text-muted-foreground"
                           : unitProgress.isCompleted
-                            ? "text-emerald-200"
-                            : "text-white"
+                            ? "text-primary"
+                            : "text-foreground"
                       } ${isMobile ? "text-base" : "text-lg"}`}
                     >
                       {unit.title}
                     </CardTitle>
                     <p
                       className={`${
-                        isLocked ? "text-white/40" : "text-white/80"
+                        isLocked
+                          ? "text-muted-foreground/60"
+                          : "text-muted-foreground"
                       } ${isMobile ? "text-xs" : "text-sm"}`}
                     >
                       {unit.description}
