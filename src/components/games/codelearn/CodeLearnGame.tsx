@@ -16,6 +16,7 @@ import {
   Clock,
   Zap,
   Brain,
+  Coins,
 } from "lucide-react";
 import { CodeLearnLanguageSelector } from "./CodeLearnLanguageSelector";
 import { CodeLearnUnitView } from "./CodeLearnUnitView";
@@ -112,6 +113,14 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
   ) => {
     if (!userProgress) return;
 
+    // Calculate coin reward based on performance
+    const coinReward = progressManager.calculateCoinReward(
+      lesson.xpReward,
+      accuracy,
+      timeSpent < 180, // time bonus for completing under 3 minutes
+      Math.min(userProgress.currentStreak * 0.1 + 1, 2), // streak multiplier up to 2x
+    );
+
     // Create session record
     const session = {
       id: Date.now().toString(),
@@ -122,6 +131,7 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
       score,
       accuracy,
       xpEarned: lesson.xpReward,
+      coinsEarned: coinReward.amount,
       exerciseResults: [], // Would be populated with actual exercise results
       timeSpent,
       hintsUsed: 0,
@@ -134,9 +144,12 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
     setUserProgress(updatedProgress);
 
     // Show completion toast
-    toast.success(`Lesson completed! +${lesson.xpReward} XP`, {
-      description: `Score: ${Math.round(score)}% • Accuracy: ${Math.round(accuracy * 100)}%`,
-    });
+    toast.success(
+      `Lesson completed! +${lesson.xpReward} XP, +${coinReward.amount} coins`,
+      {
+        description: `Score: ${Math.round(score)}% • Accuracy: ${Math.round(accuracy * 100)}%${coinReward.bonus ? " • Bonus earned!" : ""}`,
+      },
+    );
 
     // Auto-advance to next lesson or back to unit view
     setTimeout(() => {
@@ -212,6 +225,14 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
                 <Star className="w-4 h-4 text-yellow-400" />
                 <span className="text-yellow-100 font-bold">
                   {userProgress.totalXP.toLocaleString()}
+                </span>
+              </div>
+
+              {/* Total Coins */}
+              <div className="flex items-center gap-1 bg-amber-500/20 px-3 py-1 rounded-full">
+                <Coins className="w-4 h-4 text-amber-400" />
+                <span className="text-amber-100 font-bold">
+                  {userProgress.availableCoins.toLocaleString()}
                 </span>
               </div>
             </div>
