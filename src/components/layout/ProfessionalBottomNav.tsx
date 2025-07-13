@@ -52,12 +52,7 @@ export const ProfessionalBottomNav: React.FC<ProfessionalBottomNavProps> = ({
       icon: Wallet,
       color: "emerald",
     },
-    {
-      id: "profile",
-      label: "Profile",
-      icon: UserCircle,
-      color: "gray",
-    },
+    // Profile button removed - now accessible through header dropdown
   ];
 
   // Add admin tab if user is admin
