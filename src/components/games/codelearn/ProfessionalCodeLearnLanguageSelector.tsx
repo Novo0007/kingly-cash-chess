@@ -106,6 +106,67 @@ export const ProfessionalCodeLearnLanguageSelector: React.FC<
         )}
       </div>
 
+      {/* Key Features Section */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Why Choose CodeMaster?
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Join thousands of learners mastering programming with our
+            comprehensive platform
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="text-center p-4 bg-white rounded-xl border border-gray-100">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <BookOpen className="w-6 h-6 text-blue-600" />
+            </div>
+            <h3 className="font-semibold text-gray-900 mb-2">50+ Languages</h3>
+            <p className="text-sm text-gray-600">
+              Learn Python, JavaScript, Java, and more with expert-curated
+              content
+            </p>
+          </div>
+
+          <div className="text-center p-4 bg-white rounded-xl border border-gray-100">
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <Zap className="w-6 h-6 text-green-600" />
+            </div>
+            <h3 className="font-semibold text-gray-900 mb-2">
+              Interactive Practice
+            </h3>
+            <p className="text-sm text-gray-600">
+              Code in real environments with instant feedback and hands-on
+              exercises
+            </p>
+          </div>
+
+          <div className="text-center p-4 bg-white rounded-xl border border-gray-100">
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <Target className="w-6 h-6 text-purple-600" />
+            </div>
+            <h3 className="font-semibold text-gray-900 mb-2">
+              Daily Challenges
+            </h3>
+            <p className="text-sm text-gray-600">
+              Solve real-world problems and compete with fellow learners
+            </p>
+          </div>
+
+          <div className="text-center p-4 bg-white rounded-xl border border-gray-100">
+            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <Award className="w-6 h-6 text-orange-600" />
+            </div>
+            <h3 className="font-semibold text-gray-900 mb-2">Certificates</h3>
+            <p className="text-sm text-gray-600">
+              Earn certificates and badges to showcase your programming skills
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Languages Grid - Mobile-first 1x1 layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {languages.map((language) => {
