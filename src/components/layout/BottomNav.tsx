@@ -120,13 +120,6 @@ export const BottomNav = ({
               </Button>
             );
           })}
-
-          {/* Theme toggle with consistent styling */}
-          <div className="flex items-center justify-center min-h-[64px] min-w-[64px]">
-            <div className="p-3 rounded-2xl bg-white/60 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/80 transition-all duration-300">
-              <ThemeToggle />
-            </div>
-          </div>
         </div>
       </div>
     </div>
