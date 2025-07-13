@@ -167,13 +167,14 @@ export const FourPicsLeaderboard: React.FC<FourPicsLeaderboardProps> = ({
               secondaryScore = `Level ${entry.highest_level_reached}`;
               scoreIcon = <Coins className="h-4 w-4 text-yellow-600" />;
               break;
-            case "speed":
+            case "speed": {
               const avgTime =
                 entry.total_time_played / entry.total_levels_completed;
               primaryScore = `${formatTime(avgTime)} avg`;
               secondaryScore = `${entry.total_levels_completed} levels`;
               scoreIcon = <Clock className="h-4 w-4 text-green-600" />;
               break;
+            }
           }
 
           return (
