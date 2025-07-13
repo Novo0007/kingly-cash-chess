@@ -25,7 +25,14 @@ import { useTheme } from "@/contexts/ThemeContext";
 
 interface NealFunGameLobbyProps {
   onSelectGame: (
-    gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
+    gameType:
+      | "chess"
+      | "ludo"
+      | "maze"
+      | "game2048"
+      | "math"
+      | "wordsearch"
+      | "codelearn",
   ) => void;
 }
 
