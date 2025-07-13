@@ -57,11 +57,11 @@ export const ProfessionalCodeLearnLanguageSelector: React.FC<
           <Code className="w-8 h-8 text-white" />
         </div>
 
-        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900">
+        <h1 className="text-professional-primary text-3xl lg:text-4xl font-bold">
           Choose Your Programming Language
         </h1>
 
-        <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+        <p className="text-professional-secondary max-w-2xl mx-auto text-lg">
           Start your coding journey with interactive lessons, hands-on projects,
           and personalized learning paths.
         </p>
