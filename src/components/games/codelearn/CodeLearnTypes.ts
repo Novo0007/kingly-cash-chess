@@ -98,6 +98,7 @@ export interface LanguageProgress {
   languageId: string;
   level: number;
   xp: number;
+  coins: number;
   completedUnits: number;
   totalUnits: number;
   completedLessons: number;
