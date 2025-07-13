@@ -128,6 +128,7 @@ export interface Achievement {
     languageId?: string;
   };
   xpReward: number;
+  coinReward: number;
   unlockedAt?: string;
   progress: number;
   maxProgress: number;
