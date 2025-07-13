@@ -170,4 +170,5 @@ export const ProfessionalBottomNav: React.FC<ProfessionalBottomNavProps> = ({
   );
 };
 
+export { ProfessionalBottomNav as BottomNav };
 export default ProfessionalBottomNav;
