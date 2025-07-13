@@ -203,43 +203,38 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      {/* Professional Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                  <Crown className="w-4 h-4 lg:w-5 lg:h-5 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-lg lg:text-xl font-bold text-gray-900">
-                    Game Hub
-                  </h1>
-                  <p className="text-xs lg:text-sm text-gray-500">
-                    Professional Gaming Platform
-                  </p>
-                </div>
-              </div>
-            </div>
+    <div className="space-y-8">
+      {/* Welcome Section */}
+      <div className="text-center space-y-4">
+        <h1 className="text-professional-primary text-3xl lg:text-4xl font-bold">
+          Welcome to Game Hub
+        </h1>
+        <p className="text-professional-secondary text-lg max-w-2xl mx-auto">
+          Choose from our collection of exciting games and start playing now!
+        </p>
 
-            {/* Stats */}
-            <div className="hidden sm:flex items-center gap-6">
-              <div className="text-center">
-                <div className="text-lg font-bold text-gray-900">5.2K+</div>
-                <div className="text-xs text-gray-500">Players</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-green-600">₹10L+</div>
-                <div className="text-xs text-gray-500">Prizes</div>
-              </div>
+        {/* Stats */}
+        <div className="flex justify-center items-center gap-8 mt-6">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-professional-primary">
+              5.2K+
             </div>
+            <div className="text-professional-muted text-sm">
+              Active Players
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-green-600">₹10L+</div>
+            <div className="text-professional-muted text-sm">Prizes Won</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-blue-600">24/7</div>
+            <div className="text-professional-muted text-sm">Support</div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+      <div className="space-y-8">
         {/* Category Filter */}
         <div className="mb-8">
           <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
