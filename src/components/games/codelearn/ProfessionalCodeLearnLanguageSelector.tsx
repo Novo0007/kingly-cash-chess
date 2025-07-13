@@ -321,14 +321,21 @@ export const ProfessionalCodeLearnLanguageSelector: React.FC<
         })}
       </div>
 
-      {/* Features Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+      {/* Comprehensive Features Section */}
+      <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-200 p-8">
         <div className="text-center space-y-6">
-          <h3 className="text-2xl font-bold text-gray-900">
-            Why Choose CodeMaster?
-          </h3>
+          <div className="space-y-3">
+            <h3 className="text-3xl font-bold text-gray-900">
+              The Complete Learning Experience
+            </h3>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              CodeMaster combines the best learning methods to help you become a
+              confident programmer, whether you're starting from zero or
+              advancing your career.
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="w-8 h-8 text-blue-600" />
