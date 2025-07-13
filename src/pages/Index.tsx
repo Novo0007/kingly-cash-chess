@@ -371,6 +371,23 @@ const Index = () => {
     }
   };
 
+  // Professional Layout Handler
+  if (useProfessionalLayout) {
+    return (
+      <ProfessionalMobileOptimized>
+        <ProfessionalAppLayout
+          currentView={currentView}
+          onViewChange={setCurrentView}
+          isAdmin={isAdmin}
+          showHeader={currentView !== "games" || !useProfessionalStyle}
+          showBottomNav={true}
+        >
+          {renderCurrentView()}
+        </ProfessionalAppLayout>
+      </ProfessionalMobileOptimized>
+    );
+  }
+
   if (useProfessionalStyle && currentView === "games") {
     return (
       <MobileOptimized>
