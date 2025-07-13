@@ -27,11 +27,11 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [themeId, setThemeId] = useState<ThemeId>(() => {
-    // Get theme from localStorage or default to "default"
+    // Get theme from localStorage or default to "charcoal"
     const savedTheme = localStorage.getItem("theme") as ThemeId;
     return savedTheme && themes.find((t) => t.id === savedTheme)
       ? savedTheme
-      : "default";
+      : "charcoal";
   });
 
   const currentTheme =
