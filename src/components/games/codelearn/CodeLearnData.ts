@@ -107,6 +107,7 @@ export class CodeLearnDataService {
         type: "concept",
         difficulty: 1,
         xpReward: 20,
+        coinReward: 10,
         order: 1,
         prerequisiteIds: [],
         isCompleted: false,
@@ -132,6 +133,7 @@ console.log(age);  // 25`,
               explanation:
                 "'const' is used for variables that won't be reassigned after declaration.",
               points: 10,
+              coinReward: 5,
             },
             {
               id: "js-var-2",
@@ -143,6 +145,7 @@ console.log(age);  // 25`,
               explanation:
                 "'let' is the modern way to declare variables that may change.",
               points: 10,
+              coinReward: 5,
             },
             {
               id: "js-var-3",
@@ -154,6 +157,7 @@ console.log(age);  // 25`,
               explanation:
                 "Use 'const' for mathematical constants that never change.",
               points: 15,
+              coinReward: 8,
             },
           ],
           hints: [
