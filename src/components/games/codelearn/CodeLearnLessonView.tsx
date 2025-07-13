@@ -131,11 +131,12 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   };
 
   const handleLessonComplete = () => {
-    const correctAnswers = lesson.content.exercises.filter(
+    const exercises = lesson?.content?.exercises ?? [];
+    const correctAnswers = exercises.filter(
       (ex) => exerciseResults[ex.id],
     ).length;
 
-    const totalExercises = lesson.content.exercises.length;
+    const totalExercises = exercises.length;
     const accuracy = correctAnswers / totalExercises;
     const score = accuracy * 100;
 
