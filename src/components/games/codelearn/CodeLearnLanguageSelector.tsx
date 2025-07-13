@@ -265,8 +265,8 @@ export const CodeLearnLanguageSelector: React.FC<
                       <div
                         className={`flex items-center gap-2 ${isMobile ? "text-xs" : "text-xs"}`}
                       >
-                        <Target className="w-3 h-3 text-emerald-400" />
-                        <span className="text-white/70">
+                        <Target className="w-3 h-3 text-primary" />
+                        <span className="text-muted-foreground">
                           {Math.round(langProgress.accuracy * 100)}% accuracy
                         </span>
                       </div>
