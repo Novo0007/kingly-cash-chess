@@ -315,7 +315,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                   <div
                     className={`flex items-center ${isMobile ? "gap-3" : "gap-4"}`}
                   >
-                    <div className="flex items-center gap-1 text-white/80">
+                    <div className="flex items-center gap-1 text-muted-foreground">
                       <BookOpen
                         className={`${isMobile ? "w-3 h-3" : "w-4 h-4"}`}
                       />
@@ -323,7 +323,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                     </div>
 
                     {!isLocked && unitProgress.isCompleted && (
-                      <div className="flex items-center gap-1 text-emerald-400">
+                      <div className="flex items-center gap-1 text-primary">
                         <Trophy
                           className={`${isMobile ? "w-3 h-3" : "w-4 h-4"}`}
                         />
@@ -333,7 +333,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                   </div>
 
                   {!isLocked && !unitProgress.isCompleted && (
-                    <div className="flex items-center gap-1 text-cyan-300">
+                    <div className="flex items-center gap-1 text-accent">
                       <Clock
                         className={`${isMobile ? "w-3 h-3" : "w-4 h-4"}`}
                       />
