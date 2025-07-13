@@ -160,10 +160,10 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
     },
     {
       id: "codelearn",
-      title: "CodeLearn Academy",
+      title: "CodeMaster",
       subtitle: "Programming Mastery",
       description:
-        "Learn programming languages with interactive lessons and challenges",
+        "Master programming with bite-sized lessons, real-world challenges, and community support",
       icon: Code,
       gradient: "from-blue-500 via-indigo-500 to-purple-500",
       bgGradient: "from-blue-50 to-indigo-50",
@@ -276,7 +276,7 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
           </h1>
 
           <p className="text-xl sm:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-            ✨ Crafting moments of pure magic, one game at 
+            ✨ Crafting moments of pure magic, one game at
             <span className="font-bold text-green-600"> a time ✨</span>
           </p>
 
