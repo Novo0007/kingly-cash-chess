@@ -17,6 +17,7 @@ import {
   DollarSign,
   Gift,
   BookOpen,
+  Code,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
@@ -24,7 +25,14 @@ import { useTheme } from "@/contexts/ThemeContext";
 
 interface NealFunGameLobbyProps {
   onSelectGame: (
-    gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
+    gameType:
+      | "chess"
+      | "ludo"
+      | "maze"
+      | "game2048"
+      | "math"
+      | "wordsearch"
+      | "codelearn",
   ) => void;
 }
 
@@ -100,6 +108,16 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
       isPopular: true,
       isPaid: true,
     },
+    {
+      id: "codelearn",
+      title: "CodeLearn Academy",
+      description: "Learn programming with interactive lessons",
+      icon: Code,
+      emoji: "👨‍💻",
+      players: "1.2K+ learning",
+      isPopular: true,
+      isPaid: false,
+    },
   ];
 
   const comingSoon = [
@@ -113,7 +131,14 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
 
   const handleGameSelect = useCallback(
     (
-      gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
+      gameType:
+        | "chess"
+        | "ludo"
+        | "maze"
+        | "game2048"
+        | "math"
+        | "wordsearch"
+        | "codelearn",
     ) => {
       onSelectGame(gameType);
     },
@@ -282,7 +307,8 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
                       | "maze"
                       | "game2048"
                       | "math"
-                      | "wordsearch",
+                      | "wordsearch"
+                      | "codelearn",
                   )
                 }
               >

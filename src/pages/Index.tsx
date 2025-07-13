@@ -16,6 +16,7 @@ import { MazeGame } from "@/components/games/maze/MazeGame";
 import { Game2048 } from "@/components/games/game2048/Game2048";
 import { MathGame } from "@/components/games/math/MathGame";
 import { WordSearchGame } from "@/components/games/wordsearch/WordSearchGame";
+import { CodeLearnGame } from "@/components/games/codelearn/CodeLearnGame";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -34,7 +35,14 @@ const Index = () => {
   const [currentView, setCurrentView] = useState("games");
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
   const [selectedGameType, setSelectedGameType] = useState<
-    "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch" | null
+    | "chess"
+    | "ludo"
+    | "maze"
+    | "game2048"
+    | "math"
+    | "wordsearch"
+    | "codelearn"
+    | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [useNealFunStyle, setUseNealFunStyle] = useState(false);
@@ -166,7 +174,14 @@ const Index = () => {
   }, [user?.email]);
 
   const handleSelectGame = (
-    gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
+    gameType:
+      | "chess"
+      | "ludo"
+      | "maze"
+      | "game2048"
+      | "math"
+      | "wordsearch"
+      | "codelearn",
   ) => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
@@ -181,6 +196,8 @@ const Index = () => {
       setCurrentView("math-game");
     } else if (gameType === "wordsearch") {
       setCurrentView("wordsearch-game");
+    } else if (gameType === "codelearn") {
+      setCurrentView("codelearn-game");
     }
   };
 
@@ -198,6 +215,8 @@ const Index = () => {
       setCurrentView("math-game");
     } else if (selectedGameType === "wordsearch") {
       setCurrentView("wordsearch-game");
+    } else if (selectedGameType === "codelearn") {
+      setCurrentView("codelearn-game");
     }
   };
 
@@ -215,6 +234,8 @@ const Index = () => {
       setCurrentView("math-game");
     } else if (selectedGameType === "wordsearch") {
       setCurrentView("wordsearch-game");
+    } else if (selectedGameType === "codelearn") {
+      setCurrentView("codelearn-game");
     }
   };
 
@@ -324,6 +345,8 @@ const Index = () => {
         return (
           <WordSearchGame onBack={handleBackToGameSelection} user={user} />
         );
+      case "codelearn-game":
+        return <CodeLearnGame onBack={handleBackToGameSelection} user={user} />;
       case "wallet":
         return <WalletManager />;
       case "friends":

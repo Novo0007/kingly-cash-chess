@@ -17,6 +17,7 @@ import {
   CheckCircle,
   Clock,
   Brain,
+  Code,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
@@ -29,7 +30,14 @@ import { useTheme } from "@/contexts/ThemeContext";
 
 interface GameSelectionProps {
   onSelectGame: (
-    gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
+    gameType:
+      | "chess"
+      | "ludo"
+      | "maze"
+      | "game2048"
+      | "math"
+      | "wordsearch"
+      | "codelearn",
   ) => void;
 }
 
@@ -54,7 +62,14 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
   // Memoize click handlers for better performance
   const handleGameSelect = useCallback(
     (
-      gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
+      gameType:
+        | "chess"
+        | "ludo"
+        | "maze"
+        | "game2048"
+        | "math"
+        | "wordsearch"
+        | "codelearn",
     ) => {
       onSelectGame(gameType);
     },
@@ -194,6 +209,26 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         players: "150+ Playing",
         isMoneyGame: true,
       },
+      {
+        id: "codelearn",
+        title: "CodeLearn Academy",
+        description:
+          "Learn programming languages with interactive lessons and achievements!",
+        icon: Code,
+        emoji: "👨‍💻",
+        color: "indigo",
+        gradient: "from-indigo-700 via-blue-700 to-purple-700",
+        lightGradient: "from-indigo-100 via-blue-100 to-purple-100",
+        features: [
+          "🆓 Free Learning",
+          "📚 6 Languages",
+          "🏆 Achievements",
+          "📈 Progress Tracking",
+        ],
+        status: "LEARN",
+        players: "1.2K+ Learning",
+        isMoneyGame: false,
+      },
     ],
     [],
   );
@@ -226,28 +261,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
             className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-2xl blur-xl animate-pulse`}
           ></div>
           <div
-            className={`relative flex items-center gap-4 mb-6 md:mb-8 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10 ${
-              // Apply theme-specific classes
-              currentTheme.id === "cosmicvoid"
-                ? "cosmic-element"
-                : currentTheme.id === "lavamolten"
-                  ? "molten-effect"
-                  : currentTheme.id === "icecrystal"
-                    ? "crystal-effect"
-                    : currentTheme.id === "forestmystic"
-                      ? "nature-glow"
-                      : currentTheme.id === "goldluxury"
-                        ? "luxury-shine"
-                        : currentTheme.id === "oceandeep"
-                          ? "wave-effect"
-                          : currentTheme.id === "royalpurple"
-                            ? "royal-glow"
-                            : currentTheme.id === "sunsetvibes"
-                              ? "warm-gradient"
-                              : currentTheme.id === "synthwave80s"
-                                ? "neon-glow grid-lines"
-                                : ""
-            }`}
+            className={`relative flex items-center gap-4 mb-6 md:mb-8 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10`}
           >
             <div className="flex items-center gap-3">
               <div className="relative">

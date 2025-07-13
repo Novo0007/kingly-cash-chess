@@ -23,6 +23,7 @@ import {
   TrendingUp,
   Shield,
   CheckCircle,
+  Code,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
@@ -30,7 +31,14 @@ import { OptimizedImage } from "@/components/ui/optimized-image";
 
 interface ModernGameLobbyProps {
   onSelectGame: (
-    gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
+    gameType:
+      | "chess"
+      | "ludo"
+      | "maze"
+      | "game2048"
+      | "math"
+      | "wordsearch"
+      | "codelearn",
   ) => void;
 }
 
@@ -150,11 +158,36 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
       isPopular: true,
       isPaid: true,
     },
+    {
+      id: "codelearn",
+      title: "CodeLearn Academy",
+      subtitle: "Programming Mastery",
+      description:
+        "Learn programming languages with interactive lessons and challenges",
+      icon: Code,
+      gradient: "from-blue-500 via-indigo-500 to-purple-500",
+      bgGradient: "from-blue-50 to-indigo-50",
+      players: "1.2K+",
+      status: "🎓 LEARN",
+      earning: "Free Learning",
+      features: ["6 Languages", "Achievements", "Progress"],
+      image:
+        "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop",
+      isPopular: true,
+      isPaid: false,
+    },
   ];
 
   const handleGameSelect = useCallback(
     (
-      gameType: "chess" | "ludo" | "maze" | "game2048" | "math" | "wordsearch",
+      gameType:
+        | "chess"
+        | "ludo"
+        | "maze"
+        | "game2048"
+        | "math"
+        | "wordsearch"
+        | "codelearn",
     ) => {
       onSelectGame(gameType);
     },
@@ -303,7 +336,8 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
                     | "maze"
                     | "game2048"
                     | "math"
-                    | "wordsearch",
+                    | "wordsearch"
+                    | "codelearn",
                 )
               }
             >
