@@ -220,30 +220,30 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
             </Card>
 
             {/* Level Progress */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
+            <Card className="bg-card border border-border shadow-sm">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
-                      <Trophy className="w-4 h-4 text-indigo-600" />
+                    <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
+                      <Trophy className="w-4 h-4 text-primary" />
                     </div>
-                    <span className="text-sm font-semibold text-gray-700">
+                    <span className="text-sm font-semibold text-foreground">
                       Level {userProgress.level}
                     </span>
                   </div>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-muted-foreground">
                     {levelInfo.current}/{levelInfo.total} XP
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-muted rounded-full h-2">
                   <div
-                    className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                    className={`bg-gradient-to-r ${currentTheme.gradients.primary} h-2 rounded-full transition-all duration-300`}
                     style={{
                       width: `${(levelInfo.current / levelInfo.total) * 100}%`,
                     }}
                   ></div>
                 </div>
-                <div className="mt-2 text-xs text-gray-600">
+                <div className="mt-2 text-xs text-muted-foreground">
                   {Math.round((levelInfo.current / levelInfo.total) * 100)}% to
                   next level
                 </div>
