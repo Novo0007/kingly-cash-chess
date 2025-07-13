@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
   Lock,
   Star,
@@ -165,10 +164,12 @@ export const MathLevelSelector: React.FC<MathLevelSelectorProps> = ({
               <span>Overall Progress</span>
               <span>{Math.round(levelSystem.getCompletionRate() * 100)}%</span>
             </div>
-            <Progress
-              value={levelSystem.getCompletionRate() * 100}
-              className="h-2"
-            />
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${levelSystem.getCompletionRate() * 100}%` }}
+              ></div>
+            </div>
           </div>
 
           <div className="text-center">
