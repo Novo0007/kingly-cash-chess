@@ -294,10 +294,11 @@ export const ProfessionalCodeLearnLanguageSelector: React.FC<
                 <Award className="w-8 h-8 text-purple-600" />
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                Achievements
+                Community Support
               </h4>
               <p className="text-gray-600">
-                Earn badges and rewards as you master new programming skills
+                Join a thriving community of coders. Share progress, ask
+                questions, and learn together!
               </p>
             </div>
           </div>
