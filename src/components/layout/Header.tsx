@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import { runFullDiagnostic } from "@/utils/connectionTest";
 import { useTheme } from "@/contexts/ThemeContext";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 interface HeaderProps {
   onNavigateToWallet?: () => void;
