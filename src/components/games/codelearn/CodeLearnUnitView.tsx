@@ -206,7 +206,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
               {/* Progress Indicator */}
               {!isLocked && (
                 <div
-                  className="absolute top-0 left-0 h-1 bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 shadow-lg"
+                  className="absolute top-0 left-0 h-1 bg-gradient-to-r from-primary to-accent shadow-lg"
                   style={{ width: `${unitProgress.progress}%` }}
                 />
               )}
