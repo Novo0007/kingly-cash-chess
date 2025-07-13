@@ -83,7 +83,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       iconBg: "bg-amber-100",
       iconColor: "text-amber-600",
       players: "2.5K+ Online",
-      status: "🔥 HOT",
+      status: "�� HOT",
       earning: "₹2,50,000",
       features: ["Live Tournaments", "Quick Matches", "Global Rankings"],
       highlight: true,
@@ -270,7 +270,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
           {filteredGames.map((game, index) => (
             <Card
               key={game.id}
-              className={`group cursor-pointer border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] overflow-hidden ${
+              className={`professional-card interactive group cursor-pointer ${
                 game.highlight ? "ring-2 ring-blue-200 ring-opacity-50" : ""
               }`}
               onClick={() => handleGameSelect(game.id)}
