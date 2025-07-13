@@ -494,6 +494,16 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
 
         {/* Beautiful Stats Section */}
         <div className="mt-16">
+          {/* Inspiring Quote */}
+          <div className="text-center mb-8">
+            <p
+              className={`font-light text-white/90 italic ${isMobile ? "text-sm" : "text-lg"}`}
+            >
+              "In every game lies a universe of possibilities, waiting to be
+              discovered"
+            </p>
+          </div>
+
           <div
             className={`grid gap-6 text-center ${isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-3"}`}
           >
@@ -506,7 +516,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
               <div
                 className={`text-purple-200/80 ${isMobile ? "text-xs" : "text-sm"}`}
               >
-                💝 Adventures Ready
+                💝 Worlds to Explore
               </div>
             </div>
             <div className="backdrop-blur-sm bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-3xl p-6 border border-cyan-400/30">
@@ -518,7 +528,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
               <div
                 className={`text-cyan-200/80 ${isMobile ? "text-xs" : "text-sm"}`}
               >
-                🌟 Happy Hearts
+                🌟 Dream Weavers
               </div>
             </div>
             <div className="backdrop-blur-sm bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-3xl p-6 border border-emerald-400/30">
@@ -530,7 +540,7 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
               <div
                 className={`text-emerald-200/80 ${isMobile ? "text-xs" : "text-sm"}`}
               >
-                💫 Endless Joy
+                💫 Moments of Wonder
               </div>
             </div>
           </div>
