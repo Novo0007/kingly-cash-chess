@@ -153,9 +153,13 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
   };
 
   const handleBackToUnits = () => {
-    setCurrentView("units");
-    setSelectedUnit(null);
-    setSelectedLesson(null);
+    if (currentView === "unit-lessons") {
+      setCurrentView("units");
+      setSelectedUnit(null);
+    } else {
+      setCurrentView("unit-lessons");
+      setSelectedLesson(null);
+    }
     setIsMobileMenuOpen(false);
   };
 
