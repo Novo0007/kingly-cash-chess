@@ -229,6 +229,7 @@ let eitherTrue = true || false; // true`,
               explanation:
                 "The modulo operator (%) returns the remainder after division. 15 ÷ 4 = 3 remainder 3.",
               points: 10,
+              coinReward: 5,
             },
             {
               id: "js-op-2",
