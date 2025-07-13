@@ -347,7 +347,11 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
               ? "Back to Units"
               : currentView === "units"
                 ? "All Languages"
-                : "Back to Games"}
+                : currentView === "achievements" ||
+                    currentView === "profile" ||
+                    currentView === "leaderboard"
+                  ? "Back to Languages"
+                  : "Back to Games"}
           </Button>
 
           {selectedLanguage && (
