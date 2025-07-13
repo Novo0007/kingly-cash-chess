@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CodeLearnLanguageSelector } from "./CodeLearnLanguageSelector";
+import { ProfessionalCodeLearnLanguageSelector } from "./ProfessionalCodeLearnLanguageSelector";
 import { CodeLearnUnitView } from "./CodeLearnUnitView";
 import { CodeLearnLessonView } from "./CodeLearnLessonView";
 import { CodeLearnAchievements } from "./CodeLearnAchievements";
