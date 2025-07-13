@@ -6,7 +6,7 @@ import type {
   HintType,
 } from "@/components/games/fourpics/FourPicsGameLogic";
 
-export interface FourPicsApiResult<T = any> {
+export interface FourPicsApiResult<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -214,7 +214,19 @@ export async function getFourPicsScores(
 
 // Get leaderboard
 export async function getFourPicsLeaderboard(): Promise<
-  FourPicsApiResult<any[]>
+  FourPicsApiResult<
+    {
+      user_id: string;
+      total_levels_completed: number;
+      total_coins_earned: number;
+      highest_level_reached: number;
+      total_time_played: number;
+      profiles: {
+        username: string;
+        avatar_url: string | null;
+      };
+    }[]
+  >
 > {
   try {
     const { data, error } = await supabase
@@ -250,9 +262,20 @@ export async function getFourPicsLeaderboard(): Promise<
 }
 
 // Get coin transactions
-export async function getFourPicsCoinTransactions(
-  userId: string,
-): Promise<FourPicsApiResult<any[]>> {
+export async function getFourPicsCoinTransactions(userId: string): Promise<
+  FourPicsApiResult<
+    {
+      id: string;
+      user_id: string;
+      level_id: string | null;
+      transaction_type: string;
+      hint_type: string | null;
+      amount: number;
+      description: string | null;
+      created_at: string;
+    }[]
+  >
+> {
   try {
     const { data, error } = await supabase
       .from("fourpics_coin_transactions")
