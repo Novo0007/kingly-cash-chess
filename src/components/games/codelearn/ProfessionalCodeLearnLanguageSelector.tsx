@@ -58,12 +58,17 @@ export const ProfessionalCodeLearnLanguageSelector: React.FC<
         </div>
 
         <h1 className="text-professional-primary text-3xl lg:text-4xl font-bold">
-          Choose Your Programming Language
+          Welcome to CodeMaster
         </h1>
+        <p className="text-lg font-medium text-professional-primary/80">
+          Unlock the world of programming, one lesson at a time
+        </p>
 
-        <p className="text-professional-secondary max-w-2xl mx-auto text-lg">
-          Start your coding journey with interactive lessons, hands-on projects,
-          and personalized learning paths.
+        <p className="text-professional-secondary max-w-3xl mx-auto text-lg">
+          Your ultimate companion on the journey to mastering programming!
+          Whether you're a complete beginner or an experienced developer,
+          CodeMaster offers interactive lessons, coding challenges, and a
+          supportive community to help you level up your skills.
         </p>
 
         {/* User Stats */}
