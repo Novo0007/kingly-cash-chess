@@ -359,6 +359,16 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
 
         <div className="flex items-center gap-2">
           <Button
+            onClick={() => setCurrentView("leaderboard")}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <TrendingUp className="w-4 h-4" />
+            Leaderboard
+          </Button>
+
+          <Button
             onClick={() => setCurrentView("achievements")}
             variant="outline"
             size="sm"
