@@ -179,10 +179,13 @@ export interface LeaderboardEntry {
   username: string;
   avatar?: string;
   xp: number;
+  coins: number;
   level: number;
   streak: number;
   rank: number;
   country?: string;
+  completedLessons: number;
+  accuracy: number;
 }
 
 export interface CodeSession {
