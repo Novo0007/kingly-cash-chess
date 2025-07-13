@@ -56,15 +56,6 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onBack }) => {
 
   const getThemeIcon = (themeId: string) => {
     const icons = {
-      cosmicvoid: "🌌",
-      sunsetvibes: "🌅",
-      forestmystic: "🌲",
-      icecrystal: "❄️",
-      lavamolten: "����",
-      synthwave80s: "🕺",
-      goldluxury: "👑",
-      oceandeep: "🌊",
-      royalpurple: "🔮",
       glitchcyber: "⚡",
       hackermatrix: "🔰",
       glowyfun: "✨",
@@ -159,39 +150,13 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onBack }) => {
                       : "border-white/20 hover:border-white/40"
                 } ${theme.id === "hackermatrix" ? "matrix-card" : ""} ${
                   theme.id === "glitchcyber" ? "glitch-card" : ""
-                } ${theme.id === "cosmicvoid" ? "cosmic-element" : ""} ${
-                  theme.id === "lavamolten" ? "molten-effect" : ""
-                } ${theme.id === "icecrystal" ? "crystal-effect" : ""} ${
-                  theme.id === "forestmystic" ? "nature-glow" : ""
-                } ${theme.id === "goldluxury" ? "luxury-shine" : ""} ${
-                  theme.id === "oceandeep" ? "wave-effect" : ""
-                } ${theme.id === "royalpurple" ? "royal-glow" : ""} ${
-                  theme.id === "sunsetvibes" ? "warm-gradient" : ""
-                } ${theme.id === "synthwave80s" ? "neon-glow" : ""}`}
+                }`}
                 onClick={() => handleThemeChange(theme.id)}
               >
                 {/* Enhanced Background Effects */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                   <div
-                    className={`absolute top-0 right-0 w-32 h-32 rounded-full -translate-y-16 translate-x-16 transition-all duration-700 ${
-                      theme.id === "cosmicvoid"
-                        ? "bg-purple-400/20"
-                        : theme.id === "lavamolten"
-                          ? "bg-red-400/20 fire-particle"
-                          : theme.id === "icecrystal"
-                            ? "bg-cyan-400/20 frost-overlay"
-                            : theme.id === "forestmystic"
-                              ? "bg-green-400/20 leaf-float"
-                              : theme.id === "goldluxury"
-                                ? "bg-yellow-400/20 crown-effect"
-                                : theme.id === "oceandeep"
-                                  ? "bg-blue-400/20 bubble-effect"
-                                  : theme.id === "royalpurple"
-                                    ? "bg-purple-400/20 gem-sparkle"
-                                    : theme.id === "sunsetvibes"
-                                      ? "bg-orange-400/20 sun-ray"
-                                      : "bg-white/10"
-                    } group-hover:scale-110`}
+                    className={`absolute top-0 right-0 w-32 h-32 rounded-full -translate-y-16 translate-x-16 transition-all duration-700 bg-white/10 group-hover:scale-110`}
                   ></div>
 
                   <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12 group-hover:scale-110 transition-transform duration-700"></div>
