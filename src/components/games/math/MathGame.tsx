@@ -205,7 +205,7 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
         toast.error("Could not start level. Please try again.");
       }
     },
-    [levelSystem],
+    [levelSystem, supabaseLevelSystem],
   );
 
   const handleAnswer = useCallback(
