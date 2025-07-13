@@ -245,10 +245,10 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
                 variant={
                   selectedCategory === category.id ? "default" : "outline"
                 }
-                className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-200 ${
+                className={`professional-button size-md flex items-center gap-2 rounded-full ${
                   selectedCategory === category.id
-                    ? `bg-${category.color}-600 text-white hover:bg-${category.color}-700`
-                    : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                    : "bg-white border-gray-200 text-professional-primary hover:bg-gray-50"
                 }`}
               >
                 <category.icon className="w-4 h-4" />
