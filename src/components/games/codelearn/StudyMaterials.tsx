@@ -87,7 +87,7 @@ export const StudyMaterials: React.FC<StudyMaterialsProps> = ({ onBack }) => {
       duration: "5-6 hours",
       rating: 4.7,
       downloads: 9650,
-      url: "/pdfs/react-development.pdf",
+      url: "https://react.dev/learn",
       topics: ["Components", "Hooks", "State Management", "Routing", "Testing"],
     },
     {
@@ -100,7 +100,7 @@ export const StudyMaterials: React.FC<StudyMaterialsProps> = ({ onBack }) => {
       duration: "8-10 hours",
       rating: 4.6,
       downloads: 7200,
-      url: "/pdfs/algorithms-data-structures.pdf",
+      url: "https://www.geeksforgeeks.org/data-structures/",
       topics: ["Arrays", "Trees", "Graphs", "Sorting", "Dynamic Programming"],
     },
     {
