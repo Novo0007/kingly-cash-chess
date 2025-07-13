@@ -336,7 +336,8 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
                     | "maze"
                     | "game2048"
                     | "math"
-                    | "wordsearch",
+                    | "wordsearch"
+                    | "codelearn",
                 )
               }
             >
