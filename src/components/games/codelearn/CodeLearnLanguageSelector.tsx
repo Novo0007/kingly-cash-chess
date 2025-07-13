@@ -216,12 +216,12 @@ export const CodeLearnLanguageSelector: React.FC<
                 </div>
 
                 <CardTitle
-                  className={`font-bold text-white group-hover:text-cyan-200 transition-colors ${isMobile ? "text-lg" : "text-xl"}`}
+                  className={`font-bold text-foreground group-hover:text-primary transition-colors ${isMobile ? "text-lg" : "text-xl"}`}
                 >
                   {language.name}
                 </CardTitle>
                 <p
-                  className={`text-white/80 leading-relaxed ${isMobile ? "text-xs" : "text-sm"}`}
+                  className={`text-muted-foreground leading-relaxed ${isMobile ? "text-xs" : "text-sm"}`}
                 >
                   {language.description}
                 </p>
