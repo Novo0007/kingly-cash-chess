@@ -29,6 +29,7 @@ import {
   LevelGameScore,
 } from "./MathLevelGameLogic";
 import { MathLevelSystem, LevelProgress } from "./MathLevelSystem";
+import { MathLevelSystemSupabase } from "./MathLevelSystemSupabase";
 import { MathLevelSelector } from "./MathLevelSelector";
 import { toast } from "sonner";
 import { useDeviceType } from "@/hooks/use-mobile";
