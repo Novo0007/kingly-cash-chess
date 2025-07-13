@@ -251,26 +251,28 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
             </Card>
 
             {/* Streak & Coins */}
-            <Card className="bg-white border border-gray-200 shadow-sm">
+            <Card className="bg-card border border-border shadow-sm">
               <CardContent className="p-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <div className="flex items-center justify-center gap-1 mb-1">
                       <Flame className="w-4 h-4 text-orange-500" />
-                      <span className="text-sm font-bold text-gray-900">
+                      <span className="text-sm font-bold text-foreground">
                         {streakInfo?.current || 0}
                       </span>
                     </div>
-                    <div className="text-xs text-gray-500">Day Streak</div>
+                    <div className="text-xs text-muted-foreground">
+                      Day Streak
+                    </div>
                   </div>
                   <div className="text-center">
                     <div className="flex items-center justify-center gap-1 mb-1">
                       <Coins className="w-4 h-4 text-amber-500" />
-                      <span className="text-sm font-bold text-gray-900">
+                      <span className="text-sm font-bold text-foreground">
                         {userProgress.availableCoins}
                       </span>
                     </div>
-                    <div className="text-xs text-gray-500">Coins</div>
+                    <div className="text-xs text-muted-foreground">Coins</div>
                   </div>
                 </div>
               </CardContent>
