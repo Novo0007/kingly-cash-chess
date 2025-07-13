@@ -366,7 +366,7 @@ export const CodeLearnLanguageSelector: React.FC<
                 className={`absolute opacity-0 group-hover:opacity-100 transition-opacity ${isMobile ? "bottom-3 right-3" : "bottom-4 right-4"}`}
               >
                 <ArrowRight
-                  className={`text-white/80 ${isMobile ? "w-5 h-5" : "w-6 h-6"}`}
+                  className={`text-muted-foreground ${isMobile ? "w-5 h-5" : "w-6 h-6"}`}
                 />
               </div>
             </Card>
