@@ -414,6 +414,16 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
           />
         )}
 
+        {currentView === "unit-lessons" && selectedUnit && (
+          <CodeLearnUnitLessonsView
+            unit={selectedUnit}
+            lessons={dataService.getLessonsForUnit(selectedUnit.id)}
+            userProgress={userProgress}
+            onLessonSelect={handleLessonSelect}
+            onBackToUnits={handleBackToUnits}
+          />
+        )}
+
         {currentView === "lesson" && selectedLesson && selectedUnit && (
           <CodeLearnLessonView
             lesson={selectedLesson}
