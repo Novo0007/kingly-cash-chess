@@ -282,11 +282,9 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
 
   const renderNavigation = () => {
     return (
-      <div
-        className={`mb-4 md:mb-6 ${isMobile ? "space-y-3" : "flex items-center justify-between"}`}
-      >
+      <div className="flex items-center justify-between mb-6">
         {/* Back Button and Breadcrumbs */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-3">
           <Button
             onClick={() => {
               if (currentView === "lesson") {
@@ -304,112 +302,82 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
               }
             }}
             variant="outline"
-            size={isMobile ? "sm" : "sm"}
-            className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20"
+            size="sm"
+            className="flex items-center gap-2 bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
           >
-            <ArrowLeft className={`${isMobile ? "w-3 h-3" : "w-4 h-4"}`} />
-            <span className={isMobile ? "text-xs" : "text-sm"}>
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm">
               {currentView === "lesson"
-                ? "Units"
+                ? "Back to Units"
                 : currentView === "units"
-                  ? "Languages"
+                  ? "Back to Languages"
                   : currentView === "achievements" ||
                       currentView === "profile" ||
                       currentView === "leaderboard"
-                    ? "Languages"
-                    : "Games"}
+                    ? "Back to Languages"
+                    : "Back to Games"}
             </span>
           </Button>
 
-          {selectedLanguage && (
-            <Badge className="bg-white/10 text-white border border-white/20 text-xs">
-              {selectedLanguage.icon}{" "}
-              {isMobile
-                ? selectedLanguage.name.substring(0, 8) +
-                  (selectedLanguage.name.length > 8 ? "..." : "")
-                : selectedLanguage.name}
-            </Badge>
-          )}
-
-          {selectedUnit && (
-            <Badge className="bg-white/10 text-white border border-white/20 text-xs">
-              {selectedUnit.icon}{" "}
-              {isMobile
-                ? selectedUnit.title.substring(0, 10) +
-                  (selectedUnit.title.length > 10 ? "..." : "")
-                : selectedUnit.title}
-            </Badge>
-          )}
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            {selectedLanguage && (
+              <>
+                <span>/</span>
+                <Badge
+                  variant="secondary"
+                  className="bg-gray-100 text-gray-700 text-xs"
+                >
+                  {selectedLanguage.icon} {selectedLanguage.name}
+                </Badge>
+              </>
+            )}
+            {selectedUnit && (
+              <>
+                <span>/</span>
+                <Badge
+                  variant="secondary"
+                  className="bg-gray-100 text-gray-700 text-xs"
+                >
+                  {selectedUnit.icon} {selectedUnit.title}
+                </Badge>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Action Buttons */}
-        {isMobile ? (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => setCurrentView("leaderboard")}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20 px-3"
-              >
-                <TrendingUp className="w-3 h-3" />
-                <span className="text-xs">Ranks</span>
-              </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => setCurrentView("leaderboard")}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+          >
+            <TrendingUp className="w-4 h-4" />
+            {isMobile ? "Ranks" : "Leaderboard"}
+          </Button>
 
-              <Button
-                onClick={() => setCurrentView("achievements")}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20 px-3"
-              >
-                <Trophy className="w-3 h-3" />
-                <span className="text-xs">Awards</span>
-              </Button>
+          <Button
+            onClick={() => setCurrentView("achievements")}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+          >
+            <Trophy className="w-4 h-4" />
+            {isMobile ? "Awards" : "Achievements"}
+          </Button>
 
-              <Button
-                onClick={() => setCurrentView("profile")}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20 px-3"
-              >
-                <Target className="w-3 h-3" />
-                <span className="text-xs">Profile</span>
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={() => setCurrentView("leaderboard")}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20"
-            >
-              <TrendingUp className="w-4 h-4" />
-              Leaderboard
-            </Button>
-
-            <Button
-              onClick={() => setCurrentView("achievements")}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20"
-            >
-              <Trophy className="w-4 h-4" />
-              Achievements
-            </Button>
-
-            <Button
-              onClick={() => setCurrentView("profile")}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20"
-            >
-              <Target className="w-4 h-4" />
-              Profile
-            </Button>
-          </div>
-        )}
+          <Button
+            onClick={() => setCurrentView("profile")}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+          >
+            <Target className="w-4 h-4" />
+            Profile
+          </Button>
+        </div>
       </div>
     );
   };
