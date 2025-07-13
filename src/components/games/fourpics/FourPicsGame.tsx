@@ -720,6 +720,29 @@ export const FourPicsGame: React.FC<FourPicsGameProps> = ({
           </CardHeader>
         </Card>
 
+        {/* Database Status Card */}
+        {databaseSetup === false && (
+          <Card className="bg-gradient-to-r from-red-500 to-orange-600 text-white border-red-200">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                  <span className="text-xl">⚠️</span>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-white">Database Not Set Up</h3>
+                  <p className="text-white/90 text-sm">
+                    Please run the migration to enable the 4 Pics 1 Word game.
+                  </p>
+                  <p className="text-white/80 text-xs mt-1">
+                    File:
+                    supabase/migrations/20250130000000_create_fourpics_system.sql
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Progress Card */}
         {userProgress && (
           <Card>
