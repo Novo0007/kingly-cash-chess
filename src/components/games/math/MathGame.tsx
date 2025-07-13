@@ -250,7 +250,15 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
 
       return isCorrect;
     },
-    [gameLogic, levelGameLogic, gameState, gameType],
+    [
+      gameLogic,
+      levelGameLogic,
+      gameState,
+      gameType,
+      levelSystem,
+      supabaseLevelSystem,
+      user,
+    ],
   );
 
   const handleUseHint = useCallback((): string | null => {
