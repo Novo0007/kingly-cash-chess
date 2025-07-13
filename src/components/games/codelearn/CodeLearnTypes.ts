@@ -197,6 +197,7 @@ export interface CodeSession {
   score: number;
   accuracy: number;
   xpEarned: number;
+  coinsEarned: number;
   exerciseResults: ExerciseResult[];
   timeSpent: number;
   hintsUsed: number;
