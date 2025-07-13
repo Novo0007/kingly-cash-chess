@@ -423,10 +423,10 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
       </div>
 
       {/* Course Stats */}
-      <Card className="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border-indigo-400/30 backdrop-blur-sm">
+      <Card className="bg-gradient-to-r from-card/80 to-card/60 border border-border backdrop-blur-sm">
         <CardContent className={isMobile ? "p-4" : "p-6"}>
           <h3
-            className={`font-bold text-indigo-200 mb-4 text-center ${isMobile ? "text-base" : "text-lg"}`}
+            className={`font-bold text-foreground mb-4 text-center ${isMobile ? "text-base" : "text-lg"}`}
           >
             Course Overview
           </h3>
@@ -436,12 +436,12 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
           >
             <div className="text-center">
               <div
-                className={`font-bold text-indigo-300 ${isMobile ? "text-xl" : "text-2xl"}`}
+                className={`font-bold text-primary ${isMobile ? "text-xl" : "text-2xl"}`}
               >
                 {units.length}
               </div>
               <div
-                className={`text-indigo-200/80 ${isMobile ? "text-xs" : "text-sm"}`}
+                className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
               >
                 Units
               </div>
@@ -449,12 +449,12 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
 
             <div className="text-center">
               <div
-                className={`font-bold text-purple-300 ${isMobile ? "text-xl" : "text-2xl"}`}
+                className={`font-bold text-accent ${isMobile ? "text-xl" : "text-2xl"}`}
               >
                 {units.reduce((total, unit) => total + unit.totalLessons, 0)}
               </div>
               <div
-                className={`text-purple-200/80 ${isMobile ? "text-xs" : "text-sm"}`}
+                className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
               >
                 Total Lessons
               </div>
@@ -462,12 +462,12 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
 
             <div className="text-center">
               <div
-                className={`font-bold text-cyan-300 ${isMobile ? "text-xl" : "text-2xl"}`}
+                className={`font-bold text-primary ${isMobile ? "text-xl" : "text-2xl"}`}
               >
                 {language.estimatedHours}h
               </div>
               <div
-                className={`text-cyan-200/80 ${isMobile ? "text-xs" : "text-sm"}`}
+                className={`text-muted-foreground ${isMobile ? "text-xs" : "text-sm"}`}
               >
                 Estimated Time
               </div>
@@ -475,7 +475,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
 
             <div className="text-center">
               <div
-                className={`font-bold text-emerald-300 ${isMobile ? "text-xl" : "text-2xl"}`}
+                className={`font-bold text-accent ${isMobile ? "text-xl" : "text-2xl"}`}
               >
                 {language.difficulty === "beginner"
                   ? "🌱"
@@ -484,7 +484,7 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                     : "⚡"}
               </div>
               <div
-                className={`text-emerald-200/80 capitalize ${isMobile ? "text-xs" : "text-sm"}`}
+                className={`text-muted-foreground capitalize ${isMobile ? "text-xs" : "text-sm"}`}
               >
                 {language.difficulty}
               </div>
