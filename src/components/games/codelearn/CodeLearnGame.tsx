@@ -323,13 +323,13 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
           </Button>
 
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             {selectedLanguage && (
               <>
                 <span>/</span>
                 <Badge
                   variant="secondary"
-                  className="bg-gray-100 text-gray-700 text-xs"
+                  className="bg-secondary text-secondary-foreground text-xs"
                 >
                   {selectedLanguage.icon} {selectedLanguage.name}
                 </Badge>
@@ -340,7 +340,7 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
                 <span>/</span>
                 <Badge
                   variant="secondary"
-                  className="bg-gray-100 text-gray-700 text-xs"
+                  className="bg-secondary text-secondary-foreground text-xs"
                 >
                   {selectedUnit.icon} {selectedUnit.title}
                 </Badge>
