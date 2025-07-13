@@ -542,15 +542,20 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
         <div className="max-w-2xl mx-auto text-center">
           <div className="mb-6">
             <h3
-              className={`font-bold text-white mb-4 ${isMobile ? "text-lg" : "text-xl"}`}
+              className={`font-bold text-white mb-2 ${isMobile ? "text-lg" : "text-xl"}`}
             >
-              💫 Made with Love & Coffee ☕
+              💫 Crafted with Heart & Soul ✨
             </h3>
+            <div
+              className={`font-semibold text-transparent bg-gradient-to-r from-purple-300 to-cyan-300 bg-clip-text mb-4 ${isMobile ? "text-sm" : "text-lg"}`}
+            >
+              "Building bridges between imagination and reality"
+            </div>
             <p
               className={`text-white/80 font-light mb-6 ${isMobile ? "text-sm" : "text-lg"}`}
             >
-              Where creativity meets technology, and every pixel tells a story
-              of passion 🎨
+              Every line of code carries our dreams, every feature holds our
+              dedication 🎨
             </p>
           </div>
 
