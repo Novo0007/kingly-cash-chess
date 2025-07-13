@@ -197,6 +197,16 @@ export class CodeLearnProgressManager {
           progress = totalUnitsCompleted;
           shouldUnlock = progress >= achievement.requirement.value;
           break;
+
+        case "coins-earned":
+          progress = this.userProgress!.totalCoins;
+          shouldUnlock = progress >= achievement.requirement.value;
+          break;
+
+        case "coins-spent":
+          progress = this.userProgress!.coinsSpent;
+          shouldUnlock = progress >= achievement.requirement.value;
+          break;
       }
 
       achievement.progress = progress;
