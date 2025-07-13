@@ -234,6 +234,32 @@ export const StudyMaterials: React.FC<StudyMaterialsProps> = ({ onBack }) => {
         "iOS Development",
       ],
     },
+    {
+      id: "js-pdf-guide",
+      title: "JavaScript PDF Reference",
+      description: "Comprehensive JavaScript reference with examples",
+      type: "pdf",
+      language: "JavaScript",
+      difficulty: "beginner",
+      duration: "2-3 hours",
+      rating: 4.8,
+      downloads: 25400,
+      url: "data:text/html;charset=utf-8,<html><body style='font-family: Arial, sans-serif; padding: 20px; line-height: 1.6;'><h1>JavaScript Reference Guide</h1><h2>Variables</h2><p>JavaScript variables are containers for storing data values.</p><pre><code>let name = 'Alice';\nconst age = 25;\nvar city = 'New York';</code></pre><h2>Functions</h2><p>Functions are blocks of code designed to perform a particular task.</p><pre><code>function greet(name) {\n  return 'Hello, ' + name + '!';\n}\n\n// Arrow function\nconst add = (a, b) => a + b;</code></pre><h2>Objects</h2><p>Objects are collections of key-value pairs.</p><pre><code>const person = {\n  name: 'John',\n  age: 30,\n  city: 'Boston'\n};</code></pre></body></html>",
+      topics: ["Variables", "Functions", "Objects", "Arrays", "ES6"],
+    },
+    {
+      id: "python-pdf-guide",
+      title: "Python PDF Reference",
+      description: "Essential Python concepts and syntax guide",
+      type: "pdf",
+      language: "Python",
+      difficulty: "beginner",
+      duration: "2-3 hours",
+      rating: 4.9,
+      downloads: 18200,
+      url: "data:text/html;charset=utf-8,<html><body style='font-family: Arial, sans-serif; padding: 20px; line-height: 1.6;'><h1>Python Reference Guide</h1><h2>Variables and Data Types</h2><p>Python variables are created when you assign a value to them.</p><pre><code>name = 'Python'\nage = 30\nheight = 5.9\nis_programmer = True</code></pre><h2>Lists and Dictionaries</h2><p>Lists and dictionaries are fundamental data structures in Python.</p><pre><code># Lists\nfruits = ['apple', 'banana', 'orange']\n\n# Dictionaries\nperson = {\n  'name': 'Alice',\n  'age': 25,\n  'city': 'Seattle'\n}</code></pre><h2>Functions</h2><p>Functions in Python are defined using the def keyword.</p><pre><code>def greet(name):\n  return f'Hello, {name}!'\n\n# Lambda functions\nadd = lambda x, y: x + y</code></pre></body></html>",
+      topics: ["Variables", "Functions", "Lists", "Dictionaries", "Classes"],
+    },
   ];
 
   const languages = [
