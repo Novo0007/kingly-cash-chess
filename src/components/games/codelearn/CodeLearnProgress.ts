@@ -327,6 +327,145 @@ export class CodeLearnProgressManager {
     );
   }
 
+  // Coin-related methods
+  public spendCoins(amount: number, source: string, sourceId: string): boolean {
+    if (!this.userProgress || this.userProgress.availableCoins < amount) {
+      return false;
+    }
+
+    this.userProgress.availableCoins -= amount;
+    this.userProgress.coinsSpent += amount;
+
+    // Record transaction
+    this.recordCoinTransaction({
+      id: this.generateTransactionId(),
+      userId: this.userProgress.userId,
+      type: "spent",
+      amount: -amount,
+      source: source as any,
+      sourceId,
+      description: `Spent ${amount} coins on ${source}`,
+      timestamp: new Date().toISOString(),
+    });
+
+    this.saveProgressToStorage();
+    return true;
+  }
+
+  public earnCoins(
+    amount: number,
+    source: string,
+    sourceId: string,
+    description?: string,
+  ): void {
+    if (!this.userProgress) return;
+
+    this.userProgress.totalCoins += amount;
+    this.userProgress.availableCoins += amount;
+    this.userProgress.todayCoins += amount;
+
+    // Record transaction
+    this.recordCoinTransaction({
+      id: this.generateTransactionId(),
+      userId: this.userProgress.userId,
+      type: "earned",
+      amount,
+      source: source as any,
+      sourceId,
+      description: description || `Earned ${amount} coins from ${source}`,
+      timestamp: new Date().toISOString(),
+    });
+
+    this.saveProgressToStorage();
+  }
+
+  public getCoinBalance(): number {
+    return this.userProgress?.availableCoins || 0;
+  }
+
+  public getTotalCoinsEarned(): number {
+    return this.userProgress?.totalCoins || 0;
+  }
+
+  public getDailyCoinProgress(): {
+    current: number;
+    goal: number;
+    percentage: number;
+  } {
+    if (!this.userProgress) return { current: 0, goal: 50, percentage: 0 };
+
+    const current = this.userProgress.todayCoins;
+    const goal = this.userProgress.dailyGoalCoins;
+    const percentage = Math.min((current / goal) * 100, 100);
+
+    return { current, goal, percentage };
+  }
+
+  private recordCoinTransaction(transaction: CoinTransaction): void {
+    try {
+      const transactions = this.getCoinTransactions();
+      transactions.unshift(transaction); // Add to beginning
+
+      // Keep only last 100 transactions
+      const limitedTransactions = transactions.slice(0, 100);
+
+      localStorage.setItem(
+        `codelearn_transactions_${this.userProgress?.userId}`,
+        JSON.stringify(limitedTransactions),
+      );
+    } catch (error) {
+      console.error("Failed to record coin transaction:", error);
+    }
+  }
+
+  public getCoinTransactions(): CoinTransaction[] {
+    try {
+      const transactions = localStorage.getItem(
+        `codelearn_transactions_${this.userProgress?.userId}`,
+      );
+      return transactions ? JSON.parse(transactions) : [];
+    } catch (error) {
+      console.error("Failed to get coin transactions:", error);
+      return [];
+    }
+  }
+
+  private generateTransactionId(): string {
+    return `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  public calculateCoinReward(
+    exercisePoints: number,
+    accuracy: number,
+    timeBonus: boolean = false,
+    streakMultiplier: number = 1,
+  ): CoinReward {
+    // Base coin reward calculation
+    let baseAmount = Math.floor(exercisePoints * 0.5);
+
+    // Accuracy bonus
+    if (accuracy >= 1.0) {
+      baseAmount = Math.floor(baseAmount * 1.5); // 50% bonus for perfect
+    } else if (accuracy >= 0.8) {
+      baseAmount = Math.floor(baseAmount * 1.2); // 20% bonus for 80%+
+    }
+
+    // Time bonus
+    if (timeBonus) {
+      baseAmount = Math.floor(baseAmount * 1.3); // 30% bonus for quick completion
+    }
+
+    // Streak multiplier
+    baseAmount = Math.floor(baseAmount * streakMultiplier);
+
+    return {
+      amount: Math.max(baseAmount, 1), // Minimum 1 coin
+      source: "exercise",
+      multiplier: streakMultiplier,
+      bonus: timeBonus || accuracy >= 1.0,
+    };
+  }
+
   private saveProgressToStorage(): void {
     if (!this.userProgress) return;
 
