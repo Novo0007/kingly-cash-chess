@@ -82,16 +82,16 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
               {languageProgress && (
                 <div className="flex justify-between items-center">
                   <div className="text-center">
-                    <div className="text-lg font-bold text-white">
+                    <div className="text-lg font-bold text-foreground">
                       Level {languageProgress.level}
                     </div>
-                    <div className="text-white/60 text-xs">
+                    <div className="text-muted-foreground text-xs">
                       {languageProgress.completedLessons}/
                       {languageProgress.totalLessons} lessons
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-emerald-300">
+                    <div className="text-lg font-bold text-primary">
                       {Math.round(
                         (languageProgress.completedLessons /
                           languageProgress.totalLessons) *
@@ -99,7 +99,9 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                       )}
                       %
                     </div>
-                    <div className="text-white/60 text-xs">Complete</div>
+                    <div className="text-muted-foreground text-xs">
+                      Complete
+                    </div>
                   </div>
                 </div>
               )}
