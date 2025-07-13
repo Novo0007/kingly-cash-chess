@@ -253,6 +253,100 @@ let eitherTrue = true || false; // true`,
       },
     ];
 
+    // Add one more lesson to js-basics
+    jsBasicsLessons.push({
+      id: "js-conditions",
+      languageId: "javascript",
+      unitId: "js-basics",
+      title: "Conditional Statements",
+      description: "Make decisions in your code with if/else statements",
+      type: "practice",
+      difficulty: 2,
+      xpReward: 30,
+      coinReward: 15,
+      order: 3,
+      prerequisiteIds: ["js-operators"],
+      isCompleted: false,
+      isUnlocked: true,
+      attempts: 0,
+      content: {
+        explanation:
+          "Conditional statements allow your program to make decisions based on different conditions. The if statement executes code only when a condition is true.",
+        codeExample: `// Simple if statement
+let age = 18;
+if (age >= 18) {
+    console.log("You can vote!");
+}
+
+// If-else statement
+let weather = "sunny";
+if (weather === "sunny") {
+    console.log("Wear sunglasses!");
+} else {
+    console.log("Take an umbrella!");
+}
+
+// Multiple conditions
+let score = 85;
+if (score >= 90) {
+    console.log("A grade");
+} else if (score >= 80) {
+    console.log("B grade");
+} else {
+    console.log("Keep studying!");
+}`,
+        exercises: [
+          {
+            id: "js-if-1",
+            type: "multiple-choice",
+            question:
+              "What happens if the condition in an if statement is false?",
+            options: [
+              "The code runs anyway",
+              "The code inside if is skipped",
+              "An error occurs",
+              "The program stops",
+            ],
+            correctAnswer: "The code inside if is skipped",
+            explanation:
+              "When an if condition is false, JavaScript skips the code block inside the if statement.",
+            points: 10,
+            coinReward: 5,
+          },
+          {
+            id: "js-if-2",
+            type: "code-completion",
+            question:
+              "Complete the if statement to check if a number is positive:",
+            code: "let number = 5;\n_____ (number > 0) {\n    console.log('Positive!');\n}",
+            correctAnswer: "if",
+            explanation:
+              "The 'if' keyword is used to create conditional statements.",
+            points: 15,
+            coinReward: 8,
+          },
+          {
+            id: "js-if-3",
+            type: "write-function",
+            question:
+              "Write an if-else statement that prints 'Even' if a number is even, 'Odd' if it's odd:",
+            code: "let num = 7;\n// Write your if-else statement here",
+            correctAnswer:
+              "if (num % 2 === 0) {\n    console.log('Even');\n} else {\n    console.log('Odd');\n}",
+            explanation:
+              "Use the modulo operator (%) to check if a number is divisible by 2.",
+            points: 20,
+            coinReward: 10,
+          },
+        ],
+        hints: [
+          "Use === for exact equality comparison",
+          "The modulo operator (%) gives the remainder after division",
+          "else if allows you to check multiple conditions",
+        ],
+      },
+    });
+
     this.lessons.set("js-basics", jsBasicsLessons);
 
     // JavaScript Functions Lessons
