@@ -5,6 +5,10 @@ import {
   Exercise,
   LANGUAGES,
 } from "./CodeLearnTypes";
+import {
+  addCoinRewardsToLessons,
+  setupCoinRewards,
+} from "./coinRewardDefaults";
 
 export class CodeLearnDataService {
   private static instance: CodeLearnDataService;
