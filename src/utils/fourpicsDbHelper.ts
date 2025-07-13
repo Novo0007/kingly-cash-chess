@@ -29,8 +29,16 @@ export async function getFourPicsLevels(
     const { data, error } = await query;
 
     if (error) {
-      console.error("Error fetching 4 Pics levels:", error);
-      return { success: false, error: error.message };
+      console.error("Error fetching 4 Pics levels:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+      return {
+        success: false,
+        error: `Database error: ${error.message}. ${error.hint || ""}`,
+      };
     }
 
     return { success: true, data: data || [] };
@@ -55,8 +63,16 @@ export async function getFourPicsLevel(
       .single();
 
     if (error) {
-      console.error("Error fetching 4 Pics level:", error);
-      return { success: false, error: error.message };
+      console.error("Error fetching 4 Pics level:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+      return {
+        success: false,
+        error: `Database error: ${error.message}. ${error.hint || ""}`,
+      };
     }
 
     return { success: true, data };
@@ -79,8 +95,16 @@ export async function getFourPicsProgress(
     });
 
     if (error) {
-      console.error("Error fetching 4 Pics progress:", error);
-      return { success: false, error: error.message };
+      console.error("Error fetching 4 Pics progress:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+      return {
+        success: false,
+        error: `Database error: ${error.message}. ${error.hint || ""}`,
+      };
     }
 
     return { success: true, data };
