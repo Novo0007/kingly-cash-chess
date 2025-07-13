@@ -178,7 +178,7 @@ export const CodeLearnLanguageSelector: React.FC<
               {/* Progress Bar at Top */}
               {langProgress.isStarted && (
                 <div
-                  className="absolute top-0 left-0 h-1 bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 transition-all duration-300 shadow-lg"
+                  className="absolute top-0 left-0 h-1 bg-gradient-to-r from-primary to-accent transition-all duration-300 shadow-lg"
                   style={{ width: `${langProgress.progress}%` }}
                 />
               )}
