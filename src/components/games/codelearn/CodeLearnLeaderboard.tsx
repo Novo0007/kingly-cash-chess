@@ -280,9 +280,9 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
                 <Trophy className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold">CodeLearn Leaderboard</h2>
+                <h2 className="text-2xl font-bold">CodeMaster Leaderboard</h2>
                 <p className="text-sm text-muted-foreground">
-                  See how you rank against other learners
+                  Compete with fellow coders and climb the ranks
                 </p>
               </div>
             </div>
