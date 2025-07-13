@@ -355,7 +355,7 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
             onClick={() => setCurrentView("leaderboard")}
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+            className="flex items-center gap-2 bg-card border-border text-foreground hover:bg-accent"
           >
             <TrendingUp className="w-4 h-4" />
             {isMobile ? "Ranks" : "Leaderboard"}
@@ -365,7 +365,7 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
             onClick={() => setCurrentView("achievements")}
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+            className="flex items-center gap-2 bg-card border-border text-foreground hover:bg-accent"
           >
             <Trophy className="w-4 h-4" />
             {isMobile ? "Awards" : "Achievements"}
@@ -375,7 +375,7 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
             onClick={() => setCurrentView("profile")}
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+            className="flex items-center gap-2 bg-card border-border text-foreground hover:bg-accent"
           >
             <Target className="w-4 h-4" />
             Profile
