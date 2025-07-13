@@ -101,6 +101,20 @@ export async function getFourPicsProgress(
         hint: error.hint,
         code: error.code,
       });
+
+      // Check if it's a missing function error
+      if (
+        error.code === "42883" ||
+        error.message.includes("function") ||
+        error.message.includes("does not exist")
+      ) {
+        return {
+          success: false,
+          error:
+            "4 Pics 1 Word database not set up. Please run the migration: supabase/migrations/20250130000000_create_fourpics_system.sql",
+        };
+      }
+
       return {
         success: false,
         error: `Database error: ${error.message}. ${error.hint || ""}`,
