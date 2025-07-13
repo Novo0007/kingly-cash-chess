@@ -17,7 +17,9 @@ import {
   Zap,
   Brain,
   Coins,
+  Menu,
 } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { CodeLearnLanguageSelector } from "./CodeLearnLanguageSelector";
 import { CodeLearnUnitView } from "./CodeLearnUnitView";
 import { CodeLearnLessonView } from "./CodeLearnLessonView";
@@ -53,7 +55,9 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
   user,
 }) => {
   const { currentTheme } = useTheme();
+  const isMobile = useIsMobile();
   const [currentView, setCurrentView] = useState<GameView>("languages");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<CodeLanguage | null>(
     null,
   );
@@ -182,87 +186,153 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
       : null;
 
     return (
-      <div className="relative mb-6">
-        {/* Background Effect */}
+      <div className="relative mb-4 md:mb-6">
+        {/* Mobile-friendly Background Effect */}
         <div
-          className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-2xl blur-xl animate-pulse`}
+          className={`absolute -inset-2 md:-inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-xl md:rounded-2xl blur-xl animate-pulse`}
         ></div>
 
-        <div className="relative flex items-center gap-4 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div
-                className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
-              ></div>
-              <div
-                className={`relative w-12 h-12 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center text-2xl`}
-              >
-                💻
+        <div className="relative p-3 md:p-4 backdrop-blur-sm bg-white/5 rounded-xl md:rounded-2xl border border-white/10">
+          {/* Mobile Header Layout */}
+          {isMobile ? (
+            <div className="space-y-3">
+              {/* Top Row - Icon and Title */}
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
+                  ></div>
+                  <div
+                    className={`relative w-10 h-10 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center text-lg`}
+                  >
+                    💻
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h1 className="text-xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
+                    CodeLearn Academy
+                  </h1>
+                  <p className="text-white/80 text-xs">
+                    Learn programming interactively
+                  </p>
+                </div>
               </div>
-            </div>
-            <div>
-              <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
-                CodeLearn Academy
-              </h1>
-              <p className="text-white/80 text-sm">
-                Learn programming languages interactively
-              </p>
-            </div>
-          </div>
 
-          {userProgress && (
-            <div className="flex items-center gap-4 ml-auto">
-              {/* Level Badge */}
-              <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1">
-                Level {userProgress.level}
-              </Badge>
+              {/* Stats Row */}
+              {userProgress && (
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1 bg-purple-500/20 px-2 py-1 rounded-full">
+                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs">
+                      Lv.{userProgress.level}
+                    </Badge>
+                  </div>
 
-              {/* Streak */}
-              {streakInfo && streakInfo.current > 0 && (
-                <div className="flex items-center gap-1 bg-orange-500/20 px-3 py-1 rounded-full">
-                  <Flame className="w-4 h-4 text-orange-400" />
-                  <span className="text-orange-100 font-bold">
-                    {streakInfo.current}
-                  </span>
+                  {streakInfo && streakInfo.current > 0 && (
+                    <div className="flex items-center gap-1 bg-orange-500/20 px-2 py-1 rounded-full">
+                      <Flame className="w-3 h-3 text-orange-400" />
+                      <span className="text-orange-100 font-bold text-xs">
+                        {streakInfo.current}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-1 bg-yellow-500/20 px-2 py-1 rounded-full">
+                    <Star className="w-3 h-3 text-yellow-400" />
+                    <span className="text-yellow-100 font-bold text-xs">
+                      {userProgress.totalXP.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1 bg-amber-500/20 px-2 py-1 rounded-full">
+                    <Coins className="w-3 h-3 text-amber-400" />
+                    <span className="text-amber-100 font-bold text-xs">
+                      {userProgress.availableCoins.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
               )}
-
-              {/* Total XP */}
-              <div className="flex items-center gap-1 bg-yellow-500/20 px-3 py-1 rounded-full">
-                <Star className="w-4 h-4 text-yellow-400" />
-                <span className="text-yellow-100 font-bold">
-                  {userProgress.totalXP.toLocaleString()}
-                </span>
+            </div>
+          ) : (
+            /* Desktop Header Layout */
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-md opacity-60 animate-pulse`}
+                  ></div>
+                  <div
+                    className={`relative w-12 h-12 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center text-2xl`}
+                  >
+                    💻
+                  </div>
+                </div>
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
+                    CodeLearn Academy
+                  </h1>
+                  <p className="text-white/80 text-sm">
+                    Learn programming languages interactively
+                  </p>
+                </div>
               </div>
 
-              {/* Total Coins */}
-              <div className="flex items-center gap-1 bg-amber-500/20 px-3 py-1 rounded-full">
-                <Coins className="w-4 h-4 text-amber-400" />
-                <span className="text-amber-100 font-bold">
-                  {userProgress.availableCoins.toLocaleString()}
-                </span>
-              </div>
+              {userProgress && (
+                <div className="flex items-center gap-4 ml-auto">
+                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1">
+                    Level {userProgress.level}
+                  </Badge>
+
+                  {streakInfo && streakInfo.current > 0 && (
+                    <div className="flex items-center gap-1 bg-orange-500/20 px-3 py-1 rounded-full">
+                      <Flame className="w-4 h-4 text-orange-400" />
+                      <span className="text-orange-100 font-bold">
+                        {streakInfo.current}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-1 bg-yellow-500/20 px-3 py-1 rounded-full">
+                    <Star className="w-4 h-4 text-yellow-400" />
+                    <span className="text-yellow-100 font-bold">
+                      {userProgress.totalXP.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1 bg-amber-500/20 px-3 py-1 rounded-full">
+                    <Coins className="w-4 h-4 text-amber-400" />
+                    <span className="text-amber-100 font-bold">
+                      {userProgress.availableCoins.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Progress Bars */}
+        {/* Mobile-friendly Progress Bars */}
         {userProgress && dailyGoal && levelInfo && (
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div
+            className={`mt-3 md:mt-4 grid gap-3 md:gap-4 ${isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-3"}`}
+          >
             {/* Daily XP Goal Progress */}
-            <Card className="bg-gradient-to-r from-green-900/30 to-blue-900/30 border border-green-400/30">
-              <CardContent className="p-3">
+            <Card className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-400/30 backdrop-blur-sm">
+              <CardContent className={`${isMobile ? "p-3" : "p-4"}`}>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-green-300 text-sm font-medium">
+                  <span
+                    className={`text-emerald-300 font-medium ${isMobile ? "text-xs" : "text-sm"}`}
+                  >
                     Daily XP Goal
                   </span>
-                  <span className="text-green-100 text-sm">
+                  <span
+                    className={`text-emerald-100 ${isMobile ? "text-xs" : "text-sm"}`}
+                  >
                     {dailyGoal.current}/{dailyGoal.goal} XP
                   </span>
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
+                <div className="w-full bg-white/20 rounded-full h-2">
                   <div
-                    className="bg-gradient-to-r from-green-400 to-blue-400 h-2 rounded-full transition-all duration-300"
+                    className="bg-gradient-to-r from-emerald-400 to-teal-400 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${dailyGoal.percentage}%` }}
                   ></div>
                 </div>
@@ -270,17 +340,21 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
             </Card>
 
             {/* Daily Coin Goal Progress */}
-            <Card className="bg-gradient-to-r from-amber-900/30 to-orange-900/30 border border-amber-400/30">
-              <CardContent className="p-3">
+            <Card className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/30 backdrop-blur-sm">
+              <CardContent className={`${isMobile ? "p-3" : "p-4"}`}>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-amber-300 text-sm font-medium">
+                  <span
+                    className={`text-amber-300 font-medium ${isMobile ? "text-xs" : "text-sm"}`}
+                  >
                     Daily Coins
                   </span>
-                  <span className="text-amber-100 text-sm">
+                  <span
+                    className={`text-amber-100 ${isMobile ? "text-xs" : "text-sm"}`}
+                  >
                     {userProgress.todayCoins}/{userProgress.dailyGoalCoins}
                   </span>
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
+                <div className="w-full bg-white/20 rounded-full h-2">
                   <div
                     className="bg-gradient-to-r from-amber-400 to-orange-400 h-2 rounded-full transition-all duration-300"
                     style={{
@@ -292,19 +366,23 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
             </Card>
 
             {/* Level Progress */}
-            <Card className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-400/30">
-              <CardContent className="p-3">
+            <Card className="bg-gradient-to-r from-violet-500/20 to-purple-500/20 border border-violet-400/30 backdrop-blur-sm">
+              <CardContent className={`${isMobile ? "p-3" : "p-4"}`}>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-purple-300 text-sm font-medium">
+                  <span
+                    className={`text-violet-300 font-medium ${isMobile ? "text-xs" : "text-sm"}`}
+                  >
                     Level {userProgress.level}
                   </span>
-                  <span className="text-purple-100 text-sm">
+                  <span
+                    className={`text-violet-100 ${isMobile ? "text-xs" : "text-sm"}`}
+                  >
                     {levelInfo.current}/{levelInfo.total} XP
                   </span>
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
+                <div className="w-full bg-white/20 rounded-full h-2">
                   <div
-                    className="bg-gradient-to-r from-purple-400 to-pink-400 h-2 rounded-full transition-all duration-300"
+                    className="bg-gradient-to-r from-violet-400 to-purple-400 h-2 rounded-full transition-all duration-300"
                     style={{
                       width: `${(levelInfo.current / levelInfo.total) * 100}%`,
                     }}
@@ -320,8 +398,11 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
 
   const renderNavigation = () => {
     return (
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
+      <div
+        className={`mb-4 md:mb-6 ${isMobile ? "space-y-3" : "flex items-center justify-between"}`}
+      >
+        {/* Back Button and Breadcrumbs */}
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
             onClick={() => {
               if (currentView === "lesson") {
@@ -339,65 +420,112 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
               }
             }}
             variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
+            size={isMobile ? "sm" : "sm"}
+            className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20"
           >
-            <ArrowLeft className="w-4 h-4" />
-            {currentView === "lesson"
-              ? "Back to Units"
-              : currentView === "units"
-                ? "All Languages"
-                : currentView === "achievements" ||
-                    currentView === "profile" ||
-                    currentView === "leaderboard"
-                  ? "Back to Languages"
-                  : "Back to Games"}
+            <ArrowLeft className={`${isMobile ? "w-3 h-3" : "w-4 h-4"}`} />
+            <span className={isMobile ? "text-xs" : "text-sm"}>
+              {currentView === "lesson"
+                ? "Units"
+                : currentView === "units"
+                  ? "Languages"
+                  : currentView === "achievements" ||
+                      currentView === "profile" ||
+                      currentView === "leaderboard"
+                    ? "Languages"
+                    : "Games"}
+            </span>
           </Button>
 
           {selectedLanguage && (
-            <Badge className="bg-white/10 text-white border border-white/20">
-              {selectedLanguage.icon} {selectedLanguage.name}
+            <Badge className="bg-white/10 text-white border border-white/20 text-xs">
+              {selectedLanguage.icon}{" "}
+              {isMobile
+                ? selectedLanguage.name.substring(0, 8) +
+                  (selectedLanguage.name.length > 8 ? "..." : "")
+                : selectedLanguage.name}
             </Badge>
           )}
 
           {selectedUnit && (
-            <Badge className="bg-white/10 text-white border border-white/20">
-              {selectedUnit.icon} {selectedUnit.title}
+            <Badge className="bg-white/10 text-white border border-white/20 text-xs">
+              {selectedUnit.icon}{" "}
+              {isMobile
+                ? selectedUnit.title.substring(0, 10) +
+                  (selectedUnit.title.length > 10 ? "..." : "")
+                : selectedUnit.title}
             </Badge>
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={() => setCurrentView("leaderboard")}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <TrendingUp className="w-4 h-4" />
-            Leaderboard
-          </Button>
+        {/* Action Buttons */}
+        {isMobile ? (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => setCurrentView("leaderboard")}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20 px-3"
+              >
+                <TrendingUp className="w-3 h-3" />
+                <span className="text-xs">Ranks</span>
+              </Button>
 
-          <Button
-            onClick={() => setCurrentView("achievements")}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <Trophy className="w-4 h-4" />
-            Achievements
-          </Button>
+              <Button
+                onClick={() => setCurrentView("achievements")}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20 px-3"
+              >
+                <Trophy className="w-3 h-3" />
+                <span className="text-xs">Awards</span>
+              </Button>
 
-          <Button
-            onClick={() => setCurrentView("profile")}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <Target className="w-4 h-4" />
-            Profile
-          </Button>
-        </div>
+              <Button
+                onClick={() => setCurrentView("profile")}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1 bg-white/10 border-white/20 text-white hover:bg-white/20 px-3"
+              >
+                <Target className="w-3 h-3" />
+                <span className="text-xs">Profile</span>
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setCurrentView("leaderboard")}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              <TrendingUp className="w-4 h-4" />
+              Leaderboard
+            </Button>
+
+            <Button
+              onClick={() => setCurrentView("achievements")}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              <Trophy className="w-4 h-4" />
+              Achievements
+            </Button>
+
+            <Button
+              onClick={() => setCurrentView("profile")}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              <Target className="w-4 h-4" />
+              Profile
+            </Button>
+          </div>
+        )}
       </div>
     );
   };
@@ -469,15 +597,17 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
 
   return (
     <div
-      className="min-h-screen p-4"
+      className={`min-h-screen ${isMobile ? "p-2 pb-20" : "p-4"}`}
       style={{
-        background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
+        background: isMobile
+          ? `linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)`
+          : `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
       }}
     >
-      <div className="max-w-7xl mx-auto">
+      <div className={`${isMobile ? "max-w-full" : "max-w-7xl"} mx-auto`}>
         {renderHeader()}
         {renderNavigation()}
-        {renderContent()}
+        <div className={isMobile ? "space-y-4" : ""}>{renderContent()}</div>
       </div>
     </div>
   );

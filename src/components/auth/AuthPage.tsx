@@ -89,7 +89,7 @@ export const AuthPage = () => {
             <Zap className="h-8 w-8 text-yellow-500" />
           </div>
           <CardDescription className="text-gray-300">
-            Play chess, win real money!
+            Where legends are born, one move at a time ✨
           </CardDescription>
         </CardHeader>
 
