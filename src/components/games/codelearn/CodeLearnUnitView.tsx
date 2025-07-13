@@ -131,20 +131,20 @@ export const CodeLearnUnitView: React.FC<CodeLearnUnitViewProps> = ({
                   {language.icon}
                 </div>
                 <div className="flex-1">
-                  <CardTitle className="text-2xl text-white mb-1">
+                  <CardTitle className="text-2xl text-foreground mb-1">
                     {language.name} Course
                   </CardTitle>
-                  <p className="text-white/80 text-sm">
+                  <p className="text-muted-foreground text-sm">
                     {language.description}
                   </p>
                 </div>
 
                 {languageProgress && (
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-white">
+                    <div className="text-2xl font-bold text-foreground">
                       Level {languageProgress.level}
                     </div>
-                    <div className="text-white/60 text-sm">
+                    <div className="text-muted-foreground text-sm">
                       {languageProgress.completedLessons}/
                       {languageProgress.totalLessons} lessons
                     </div>
