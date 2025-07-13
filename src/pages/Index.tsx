@@ -22,6 +22,7 @@ import { Game2048 } from "@/components/games/game2048/Game2048";
 import { MathGame } from "@/components/games/math/MathGame";
 import { WordSearchGame } from "@/components/games/wordsearch/WordSearchGame";
 import { CodeLearnGame } from "@/components/games/codelearn/CodeLearnGame";
+import { FourPicsGame } from "@/components/games/fourpics/FourPicsGame";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -47,6 +48,7 @@ const Index = () => {
     | "math"
     | "wordsearch"
     | "codelearn"
+    | "fourpics"
     | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -188,7 +190,8 @@ const Index = () => {
       | "game2048"
       | "math"
       | "wordsearch"
-      | "codelearn",
+      | "codelearn"
+      | "fourpics",
   ) => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
@@ -205,6 +208,8 @@ const Index = () => {
       setCurrentView("wordsearch-game");
     } else if (gameType === "codelearn") {
       setCurrentView("codelearn-game");
+    } else if (gameType === "fourpics") {
+      setCurrentView("fourpics-game");
     }
   };
 
@@ -224,6 +229,8 @@ const Index = () => {
       setCurrentView("wordsearch-game");
     } else if (selectedGameType === "codelearn") {
       setCurrentView("codelearn-game");
+    } else if (selectedGameType === "fourpics") {
+      setCurrentView("fourpics-game");
     }
   };
 
@@ -243,6 +250,8 @@ const Index = () => {
       setCurrentView("wordsearch-game");
     } else if (selectedGameType === "codelearn") {
       setCurrentView("codelearn-game");
+    } else if (selectedGameType === "fourpics") {
+      setCurrentView("fourpics-game");
     }
   };
 
@@ -356,6 +365,8 @@ const Index = () => {
         );
       case "codelearn-game":
         return <CodeLearnGame onBack={handleBackToGameSelection} user={user} />;
+      case "fourpics-game":
+        return <FourPicsGame onBack={handleBackToGameSelection} user={user} />;
       case "wallet":
         return <WalletManager />;
       case "friends":
