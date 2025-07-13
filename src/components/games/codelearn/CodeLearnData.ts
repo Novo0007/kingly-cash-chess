@@ -297,6 +297,7 @@ console.log(add(5, 3)); // 8`,
               explanation:
                 "Functions use the 'function' keyword, followed by name, parameters in parentheses, and code in curly braces.",
               points: 25,
+              coinReward: 12,
             },
           ],
           hints: [
