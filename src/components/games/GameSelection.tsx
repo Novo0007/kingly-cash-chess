@@ -226,28 +226,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
             className={`absolute -inset-4 bg-gradient-to-r ${currentTheme.gradients.primary}/20 rounded-2xl blur-xl animate-pulse`}
           ></div>
           <div
-            className={`relative flex items-center gap-4 mb-6 md:mb-8 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10 ${
-              // Apply theme-specific classes
-              currentTheme.id === "cosmicvoid"
-                ? "cosmic-element"
-                : currentTheme.id === "lavamolten"
-                  ? "molten-effect"
-                  : currentTheme.id === "icecrystal"
-                    ? "crystal-effect"
-                    : currentTheme.id === "forestmystic"
-                      ? "nature-glow"
-                      : currentTheme.id === "goldluxury"
-                        ? "luxury-shine"
-                        : currentTheme.id === "oceandeep"
-                          ? "wave-effect"
-                          : currentTheme.id === "royalpurple"
-                            ? "royal-glow"
-                            : currentTheme.id === "sunsetvibes"
-                              ? "warm-gradient"
-                              : currentTheme.id === "synthwave80s"
-                                ? "neon-glow grid-lines"
-                                : ""
-            }`}
+            className={`relative flex items-center gap-4 mb-6 md:mb-8 p-4 backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10`}
           >
             <div className="flex items-center gap-3">
               <div className="relative">
