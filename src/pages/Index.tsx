@@ -53,6 +53,7 @@ const Index = () => {
   const [useNealFunStyle, setUseNealFunStyle] = useState(false);
   const [useModernStyle, setUseModernStyle] = useState(false);
   const [useProfessionalStyle, setUseProfessionalStyle] = useState(true);
+  const [useProfessionalLayout, setUseProfessionalLayout] = useState(true);
 
   // Optimized profile fetching with caching
   const fetchUserProfile = useCallback(async (userId: string) => {
