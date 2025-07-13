@@ -215,6 +215,8 @@ export class CodeLearnProgressManager {
         achievement.isUnlocked = true;
         achievement.unlockedAt = new Date().toISOString();
         this.userProgress!.totalXP += achievement.xpReward;
+        this.userProgress!.totalCoins += achievement.coinReward;
+        this.userProgress!.availableCoins += achievement.coinReward;
 
         // Show achievement notification
         this.showAchievementNotification(achievement);
