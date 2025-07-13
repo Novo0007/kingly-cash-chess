@@ -28,6 +28,21 @@ export class CodeLearnDataService {
     this.initializePythonCourse();
     this.initializeJavaCourse();
     this.initializeReactCourse();
+
+    // Setup coin rewards for all courses
+    setupCoinRewards();
+    this.addCoinRewardsToAllCourses();
+  }
+
+  private addCoinRewardsToAllCourses(): void {
+    // Process all units and lessons to add coin rewards
+    for (const [languageId, units] of this.units.entries()) {
+      for (const unit of units) {
+        const lessons = this.lessons.get(unit.id) || [];
+        const updatedLessons = addCoinRewardsToLessons(lessons);
+        this.lessons.set(unit.id, updatedLessons);
+      }
+    }
   }
 
   public getLanguages(): CodeLanguage[] {
