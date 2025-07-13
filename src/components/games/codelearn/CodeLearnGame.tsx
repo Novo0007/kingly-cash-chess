@@ -40,7 +40,13 @@ interface CodeLearnGameProps {
   user: any;
 }
 
-type GameView = "languages" | "units" | "lesson" | "achievements" | "profile";
+type GameView =
+  | "languages"
+  | "units"
+  | "lesson"
+  | "achievements"
+  | "profile"
+  | "leaderboard";
 
 export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
   onBack,
