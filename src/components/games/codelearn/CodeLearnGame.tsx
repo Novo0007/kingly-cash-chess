@@ -169,6 +169,8 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
         return "Code Master";
       case "units":
         return selectedLanguage?.name || "Units";
+      case "unit-lessons":
+        return selectedUnit?.title || "Lessons";
       case "lesson":
         return selectedLesson?.title || "Lesson";
       case "achievements":
