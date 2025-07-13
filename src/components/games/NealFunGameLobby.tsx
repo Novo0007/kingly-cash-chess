@@ -307,7 +307,8 @@ export const NealFunGameLobby: React.FC<NealFunGameLobbyProps> = ({
                       | "maze"
                       | "game2048"
                       | "math"
-                      | "wordsearch",
+                      | "wordsearch"
+                      | "codelearn",
                   )
                 }
               >
