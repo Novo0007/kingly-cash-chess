@@ -902,6 +902,35 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
               </div>
             </CardContent>
           </Card>
+
+          <Card className="relative bg-gradient-to-br from-slate-500 to-gray-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-400/20 to-gray-400/20"></div>
+            <CardContent className="relative p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <FileText className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-lg font-heading">
+                      Hangman Rules
+                    </h4>
+                    <p className="text-white/90 text-sm font-medium">
+                      Master the classic word guessing game strategies
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => navigate("/hangman-rules")}
+                  variant="secondary"
+                  className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
+                >
+                  Learn
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Enhanced Footer with Trust Badges */}
