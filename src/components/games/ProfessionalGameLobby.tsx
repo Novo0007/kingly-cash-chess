@@ -16,6 +16,7 @@ import {
   Code,
   Trophy,
   Type,
+  Library,
   Coins,
   Zap,
   ArrowRight,
