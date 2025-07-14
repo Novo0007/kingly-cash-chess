@@ -205,6 +205,25 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       highlight: false,
       priority: 8,
     },
+    {
+      id: "books",
+      title: "Book Store",
+      subtitle: "Read & Learn",
+      description:
+        "Discover amazing books and expand your knowledge with our curated collection",
+      icon: Library,
+      category: "free",
+      gradient: "from-indigo-500 to-purple-600",
+      cardBg: "from-indigo-50 to-purple-50",
+      iconBg: "bg-indigo-100",
+      iconColor: "text-indigo-600",
+      players: "250+ Reading",
+      status: "📚 NEW",
+      earning: "Coin System",
+      features: ["5+ Books", "Progress Tracking", "Multiple Genres"],
+      highlight: true,
+      priority: 4,
+    },
   ];
 
   const filteredGames = games
