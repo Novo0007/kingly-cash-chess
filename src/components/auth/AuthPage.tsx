@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Crown, Zap, Sparkles, Heart, Star, Moon, Sun } from "lucide-react";
+import { Crown, Zap, Sparkles, Heart, Star } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export const AuthPage = () => {
@@ -47,24 +47,10 @@ export const AuthPage = () => {
       });
 
       if (error) {
-        toast.error(error.message, {
-          style: {
-            background:
-              "linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9))",
-            color: "white",
-            border: "none",
-          },
-        });
+        toast.error(error.message);
       } else {
         toast.success(
           "✨ Welcome to our magical world! Please check your email.",
-          {
-            style: {
-              background: `linear-gradient(135deg, ${currentTheme.gradients.primary})`,
-              color: "white",
-              border: "none",
-            },
-          },
         );
       }
     } catch (networkError) {
@@ -88,22 +74,9 @@ export const AuthPage = () => {
       });
 
       if (error) {
-        toast.error(error.message, {
-          style: {
-            background:
-              "linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9))",
-            color: "white",
-            border: "none",
-          },
-        });
+        toast.error(error.message);
       } else {
-        toast.success("🎌 Welcome back, dear player! ✨", {
-          style: {
-            background: `linear-gradient(135deg, ${currentTheme.gradients.primary})`,
-            color: "white",
-            border: "none",
-          },
-        });
+        toast.success("🎌 Welcome back, dear player! ✨");
       }
     } catch (networkError) {
       console.warn("Network error during sign in:", networkError);
@@ -115,24 +88,6 @@ export const AuthPage = () => {
     }
   };
 
-  // Floating particle component
-  const FloatingParticle = ({ delay = 0, size = "small" }) => (
-    <div
-      className={`absolute animate-float opacity-30 ${
-        size === "large" ? "w-3 h-3" : "w-2 h-2"
-      } ${currentTheme.id.includes("love") || currentTheme.id.includes("sakura") ? "text-pink-300" : "text-purple-300"}`}
-      style={{
-        animationDelay: `${delay}s`,
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`,
-      }}
-    >
-      {currentTheme.id.includes("love") || currentTheme.id.includes("sakura")
-        ? "🌸"
-        : "✨"}
-    </div>
-  );
-
   return (
     <div
       className={`min-h-screen relative overflow-hidden flex items-center justify-center p-4 bg-gradient-to-br ${currentTheme.gradients.primary} via-${currentTheme.gradients.secondary} to-${currentTheme.gradients.accent}`}
@@ -140,27 +95,30 @@ export const AuthPage = () => {
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Floating particles */}
-        {[...Array(12)].map((_, i) => (
-          <FloatingParticle
+        {[...Array(8)].map((_, i) => (
+          <div
             key={i}
-            delay={i * 0.5}
-            size={i % 3 === 0 ? "large" : "small"}
-          />
+            className="absolute text-2xl opacity-30 animate-bounce"
+            style={{
+              animationDelay: `${i * 0.5}s`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDuration: "3s",
+            }}
+          >
+            {currentTheme.id.includes("love") ||
+            currentTheme.id.includes("sakura")
+              ? "🌸"
+              : "✨"}
+          </div>
         ))}
 
-        {/* Animated background shapes */}
+        {/* Background shapes */}
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-pink-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
         <div
           className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse"
           style={{ animationDelay: "2s" }}
         ></div>
-        <div
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "4s" }}
-        ></div>
-
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"></div>
       </div>
 
       {/* Main Auth Card */}
@@ -178,11 +136,6 @@ export const AuthPage = () => {
             : "bg-white/90 text-gray-800"
         }`}
       >
-        {/* Glowing border effect */}
-        <div
-          className={`absolute -inset-0.5 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-lg blur opacity-20 animate-pulse`}
-        ></div>
-
         <CardHeader className="text-center space-y-6 relative z-10">
           {/* Animated logo section */}
           <div
@@ -260,52 +213,25 @@ export const AuthPage = () => {
             ✨
           </CardDescription>
 
-          {/* Cute character indicators */}
+          {/* Character indicators */}
           <div className="flex justify-center gap-2">
             <div
               className="text-2xl animate-bounce"
               style={{ animationDelay: "0s" }}
             >
-              {currentTheme.id.includes("sakura")
-                ? "🌸"
-                : currentTheme.id.includes("love")
-                  ? "💖"
-                  : currentTheme.id.includes("dream")
-                    ? "🦄"
-                    : currentTheme.id.includes("strawberry")
-                      ? "🍓"
-                      : currentTheme.id.includes("cosmic")
-                        ? "🌌"
-                        : currentTheme.id.includes("neon")
-                          ? "💫"
-                          : "🎮"}
+              🎮
             </div>
             <div
               className="text-2xl animate-bounce"
               style={{ animationDelay: "0.3s" }}
             >
-              {currentTheme.id.includes("love") ||
-              currentTheme.id.includes("sakura")
-                ? "👸"
-                : "🎯"}
+              👑
             </div>
             <div
               className="text-2xl animate-bounce"
               style={{ animationDelay: "0.6s" }}
             >
-              {currentTheme.id.includes("sakura")
-                ? "🌸"
-                : currentTheme.id.includes("love")
-                  ? "💖"
-                  : currentTheme.id.includes("dream")
-                    ? "🦄"
-                    : currentTheme.id.includes("strawberry")
-                      ? "🍓"
-                      : currentTheme.id.includes("cosmic")
-                        ? "🌌"
-                        : currentTheme.id.includes("neon")
-                          ? "💫"
-                          : "🎮"}
+              ✨
             </div>
           </div>
         </CardHeader>
@@ -360,59 +286,54 @@ export const AuthPage = () => {
 
             <TabsContent value="signin" className="space-y-6 mt-6">
               <form onSubmit={handleSignIn} className="space-y-4">
-                <div className="relative group">
+                <div className="space-y-2">
                   <Input
                     type="email"
-                    placeholder="🌟 Your magical email address"
+                    placeholder="✨ Email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className={`transition-all duration-300 rounded-xl border-2 focus:scale-[1.02] ${
+                    autoComplete="email"
+                    className={`w-full h-12 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
                       currentTheme.id.includes("dark") ||
                       currentTheme.id.includes("midnight") ||
                       currentTheme.id.includes("neon") ||
                       currentTheme.id.includes("cosmic")
-                        ? "bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400"
-                        : "bg-white/80 border-gray-200 text-gray-800 placeholder:text-gray-500 focus:border-pink-400"
-                    } backdrop-blur-sm shadow-lg`}
+                        ? "bg-gray-800/70 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
+                        : "bg-white/90 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
+                    } focus:outline-none shadow-lg`}
                   />
-                  <div
-                    className={`absolute -inset-0.5 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-xl blur opacity-0 group-focus-within:opacity-30 transition-opacity duration-300`}
-                  ></div>
                 </div>
 
-                <div className="relative group">
+                <div className="space-y-2">
                   <Input
                     type="password"
-                    placeholder="🔮 Your secret spell (password)"
+                    placeholder="🔮 Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className={`transition-all duration-300 rounded-xl border-2 focus:scale-[1.02] ${
+                    autoComplete="current-password"
+                    className={`w-full h-12 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
                       currentTheme.id.includes("dark") ||
                       currentTheme.id.includes("midnight") ||
                       currentTheme.id.includes("neon") ||
                       currentTheme.id.includes("cosmic")
-                        ? "bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400"
-                        : "bg-white/80 border-gray-200 text-gray-800 placeholder:text-gray-500 focus:border-pink-400"
-                    } backdrop-blur-sm shadow-lg`}
+                        ? "bg-gray-800/70 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
+                        : "bg-white/90 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
+                    } focus:outline-none shadow-lg`}
                   />
-                  <div
-                    className={`absolute -inset-0.5 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-xl blur opacity-0 group-focus-within:opacity-30 transition-opacity duration-300`}
-                  ></div>
                 </div>
 
                 <Button
                   type="submit"
                   disabled={loading}
-                  className={`w-full py-6 text-base font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.98] bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-xl hover:shadow-2xl relative overflow-hidden group`}
+                  className={`w-full h-12 text-base font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.98] bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-xl hover:shadow-2xl relative overflow-hidden group`}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                   <div className="relative flex items-center justify-center gap-2">
                     {loading ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        <span>Entering the realm...</span>
+                        <span>Entering...</span>
                       </>
                     ) : (
                       <>
@@ -428,100 +349,91 @@ export const AuthPage = () => {
 
             <TabsContent value="signup" className="space-y-6 mt-6">
               <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="relative group">
+                <div className="space-y-2">
                   <Input
                     type="text"
-                    placeholder="🎭 Choose your hero name"
+                    placeholder="🎭 Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
-                    className={`transition-all duration-300 rounded-xl border-2 focus:scale-[1.02] ${
+                    autoComplete="username"
+                    className={`w-full h-12 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
                       currentTheme.id.includes("dark") ||
                       currentTheme.id.includes("midnight") ||
                       currentTheme.id.includes("neon") ||
                       currentTheme.id.includes("cosmic")
-                        ? "bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400"
-                        : "bg-white/80 border-gray-200 text-gray-800 placeholder:text-gray-500 focus:border-pink-400"
-                    } backdrop-blur-sm shadow-lg`}
+                        ? "bg-gray-800/70 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
+                        : "bg-white/90 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
+                    } focus:outline-none shadow-lg`}
                   />
-                  <div
-                    className={`absolute -inset-0.5 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-xl blur opacity-0 group-focus-within:opacity-30 transition-opacity duration-300`}
-                  ></div>
                 </div>
 
-                <div className="relative group">
+                <div className="space-y-2">
                   <Input
                     type="text"
-                    placeholder="👑 Your royal full name"
+                    placeholder="👑 Full Name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className={`transition-all duration-300 rounded-xl border-2 focus:scale-[1.02] ${
+                    autoComplete="name"
+                    className={`w-full h-12 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
                       currentTheme.id.includes("dark") ||
                       currentTheme.id.includes("midnight") ||
                       currentTheme.id.includes("neon") ||
                       currentTheme.id.includes("cosmic")
-                        ? "bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400"
-                        : "bg-white/80 border-gray-200 text-gray-800 placeholder:text-gray-500 focus:border-pink-400"
-                    } backdrop-blur-sm shadow-lg`}
+                        ? "bg-gray-800/70 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
+                        : "bg-white/90 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
+                    } focus:outline-none shadow-lg`}
                   />
-                  <div
-                    className={`absolute -inset-0.5 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-xl blur opacity-0 group-focus-within:opacity-30 transition-opacity duration-300`}
-                  ></div>
                 </div>
 
-                <div className="relative group">
+                <div className="space-y-2">
                   <Input
                     type="email"
-                    placeholder="🌟 Your magical email address"
+                    placeholder="✨ Email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className={`transition-all duration-300 rounded-xl border-2 focus:scale-[1.02] ${
+                    autoComplete="email"
+                    className={`w-full h-12 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
                       currentTheme.id.includes("dark") ||
                       currentTheme.id.includes("midnight") ||
                       currentTheme.id.includes("neon") ||
                       currentTheme.id.includes("cosmic")
-                        ? "bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400"
-                        : "bg-white/80 border-gray-200 text-gray-800 placeholder:text-gray-500 focus:border-pink-400"
-                    } backdrop-blur-sm shadow-lg`}
+                        ? "bg-gray-800/70 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
+                        : "bg-white/90 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
+                    } focus:outline-none shadow-lg`}
                   />
-                  <div
-                    className={`absolute -inset-0.5 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-xl blur opacity-0 group-focus-within:opacity-30 transition-opacity duration-300`}
-                  ></div>
                 </div>
 
-                <div className="relative group">
+                <div className="space-y-2">
                   <Input
                     type="password"
-                    placeholder="🔮 Create your secret spell"
+                    placeholder="🔮 Create password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className={`transition-all duration-300 rounded-xl border-2 focus:scale-[1.02] ${
+                    autoComplete="new-password"
+                    className={`w-full h-12 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
                       currentTheme.id.includes("dark") ||
                       currentTheme.id.includes("midnight") ||
                       currentTheme.id.includes("neon") ||
                       currentTheme.id.includes("cosmic")
-                        ? "bg-gray-800/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400"
-                        : "bg-white/80 border-gray-200 text-gray-800 placeholder:text-gray-500 focus:border-pink-400"
-                    } backdrop-blur-sm shadow-lg`}
+                        ? "bg-gray-800/70 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
+                        : "bg-white/90 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
+                    } focus:outline-none shadow-lg`}
                   />
-                  <div
-                    className={`absolute -inset-0.5 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-xl blur opacity-0 group-focus-within:opacity-30 transition-opacity duration-300`}
-                  ></div>
                 </div>
 
                 <Button
                   type="submit"
                   disabled={loading}
-                  className={`w-full py-6 text-base font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.98] bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-xl hover:shadow-2xl relative overflow-hidden group`}
+                  className={`w-full h-12 text-base font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.98] bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-xl hover:shadow-2xl relative overflow-hidden group`}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                   <div className="relative flex items-center justify-center gap-2">
                     {loading ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        <span>Creating your legend...</span>
+                        <span>Creating...</span>
                       </>
                     ) : (
                       <>
@@ -566,9 +478,9 @@ export const AuthPage = () => {
         </CardContent>
       </Card>
 
-      {/* Additional floating elements for extra magic */}
+      {/* Additional floating elements */}
       <div
-        className="absolute bottom-10 left-10 text-6xl opacity-20 animate-bounce"
+        className="absolute bottom-4 left-4 sm:bottom-10 sm:left-10 text-4xl sm:text-6xl opacity-20 animate-bounce"
         style={{ animationDuration: "3s" }}
       >
         {currentTheme.id.includes("love") || currentTheme.id.includes("sakura")
@@ -576,7 +488,7 @@ export const AuthPage = () => {
           : "✨"}
       </div>
       <div
-        className="absolute top-10 right-10 text-6xl opacity-20 animate-bounce"
+        className="absolute top-4 right-4 sm:top-10 sm:right-10 text-4xl sm:text-6xl opacity-20 animate-bounce"
         style={{ animationDuration: "4s", animationDelay: "1s" }}
       >
         {currentTheme.id.includes("love") || currentTheme.id.includes("sakura")
@@ -586,17 +498,3 @@ export const AuthPage = () => {
     </div>
   );
 };
-
-// Add custom CSS for floating animation
-const style = document.createElement("style");
-style.textContent = `
-  @keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    33% { transform: translateY(-10px) rotate(120deg); }
-    66% { transform: translateY(5px) rotate(240deg); }
-  }
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-`;
-document.head.appendChild(style);
