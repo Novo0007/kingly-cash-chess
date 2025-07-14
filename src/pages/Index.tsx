@@ -22,6 +22,7 @@ import { Game2048 } from "@/components/games/game2048/Game2048";
 import { MathGame } from "@/components/games/math/MathGame";
 import { WordSearchGame } from "@/components/games/wordsearch/WordSearchGame";
 import { CodeLearnGame } from "@/components/games/codelearn/CodeLearnGame";
+import { HangmanGame } from "@/components/games/hangman/HangmanGame";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -47,6 +48,7 @@ const Index = () => {
     | "math"
     | "wordsearch"
     | "codelearn"
+    | "hangman"
     | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
