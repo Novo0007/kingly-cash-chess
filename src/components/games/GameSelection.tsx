@@ -19,6 +19,7 @@ import {
   Brain,
   Code,
   Image,
+  FileText,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
@@ -39,7 +40,8 @@ interface GameSelectionProps {
       | "math"
       | "wordsearch"
       | "codelearn"
-      | "fourpics",
+      | "fourpics"
+      | "hangman",
   ) => void;
 }
 
@@ -72,7 +74,8 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         | "math"
         | "wordsearch"
         | "codelearn"
-        | "fourpics",
+        | "fourpics"
+        | "hangman",
     ) => {
       onSelectGame(gameType);
     },
@@ -251,6 +254,26 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         status: "NEW",
         players: "80+ Playing",
         isMoneyGame: true,
+      },
+      {
+        id: "hangman",
+        title: "Hangman",
+        description:
+          "Classic word guessing game with multiple difficulty levels and categories!",
+        icon: FileText,
+        emoji: "🎯",
+        color: "slate",
+        gradient: "from-slate-700 via-gray-700 to-zinc-700",
+        lightGradient: "from-slate-100 via-gray-100 to-zinc-100",
+        features: [
+          "🆓 Free to Play",
+          "🎯 Word Guessing",
+          "📚 Multiple Categories",
+          "⚡ 3 Difficulty Levels",
+        ],
+        status: "NEW",
+        players: "50+ Playing",
+        isMoneyGame: false,
       },
     ],
     [],
@@ -521,7 +544,8 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                             | "math"
                             | "wordsearch"
                             | "codelearn"
-                            | "fourpics",
+                            | "fourpics"
+                            | "hangman",
                         )
                       }
                       className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:from-opacity-90 text-white border-0 py-4 md:py-5 lg:py-6 text-sm md:text-base lg:text-lg font-bold rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 ease-out transform hover:scale-[1.03] hover:-translate-y-1 group/btn will-change-transform`}
@@ -869,6 +893,35 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </div>
                 <Button
                   onClick={() => navigate("/fourpics-rules")}
+                  variant="secondary"
+                  className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
+                >
+                  Learn
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="relative bg-gradient-to-br from-slate-500 to-gray-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-400/20 to-gray-400/20"></div>
+            <CardContent className="relative p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <FileText className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-lg font-heading">
+                      Hangman Rules
+                    </h4>
+                    <p className="text-white/90 text-sm font-medium">
+                      Master the classic word guessing game strategies
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => navigate("/hangman-rules")}
                   variant="secondary"
                   className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
                 >
