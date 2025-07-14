@@ -25,7 +25,7 @@ import { CodeLearnGame } from "@/components/games/codelearn/CodeLearnGame";
 
 import { HangmanGame } from "@/components/games/hangman/HangmanGame";
 import { BookStore } from "@/components/games/books/BookStore";
-=======
+
 import { FourPicsGame } from "@/components/games/fourpics/FourPicsGame";
 import { HangmanGame } from "@/components/games/hangman/HangmanGame";
 
