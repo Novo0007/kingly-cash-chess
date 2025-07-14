@@ -213,6 +213,8 @@ const Index = () => {
       setCurrentView("codelearn-game");
     } else if (gameType === "hangman") {
       setCurrentView("hangman-game");
+    } else if (gameType === "books") {
+      setCurrentView("books-store");
     }
   };
 
