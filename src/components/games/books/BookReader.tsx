@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -64,8 +70,11 @@ export const BookReader: React.FC<BookReaderProps> = ({
   const [showSettings, setShowSettings] = useState(false);
   const [readingTime, setReadingTime] = useState(0);
 
-  // Get user's progress for this book
-  const userBook = userBooks.find((ub) => ub.book_id === book.id);
+  // Get user's progress for this book (memoized to prevent unnecessary re-renders)
+  const userBook = useMemo(
+    () => userBooks.find((ub) => ub.book_id === book.id),
+    [userBooks, book.id],
+  );
   const savedProgress = userBook?.reading_progress || 0;
 
   // Split content into pages (roughly 500 words per page)
@@ -84,11 +93,13 @@ export const BookReader: React.FC<BookReaderProps> = ({
     return pageArray;
   }, [book.content, isMobile]);
 
-  // Initialize current page based on saved progress
+  // Initialize current page based on saved progress (only once)
+  const initializedRef = useRef(false);
   useEffect(() => {
-    if (savedProgress > 0) {
+    if (!initializedRef.current && savedProgress > 0 && pages.length > 0) {
       const pageFromProgress = Math.floor((savedProgress / 100) * pages.length);
       setCurrentPage(pageFromProgress);
+      initializedRef.current = true;
     }
   }, [savedProgress, pages.length]);
 
@@ -101,12 +112,27 @@ export const BookReader: React.FC<BookReaderProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  // Update progress when page changes
+  // Update progress when page changes (debounced to prevent excessive calls)
+  const updateProgressRef = useRef<NodeJS.Timeout>();
   useEffect(() => {
     if (pages.length > 0) {
-      const progress = Math.round(((currentPage + 1) / pages.length) * 100);
-      onUpdateProgress(book.id, progress);
+      // Clear previous timeout
+      if (updateProgressRef.current) {
+        clearTimeout(updateProgressRef.current);
+      }
+
+      // Debounce the progress update
+      updateProgressRef.current = setTimeout(() => {
+        const progress = Math.round(((currentPage + 1) / pages.length) * 100);
+        onUpdateProgress(book.id, progress);
+      }, 500);
     }
+
+    return () => {
+      if (updateProgressRef.current) {
+        clearTimeout(updateProgressRef.current);
+      }
+    };
   }, [currentPage, pages.length, book.id]);
 
   const goToNextPage = () => {
