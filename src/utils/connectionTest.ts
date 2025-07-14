@@ -1,94 +1,54 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export const testSupabaseConnection = async () => {
-  console.log("🔍 Testing Supabase connection...");
-
   try {
-    // Test 1: Check if Supabase client is initialized
-    console.log("✓ Supabase client initialized");
-    console.log("📍 URL:", "https://uznjfbqnivhfrotrtzzf.supabase.co"); // Direct URL
-    console.log("🔑 Key exists:", true); // Key exists check
+    console.log("🔍 Testing Supabase connection...");
 
-    // Test 2: Simple ping test
-    const startTime = Date.now();
+    // Test 1: Check if we can reach Supabase health endpoint
+    const healthResponse = await fetch(supabase.supabaseUrl + "/health");
+    console.log("Health endpoint status:", healthResponse.status);
+
+    // Test 2: Try a simple query
     const { data, error } = await supabase
       .from("profiles")
       .select("count")
       .limit(1);
-    const responseTime = Date.now() - startTime;
 
     if (error) {
-      console.error("❌ Supabase connection failed:", {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint,
-      });
-      return {
-        connected: false,
-        error: error.message || "Unknown Supabase error",
-        responseTime: null,
-      };
+      console.error("Supabase query error:", error);
+      return { success: false, error: error.message };
     }
 
-    console.log(`✅ Supabase connection successful (${responseTime}ms)`);
-    return {
-      connected: true,
-      error: null,
-      responseTime,
-    };
+    console.log("✅ Supabase connection successful");
+    return { success: true };
   } catch (error) {
-    console.error(
-      "💥 Connection test failed:",
-      error instanceof Error ? error.message : String(error),
-    );
+    console.error("❌ Supabase connection failed:", error);
     return {
-      connected: false,
+      success: false,
       error: error instanceof Error ? error.message : String(error),
-      responseTime: null,
     };
   }
 };
 
-export const checkNetworkConnectivity = async () => {
-  console.log("🌐 Testing network connectivity...");
-
+export const testAuthConnection = async () => {
   try {
-    // Test basic internet connectivity
-    const response = await fetch("https://httpbin.org/get", {
-      method: "GET",
-      mode: "cors",
-    });
+    console.log("🔍 Testing Supabase Auth connection...");
 
-    if (response.ok) {
-      console.log("✅ Internet connectivity working");
-      return { connected: true, error: null };
-    } else {
-      console.log("❌ Internet connectivity issues");
-      return { connected: false, error: `HTTP ${response.status}` };
-    }
-  } catch (error) {
-    console.error(
-      "💥 Network test failed:",
-      error instanceof Error ? error.message : String(error),
+    // Test auth session retrieval with timeout
+    const sessionPromise = supabase.auth.getSession();
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Timeout after 10 seconds")), 10000),
     );
+
+    const result = await Promise.race([sessionPromise, timeoutPromise]);
+
+    console.log("✅ Auth connection successful");
+    return { success: true, session: result };
+  } catch (error) {
+    console.error("❌ Auth connection failed:", error);
     return {
-      connected: false,
+      success: false,
       error: error instanceof Error ? error.message : String(error),
     };
   }
-};
-
-export const runFullDiagnostic = async () => {
-  console.log("🏥 Running full connection diagnostic...");
-
-  const results = {
-    browserOnline: navigator.onLine,
-    networkTest: await checkNetworkConnectivity(),
-    supabaseTest: await testSupabaseConnection(),
-    timestamp: new Date().toISOString(),
-  };
-
-  console.log("📊 Diagnostic Results:", results);
-  return results;
 };
