@@ -162,13 +162,26 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
         .order("purchased_at", { ascending: false });
 
       if (error) {
-        console.error("Error fetching user books:", error);
+        console.error("Error fetching user books:", error.message, error);
+        // If table doesn't exist, start with empty array
+        if (error.message.includes("does not exist")) {
+          console.log(
+            "User books table doesn't exist, starting with empty library",
+          );
+          setUserBooks([]);
+          return;
+        }
+        setUserBooks([]);
         return;
       }
 
       setUserBooks(data || []);
     } catch (error) {
-      console.error("Error fetching user books:", error);
+      console.error(
+        "Error fetching user books:",
+        error instanceof Error ? error.message : error,
+      );
+      setUserBooks([]);
     }
   }, [user]);
 
