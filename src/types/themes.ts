@@ -96,6 +96,70 @@ export const themes: ThemeDefinition[] = [
       accent: "from-blue-900/50 to-indigo-900/50",
     },
   },
+  {
+    id: "anime",
+    name: "Anime Aesthetic",
+    description: "Soft pastel colors with dreamy anime-inspired aesthetics",
+    preview: "🌸",
+    colors: {
+      background: "330 100% 98%", // Very soft pink-white background
+      foreground: "260 15% 15%", // Deep purple-gray text
+      card: "320 100% 99%", // Pure white with hint of pink
+      cardForeground: "260 15% 15%", // Deep purple-gray for card text
+      popover: "320 100% 99%", // Pure white with hint of pink
+      popoverForeground: "260 15% 15%", // Deep purple-gray for popover text
+      primary: "340 82% 75%", // Soft sakura pink
+      primaryForeground: "0 0% 100%", // Pure white text on primary
+      secondary: "280 40% 85%", // Soft lavender purple
+      secondaryForeground: "260 15% 15%", // Deep purple-gray on secondary
+      muted: "300 30% 94%", // Very light purple-pink
+      mutedForeground: "260 8% 45%", // Muted purple-gray
+      accent: "200 80% 75%", // Soft sky blue
+      accentForeground: "260 15% 15%", // Deep purple-gray on accent
+      destructive: "0 70% 70%", // Soft coral red
+      destructiveForeground: "0 0% 100%", // White text on destructive
+      border: "300 20% 88%", // Soft purple-pink border
+      input: "300 25% 95%", // Very light purple-pink input
+      ring: "340 82% 75%", // Sakura pink ring
+    },
+    gradients: {
+      primary: "from-pink-300 via-purple-300 to-indigo-300", // Dreamy anime gradient
+      secondary: "from-rose-100 to-pink-200", // Soft rose gradient
+      accent: "from-cyan-200 via-blue-200 to-purple-200", // Sky to purple gradient
+    },
+  },
+  {
+    id: "kawaii",
+    name: "Kawaii Dreams",
+    description: "Ultra-cute pastel theme with magical girl vibes",
+    preview: "🌈",
+    colors: {
+      background: "310 100% 97%", // Soft magical pink
+      foreground: "280 20% 20%", // Dark purple text
+      card: "300 100% 98%", // Ultra soft pink-white
+      cardForeground: "280 20% 20%", // Dark purple for cards
+      popover: "300 100% 98%", // Ultra soft pink-white
+      popoverForeground: "280 20% 20%", // Dark purple for popovers
+      primary: "320 90% 70%", // Bright magical pink
+      primaryForeground: "0 0% 100%", // Pure white
+      secondary: "260 60% 80%", // Soft magic purple
+      secondaryForeground: "280 20% 20%", // Dark purple
+      muted: "290 40% 92%", // Light magical mist
+      mutedForeground: "280 12% 50%", // Muted magical gray
+      accent: "180 70% 75%", // Mint magical blue
+      accentForeground: "280 20% 20%", // Dark purple on accent
+      destructive: "15 80% 75%", // Coral magical
+      destructiveForeground: "0 0% 100%", // White on destructive
+      border: "290 30% 85%", // Magical border
+      input: "290 35% 93%", // Magical input field
+      ring: "320 90% 70%", // Bright magical pink ring
+    },
+    gradients: {
+      primary: "from-pink-400 via-rose-400 to-purple-400", // Magical girl gradient
+      secondary: "from-purple-100 to-pink-100", // Soft magical gradient
+      accent: "from-blue-200 via-cyan-200 to-teal-200", // Ocean magical gradient
+    },
+  },
 ];
 
 export type ThemeId = (typeof themes)[number]["id"];
