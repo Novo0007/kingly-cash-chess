@@ -18,6 +18,7 @@ import {
   Clock,
   Brain,
   Code,
+  Type,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
@@ -37,7 +38,8 @@ interface GameSelectionProps {
       | "game2048"
       | "math"
       | "wordsearch"
-      | "codelearn",
+      | "codelearn"
+      | "hangman",
   ) => void;
 }
 
@@ -69,7 +71,8 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         | "game2048"
         | "math"
         | "wordsearch"
-        | "codelearn",
+        | "codelearn"
+        | "hangman",
     ) => {
       onSelectGame(gameType);
     },
@@ -227,6 +230,26 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         ],
         status: "LEARN",
         players: "1.2K+ Learning",
+        isMoneyGame: false,
+      },
+      {
+        id: "hangman",
+        title: "Hangman Challenge",
+        description:
+          "Guess the hidden word by selecting letters before time runs out!",
+        icon: Type,
+        emoji: "🎪",
+        color: "red",
+        gradient: "from-red-700 via-pink-700 to-purple-700",
+        lightGradient: "from-red-100 via-pink-100 to-purple-100",
+        features: [
+          "🆓 Free to Play",
+          "🎢 3 Categories",
+          "⏱️ Time Challenge",
+          "🏆 Progressive Levels",
+        ],
+        status: "NEW",
+        players: "350+ Playing",
         isMoneyGame: false,
       },
     ],
@@ -496,7 +519,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                             | "maze"
                             | "game2048"
                             | "math"
-                            | "wordsearch",
+                            | "wordsearch"
+                            | "codelearn"
+                            | "hangman",
                         )
                       }
                       className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:from-opacity-90 text-white border-0 py-4 md:py-5 lg:py-6 text-sm md:text-base lg:text-lg font-bold rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 ease-out transform hover:scale-[1.03] hover:-translate-y-1 group/btn will-change-transform`}
