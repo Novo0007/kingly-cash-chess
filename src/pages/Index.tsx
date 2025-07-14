@@ -23,6 +23,7 @@ import { MathGame } from "@/components/games/math/MathGame";
 import { WordSearchGame } from "@/components/games/wordsearch/WordSearchGame";
 import { CodeLearnGame } from "@/components/games/codelearn/CodeLearnGame";
 import { FourPicsGame } from "@/components/games/fourpics/FourPicsGame";
+import { HangmanGame } from "@/components/games/hangman/HangmanGame";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -49,6 +50,7 @@ const Index = () => {
     | "wordsearch"
     | "codelearn"
     | "fourpics"
+    | "hangman"
     | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
