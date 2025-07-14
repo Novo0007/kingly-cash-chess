@@ -179,7 +179,10 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
 
   // Initialize user coins if needed
   const initializeUserCoins = useCallback(async () => {
-    if (!user) return;
+    if (!user || !databaseAvailable) {
+      setUserCoins(1000);
+      return;
+    }
 
     try {
       const { data: existingCoins, error: fetchError } = await supabase
