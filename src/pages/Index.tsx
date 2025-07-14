@@ -372,6 +372,8 @@ const Index = () => {
         return <CodeLearnGame onBack={handleBackToGameSelection} user={user} />;
       case "hangman-game":
         return <HangmanGame onBack={handleBackToGameSelection} user={user} />;
+      case "books-store":
+        return <BookStore onBack={handleBackToGameSelection} user={user} />;
       case "wallet":
         return <WalletManager />;
       case "friends":
