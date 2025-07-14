@@ -107,7 +107,7 @@ export const BookReader: React.FC<BookReaderProps> = ({
       const progress = Math.round(((currentPage + 1) / pages.length) * 100);
       onUpdateProgress(book.id, progress);
     }
-  }, [currentPage, pages.length, book.id, onUpdateProgress]);
+  }, [currentPage, pages.length, book.id]);
 
   const goToNextPage = () => {
     if (currentPage < pages.length - 1) {
