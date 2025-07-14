@@ -194,50 +194,46 @@ if (error && error.code !== "PGRST116") {
     checkAdminStatus();
   }, [user?.email]);
 
-  const handleSelectGame = (
-    gameType:
-      | "chess"
-      | "ludo"
-      | "maze"
-      | "game2048"
-      | "math"
-      | "wordsearch"
-      | "codelearn"
+ // Remove duplicate import
+// import { HangmanGame } from "@/components/games/hangman/HangmanGame";  // REMOVE ONE
 
-      | "hangman"
-      | "books",
-      | "fourpics"
-    
-
-  ) => {
-    setSelectedGameType(gameType);
-    if (gameType === "chess") {
-      setCurrentView("lobby");
-    } else if (gameType === "ludo") {
-      setCurrentView("ludo-lobby");
-    } else if (gameType === "maze") {
-      setCurrentView("maze-game");
-    } else if (gameType === "game2048") {
-      setCurrentView("game2048");
-    } else if (gameType === "math") {
-      setCurrentView("math-game");
-    } else if (gameType === "wordsearch") {
-      setCurrentView("wordsearch-game");
-    } else if (gameType === "codelearn") {
-      setCurrentView("codelearn-game");
-
-    } else if (gameType === "hangman") {
-      setCurrentView("hangman-game");
-    } else if (gameType === "books") {
-      setCurrentView("books-store");
-
-    } else if (gameType === "fourpics") {
-      setCurrentView("fourpics-game");
-    } else if (gameType === "hangman") {
-      setCurrentView("hangman-game");
-
-    }
-  };
+// Fix type in handleSelectGame
+const handleSelectGame = (
+  gameType:
+    | "chess"
+    | "ludo"
+    | "maze"
+    | "game2048"
+    | "math"
+    | "wordsearch"
+    | "codelearn"
+    | "hangman"
+    | "books"
+    | "fourpics"
+) => {
+  setSelectedGameType(gameType);
+  if (gameType === "chess") {
+    setCurrentView("lobby");
+  } else if (gameType === "ludo") {
+    setCurrentView("ludo-lobby");
+  } else if (gameType === "maze") {
+    setCurrentView("maze-game");
+  } else if (gameType === "game2048") {
+    setCurrentView("game2048");
+  } else if (gameType === "math") {
+    setCurrentView("math-game");
+  } else if (gameType === "wordsearch") {
+    setCurrentView("wordsearch-game");
+  } else if (gameType === "codelearn") {
+    setCurrentView("codelearn-game");
+  } else if (gameType === "hangman") {
+    setCurrentView("hangman-game");
+  } else if (gameType === "books") {
+    setCurrentView("books-store");
+  } else if (gameType === "fourpics") {
+    setCurrentView("fourpics-game");
+  }
+};
 
   const handleJoinGame = (gameId: string) => {
     setCurrentGameId(gameId);
