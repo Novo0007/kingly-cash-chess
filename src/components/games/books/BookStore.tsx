@@ -231,6 +231,11 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
 
   // Fetch all books
   const fetchBooks = useCallback(async () => {
+    if (!databaseAvailable) {
+      setBooks(getSampleBooks());
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from("books")
@@ -240,14 +245,8 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
 
       if (error) {
         console.error("Error fetching books:", error.message, error);
-        // If books table doesn't exist, create sample books in memory
-        if (error.message.includes("does not exist")) {
-          console.log("Books table doesn't exist, using sample data");
-          setDatabaseAvailable(false);
-          setBooks(getSampleBooks());
-          return;
-        }
         toast.error("Failed to load books");
+        setBooks(getSampleBooks());
         return;
       }
 
@@ -258,10 +257,9 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
         error instanceof Error ? error.message : error,
       );
       toast.error("Failed to load books");
-      // Use sample books as fallback
       setBooks(getSampleBooks());
     }
-  }, []);
+  }, [databaseAvailable]);
 
   // Fetch user's purchased books
   const fetchUserBooks = useCallback(async () => {
