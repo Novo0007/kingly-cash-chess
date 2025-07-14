@@ -544,7 +544,8 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                             | "math"
                             | "wordsearch"
                             | "codelearn"
-                            | "fourpics",
+                            | "fourpics"
+                            | "hangman",
                         )
                       }
                       className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:from-opacity-90 text-white border-0 py-4 md:py-5 lg:py-6 text-sm md:text-base lg:text-lg font-bold rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 ease-out transform hover:scale-[1.03] hover:-translate-y-1 group/btn will-change-transform`}
