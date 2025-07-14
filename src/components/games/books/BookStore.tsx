@@ -413,6 +413,35 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
       return;
     }
 
+    // Use fallback logic immediately in demo mode
+    if (!databaseAvailable) {
+      console.log("Using demo mode purchase logic");
+
+      // Simulate successful purchase
+      const newBalance = userCoins - book.price_coins;
+      setUserCoins(newBalance);
+
+      // Add book to user's library (in memory only)
+      const newUserBook: UserBook = {
+        id: `user-book-${Date.now()}`,
+        book_id: book.id,
+        reading_progress: 0,
+        is_favorite: false,
+        book: book,
+      };
+      setUserBooks((prev) => [newUserBook, ...prev]);
+
+      toast.success("📚 Book purchased successfully! (Demo Mode)", {
+        style: {
+          background:
+            "linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(59, 130, 246, 0.9))",
+          color: "white",
+          border: "none",
+        },
+      });
+      return;
+    }
+
     try {
       // Try to call the stored procedure first
       const { data, error } = await supabase.rpc("purchase_book", {
