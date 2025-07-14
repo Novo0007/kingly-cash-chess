@@ -59,7 +59,7 @@ const Index = () => {
     | "books"
 
     | "fourpics"
-    | "hangman"
+    
 
     | null
   >(null);
@@ -206,9 +206,8 @@ if (error && error.code !== "PGRST116") {
 
       | "hangman"
       | "books",
-
       | "fourpics"
-      | "hangman",
+    
 
   ) => {
     setSelectedGameType(gameType);
