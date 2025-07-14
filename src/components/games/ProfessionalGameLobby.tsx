@@ -204,6 +204,24 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       highlight: false,
       priority: 8,
     },
+    {
+      id: "hangman",
+      title: "Hangman Classic",
+      subtitle: "Word Guessing Game",
+      description: "Classic word guessing with multiple difficulty levels",
+      icon: FileText,
+      category: "free",
+      gradient: "from-gray-500 to-slate-600",
+      cardBg: "from-gray-50 to-slate-50",
+      iconBg: "bg-gray-100",
+      iconColor: "text-gray-600",
+      players: "50+ Playing",
+      status: "🎯 CLASSIC",
+      earning: "Free Play",
+      features: ["3 Difficulty Levels", "Word Categories", "Hints Available"],
+      highlight: false,
+      priority: 9,
+    },
   ];
 
   const filteredGames = games
