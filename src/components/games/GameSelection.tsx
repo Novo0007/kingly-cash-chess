@@ -39,7 +39,8 @@ interface GameSelectionProps {
       | "math"
       | "wordsearch"
       | "codelearn"
-      | "fourpics",
+      | "fourpics"
+      | "hangman",
   ) => void;
 }
 
@@ -72,7 +73,8 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         | "math"
         | "wordsearch"
         | "codelearn"
-        | "fourpics",
+        | "fourpics"
+        | "hangman",
     ) => {
       onSelectGame(gameType);
     },
