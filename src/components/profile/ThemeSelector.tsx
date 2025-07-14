@@ -14,7 +14,7 @@ import {
   Star,
 } from "lucide-react";
 import { toast } from "sonner";
-import type { ThemeId } from "@/types/themes";
+import type { ThemeId, ThemeDefinition } from "@/types/themes";
 
 interface ThemeSelectorProps {
   onBack?: () => void;
