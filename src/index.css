@@ -4,6 +4,8 @@
 @import "./styles/theme-effects.css";
 /* Import theme particle effects */
 @import "./styles/theme-particles.css";
+/* Import anime love theme effects */
+@import "./styles/anime-love-themes.css";
 
 @tailwind base;
 @tailwind components;
