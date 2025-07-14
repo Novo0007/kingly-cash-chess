@@ -64,7 +64,7 @@ export const HangmanLeaderboard: React.FC<HangmanLeaderboardProps> = ({
 
   useEffect(() => {
     fetchLeaderboardData();
-  }, []);
+  }, [fetchLeaderboardData]);
 
   const fetchLeaderboardData = async () => {
     try {
