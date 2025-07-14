@@ -15,6 +15,7 @@ import {
   BookOpen,
   Code,
   Trophy,
+  Type,
   Coins,
   Zap,
   ArrowRight,
@@ -33,7 +34,8 @@ interface ProfessionalGameLobbyProps {
       | "game2048"
       | "math"
       | "wordsearch"
-      | "codelearn",
+      | "codelearn"
+      | "hangman",
   ) => void;
 }
 
@@ -181,6 +183,25 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       features: ["Multiplayer Mode", "Smart Hints", "Daily Rewards"],
       highlight: false,
       priority: 7,
+    },
+    {
+      id: "hangman",
+      title: "Hangman Challenge",
+      subtitle: "Word Guessing Game",
+      description:
+        "Guess the hidden word before time runs out in this classic game",
+      icon: Type,
+      category: "free",
+      gradient: "from-red-500 to-pink-600",
+      cardBg: "from-red-50 to-pink-50",
+      iconBg: "bg-red-100",
+      iconColor: "text-red-600",
+      players: "350+ Playing",
+      status: "🎪 NEW",
+      earning: "Free Play",
+      features: ["3 Categories", "Progressive Levels", "Time Challenge"],
+      highlight: false,
+      priority: 8,
     },
   ];
 
