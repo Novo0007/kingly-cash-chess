@@ -35,7 +35,8 @@ interface ProfessionalGameLobbyProps {
       | "math"
       | "wordsearch"
       | "codelearn"
-      | "fourpics",
+      | "fourpics"
+      | "hangman",
   ) => void;
 }
 
