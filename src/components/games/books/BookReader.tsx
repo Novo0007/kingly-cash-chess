@@ -231,12 +231,13 @@ export const BookReader: React.FC<BookReaderProps> = ({
                     >
                       Font Size
                     </label>
-                    <Slider
-                      value={[fontSize]}
-                      onValueChange={(value) => setFontSize(value[0])}
+                    <input
+                      type="range"
                       min={12}
                       max={24}
                       step={1}
+                      value={fontSize}
+                      onChange={(e) => setFontSize(parseInt(e.target.value))}
                       className="w-full"
                     />
                     <div
