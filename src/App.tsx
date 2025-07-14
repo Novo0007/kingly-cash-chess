@@ -18,6 +18,7 @@ import { Game2048RulesPage } from "./pages/Game2048RulesPage";
 import { MathRulesPage } from "./pages/MathRulesPage";
 import WordSearchRulesPage from "./pages/WordSearchRulesPage";
 import FourPicsRulesPage from "./pages/FourPicsRulesPage";
+import HangmanRulesPage from "./pages/HangmanRulesPage";
 import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { DraggableMusicControl } from "@/components/music/DraggableMusicControl";
 import { AppLoadingScreen } from "@/components/ui/app-loading-screen";
@@ -115,6 +116,7 @@ const App = () => {
                   element={<WordSearchRulesPage />}
                 />
                 <Route path="/fourpics-rules" element={<FourPicsRulesPage />} />
+                <Route path="/hangman-rules" element={<HangmanRulesPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
