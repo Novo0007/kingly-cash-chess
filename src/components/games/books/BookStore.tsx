@@ -263,7 +263,10 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
 
   // Fetch user's purchased books
   const fetchUserBooks = useCallback(async () => {
-    if (!user) return;
+    if (!user || !databaseAvailable) {
+      setUserBooks([]);
+      return;
+    }
 
     try {
       const { data, error } = await supabase
@@ -279,14 +282,6 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
 
       if (error) {
         console.error("Error fetching user books:", error.message, error);
-        // If table doesn't exist, start with empty array
-        if (error.message.includes("does not exist")) {
-          console.log(
-            "User books table doesn't exist, starting with empty library",
-          );
-          setUserBooks([]);
-          return;
-        }
         setUserBooks([]);
         return;
       }
@@ -299,7 +294,7 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
       );
       setUserBooks([]);
     }
-  }, [user]);
+  }, [user, databaseAvailable]);
 
   // Fetch user coins
   const fetchUserCoins = useCallback(async () => {
