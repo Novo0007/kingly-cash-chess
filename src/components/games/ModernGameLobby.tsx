@@ -189,7 +189,9 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
         | "game2048"
         | "math"
         | "wordsearch"
-        | "codelearn",
+        | "codelearn"
+        | "hangman"
+        | "fourpics",
     ) => {
       onSelectGame(gameType);
     },
