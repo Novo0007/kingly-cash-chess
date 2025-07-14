@@ -247,6 +247,8 @@ const Index = () => {
       setCurrentView("wordsearch-game");
     } else if (selectedGameType === "codelearn") {
       setCurrentView("codelearn-game");
+    } else if (selectedGameType === "hangman") {
+      setCurrentView("hangman-game");
     }
   };
 
