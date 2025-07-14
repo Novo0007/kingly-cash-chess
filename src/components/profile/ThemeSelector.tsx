@@ -66,7 +66,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onBack }) => {
     (theme) => !["light", "dark"].includes(theme.id),
   );
 
-  const getThemeIcon = (theme: { id: string; name: string }) => {
+  const getThemeIcon = (theme: ThemeDefinition) => {
     if (theme.id === "light") return <Sun className="h-5 w-5" />;
     if (theme.id === "dark") return <Moon className="h-5 w-5" />;
     if (theme.name.toLowerCase().includes("love"))
