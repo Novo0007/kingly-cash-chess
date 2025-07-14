@@ -335,7 +335,7 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
       );
       setUserCoins(1000);
     }
-  }, [user]);
+  }, [user, databaseAvailable]);
 
   // Initialize data
   useEffect(() => {
