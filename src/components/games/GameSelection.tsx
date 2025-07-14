@@ -18,7 +18,7 @@ import {
   Clock,
   Brain,
   Code,
-  Type,
+
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
@@ -39,6 +39,10 @@ interface GameSelectionProps {
       | "math"
       | "wordsearch"
       | "codelearn"
+
+
+      | "fourpics"
+
       | "hangman",
   ) => void;
 }
@@ -72,6 +76,10 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         | "math"
         | "wordsearch"
         | "codelearn"
+
+
+        | "fourpics"
+
         | "hangman",
     ) => {
       onSelectGame(gameType);
@@ -233,6 +241,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         isMoneyGame: false,
       },
       {
+
         id: "hangman",
         title: "Hangman Challenge",
         description:
@@ -250,6 +259,45 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         ],
         status: "NEW",
         players: "350+ Playing",
+=======
+        id: "fourpics",
+        title: "4 Pics 1 Word",
+        description:
+          "Guess the word from four pictures - challenging visual puzzles with coin rewards!",
+        icon: Image,
+        emoji: "🖼️",
+        color: "orange",
+        gradient: "from-orange-700 via-red-700 to-pink-700",
+        lightGradient: "from-orange-100 via-red-100 to-pink-100",
+        features: [
+          "🖼️ Visual Puzzles",
+          "🪙 Coin System",
+          "💡 Smart Hints",
+          "📈 99 Levels",
+        ],
+        status: "NEW",
+        players: "80+ Playing",
+        isMoneyGame: true,
+      },
+      {
+        id: "hangman",
+        title: "Hangman",
+        description:
+          "Classic word guessing game with multiple difficulty levels and categories!",
+        icon: FileText,
+        emoji: "🎯",
+        color: "slate",
+        gradient: "from-slate-700 via-gray-700 to-zinc-700",
+        lightGradient: "from-slate-100 via-gray-100 to-zinc-100",
+        features: [
+          "🆓 Free to Play",
+          "🎯 Word Guessing",
+          "📚 Multiple Categories",
+          "⚡ 3 Difficulty Levels",
+        ],
+        status: "NEW",
+        players: "50+ Playing",
+
         isMoneyGame: false,
       },
     ],
@@ -521,6 +569,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                             | "math"
                             | "wordsearch"
                             | "codelearn"
+
+           | "fourpics"
+
                             | "hangman",
                         )
                       }
@@ -675,7 +726,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         </div>
 
         {/* Enhanced Game Rules Section */}
-        <div className="grid grid-cols-2 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+        <div className="grid grid-cols-2 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
           <Card className="relative bg-gradient-to-br from-blue-500 to-purple-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20"></div>
             <CardContent className="relative p-6">
@@ -840,6 +891,64 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </div>
                 <Button
                   onClick={() => navigate("/wordsearch-rules")}
+                  variant="secondary"
+                  className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
+                >
+                  Learn
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="relative bg-gradient-to-br from-orange-500 to-red-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-red-400/20"></div>
+            <CardContent className="relative p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <Image className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-lg font-heading">
+                      4 Pics 1 Word Rules
+                    </h4>
+                    <p className="text-white/90 text-sm font-medium">
+                      Learn strategies for visual word puzzles
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => navigate("/fourpics-rules")}
+                  variant="secondary"
+                  className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
+                >
+                  Learn
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="relative bg-gradient-to-br from-slate-500 to-gray-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-400/20 to-gray-400/20"></div>
+            <CardContent className="relative p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <FileText className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-lg font-heading">
+                      Hangman Rules
+                    </h4>
+                    <p className="text-white/90 text-sm font-medium">
+                      Master the classic word guessing game strategies
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => navigate("/hangman-rules")}
                   variant="secondary"
                   className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
                 >

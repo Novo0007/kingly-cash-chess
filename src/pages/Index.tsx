@@ -22,8 +22,13 @@ import { Game2048 } from "@/components/games/game2048/Game2048";
 import { MathGame } from "@/components/games/math/MathGame";
 import { WordSearchGame } from "@/components/games/wordsearch/WordSearchGame";
 import { CodeLearnGame } from "@/components/games/codelearn/CodeLearnGame";
+
 import { HangmanGame } from "@/components/games/hangman/HangmanGame";
 import { BookStore } from "@/components/games/books/BookStore";
+=======
+import { FourPicsGame } from "@/components/games/fourpics/FourPicsGame";
+import { HangmanGame } from "@/components/games/hangman/HangmanGame";
+
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -49,8 +54,13 @@ const Index = () => {
     | "math"
     | "wordsearch"
     | "codelearn"
+
     | "hangman"
     | "books"
+
+    | "fourpics"
+    | "hangman"
+
     | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -193,8 +203,13 @@ const Index = () => {
       | "math"
       | "wordsearch"
       | "codelearn"
+
       | "hangman"
       | "books",
+
+      | "fourpics"
+      | "hangman",
+
   ) => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
@@ -211,10 +226,17 @@ const Index = () => {
       setCurrentView("wordsearch-game");
     } else if (gameType === "codelearn") {
       setCurrentView("codelearn-game");
+
     } else if (gameType === "hangman") {
       setCurrentView("hangman-game");
     } else if (gameType === "books") {
       setCurrentView("books-store");
+
+    } else if (gameType === "fourpics") {
+      setCurrentView("fourpics-game");
+    } else if (gameType === "hangman") {
+      setCurrentView("hangman-game");
+
     }
   };
 
@@ -234,8 +256,13 @@ const Index = () => {
       setCurrentView("wordsearch-game");
     } else if (selectedGameType === "codelearn") {
       setCurrentView("codelearn-game");
+
     } else if (selectedGameType === "hangman") {
       setCurrentView("hangman-game");
+
+    } else if (selectedGameType === "fourpics") {
+      setCurrentView("fourpics-game");
+
     }
   };
 
@@ -255,8 +282,13 @@ const Index = () => {
       setCurrentView("wordsearch-game");
     } else if (selectedGameType === "codelearn") {
       setCurrentView("codelearn-game");
+
     } else if (selectedGameType === "hangman") {
       setCurrentView("hangman-game");
+
+    } else if (selectedGameType === "fourpics") {
+      setCurrentView("fourpics-game");
+
     }
   };
 
@@ -370,10 +402,17 @@ const Index = () => {
         );
       case "codelearn-game":
         return <CodeLearnGame onBack={handleBackToGameSelection} user={user} />;
+
       case "hangman-game":
         return <HangmanGame onBack={handleBackToGameSelection} user={user} />;
       case "books-store":
         return <BookStore onBack={handleBackToGameSelection} user={user} />;
+
+      case "fourpics-game":
+        return <FourPicsGame onBack={handleBackToGameSelection} user={user} />;
+      case "hangman-game":
+        return <HangmanGame onBack={handleBackToGameSelection} user={user} />;
+
       case "wallet":
         return <WalletManager />;
       case "friends":
