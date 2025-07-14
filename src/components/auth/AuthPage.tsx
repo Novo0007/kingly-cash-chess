@@ -165,7 +165,7 @@ export const AuthPage = () => {
 
       {/* Main Auth Card */}
       <Card
-        className={`w-full max-w-md relative z-10 backdrop-blur-xl bg-white/90 border border-white/20 shadow-2xl transition-all duration-1000 ${
+        className={`w-full max-w-md mx-4 relative z-10 backdrop-blur-xl bg-white/90 border border-white/20 shadow-2xl transition-all duration-1000 ${
           isLoaded
             ? "opacity-100 translate-y-0 scale-100"
             : "opacity-0 translate-y-8 scale-95"
