@@ -24,6 +24,8 @@ import {
   Shield,
   CheckCircle,
   Code,
+  FileText,
+  Image,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
