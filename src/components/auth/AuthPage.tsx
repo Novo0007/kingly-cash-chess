@@ -45,7 +45,7 @@ export const AuthPage = () => {
     e.preventDefault();
     setLoading(true);
 
-    try {
+    const result = await withErrorHandling(async () => {
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -59,18 +59,19 @@ export const AuthPage = () => {
       });
 
       if (error) {
-        toast.error(error.message);
-      } else {
-        toast.success("Account created successfully! Please check your email.");
+        throw error;
       }
-    } catch (networkError) {
-      console.warn("Network error during sign up:", networkError);
-      toast.error(
-        "Connection error. Please check your internet and try again.",
-      );
-    } finally {
-      setLoading(false);
+
+      return true;
+    }, "sign up");
+
+    if (result) {
+      toast.success("Account created successfully! Please check your email.", {
+        duration: 6000,
+      });
     }
+
+    setLoading(false);
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
