@@ -373,6 +373,7 @@ const HangmanRulesPage: React.FC = () => {
           </Button>
         </div>
 
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -398,7 +399,6 @@ export const HangmanRulesPage: React.FC = () => {
 
         {/* Hangman Rules Component */}
         <HangmanRules />
-
       </div>
     </div>
   );
