@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { HangmanBoard } from "./HangmanBoard";
 import { HangmanLobby } from "./HangmanLobby";
@@ -41,7 +41,7 @@ export const HangmanGame: React.FC<HangmanGameProps> = ({ onBack, user }) => {
   const [gameLogic] = useState(() => new HangmanGameLogic());
   const [gamesPlayed, setGamesPlayed] = useState<HangmanGameState[]>([]);
   const [isSubmittingScore, setIsSubmittingScore] = useState(false);
-  const [gameTimer, setGameTimer] = useState<NodeJS.Timeout | null>(null);
+  const gameTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Initialize hangman scores table if it doesn't exist
   useEffect(() => {
@@ -69,6 +69,12 @@ export const HangmanGame: React.FC<HangmanGameProps> = ({ onBack, user }) => {
 
   // Game timer effect
   useEffect(() => {
+    // Clear existing timer
+    if (gameTimerRef.current) {
+      clearInterval(gameTimerRef.current);
+      gameTimerRef.current = null;
+    }
+
     if (gameState && !gameState.isGameOver && currentView === "game") {
       const timer = setInterval(() => {
         setGameState((prevState) => {
@@ -83,22 +89,25 @@ export const HangmanGame: React.FC<HangmanGameProps> = ({ onBack, user }) => {
         });
       }, 1000);
 
-      setGameTimer(timer);
-      return () => clearInterval(timer);
-    } else if (gameTimer) {
-      clearInterval(gameTimer);
-      setGameTimer(null);
+      gameTimerRef.current = timer;
+      return () => {
+        if (gameTimerRef.current) {
+          clearInterval(gameTimerRef.current);
+          gameTimerRef.current = null;
+        }
+      };
     }
-  }, [gameState, currentView, gameLogic, gameTimer]);
+  }, [gameState, currentView, gameLogic]);
 
   // Clean up timer on unmount
   useEffect(() => {
     return () => {
-      if (gameTimer) {
-        clearInterval(gameTimer);
+      if (gameTimerRef.current) {
+        clearInterval(gameTimerRef.current);
+        gameTimerRef.current = null;
       }
     };
-  }, [gameTimer]);
+  }, []);
 
   const startNewGame = useCallback(
     (level: number = 1) => {
@@ -209,9 +218,9 @@ export const HangmanGame: React.FC<HangmanGameProps> = ({ onBack, user }) => {
     setGameState(null);
     setGamesPlayed([]);
     setCurrentView("lobby");
-    if (gameTimer) {
-      clearInterval(gameTimer);
-      setGameTimer(null);
+    if (gameTimerRef.current) {
+      clearInterval(gameTimerRef.current);
+      gameTimerRef.current = null;
     }
   }, [gameTimer]);
 
