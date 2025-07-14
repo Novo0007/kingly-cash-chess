@@ -21,6 +21,7 @@ import {
   Menu,
   X,
   Image,
+  FileText,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
@@ -35,7 +36,8 @@ interface ProfessionalGameLobbyProps {
       | "math"
       | "wordsearch"
       | "codelearn"
-      | "fourpics",
+      | "fourpics"
+      | "hangman",
   ) => void;
 }
 
@@ -88,7 +90,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       iconBg: "bg-amber-100",
       iconColor: "text-amber-600",
       players: "2.5K+ Online",
-      status: "�� HOT",
+      status: "🔥 HOT",
       earning: "₹2,50,000",
       features: ["Live Tournaments", "Quick Matches", "Global Rankings"],
       highlight: true,
@@ -107,7 +109,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       iconColor: "text-emerald-600",
       players: "1.8K+ Playing",
       status: "⭐ POPULAR",
-      earning: "₹1,80,000",
+      earning: "���1,80,000",
       features: ["2-4 Players", "Quick Rounds", "Real Prizes"],
       highlight: true,
       priority: 3,
@@ -201,6 +203,24 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       features: ["99 Levels", "Smart Hints", "Visual Puzzles"],
       highlight: false,
       priority: 8,
+    },
+    {
+      id: "hangman",
+      title: "Hangman",
+      subtitle: "Word Guessing",
+      description: "Guess the word letter by letter before time runs out",
+      icon: FileText,
+      category: "free",
+      gradient: "from-purple-500 to-indigo-600",
+      cardBg: "from-purple-50 to-indigo-50",
+      iconBg: "bg-purple-100",
+      iconColor: "text-purple-600",
+      players: "120+ Playing",
+      status: "🎯 CLASSIC",
+      earning: "Free Play",
+      features: ["Word Categories", "Time Challenge", "Hint System"],
+      highlight: false,
+      priority: 9,
     },
   ];
 
