@@ -66,7 +66,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onBack }) => {
     (theme) => !["light", "dark"].includes(theme.id),
   );
 
-  const getThemeIcon = (theme: any) => {
+  const getThemeIcon = (theme: { id: string; name: string }) => {
     if (theme.id === "light") return <Sun className="h-5 w-5" />;
     if (theme.id === "dark") return <Moon className="h-5 w-5" />;
     if (theme.name.toLowerCase().includes("love"))
@@ -74,7 +74,16 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ onBack }) => {
     return <Star className="h-5 w-5" />;
   };
 
-  const renderThemeCard = (theme: any, isActive: boolean) => (
+  const renderThemeCard = (
+    theme: {
+      id: string;
+      name: string;
+      description: string;
+      preview: string;
+      gradients: { primary: string; secondary: string; accent: string };
+    },
+    isActive: boolean,
+  ) => (
     <Card
       key={theme.id}
       className={`relative cursor-pointer transform transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] rounded-2xl overflow-hidden border-2 ${
