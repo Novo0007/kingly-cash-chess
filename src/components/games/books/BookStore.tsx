@@ -301,7 +301,10 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
 
   // Fetch user coins
   const fetchUserCoins = useCallback(async () => {
-    if (!user) return;
+    if (!user || !databaseAvailable) {
+      setUserCoins(1000);
+      return;
+    }
 
     try {
       const { data, error } = await supabase
