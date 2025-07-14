@@ -560,7 +560,7 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="text-6xl animate-bounce">📚</div>
+          <div className="text-6xl animate-bounce">���</div>
           <h3 className="text-xl font-bold text-gray-800">
             Loading Book Store...
           </h3>
@@ -572,6 +572,22 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
+      {/* Database Notice */}
+      {!databaseAvailable && (
+        <div className="bg-gradient-to-r from-yellow-100 to-orange-100 border-l-4 border-yellow-500 p-4">
+          <div className="flex items-center max-w-6xl mx-auto">
+            <div className="text-yellow-600 mr-3">⚠️</div>
+            <div>
+              <h4 className="text-yellow-800 font-semibold">Demo Mode</h4>
+              <p className="text-yellow-700 text-sm">
+                Book store is running in demo mode with sample data. Purchases
+                and progress won't be saved permanently.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="sticky top-0 z-50 p-4 bg-white/90 backdrop-blur-sm border-b border-purple-200">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
