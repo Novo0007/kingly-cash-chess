@@ -78,9 +78,8 @@ const Index = () => {
         .select("*")
         .eq("id", userId)
         .single();
-
-         if (error && error.code ! "PGRST116") {
-      if (error && error.code !== "PGRST116") {
+      
+if (error && error.code !== "PGRST116") {
         console.error("Profile fetch error:", {
           message: error.message,
           details: error.details,
