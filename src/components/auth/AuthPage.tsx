@@ -25,6 +25,7 @@ import {
   Users,
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { handleSupabaseError, withErrorHandling } from "@/utils/errorHandler";
 
 export const AuthPage = () => {
   const [email, setEmail] = useState("");
@@ -501,7 +502,7 @@ export const AuthPage = () => {
               <div className="flex justify-center space-x-2 text-lg">
                 {currentTheme.id === "dreampixels" && "💖 ✨ 🌟 ✨ 💖"}
                 {currentTheme.id === "sakurablossom" && "🌸 🌺 🌸 🌺 🌸"}
-                {currentTheme.id === "loveheart" && "❤️ �� 💗 💕 ❤️"}
+                {currentTheme.id === "loveheart" && "❤️ 💕 💗 💕 ❤️"}
               </div>
             </div>
           )}
