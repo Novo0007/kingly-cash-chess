@@ -243,6 +243,7 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
         // If books table doesn't exist, create sample books in memory
         if (error.message.includes("does not exist")) {
           console.log("Books table doesn't exist, using sample data");
+          setDatabaseAvailable(false);
           setBooks(getSampleBooks());
           return;
         }
