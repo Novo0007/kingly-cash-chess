@@ -78,25 +78,26 @@ export const AuthPage = () => {
     e.preventDefault();
     setLoading(true);
 
-    try {
+    const result = await withErrorHandling(async () => {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
-        toast.error(error.message);
-      } else {
-        toast.success("Welcome back!");
+        throw error;
       }
-    } catch (networkError) {
-      console.warn("Network error during sign in:", networkError);
-      toast.error(
-        "Connection error. Please check your internet and try again.",
-      );
-    } finally {
-      setLoading(false);
+
+      return true;
+    }, "sign in");
+
+    if (result) {
+      toast.success("Welcome back!", {
+        duration: 4000,
+      });
     }
+
+    setLoading(false);
   };
 
   const isAnimeTheme = ["dreampixels", "sakurablossom", "loveheart"].includes(
