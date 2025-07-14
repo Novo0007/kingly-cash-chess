@@ -20,6 +20,7 @@ import {
   ArrowRight,
   Menu,
   X,
+  Image,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
@@ -33,7 +34,8 @@ interface ProfessionalGameLobbyProps {
       | "game2048"
       | "math"
       | "wordsearch"
-      | "codelearn",
+      | "codelearn"
+      | "fourpics",
   ) => void;
 }
 
@@ -181,6 +183,24 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       features: ["Multiplayer Mode", "Smart Hints", "Daily Rewards"],
       highlight: false,
       priority: 7,
+    },
+    {
+      id: "fourpics",
+      title: "4 Pics 1 Word",
+      subtitle: "Visual Word Puzzle",
+      description: "Guess the word from four pictures and earn coins",
+      icon: Image,
+      category: "earn",
+      gradient: "from-orange-500 to-red-600",
+      cardBg: "from-orange-50 to-red-50",
+      iconBg: "bg-orange-100",
+      iconColor: "text-orange-600",
+      players: "80+ Playing",
+      status: "🖼️ NEW",
+      earning: "Coin Rewards",
+      features: ["99 Levels", "Smart Hints", "Visual Puzzles"],
+      highlight: false,
+      priority: 8,
     },
   ];
 

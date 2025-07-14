@@ -18,6 +18,7 @@ import {
   Clock,
   Brain,
   Code,
+  Image,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
@@ -37,7 +38,8 @@ interface GameSelectionProps {
       | "game2048"
       | "math"
       | "wordsearch"
-      | "codelearn",
+      | "codelearn"
+      | "fourpics",
   ) => void;
 }
 
@@ -69,7 +71,8 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         | "game2048"
         | "math"
         | "wordsearch"
-        | "codelearn",
+        | "codelearn"
+        | "fourpics",
     ) => {
       onSelectGame(gameType);
     },
@@ -228,6 +231,26 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         status: "LEARN",
         players: "1.2K+ Learning",
         isMoneyGame: false,
+      },
+      {
+        id: "fourpics",
+        title: "4 Pics 1 Word",
+        description:
+          "Guess the word from four pictures - challenging visual puzzles with coin rewards!",
+        icon: Image,
+        emoji: "🖼️",
+        color: "orange",
+        gradient: "from-orange-700 via-red-700 to-pink-700",
+        lightGradient: "from-orange-100 via-red-100 to-pink-100",
+        features: [
+          "🖼️ Visual Puzzles",
+          "🪙 Coin System",
+          "💡 Smart Hints",
+          "📈 99 Levels",
+        ],
+        status: "NEW",
+        players: "80+ Playing",
+        isMoneyGame: true,
       },
     ],
     [],
@@ -496,7 +519,9 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                             | "maze"
                             | "game2048"
                             | "math"
-                            | "wordsearch",
+                            | "wordsearch"
+                            | "codelearn"
+                            | "fourpics",
                         )
                       }
                       className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:from-opacity-90 text-white border-0 py-4 md:py-5 lg:py-6 text-sm md:text-base lg:text-lg font-bold rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 ease-out transform hover:scale-[1.03] hover:-translate-y-1 group/btn will-change-transform`}
@@ -650,7 +675,7 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         </div>
 
         {/* Enhanced Game Rules Section */}
-        <div className="grid grid-cols-2 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+        <div className="grid grid-cols-2 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
           <Card className="relative bg-gradient-to-br from-blue-500 to-purple-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20"></div>
             <CardContent className="relative p-6">
@@ -815,6 +840,35 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </div>
                 <Button
                   onClick={() => navigate("/wordsearch-rules")}
+                  variant="secondary"
+                  className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
+                >
+                  Learn
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="relative bg-gradient-to-br from-orange-500 to-red-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-red-400/20"></div>
+            <CardContent className="relative p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <Image className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-lg font-heading">
+                      4 Pics 1 Word Rules
+                    </h4>
+                    <p className="text-white/90 text-sm font-medium">
+                      Learn strategies for visual word puzzles
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => navigate("/fourpics-rules")}
                   variant="secondary"
                   className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
                 >
