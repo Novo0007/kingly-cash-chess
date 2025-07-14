@@ -24,6 +24,7 @@ import {
   Shield,
   CheckCircle,
   Code,
+  FileText,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
@@ -38,7 +39,8 @@ interface ModernGameLobbyProps {
       | "game2048"
       | "math"
       | "wordsearch"
-      | "codelearn",
+      | "codelearn"
+      | "hangman",
   ) => void;
 }
 
@@ -176,6 +178,23 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
       isPopular: true,
       isPaid: false,
     },
+    {
+      id: "hangman",
+      title: "Hangman",
+      subtitle: "Word Guessing",
+      description: "Guess the word letter by letter before time runs out",
+      icon: FileText,
+      gradient: "from-purple-500 via-indigo-500 to-violet-500",
+      bgGradient: "from-purple-50 to-indigo-50",
+      players: "120+",
+      status: "🎯 CLASSIC",
+      earning: "Free Play",
+      features: ["Word Categories", "Time Challenge", "Hint System"],
+      image:
+        "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
+      isPopular: false,
+      isPaid: false,
+    },
   ];
 
   const handleGameSelect = useCallback(
@@ -187,7 +206,8 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
         | "game2048"
         | "math"
         | "wordsearch"
-        | "codelearn",
+        | "codelearn"
+        | "hangman",
     ) => {
       onSelectGame(gameType);
     },
@@ -337,7 +357,8 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
                     | "game2048"
                     | "math"
                     | "wordsearch"
-                    | "codelearn",
+                    | "codelearn"
+                    | "hangman",
                 )
               }
             >
