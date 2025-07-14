@@ -50,6 +50,7 @@ const Index = () => {
     | "wordsearch"
     | "codelearn"
     | "hangman"
+    | "books"
     | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
