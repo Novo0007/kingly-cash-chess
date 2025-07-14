@@ -122,15 +122,26 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Error fetching books:", error);
+        console.error("Error fetching books:", error.message, error);
+        // If books table doesn't exist, create sample books in memory
+        if (error.message.includes("does not exist")) {
+          console.log("Books table doesn't exist, using sample data");
+          setBooks(getSampleBooks());
+          return;
+        }
         toast.error("Failed to load books");
         return;
       }
 
-      setBooks(data || []);
+      setBooks(data || getSampleBooks());
     } catch (error) {
-      console.error("Error fetching books:", error);
+      console.error(
+        "Error fetching books:",
+        error instanceof Error ? error.message : error,
+      );
       toast.error("Failed to load books");
+      // Use sample books as fallback
+      setBooks(getSampleBooks());
     }
   }, []);
 
