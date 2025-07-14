@@ -484,10 +484,37 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
         .eq("book_id", bookId);
 
       if (error) {
-        console.error("Error updating reading progress:", error);
+        console.error("Error updating reading progress:", error.message, error);
+        // Fallback: Update progress in memory only
+        setUserBooks((prev) =>
+          prev.map((userBook) =>
+            userBook.book_id === bookId
+              ? {
+                  ...userBook,
+                  reading_progress: progress,
+                  last_read_at: new Date().toISOString(),
+                }
+              : userBook,
+          ),
+        );
       }
     } catch (error) {
-      console.error("Error updating reading progress:", error);
+      console.error(
+        "Error updating reading progress:",
+        error instanceof Error ? error.message : error,
+      );
+      // Fallback: Update progress in memory only
+      setUserBooks((prev) =>
+        prev.map((userBook) =>
+          userBook.book_id === bookId
+            ? {
+                ...userBook,
+                reading_progress: progress,
+                last_read_at: new Date().toISOString(),
+              }
+            : userBook,
+        ),
+      );
     }
   };
 
