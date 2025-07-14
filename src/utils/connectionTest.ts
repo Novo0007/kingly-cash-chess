@@ -52,3 +52,29 @@ export const testAuthConnection = async () => {
     };
   }
 };
+
+export const runFullDiagnostic = async () => {
+  console.log("🔍 Running full diagnostic...");
+
+  const results = await Promise.allSettled([
+    testSupabaseConnection(),
+    testAuthConnection(),
+  ]);
+
+  const [supabaseResult, authResult] = results;
+
+  const report = {
+    supabase:
+      supabaseResult.status === "fulfilled"
+        ? supabaseResult.value
+        : { success: false, error: supabaseResult.reason },
+    auth:
+      authResult.status === "fulfilled"
+        ? authResult.value
+        : { success: false, error: authResult.reason },
+    timestamp: new Date().toISOString(),
+  };
+
+  console.log("📊 Diagnostic Report:", report);
+  return report;
+};
