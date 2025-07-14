@@ -175,6 +175,7 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [userCoins, setUserCoins] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [databaseAvailable, setDatabaseAvailable] = useState(true);
 
   // Initialize user coins if needed
   const initializeUserCoins = useCallback(async () => {
