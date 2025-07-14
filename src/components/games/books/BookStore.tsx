@@ -230,7 +230,7 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
       // Set default coins as fallback
       setUserCoins(1000);
     }
-  }, [user]);
+  }, [user, databaseAvailable]);
 
   // Fetch all books
   const fetchBooks = useCallback(async () => {
