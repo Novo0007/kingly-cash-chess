@@ -197,13 +197,26 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
         .single();
 
       if (error) {
-        console.error("Error fetching user coins:", error);
+        console.error("Error fetching user coins:", error.message, error);
+        // If table doesn't exist or no record found, use default
+        if (
+          error.code === "PGRST116" ||
+          error.message.includes("does not exist")
+        ) {
+          setUserCoins(1000);
+          return;
+        }
+        setUserCoins(1000);
         return;
       }
 
-      setUserCoins(data?.balance || 0);
+      setUserCoins(data?.balance || 1000);
     } catch (error) {
-      console.error("Error fetching user coins:", error);
+      console.error(
+        "Error fetching user coins:",
+        error instanceof Error ? error.message : error,
+      );
+      setUserCoins(1000);
     }
   }, [user]);
 
@@ -337,7 +350,7 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="text-6xl animate-bounce">📚</div>
+          <div className="text-6xl animate-bounce">��</div>
           <h3 className="text-xl font-bold text-gray-800">
             Loading Book Store...
           </h3>
