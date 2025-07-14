@@ -65,11 +65,22 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
     if (!user) return;
 
     try {
-      const { data: existingCoins } = await supabase
+      const { data: existingCoins, error: fetchError } = await supabase
         .from("user_coins")
         .select("*")
         .eq("user_id", user.id)
         .single();
+
+      if (fetchError && fetchError.code !== "PGRST116") {
+        console.error(
+          "Error fetching user coins:",
+          fetchError.message,
+          fetchError,
+        );
+        // If table doesn't exist, set default coins
+        setUserCoins(1000);
+        return;
+      }
 
       if (!existingCoins) {
         const { error } = await supabase.from("user_coins").insert([
@@ -82,7 +93,9 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
         ]);
 
         if (error) {
-          console.error("Error creating user coins:", error);
+          console.error("Error creating user coins:", error.message, error);
+          // Set default coins even if insert fails
+          setUserCoins(1000);
         } else {
           setUserCoins(1000);
         }
@@ -90,7 +103,12 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
         setUserCoins(existingCoins.balance);
       }
     } catch (error) {
-      console.error("Error initializing user coins:", error);
+      console.error(
+        "Error initializing user coins:",
+        error instanceof Error ? error.message : error,
+      );
+      // Set default coins as fallback
+      setUserCoins(1000);
     }
   }, [user]);
 
