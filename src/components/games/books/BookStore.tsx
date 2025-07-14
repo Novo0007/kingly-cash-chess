@@ -51,6 +51,122 @@ interface BookStoreProps {
 
 type BookView = "browse" | "library" | "reader";
 
+// Sample books as fallback when database is not available
+const getSampleBooks = (): Book[] => [
+  {
+    id: "sample-1",
+    title: "The Art of Strategy",
+    author: "Sun Tzu",
+    description:
+      "Master the ancient art of strategic thinking and apply it to modern life and games.",
+    genre: "strategy",
+    price_coins: 150,
+    pages: 12,
+    reading_time_minutes: 45,
+    difficulty_level: "intermediate",
+    is_featured: true,
+    content: `# Chapter 1: Understanding Strategy
+
+Strategy is not just about winning battles, but about understanding the battlefield itself. In games, as in life, those who can see three moves ahead will always triumph over those who react to the present moment.
+
+## The Foundation of Strategic Thinking
+
+Every great strategist begins with observation. Watch your opponent, understand their patterns, and learn their weaknesses. This principle applies whether you're playing chess, planning a business venture, or navigating social situations.
+
+## Key Principles:
+
+1. **Know Yourself**: Understand your strengths and limitations
+2. **Know Your Opponent**: Study their habits and tendencies
+3. **Control the Environment**: Shape the battlefield to your advantage
+4. **Adapt and Overcome**: Be flexible in your approach
+
+The greatest victories are won before the battle begins. By positioning yourself advantageously and forcing your opponent into unfavorable situations, you create opportunities for success.
+
+Remember: Strategy without action is just dreaming, but action without strategy is just chaos.`,
+  },
+  {
+    id: "sample-2",
+    title: "Programming for Beginners",
+    author: "Jane Code",
+    description:
+      "Start your journey into the wonderful world of programming with this beginner-friendly guide.",
+    genre: "technology",
+    price_coins: 200,
+    pages: 15,
+    reading_time_minutes: 60,
+    difficulty_level: "beginner",
+    is_featured: true,
+    content: `# Welcome to Programming!
+
+Programming is like learning a new language - one that allows you to communicate with computers and bring your ideas to life. Don't worry if it seems intimidating at first; every expert was once a beginner.
+
+## What is Programming?
+
+Programming is the process of creating instructions for computers to follow. These instructions, called code, tell the computer exactly what to do step by step.
+
+## Your First Program
+
+Let's start with the classic "Hello, World!" program:
+
+print("Hello, World!")
+
+This simple line tells the computer to display the text "Hello, World!" on the screen. Congratulations - you've just learned your first programming concept!
+
+## Basic Concepts:
+
+1. **Variables**: Containers that store data
+2. **Functions**: Reusable blocks of code
+3. **Loops**: Instructions that repeat
+4. **Conditionals**: Code that makes decisions
+
+Remember: Programming is about solving problems creatively. Start small, be patient with yourself, and celebrate every victory!`,
+  },
+  {
+    id: "sample-3",
+    title: "Mindfulness in Daily Life",
+    author: "Dr. Sarah Peace",
+    description:
+      "Discover the power of mindfulness and learn practical techniques for a more peaceful, focused life.",
+    genre: "health",
+    price_coins: 120,
+    pages: 10,
+    reading_time_minutes: 35,
+    difficulty_level: "beginner",
+    is_featured: false,
+    content: `# The Journey to Mindfulness
+
+Mindfulness is the practice of being fully present in the moment, aware of where you are and what you're doing, without being overwhelmed by what's happening around you.
+
+## What is Mindfulness?
+
+Mindfulness is a basic human ability to be fully present, aware of where we are and what we're doing, and not overly reactive or overwhelmed by what's happening around us.
+
+## Simple Mindfulness Exercises:
+
+### 1. Breathing Meditation
+- Find a comfortable position
+- Focus on your breath
+- When your mind wanders, gently return to your breath
+- Start with just 5 minutes daily
+
+### 2. Body Scan
+- Lie down comfortably
+- Focus attention on different parts of your body
+- Notice sensations without judgment
+- Move from toes to head systematically
+
+## Benefits of Regular Practice:
+
+- Reduced stress and anxiety
+- Improved focus and concentration
+- Better emotional regulation
+- Enhanced self-awareness
+- Improved relationships
+
+Remember: Mindfulness is not about emptying your mind, but about being aware of what's in it.`,
+  },
+];
+
 export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
   const { isMobile } = useDeviceType();
   const [currentView, setCurrentView] = useState<BookView>("browse");
@@ -350,7 +466,7 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="text-6xl animate-bounce">��</div>
+          <div className="text-6xl animate-bounce">📚</div>
           <h3 className="text-xl font-bold text-gray-800">
             Loading Book Store...
           </h3>
