@@ -19,6 +19,7 @@ import {
   Brain,
   Code,
   Image,
+  FileText,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
@@ -253,6 +254,26 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         status: "NEW",
         players: "80+ Playing",
         isMoneyGame: true,
+      },
+      {
+        id: "hangman",
+        title: "Hangman",
+        description:
+          "Classic word guessing game with multiple difficulty levels and categories!",
+        icon: FileText,
+        emoji: "🎯",
+        color: "slate",
+        gradient: "from-slate-700 via-gray-700 to-zinc-700",
+        lightGradient: "from-slate-100 via-gray-100 to-zinc-100",
+        features: [
+          "🆓 Free to Play",
+          "🎯 Word Guessing",
+          "📚 Multiple Categories",
+          "⚡ 3 Difficulty Levels",
+        ],
+        status: "NEW",
+        players: "50+ Playing",
+        isMoneyGame: false,
       },
     ],
     [],
