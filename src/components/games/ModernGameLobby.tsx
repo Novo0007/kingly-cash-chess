@@ -38,7 +38,9 @@ interface ModernGameLobbyProps {
       | "game2048"
       | "math"
       | "wordsearch"
-      | "codelearn",
+      | "codelearn"
+      | "hangman"
+      | "fourpics",
   ) => void;
 }
 
