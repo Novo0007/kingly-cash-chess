@@ -498,6 +498,22 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
   const updateReadingProgress = async (bookId: string, progress: number) => {
     if (!user) return;
 
+    // In demo mode, only update in memory
+    if (!databaseAvailable) {
+      setUserBooks((prev) =>
+        prev.map((userBook) =>
+          userBook.book_id === bookId
+            ? {
+                ...userBook,
+                reading_progress: progress,
+                last_read_at: new Date().toISOString(),
+              }
+            : userBook,
+        ),
+      );
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from("user_books")
