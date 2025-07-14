@@ -129,7 +129,7 @@ export const HangmanGame: React.FC<HangmanGameProps> = ({ onBack, user }) => {
       if (updatedState.word.includes(letter)) {
         toast.success(`Great! "${letter}" is in the word! ✅`);
       } else {
-        toast.error(`Sorry, "${letter}" is not in the word. ❌`);
+        toast.error(`Sorry, "${letter}" is not in the word. ���`);
       }
 
       if (updatedState.isGameOver) {
@@ -222,7 +222,7 @@ export const HangmanGame: React.FC<HangmanGameProps> = ({ onBack, user }) => {
       clearInterval(gameTimerRef.current);
       gameTimerRef.current = null;
     }
-  }, [gameTimer]);
+  }, []);
 
   const renderGameComplete = () => {
     const stats = gameLogic.calculateFinalScore(gamesPlayed);
