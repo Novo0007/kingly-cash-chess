@@ -190,7 +190,8 @@ const Index = () => {
       | "game2048"
       | "math"
       | "wordsearch"
-      | "codelearn",
+      | "codelearn"
+      | "hangman",
   ) => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
@@ -207,6 +208,8 @@ const Index = () => {
       setCurrentView("wordsearch-game");
     } else if (gameType === "codelearn") {
       setCurrentView("codelearn-game");
+    } else if (gameType === "hangman") {
+      setCurrentView("hangman-game");
     }
   };
 
