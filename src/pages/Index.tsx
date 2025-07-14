@@ -193,7 +193,8 @@ const Index = () => {
       | "math"
       | "wordsearch"
       | "codelearn"
-      | "hangman",
+      | "hangman"
+      | "books",
   ) => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
