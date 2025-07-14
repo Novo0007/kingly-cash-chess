@@ -160,6 +160,135 @@ export const themes: ThemeDefinition[] = [
       accent: "from-blue-200 via-cyan-200 to-teal-200", // Ocean magical gradient
     },
   },
+  {
+    id: "love",
+    name: "Love Aesthetic",
+    description: "Romantic vibes with warm hearts and dreamy love colors",
+    preview: "💖",
+    colors: {
+      background: "350 100% 98%", // Soft romantic white with hint of pink
+      foreground: "340 25% 15%", // Deep romantic dark
+      card: "355 100% 99%", // Pure romantic white
+      cardForeground: "340 25% 15%", // Deep romantic for cards
+      popover: "355 100% 99%", // Pure romantic white
+      popoverForeground: "340 25% 15%", // Deep romantic for popovers
+      primary: "345 83% 65%", // Romantic rose pink
+      primaryForeground: "0 0% 100%", // Pure white
+      secondary: "15 85% 80%", // Warm coral blush
+      secondaryForeground: "340 25% 15%", // Deep romantic on secondary
+      muted: "350 50% 95%", // Very light romantic pink
+      mutedForeground: "340 15% 50%", // Muted romantic gray
+      accent: "30 100% 85%", // Warm peachy love
+      accentForeground: "340 25% 15%", // Deep romantic on accent
+      destructive: "0 75% 68%", // Soft romantic red
+      destructiveForeground: "0 0% 100%", // White on destructive
+      border: "350 30% 88%", // Soft romantic border
+      input: "350 40% 96%", // Very light romantic input
+      ring: "345 83% 65%", // Romantic rose ring
+    },
+    gradients: {
+      primary: "from-rose-400 via-pink-400 to-red-300", // Love gradient
+      secondary: "from-orange-200 to-pink-200", // Warm love gradient
+      accent: "from-pink-200 via-rose-200 to-orange-200", // Sunset love gradient
+    },
+  },
+  {
+    id: "darkgoth",
+    name: "Dark Aesthetic",
+    description:
+      "Deep mysterious vibes with gothic elegance and moody darkness",
+    preview: "🖤",
+    colors: {
+      background: "240 8% 8%", // Very dark charcoal
+      foreground: "0 0% 95%", // Near white text
+      card: "240 10% 10%", // Dark card background
+      cardForeground: "0 0% 95%", // Near white for cards
+      popover: "240 10% 10%", // Dark popover
+      popoverForeground: "0 0% 95%", // Near white for popovers
+      primary: "270 50% 35%", // Deep gothic purple
+      primaryForeground: "0 0% 98%", // Pure white
+      secondary: "240 15% 20%", // Dark gray-blue
+      secondaryForeground: "0 0% 90%", // Light gray on secondary
+      muted: "240 10% 15%", // Dark muted
+      mutedForeground: "240 5% 60%", // Muted gray
+      accent: "300 30% 25%", // Dark purple accent
+      accentForeground: "0 0% 90%", // Light gray on accent
+      destructive: "0 60% 45%", // Dark red
+      destructiveForeground: "0 0% 95%", // Near white on destructive
+      border: "240 10% 18%", // Dark border
+      input: "240 10% 12%", // Very dark input
+      ring: "270 50% 35%", // Deep gothic purple ring
+    },
+    gradients: {
+      primary: "from-purple-900 via-violet-900 to-indigo-900", // Dark gothic gradient
+      secondary: "from-slate-900 to-gray-900", // Dark gradient
+      accent: "from-purple-950 via-indigo-950 to-black", // Ultra dark gradient
+    },
+  },
+  {
+    id: "midnight",
+    name: "Midnight Romance",
+    description: "Dark romantic theme with mysterious love and gothic elegance",
+    preview: "🌙💜",
+    colors: {
+      background: "300 15% 12%", // Dark romantic background
+      foreground: "320 20% 92%", // Light romantic text
+      card: "300 20% 15%", // Dark romantic cards
+      cardForeground: "320 20% 92%", // Light romantic for cards
+      popover: "300 20% 15%", // Dark romantic popover
+      popoverForeground: "320 20% 92%", // Light romantic for popovers
+      primary: "315 65% 55%", // Dark romantic pink
+      primaryForeground: "0 0% 98%", // Pure white
+      secondary: "280 40% 25%", // Dark lavender
+      secondaryForeground: "320 15% 85%", // Light on secondary
+      muted: "300 15% 20%", // Dark muted romantic
+      mutedForeground: "300 8% 65%", // Muted romantic gray
+      accent: "330 45% 40%", // Deep romantic accent
+      accentForeground: "320 15% 85%", // Light on accent
+      destructive: "0 55% 50%", // Dark romantic red
+      destructiveForeground: "0 0% 95%", // Near white on destructive
+      border: "300 15% 22%", // Dark romantic border
+      input: "300 15% 18%", // Dark romantic input
+      ring: "315 65% 55%", // Dark romantic pink ring
+    },
+    gradients: {
+      primary: "from-pink-800 via-purple-800 to-violet-800", // Dark romantic gradient
+      secondary: "from-purple-900 to-indigo-900", // Dark mysterious gradient
+      accent: "from-rose-900 via-pink-900 to-purple-900", // Deep love gradient
+    },
+  },
+  {
+    id: "valentine",
+    name: "Valentine's Day",
+    description: "Sweet romantic theme perfect for love and valentine vibes",
+    preview: "💕",
+    colors: {
+      background: "355 100% 97%", // Soft valentine background
+      foreground: "335 30% 20%", // Deep valentine text
+      card: "358 100% 98%", // Ultra soft valentine white
+      cardForeground: "335 30% 20%", // Deep valentine for cards
+      popover: "358 100% 98%", // Ultra soft valentine white
+      popoverForeground: "335 30% 20%", // Deep valentine for popovers
+      primary: "350 85% 70%", // Valentine pink
+      primaryForeground: "0 0% 100%", // Pure white
+      secondary: "10 80% 75%", // Valentine coral
+      secondaryForeground: "335 30% 20%", // Deep valentine on secondary
+      muted: "355 60% 93%", // Light valentine mist
+      mutedForeground: "335 20% 55%", // Muted valentine gray
+      accent: "25 90% 80%", // Warm valentine peach
+      accentForeground: "335 30% 20%", // Deep valentine on accent
+      destructive: "5 80% 70%", // Soft valentine red
+      destructiveForeground: "0 0% 100%", // White on destructive
+      border: "355 40% 85%", // Soft valentine border
+      input: "355 50% 94%", // Light valentine input
+      ring: "350 85% 70%", // Valentine pink ring
+    },
+    gradients: {
+      primary: "from-pink-400 via-rose-400 to-red-400", // Valentine gradient
+      secondary: "from-red-200 to-pink-200", // Sweet valentine gradient
+      accent: "from-orange-200 via-pink-200 to-rose-200", // Warm valentine gradient
+    },
+  },
 ];
 
 export type ThemeId = (typeof themes)[number]["id"];
