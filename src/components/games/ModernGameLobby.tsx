@@ -24,6 +24,8 @@ import {
   Shield,
   CheckCircle,
   Code,
+  FileText,
+  Image,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileChatSystem } from "@/components/chat/MobileChatSystem";
@@ -38,7 +40,9 @@ interface ModernGameLobbyProps {
       | "game2048"
       | "math"
       | "wordsearch"
-      | "codelearn",
+      | "codelearn"
+      | "hangman"
+      | "fourpics",
   ) => void;
 }
 
@@ -176,6 +180,42 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
       isPopular: true,
       isPaid: false,
     },
+    {
+      id: "hangman",
+      title: "Hangman Classic",
+      subtitle: "Word Guessing",
+      description:
+        "Classic word guessing game with multiple difficulty levels and categories",
+      icon: FileText,
+      gradient: "from-slate-500 via-gray-500 to-zinc-500",
+      bgGradient: "from-slate-50 to-gray-50",
+      players: "50+",
+      status: "🎯 WORD",
+      earning: "Free Play",
+      features: ["3 Difficulty", "Categories", "Hints"],
+      image:
+        "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
+      isPopular: false,
+      isPaid: false,
+    },
+    {
+      id: "fourpics",
+      title: "4 Pics 1 Word",
+      subtitle: "Visual Puzzles",
+      description:
+        "Guess the word from four pictures - challenging visual puzzles with coin rewards",
+      icon: Image,
+      gradient: "from-orange-500 via-red-500 to-pink-500",
+      bgGradient: "from-orange-50 to-red-50",
+      players: "80+",
+      status: "🖼️ VISUAL",
+      earning: "Coin Rewards",
+      features: ["Visual Puzzles", "99 Levels", "Hints"],
+      image:
+        "https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=400&h=300&fit=crop",
+      isPopular: true,
+      isPaid: true,
+    },
   ];
 
   const handleGameSelect = useCallback(
@@ -187,7 +227,9 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
         | "game2048"
         | "math"
         | "wordsearch"
-        | "codelearn",
+        | "codelearn"
+        | "hangman"
+        | "fourpics",
     ) => {
       onSelectGame(gameType);
     },
@@ -337,7 +379,9 @@ export const ModernGameLobby: React.FC<ModernGameLobbyProps> = ({
                     | "game2048"
                     | "math"
                     | "wordsearch"
-                    | "codelearn",
+                    | "codelearn"
+                    | "hangman"
+                    | "fourpics",
                 )
               }
             >

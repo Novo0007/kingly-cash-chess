@@ -4,6 +4,8 @@
 @import "./styles/theme-effects.css";
 /* Import theme particle effects */
 @import "./styles/theme-particles.css";
+/* Import mobile enhancements */
+@import "./styles/mobile-enhancements.css";
 
 @tailwind base;
 @tailwind components;
