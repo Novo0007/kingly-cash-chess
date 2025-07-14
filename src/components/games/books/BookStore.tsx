@@ -342,6 +342,30 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
   useEffect(() => {
     const initializeData = async () => {
       setLoading(true);
+
+      // Try to fetch books first to test database availability
+      try {
+        const { error } = await supabase.from("books").select("id").limit(1);
+        if (error && error.message.includes("does not exist")) {
+          console.log("Database tables not found, running in demo mode");
+          setDatabaseAvailable(false);
+          setBooks(getSampleBooks());
+          setUserCoins(1000);
+          setUserBooks([]);
+          setLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.log("Database not accessible, running in demo mode");
+        setDatabaseAvailable(false);
+        setBooks(getSampleBooks());
+        setUserCoins(1000);
+        setUserBooks([]);
+        setLoading(false);
+        return;
+      }
+
+      // Database is available, fetch real data
       await Promise.all([
         initializeUserCoins(),
         fetchBooks(),
@@ -407,7 +431,7 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
       if (!error && data) {
         const result = data as any;
         if (result.success) {
-          toast.success("📚 Book purchased successfully!", {
+          toast.success("�� Book purchased successfully!", {
             style: {
               background:
                 "linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(59, 130, 246, 0.9))",
@@ -560,7 +584,7 @@ export const BookStore: React.FC<BookStoreProps> = ({ onBack, user }) => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="text-6xl animate-bounce">���</div>
+          <div className="text-6xl animate-bounce">📚</div>
           <h3 className="text-xl font-bold text-gray-800">
             Loading Book Store...
           </h3>
