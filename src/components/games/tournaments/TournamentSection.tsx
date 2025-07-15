@@ -403,6 +403,9 @@ export const TournamentSection: React.FC<TournamentSectionProps> = ({
         </TabsContent>
       </Tabs>
 
+      <script async="async" data-cfasync="false" src="//pl27171869.profitableratecpm.com/b34ce61993fe87916059ccdad283666b/invoke.js"></script>
+<div id="container-b34ce61993fe87916059ccdad283666b"></div>
+
       {/* Create Tournament Dialog */}
       <CreateTournamentDialog
         open={showCreateDialog}
@@ -413,3 +416,14 @@ export const TournamentSection: React.FC<TournamentSectionProps> = ({
     </div>
   );
 };
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '2e0fab1f66abf373fe75b48440aae0c3',
+		'format' : 'iframe',
+		'height' : 50,
+		'width' : 320,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/2e0fab1f66abf373fe75b48440aae0c3/invoke.js"></script>
