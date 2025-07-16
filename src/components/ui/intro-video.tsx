@@ -52,17 +52,38 @@ export const IntroVideo: React.FC<IntroVideoProps> = ({
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       try {
-        // Ensure video is muted for autoplay
-        video.muted = true;
-        setIsMuted(true);
+        // First try to play with sound
+        video.muted = false;
+        setIsMuted(false);
 
         await video.play();
         setIsPlaying(true);
         setShowPlayButton(false);
+        console.log("Autoplay with sound successful");
       } catch (error) {
-        console.log("Autoplay failed, showing play button");
-        setShowPlayButton(true);
-        setIsPlaying(false);
+        console.log("Autoplay with sound failed, trying muted...");
+
+        try {
+          // Fallback to muted autoplay
+          video.muted = true;
+          setIsMuted(true);
+
+          await video.play();
+          setIsPlaying(true);
+          setShowPlayButton(false);
+          console.log("Muted autoplay successful");
+
+          // Show unmute option after a short delay
+          setTimeout(() => {
+            if (!hasUserInteracted) {
+              setHasUserInteracted(true);
+            }
+          }, 1000);
+        } catch (mutedError) {
+          console.log("All autoplay attempts failed, showing play button");
+          setShowPlayButton(true);
+          setIsPlaying(false);
+        }
       }
     };
 
