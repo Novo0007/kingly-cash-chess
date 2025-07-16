@@ -278,36 +278,21 @@ export const ProfessionalGameLayout: React.FC<ProfessionalGameLayoutProps> = ({
       )}
 
       {/* Professional Enhancement Styles */}
-      <style jsx global>{`
+      <style>{`
         /* Professional Game Animations */
         @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
         }
 
         @keyframes glow {
-          0%,
-          100% {
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-          }
-          50% {
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
-          }
+          0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+          50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.6); }
         }
 
         @keyframes pulse-soft {
-          0%,
-          100% {
-            opacity: 0.8;
-          }
-          50% {
-            opacity: 1;
-          }
+          0%, 100% { opacity: 0.8; }
+          50% { opacity: 1; }
         }
 
         .game-element-float {
@@ -344,7 +329,7 @@ export const ProfessionalGameLayout: React.FC<ProfessionalGameLayoutProps> = ({
           background: rgba(255, 255, 255, 0.8);
           backdrop-filter: blur(20px);
           border: 1px solid rgba(255, 255, 255, 0.3);
-          box-shadow:
+          box-shadow: 
             0 8px 32px rgba(0, 0, 0, 0.1),
             0 2px 8px rgba(0, 0, 0, 0.06),
             inset 0 1px 0 rgba(255, 255, 255, 0.7);
@@ -353,7 +338,7 @@ export const ProfessionalGameLayout: React.FC<ProfessionalGameLayoutProps> = ({
 
         .game-card-enhanced:hover {
           background: rgba(255, 255, 255, 0.9);
-          box-shadow:
+          box-shadow: 
             0 12px 40px rgba(0, 0, 0, 0.15),
             0 4px 12px rgba(0, 0, 0, 0.08),
             inset 0 1px 0 rgba(255, 255, 255, 0.8);
@@ -366,7 +351,7 @@ export const ProfessionalGameLayout: React.FC<ProfessionalGameLayoutProps> = ({
             transform: none;
             filter: none;
           }
-
+          
           .game-interactive:active {
             transform: scale(0.95);
             filter: brightness(90%);
@@ -380,7 +365,7 @@ export const ProfessionalGameLayout: React.FC<ProfessionalGameLayoutProps> = ({
           .game-element-pulse {
             animation: none;
           }
-
+          
           .game-interactive {
             transition: none;
           }
