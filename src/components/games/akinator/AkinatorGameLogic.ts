@@ -454,7 +454,7 @@ export class AkinatorGameLogic {
     if (characters.length <= 1) return null;
 
     const availableQuestions = this.questions.filter(
-      (q) => !this.gameState?.askedQuestions?.includes(q.id) ?? true,
+      (q) => !(this.gameState?.askedQuestions?.includes(q.id) ?? false),
     );
 
     if (availableQuestions.length === 0) return null;
