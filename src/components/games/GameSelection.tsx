@@ -20,7 +20,6 @@ import {
   Code,
   Image,
   FileText,
-  Sparkles,
 } from "lucide-react";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
