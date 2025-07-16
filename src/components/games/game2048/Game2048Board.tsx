@@ -11,64 +11,78 @@ interface Game2048BoardProps {
 interface TileProps {
   tile: GameTile;
   boardSize: number;
+  tileSize: number;
 }
 
-const Tile: React.FC<TileProps> = ({ tile, boardSize }) => {
-  const cellSize =
-    boardSize === 4 ? "w-16 h-16" : boardSize === 5 ? "w-14 h-14" : "w-12 h-12";
+const Tile: React.FC<TileProps> = ({ tile, boardSize, tileSize }) => {
   const textSize =
-    tile.value >= 1000
-      ? "text-sm"
-      : tile.value >= 100
-        ? "text-base"
-        : "text-lg";
+    tile.value >= 10000
+      ? "text-xs font-bold"
+      : tile.value >= 1000
+        ? "text-sm font-bold"
+        : tile.value >= 100
+          ? "text-base font-bold"
+          : "text-lg font-bold";
 
   const getTileColor = (value: number) => {
     const colors: { [key: number]: string } = {
-      2: "bg-gray-200 text-gray-800",
-      4: "bg-gray-300 text-gray-800",
-      8: "bg-orange-300 text-white",
-      16: "bg-orange-400 text-white",
-      32: "bg-orange-500 text-white",
-      64: "bg-orange-600 text-white",
-      128: "bg-yellow-400 text-white font-bold",
-      256: "bg-yellow-500 text-white font-bold",
-      512: "bg-yellow-600 text-white font-bold",
-      1024: "bg-red-400 text-white font-bold",
-      2048: "bg-red-500 text-white font-bold shadow-lg",
-      4096: "bg-purple-500 text-white font-bold shadow-lg",
-      8192: "bg-purple-600 text-white font-bold shadow-lg",
+      2: "bg-gradient-to-br from-slate-100 to-slate-200 text-slate-800 shadow-sm",
+      4: "bg-gradient-to-br from-slate-200 to-slate-300 text-slate-800 shadow-md",
+      8: "bg-gradient-to-br from-orange-300 to-orange-400 text-white shadow-lg",
+      16: "bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-lg",
+      32: "bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-xl",
+      64: "bg-gradient-to-br from-red-500 to-red-600 text-white shadow-xl",
+      128: "bg-gradient-to-br from-yellow-400 to-yellow-500 text-white shadow-xl animate-pulse",
+      256: "bg-gradient-to-br from-yellow-500 to-yellow-600 text-white shadow-xl animate-pulse",
+      512: "bg-gradient-to-br from-yellow-600 to-orange-600 text-white shadow-2xl animate-pulse",
+      1024: "bg-gradient-to-br from-red-400 to-pink-500 text-white shadow-2xl animate-pulse",
+      2048: "bg-gradient-to-br from-pink-500 to-purple-600 text-white shadow-2xl animate-pulse ring-4 ring-yellow-400",
+      4096: "bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-2xl animate-pulse ring-4 ring-purple-400",
+      8192: "bg-gradient-to-br from-indigo-600 to-blue-600 text-white shadow-2xl animate-pulse ring-4 ring-blue-400",
     };
 
     return (
       colors[value] ||
-      "bg-gradient-to-br from-purple-600 to-pink-600 text-white font-bold shadow-xl"
+      "bg-gradient-to-br from-blue-600 to-purple-700 text-white shadow-2xl animate-pulse ring-4 ring-rainbow"
     );
   };
 
   const formatValue = (value: number) => {
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}M`;
+    }
     if (value >= 1000) {
       return `${(value / 1000).toFixed(value % 1000 === 0 ? 0 : 1)}k`;
     }
     return value.toString();
   };
 
+  const gap = boardSize === 4 ? 12 : boardSize === 5 ? 10 : 8;
+  const actualTileSize = tileSize - gap;
+
   return (
     <div
       className={cn(
-        cellSize,
-        "absolute rounded-lg flex items-center justify-center font-bold transition-all duration-200 transform",
+        "absolute rounded-xl flex items-center justify-center transition-all duration-300 ease-out transform select-none",
         getTileColor(tile.value),
-        tile.isNew ? "animate-pulse scale-110" : "",
-        tile.merged ? "animate-bounce" : "",
+        tile.isNew ? "scale-110 animate-bounce" : "scale-100",
+        tile.merged ? "animate-ping" : "",
       )}
       style={{
-        transform: `translate(${tile.position.y * (boardSize === 4 ? 72 : boardSize === 5 ? 64 : 56)}px, ${tile.position.x * (boardSize === 4 ? 72 : boardSize === 5 ? 64 : 56)}px)`,
+        width: `${actualTileSize}px`,
+        height: `${actualTileSize}px`,
+        transform: `translate(${tile.position.y * tileSize}px, ${tile.position.x * tileSize}px) ${tile.isNew ? "scale(1.1)" : "scale(1)"}`,
+        zIndex: tile.isNew || tile.merged ? 10 : 1,
       }}
     >
-      <span className={cn(textSize, "select-none")}>
+      <span className={cn(textSize, "select-none leading-none")}>
         {formatValue(tile.value)}
       </span>
+
+      {/* Special effects for high value tiles */}
+      {tile.value >= 2048 && (
+        <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse" />
+      )}
     </div>
   );
 };
@@ -82,14 +96,35 @@ export const Game2048Board: React.FC<Game2048BoardProps> = ({
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
     null,
   );
+  const [isSwipeEnabled, setIsSwipeEnabled] = useState(true);
 
-  const cellSize =
-    gameState.boardSize === 4
-      ? "w-16 h-16"
-      : gameState.boardSize === 5
-        ? "w-14 h-14"
-        : "w-12 h-12";
-  const gridGap = "gap-2";
+  // Calculate responsive board size
+  const getResponsiveBoardSize = () => {
+    if (typeof window === "undefined") return 320;
+
+    const screenWidth = window.innerWidth;
+    const padding = 32; // Total padding
+    const maxBoardSize = Math.min(screenWidth - padding, 400);
+
+    // Ensure minimum size
+    return Math.max(maxBoardSize, 280);
+  };
+
+  const [boardPixelSize, setBoardPixelSize] = useState(
+    getResponsiveBoardSize(),
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setBoardPixelSize(getResponsiveBoardSize());
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const tileSize = (boardPixelSize - 16) / gameState.boardSize; // 16px for padding
+  const gap = Math.max(2, Math.floor(tileSize * 0.05));
 
   // Handle keyboard events
   useEffect(() => {
@@ -128,19 +163,27 @@ export const Game2048Board: React.FC<Game2048BoardProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onMove, gameState.gameStatus]);
 
-  // Handle touch events for mobile
+  // Enhanced touch handling for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isSwipeEnabled) return;
+
     const touch = e.touches[0];
     setTouchStart({ x: touch.clientX, y: touch.clientY });
+    e.preventDefault();
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    // Prevent scrolling while playing
+    e.preventDefault();
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchStart) return;
+    if (!touchStart || !isSwipeEnabled) return;
 
     const touch = e.changedTouches[0];
     const deltaX = touch.clientX - touchStart.x;
     const deltaY = touch.clientY - touchStart.y;
-    const minSwipeDistance = 30;
+    const minSwipeDistance = Math.max(30, tileSize * 0.3); // Adaptive swipe distance
 
     if (
       Math.abs(deltaX) > minSwipeDistance ||
@@ -153,9 +196,14 @@ export const Game2048Board: React.FC<Game2048BoardProps> = ({
         // Vertical swipe
         onMove(deltaY > 0 ? "down" : "up");
       }
+
+      // Brief disable to prevent double swipes
+      setIsSwipeEnabled(false);
+      setTimeout(() => setIsSwipeEnabled(true), 150);
     }
 
     setTouchStart(null);
+    e.preventDefault();
   };
 
   const createBoardGrid = () => {
@@ -165,10 +213,11 @@ export const Game2048Board: React.FC<Game2048BoardProps> = ({
         cells.push(
           <div
             key={`cell-${x}-${y}`}
-            className={cn(
-              cellSize,
-              "bg-gray-100 rounded-lg border-2 border-gray-200 shadow-inner",
-            )}
+            className="bg-slate-200/80 rounded-lg border border-slate-300/50 shadow-inner"
+            style={{
+              width: `${tileSize - gap}px`,
+              height: `${tileSize - gap}px`,
+            }}
           />,
         );
       }
@@ -179,101 +228,145 @@ export const Game2048Board: React.FC<Game2048BoardProps> = ({
   const tiles = gameState.board.flat().filter(Boolean) as GameTile[];
 
   return (
-    <div className={cn("flex flex-col items-center space-y-4", className)}>
-      {/* Game Board */}
-      <div
-        ref={boardRef}
-        className="relative select-none touch-none"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        style={{
-          width:
-            gameState.boardSize === 4
-              ? "280px"
-              : gameState.boardSize === 5
-                ? "312px"
-                : "344px",
-          height:
-            gameState.boardSize === 4
-              ? "280px"
-              : gameState.boardSize === 5
-                ? "312px"
-                : "344px",
-        }}
-      >
-        {/* Background Grid */}
+    <div className={cn("flex flex-col items-center space-y-6", className)}>
+      {/* Game Board Container */}
+      <div className="relative">
+        {/* Main Game Board */}
         <div
-          className={cn(
-            "grid bg-gray-300 rounded-xl p-2 shadow-lg",
-            gridGap,
-            gameState.boardSize === 4
-              ? "grid-cols-4"
-              : gameState.boardSize === 5
-                ? "grid-cols-5"
-                : "grid-cols-6",
-          )}
+          ref={boardRef}
+          className="relative select-none touch-none bg-slate-300 rounded-2xl shadow-2xl border-2 border-slate-400"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{
+            width: `${boardPixelSize}px`,
+            height: `${boardPixelSize}px`,
+            padding: "8px",
+          }}
         >
-          {createBoardGrid()}
-        </div>
+          {/* Background Grid */}
+          <div
+            className="grid w-full h-full rounded-xl"
+            style={{
+              gridTemplateColumns: `repeat(${gameState.boardSize}, 1fr)`,
+              gap: `${gap}px`,
+            }}
+          >
+            {createBoardGrid()}
+          </div>
 
-        {/* Tiles */}
-        <div className="absolute top-2 left-2">
-          {tiles.map((tile) => (
-            <Tile key={tile.id} tile={tile} boardSize={gameState.boardSize} />
-          ))}
-        </div>
+          {/* Tiles Layer */}
+          <div
+            className="absolute inset-2 pointer-events-none"
+            style={{ zIndex: 5 }}
+          >
+            {tiles.map((tile) => (
+              <Tile
+                key={tile.id}
+                tile={tile}
+                boardSize={gameState.boardSize}
+                tileSize={tileSize}
+              />
+            ))}
+          </div>
 
-        {/* Game Over Overlay */}
-        {gameState.gameStatus === "lost" && (
-          <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center">
-            <div className="bg-white rounded-lg p-6 text-center shadow-xl">
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
-                Game Over!
-              </h3>
-              <p className="text-gray-600 mb-4">No more moves available</p>
-              <div className="space-y-2">
-                <p className="text-lg font-semibold">
-                  Final Score: {gameState.score.toLocaleString()}
-                </p>
-                <p className="text-sm text-gray-500">
-                  Moves: {gameState.moves}
-                </p>
+          {/* Game Over Overlay */}
+          {gameState.gameStatus === "lost" && (
+            <div className="absolute inset-0 bg-black/70 rounded-2xl flex items-center justify-center backdrop-blur-sm z-20">
+              <div className="bg-white/95 rounded-2xl p-6 text-center shadow-2xl border border-slate-200 max-w-sm mx-4">
+                <div className="text-6xl mb-4">😢</div>
+                <h3 className="text-2xl font-bold text-slate-800 mb-3">
+                  Game Over!
+                </h3>
+                <p className="text-slate-600 mb-4">No more moves available</p>
+                <div className="space-y-3">
+                  <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl p-3">
+                    <p className="text-lg font-bold text-slate-700">
+                      Final Score: {gameState.score.toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-xl p-3">
+                    <p className="text-sm text-slate-600">
+                      Moves: {gameState.moves} • Best Tile:{" "}
+                      {Math.max(...tiles.map((t) => t.value))}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Win Overlay */}
-        {gameState.gameStatus === "won" && (
-          <div className="absolute inset-0 bg-yellow-500/20 rounded-xl flex items-center justify-center">
-            <div className="bg-white rounded-lg p-6 text-center shadow-xl border-4 border-yellow-400">
-              <h3 className="text-2xl font-bold text-yellow-600 mb-2">
-                🎉 You Won!
-              </h3>
-              <p className="text-gray-600 mb-4">
-                You reached {gameState.targetTile}!
-              </p>
-              <div className="space-y-2">
-                <p className="text-lg font-semibold">
-                  Score: {gameState.score.toLocaleString()}
+          {/* Win Overlay */}
+          {gameState.gameStatus === "won" && (
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-2xl flex items-center justify-center backdrop-blur-sm z-20">
+              <div className="bg-white/95 rounded-2xl p-6 text-center shadow-2xl border-4 border-yellow-400 max-w-sm mx-4">
+                <div className="text-6xl mb-4 animate-bounce">🎉</div>
+                <h3 className="text-3xl font-bold text-yellow-600 mb-3">
+                  You Won!
+                </h3>
+                <p className="text-slate-700 mb-4 text-lg font-semibold">
+                  You reached {gameState.targetTile}!
                 </p>
-                <p className="text-sm text-gray-500">
-                  Moves: {gameState.moves}
-                </p>
+                <div className="space-y-3">
+                  <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl p-3">
+                    <p className="text-lg font-bold text-yellow-700">
+                      Score: {gameState.score.toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="bg-gradient-to-r from-green-100 to-yellow-100 rounded-xl p-3">
+                    <p className="text-sm text-green-700">
+                      Moves: {gameState.moves} • Time:{" "}
+                      {Math.floor(gameState.timeElapsed / 60)}:
+                      {(gameState.timeElapsed % 60).toString().padStart(2, "0")}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
+        </div>
+
+        {/* Glow effect for high scores */}
+        {gameState.score > 50000 && (
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400/30 to-pink-400/30 blur-xl -z-10 animate-pulse" />
         )}
       </div>
 
-      {/* Controls Instructions */}
-      <div className="text-center text-sm text-gray-600 max-w-md">
-        <p className="mb-2">
-          <strong>Desktop:</strong> Use arrow keys or WASD to move tiles
-        </p>
-        <p>
-          <strong>Mobile:</strong> Swipe in any direction to move tiles
-        </p>
+      {/* Enhanced Mobile Instructions */}
+      <div className="text-center max-w-md mx-auto">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-slate-200">
+          <div className="space-y-2 text-sm text-slate-700">
+            <div className="flex items-center justify-center gap-2 font-semibold text-slate-800 mb-3">
+              <span className="text-lg">🎮</span>
+              <span>How to Play</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="bg-blue-50 rounded-lg p-2">
+                <div className="font-semibold text-blue-800 mb-1">
+                  📱 Mobile
+                </div>
+                <div className="text-blue-700">
+                  Swipe in any direction to move tiles
+                </div>
+              </div>
+
+              <div className="bg-purple-50 rounded-lg p-2">
+                <div className="font-semibold text-purple-800 mb-1">
+                  ⌨️ Desktop
+                </div>
+                <div className="text-purple-700">
+                  Arrow keys or WASD to move
+                </div>
+              </div>
+            </div>
+
+            <div className="text-xs text-slate-600 mt-3 pt-2 border-t border-slate-200">
+              🎯 <strong>Goal:</strong> Combine tiles to reach{" "}
+              {gameState.targetTile}!
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

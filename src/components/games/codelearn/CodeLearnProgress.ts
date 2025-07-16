@@ -52,6 +52,40 @@ export class CodeLearnProgressManager {
     return this.userProgress;
   }
 
+  public completeLesson(
+    userId: string,
+    lessonId: string,
+    score: number,
+    xpEarned: number,
+    coinsEarned: number,
+    accuracy: number = 1,
+    timeSpent: number = 0,
+  ): UserProgress | null {
+    if (!this.userProgress) return null;
+
+    // Create a CodeSession for this lesson completion
+    const session: CodeSession = {
+      id: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      userId,
+      lessonId,
+      startTime: Date.now() - timeSpent * 1000,
+      endTime: Date.now(),
+      score,
+      accuracy,
+      xpEarned,
+      coinsEarned,
+      exerciseResults: [], // Could be populated if needed
+      timeSpent,
+      hintsUsed: 0,
+      completed: true,
+    };
+
+    // Update progress using the existing method
+    this.updateProgress(session);
+
+    return this.userProgress;
+  }
+
   public updateProgress(session: CodeSession): void {
     if (!this.userProgress) return;
 

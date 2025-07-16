@@ -127,20 +127,35 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
   };
 
   const handleLessonComplete = (
-    lessonId: string,
+    lesson: CodeLesson,
     score: number,
-    xpEarned: number,
-    coinsEarned: number,
+    accuracy: number,
+    timeSpent: number,
   ) => {
     if (user?.id) {
+      // Calculate XP and coins based on lesson rewards and performance
+      const baseXP = lesson.xpReward || 50;
+      const baseCoins = lesson.coinReward || 10;
+
+      // Apply accuracy multiplier
+      const xpEarned = Math.round(baseXP * accuracy);
+      const coinsEarned = Math.round(baseCoins * accuracy);
+
       const updatedProgress = progressManager.completeLesson(
         user.id,
-        lessonId,
+        lesson.id,
         score,
         xpEarned,
         coinsEarned,
+        accuracy,
+        timeSpent,
       );
       setUserProgress(updatedProgress);
+
+      // Show completion message
+      toast.success(
+        `🎉 Lesson completed! +${xpEarned} XP, +${coinsEarned} coins`,
+      );
     }
   };
 
