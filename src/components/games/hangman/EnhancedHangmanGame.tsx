@@ -274,7 +274,7 @@ export const EnhancedHangmanGame: React.FC<EnhancedHangmanGameProps> = ({
                 </div>
               </div>
               <div className="text-center">
-                <CardTitle className="text-2xl mb-2">🛠️ Power-ups</CardTitle>
+                <CardTitle className="text-2xl mb-2">🛠�� Power-ups</CardTitle>
                 <p className="text-purple-100">
                   Enhance your gameplay with special abilities
                 </p>
@@ -434,11 +434,18 @@ export const EnhancedHangmanGame: React.FC<EnhancedHangmanGameProps> = ({
             </CardContent>
           </Card>
 
-          {/* Enhanced Hangman Visual */}
-          <Card className="bg-gradient-to-br from-slate-50 to-gray-100 border-2 border-slate-200">
-            <CardContent className="p-6">
+          {/* Unified Game Card - Hangman Visual, Word Display & Alphabet Grid */}
+          <Card className="bg-gradient-to-br from-white via-blue-50 to-purple-50 border-2 border-blue-200 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <Gamepad2 className="h-6 w-6 text-purple-600" />
+                Tap Letters to Guess
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Hangman Visual Section */}
               <div className="text-center">
-                <div className="bg-white rounded-lg p-4 shadow-inner border-2 border-gray-200">
+                <div className="bg-white rounded-xl p-4 shadow-lg border-2 border-gray-200 mb-4">
                   <pre className="font-mono text-base leading-tight text-gray-700 select-none">
                     {hangmanDrawing.join("\n")}
                   </pre>
@@ -447,7 +454,7 @@ export const EnhancedHangmanGame: React.FC<EnhancedHangmanGameProps> = ({
                 {/* Danger indicator */}
                 {gameState.wrongGuesses.length >=
                   gameState.maxWrongGuesses - 2 && (
-                  <div className="mt-3 p-2 bg-red-100 border border-red-300 rounded-lg">
+                  <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg">
                     <p className="text-red-700 text-sm font-semibold flex items-center justify-center gap-2">
                       <Shield className="h-4 w-4" />
                       Danger Zone! {gameLogic?.getRemainingGuesses()} guesses
@@ -456,21 +463,17 @@ export const EnhancedHangmanGame: React.FC<EnhancedHangmanGameProps> = ({
                   </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Enhanced Word Display */}
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
-            <CardContent className="p-6 space-y-4">
-              <div className="text-center">
-                <div className="text-sm text-blue-600 mb-3 flex items-center justify-center gap-2">
+              {/* Word Display Section */}
+              <div className="text-center space-y-4">
+                <div className="text-sm text-blue-600 flex items-center justify-center gap-2">
                   <BookOpen className="h-4 w-4" />
                   <span className="font-semibold">
                     {currentLevel.category.toUpperCase()}
                   </span>
                 </div>
 
-                <div className="bg-white rounded-xl p-4 shadow-lg border-2 border-blue-100 mb-4">
+                <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl p-4 shadow-lg border-2 border-blue-200">
                   <div className="text-2xl md:text-3xl font-mono font-bold tracking-widest text-gray-800 min-h-[40px] flex items-center justify-center">
                     {gameLogic?.getWordProgress()}
                   </div>
@@ -484,50 +487,47 @@ export const EnhancedHangmanGame: React.FC<EnhancedHangmanGameProps> = ({
                   <p>{currentLevel.hint}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Enhanced Alphabet Grid */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Gamepad2 className="h-5 w-5 text-purple-600" />
-                Tap Letters to Guess
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-6 gap-2">
-                {alphabet.map((letter) => {
-                  const isGuessed = gameState.guessedLetters.has(letter);
-                  const isCorrect = gameState.correctGuesses.includes(letter);
-                  const isWrong = gameState.wrongGuesses.includes(letter);
-                  const isSelected = selectedLetter === letter;
+              {/* Alphabet Grid Section */}
+              <div className="space-y-3">
+                <div className="text-center">
+                  <div className="text-sm font-semibold text-gray-700 mb-3">
+                    🔤 Choose a Letter
+                  </div>
+                </div>
+                <div className="grid grid-cols-6 gap-2">
+                  {alphabet.map((letter) => {
+                    const isGuessed = gameState.guessedLetters.has(letter);
+                    const isCorrect = gameState.correctGuesses.includes(letter);
+                    const isWrong = gameState.wrongGuesses.includes(letter);
+                    const isSelected = selectedLetter === letter;
 
-                  return (
-                    <Button
-                      key={letter}
-                      variant={
-                        isGuessed
-                          ? isCorrect
-                            ? "default"
-                            : "destructive"
-                          : "outline"
-                      }
-                      size="sm"
-                      onClick={() => handleAlphabetClick(letter)}
-                      disabled={isGuessed || gameState.isCompleted}
-                      className={`
-                        aspect-square p-0 text-sm font-bold transition-all duration-200
-                        ${isCorrect ? "bg-green-500 hover:bg-green-600 text-white animate-pulse" : ""}
-                        ${isWrong ? "bg-red-500 hover:bg-red-600 text-white" : ""}
-                        ${isSelected ? "scale-110 bg-blue-500 text-white" : ""}
-                        ${!isGuessed && !isSelected ? "hover:scale-105 hover:bg-blue-50" : ""}
-                      `}
-                    >
-                      {letter}
-                    </Button>
-                  );
-                })}
+                    return (
+                      <Button
+                        key={letter}
+                        variant={
+                          isGuessed
+                            ? isCorrect
+                              ? "default"
+                              : "destructive"
+                            : "outline"
+                        }
+                        size="sm"
+                        onClick={() => handleAlphabetClick(letter)}
+                        disabled={isGuessed || gameState.isCompleted}
+                        className={`
+                          aspect-square p-0 text-sm font-bold transition-all duration-200
+                          ${isCorrect ? "bg-green-500 hover:bg-green-600 text-white animate-pulse shadow-lg" : ""}
+                          ${isWrong ? "bg-red-500 hover:bg-red-600 text-white shadow-lg" : ""}
+                          ${isSelected ? "scale-110 bg-blue-500 text-white shadow-xl" : ""}
+                          ${!isGuessed && !isSelected ? "hover:scale-105 hover:bg-blue-50 hover:border-blue-300" : ""}
+                        `}
+                      >
+                        {letter}
+                      </Button>
+                    );
+                  })}
+                </div>
               </div>
             </CardContent>
           </Card>
