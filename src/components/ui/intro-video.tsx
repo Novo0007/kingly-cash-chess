@@ -209,8 +209,8 @@ export const IntroVideo: React.FC<IntroVideoProps> = ({
       <div
         className={`absolute ${isMobile ? "top-2 right-2" : "top-4 right-4"} flex gap-2`}
       >
-        {/* Mute/Unmute Button - Only show if user has interacted */}
-        {hasUserInteracted && (
+        {/* Mute/Unmute Button - Show if user has interacted OR if video is playing muted */}
+        {(hasUserInteracted || (isPlaying && isMuted)) && (
           <button
             onClick={toggleMute}
             className={`${isMobile ? "w-12 h-12" : "w-10 h-10"} bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/70 active:bg-black/80 transition-colors border border-white/20 touch-manipulation`}
