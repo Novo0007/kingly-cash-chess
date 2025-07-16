@@ -205,6 +205,21 @@ export const IntroVideo: React.FC<IntroVideoProps> = ({
         )}
       </div>
 
+      {/* Unmute Reminder - Show when video is playing muted */}
+      {isPlaying && isMuted && !hasUserInteracted && (
+        <div
+          className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/70 backdrop-blur-sm rounded-xl p-4 border border-white/20 animate-pulse`}
+        >
+          <div className="flex items-center gap-3 text-white">
+            <VolumeX className="w-6 h-6" />
+            <div>
+              <p className="text-sm font-medium">Video is muted</p>
+              <p className="text-xs text-white/70">Tap volume icon to unmute</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Control Buttons */}
       <div
         className={`absolute ${isMobile ? "top-2 right-2" : "top-4 right-4"} flex gap-2`}
