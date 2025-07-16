@@ -446,9 +446,6 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
             </Button>
           </div>
         )}
-	      <script async="async" data-cfasync="false" src="//pl27171869.profitableratecpm.com/b34ce61993fe87916059ccdad283666b/invoke.js"></script>
-<div id="container-b34ce61993fe87916059ccdad283666b"></div>
-
         {/* Quick Stats Footer */}
         <div className="mt-12 p-6 bg-white rounded-2xl shadow-sm border border-gray-200">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
@@ -479,14 +476,3 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
     </div>
   );
 };
-
-<script type="text/javascript">
-	atOptions = {
-		'key' : '2e0fab1f66abf373fe75b48440aae0c3',
-		'format' : 'iframe',
-		'height' : 50,
-		'width' : 320,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/2e0fab1f66abf373fe75b48440aae0c3/invoke.js"></script>
