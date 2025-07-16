@@ -80,7 +80,7 @@ const App = () => {
     return (
       <IntroVideo
         onVideoEnd={handleIntroVideoEnd}
-        videoUrl="https://firebasestorage.googleapis.com/v0/b/nopeca-106bd.appspot.com/o/videos%2F%23genshinimpact%20%23genshinimpactedit%20%23genshinimpactedits%20%23skirk%20%23skirkedit%20%23skirkedits.mp4?alt=media&token=864c13a0-df5a-46d3-9f00-a2b0ff7f1e0f"
+        videoUrl="https://firebasestorage.googleapis.com/v0/b/nopeca-106bd.appspot.com/o/videos%2FWho's%20better%20camellya%20or%20changli.....%23edit%20%23instagram%20%23wutheringwaves%20%23wutheringwavesedit%20%23wuwu%20.mp4?alt=media&token=fd96a2b4-c936-4d42-83bf-107280c425eb"
       />
     );
   }
