@@ -1139,7 +1139,7 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
               </div>
               <div>
                 <div className="text-2xl font-bold text-yellow-600 flex items-center justify-center gap-1">
-                  <Fire className="h-5 w-5" />
+                  <Flame className="h-5 w-5" />
                   {gameStats.currentStreak}
                 </div>
                 <div className="text-sm text-gray-600">Current Streak</div>
