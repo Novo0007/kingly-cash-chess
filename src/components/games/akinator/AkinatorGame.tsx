@@ -427,7 +427,7 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
               {gameStats.currentStreak > 0 && (
                 <div className="text-center">
                   <Badge className="bg-yellow-500 text-yellow-900">
-                    <Fire className="h-3 w-3 mr-1" />
+                    <Flame className="h-3 w-3 mr-1" />
                     {gameStats.currentStreak} Win Streak
                   </Badge>
                 </div>
