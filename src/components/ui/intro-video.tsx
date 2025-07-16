@@ -128,28 +128,44 @@ export const IntroVideo: React.FC<IntroVideoProps> = ({
   return (
     <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
       {/* Video Element */}
-      <video
-        ref={videoRef}
-        className="w-full h-full object-cover"
-        muted={isMuted}
-        playsInline
-        preload="auto"
+      <div
+        className="relative w-full h-full cursor-pointer"
+        onClick={handleVideoClick}
       >
-        <source src={videoUrl} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+        <video
+          ref={videoRef}
+          className="w-full h-full object-cover"
+          muted={isMuted}
+          playsInline
+          webkit-playsinline="true"
+          x5-playsinline="true"
+          preload="auto"
+          autoPlay
+          loop={false}
+        >
+          <source src={videoUrl} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
 
-      {/* Play Button Overlay (shown if autoplay fails) */}
-      {showPlayButton && (
-        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-          <button
-            onClick={handlePlayClick}
-            className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 border-2 border-white/30"
-          >
-            <Play className="w-8 h-8 text-white ml-1" />
-          </button>
-        </div>
-      )}
+        {/* Play Button Overlay (shown if autoplay fails) */}
+        {showPlayButton && (
+          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+            <button
+              onClick={handlePlayClick}
+              className={`${isMobile ? "w-24 h-24" : "w-20 h-20"} bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 active:bg-white/40 transition-all duration-300 border-2 border-white/30 touch-manipulation`}
+            >
+              <Play
+                className={`${isMobile ? "w-10 h-10" : "w-8 h-8"} text-white ml-1`}
+              />
+            </button>
+            {isMobile && (
+              <p className="text-white/70 text-sm mt-4 text-center px-4">
+                Tap to play intro video
+              </p>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Control Buttons */}
       <div className="absolute top-4 right-4 flex gap-2">
