@@ -122,11 +122,24 @@ export const IntroVideo: React.FC<IntroVideoProps> = ({
     if (video) {
       setHasUserInteracted(true);
       try {
+        // Try to play with sound first since user clicked
+        video.muted = false;
+        setIsMuted(false);
         await video.play();
         setIsPlaying(true);
         setShowPlayButton(false);
       } catch (error) {
         console.error("Failed to play video:", error);
+        // If still fails, try muted
+        try {
+          video.muted = true;
+          setIsMuted(true);
+          await video.play();
+          setIsPlaying(true);
+          setShowPlayButton(false);
+        } catch (mutedError) {
+          console.error("Failed to play video even muted:", mutedError);
+        }
       }
     }
   };
