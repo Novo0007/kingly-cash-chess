@@ -38,6 +38,7 @@ const LoadingScreen = ({ loadingProgress }: { loadingProgress: number }) => {
 };
 
 const App = () => {
+  const [showIntroVideo, setShowIntroVideo] = useState(true);
   const [appLoading, setAppLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
