@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { X, Volume2, VolumeX, Play } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface IntroVideoProps {
   onVideoEnd: () => void;
@@ -11,9 +12,12 @@ export const IntroVideo: React.FC<IntroVideoProps> = ({
   videoUrl,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isMuted, setIsMuted] = useState(false);
+  const isMobile = useIsMobile();
+  const [isMuted, setIsMuted] = useState(true); // Start muted for better autoplay support
   const [showPlayButton, setShowPlayButton] = useState(false);
   const [videoError, setVideoError] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -29,23 +33,61 @@ export const IntroVideo: React.FC<IntroVideoProps> = ({
       onVideoEnd();
     };
 
-    const handleCanPlay = () => {
-      video.play().catch(() => {
-        // If autoplay fails, show play button
-        setShowPlayButton(true);
-      });
+    const handleLoadedData = () => {
+      // Try autoplay when video data is loaded
+      attemptAutoplay();
     };
+
+    const handlePlay = () => {
+      setIsPlaying(true);
+      setShowPlayButton(false);
+    };
+
+    const handlePause = () => {
+      setIsPlaying(false);
+    };
+
+    const attemptAutoplay = async () => {
+      try {
+        // Ensure video is muted for autoplay
+        video.muted = true;
+        setIsMuted(true);
+
+        await video.play();
+        setIsPlaying(true);
+        setShowPlayButton(false);
+      } catch (error) {
+        console.log("Autoplay failed, showing play button");
+        setShowPlayButton(true);
+        setIsPlaying(false);
+      }
+    };
+
+    // Mobile-specific optimizations
+    if (isMobile) {
+      video.setAttribute("webkit-playsinline", "true");
+      video.setAttribute("x5-playsinline", "true"); // For WeChat browser
+    }
 
     video.addEventListener("ended", handleVideoEnd);
     video.addEventListener("error", handleVideoError);
-    video.addEventListener("canplay", handleCanPlay);
+    video.addEventListener("loadeddata", handleLoadedData);
+    video.addEventListener("play", handlePlay);
+    video.addEventListener("pause", handlePause);
+
+    // Try immediate autoplay if video is already loaded
+    if (video.readyState >= 3) {
+      attemptAutoplay();
+    }
 
     return () => {
       video.removeEventListener("ended", handleVideoEnd);
       video.removeEventListener("error", handleVideoError);
-      video.removeEventListener("canplay", handleCanPlay);
+      video.removeEventListener("loadeddata", handleLoadedData);
+      video.removeEventListener("play", handlePlay);
+      video.removeEventListener("pause", handlePause);
     };
-  }, [onVideoEnd]);
+  }, [onVideoEnd, isMobile]);
 
   const handleSkip = () => {
     onVideoEnd();
