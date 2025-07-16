@@ -22,6 +22,7 @@ import HangmanRulesPage from "./pages/HangmanRulesPage";
 import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { DraggableMusicControl } from "@/components/music/DraggableMusicControl";
 import { AppLoadingScreen } from "@/components/ui/app-loading-screen";
+import { IntroVideo } from "@/components/ui/intro-video";
 
 const queryClient = new QueryClient();
 
