@@ -48,6 +48,9 @@ export const IntroVideo: React.FC<IntroVideoProps> = ({
     };
 
     const attemptAutoplay = async () => {
+      // Small delay for mobile compatibility
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       try {
         // Ensure video is muted for autoplay
         video.muted = true;
