@@ -93,19 +93,31 @@ export const IntroVideo: React.FC<IntroVideoProps> = ({
     onVideoEnd();
   };
 
-  const handlePlayClick = () => {
+  const handlePlayClick = async () => {
     const video = videoRef.current;
     if (video) {
-      video.play();
-      setShowPlayButton(false);
+      setHasUserInteracted(true);
+      try {
+        await video.play();
+        setIsPlaying(true);
+        setShowPlayButton(false);
+      } catch (error) {
+        console.error("Failed to play video:", error);
+      }
     }
   };
 
   const toggleMute = () => {
     const video = videoRef.current;
-    if (video) {
+    if (video && hasUserInteracted) {
       video.muted = !video.muted;
       setIsMuted(video.muted);
+    }
+  };
+
+  const handleVideoClick = () => {
+    if (!hasUserInteracted) {
+      handlePlayClick();
     }
   };
 
