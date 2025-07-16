@@ -20,6 +20,14 @@ import {
   ThumbsUp,
   ThumbsDown,
   Zap,
+  Award,
+  TrendingUp,
+  Settings,
+  Gamepad2,
+  Fire,
+  Gem,
+  Crown,
+  Shield,
 } from "lucide-react";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import { useDeviceType } from "@/hooks/use-mobile";
@@ -28,6 +36,8 @@ import {
   type GameState,
   type Character,
   type Question,
+  type GameStats,
+  type Achievement,
 } from "./AkinatorGameLogic";
 import type { User } from "@supabase/supabase-js";
 
@@ -36,7 +46,13 @@ interface AkinatorGameProps {
   user: User;
 }
 
-type GameView = "menu" | "playing" | "completed";
+type GameView =
+  | "menu"
+  | "difficulty"
+  | "playing"
+  | "completed"
+  | "stats"
+  | "achievements";
 
 export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
   const { isMobile } = useDeviceType();
@@ -45,36 +61,63 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showCharacterHint, setShowCharacterHint] = useState(false);
-  const [gameStats, setGameStats] = useState({
+  const [gameStats, setGameStats] = useState<GameStats>({
     gamesPlayed: 0,
     gamesWon: 0,
     totalScore: 0,
     perfectGames: 0,
+    averageQuestions: 0,
+    bestTime: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    totalHintsUsed: 0,
+    achievements: [],
+    difficultiesCompleted: {},
   });
+  const [selectedDifficulty, setSelectedDifficulty] = useState<
+    "easy" | "medium" | "hard" | "expert"
+  >("medium");
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
 
-  // Start a new game
-  const startGame = useCallback(() => {
-    try {
-      setIsLoading(true);
+  // Start a new game with selected difficulty
+  const startGame = useCallback(
+    (
+      difficulty: "easy" | "medium" | "hard" | "expert" = selectedDifficulty,
+    ) => {
+      try {
+        setIsLoading(true);
 
-      // Initialize game logic
-      const logic = new AkinatorGameLogic((newState) => {
-        setGameState(newState);
-      });
+        // Initialize game logic with difficulty
+        const logic = new AkinatorGameLogic((newState) => {
+          setGameState(newState);
+        }, difficulty);
 
-      setGameLogic(logic);
-      setGameState(logic.getGameState());
-      setCurrentView("playing");
-      setShowCharacterHint(false);
+        setGameLogic(logic);
+        setGameState(logic.getGameState());
+        setGameStats(logic.getGameStats());
+        setAchievements(logic.getAchievements());
+        setCurrentView("playing");
+        setShowCharacterHint(false);
 
-      toast.success("Think of a character and I'll try to guess it! 🔮");
-    } catch (error) {
-      console.error("Error starting game:", error);
-      toast.error("Failed to start game");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+        const difficultyText = {
+          easy: "Easy mode - I'll go easy on you! 😊",
+          medium: "Medium mode - Let's see what you've got! 🎯",
+          hard: "Hard mode - This will be challenging! 💪",
+          expert: "Expert mode - Only for true masters! 🔥",
+        };
+
+        toast.success(
+          `${difficultyText[difficulty]} Think of a character and I'll try to guess it! 🔮`,
+        );
+      } catch (error) {
+        console.error("Error starting game:", error);
+        toast.error("Failed to start game");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [selectedDifficulty],
+  );
 
   // Handle answering a question
   const handleAnswerQuestion = useCallback(
@@ -88,6 +131,10 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
       } else {
         toast.error(result.message);
       }
+
+      // Update stats and achievements
+      setGameStats(gameLogic.getGameStats());
+      setAchievements(gameLogic.getAchievements());
     },
     [gameLogic],
   );
@@ -104,6 +151,10 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
       } else {
         toast.info("You stumped me! Great job! 😅");
       }
+
+      // Update stats and achievements
+      setGameStats(gameLogic.getGameStats());
+      setAchievements(gameLogic.getAchievements());
     },
     [gameLogic, gameState],
   );
@@ -115,24 +166,38 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
     if (gameState.isGameComplete) {
       const stats = gameLogic.getCompletionStats();
 
-      // Update game stats
-      setGameStats((prev) => ({
-        gamesPlayed: prev.gamesPlayed + 1,
-        gamesWon:
-          gameState.gameStatus === "won" ? prev.gamesWon + 1 : prev.gamesWon,
-        totalScore: prev.totalScore + stats.score,
-        perfectGames:
-          stats.questionsAsked <= 10 && gameState.gameStatus === "won"
-            ? prev.perfectGames + 1
-            : prev.perfectGames,
-      }));
+      // Check for new achievements
+      const newAchievements = gameLogic.getAchievements();
+      const previousAchievements = achievements.length;
+
+      if (newAchievements.length > previousAchievements) {
+        toast.success(`🏆 New achievement unlocked!`);
+      }
 
       // Show completion view after a short delay
       setTimeout(() => {
         setCurrentView("completed");
       }, 1500);
     }
-  }, [gameState, gameLogic]);
+  }, [gameState, gameLogic, achievements.length]);
+
+  // Use hint
+  const handleUseHint = () => {
+    if (!gameLogic || !gameState) return;
+
+    if (gameState.hintsUsed >= gameState.maxHints) {
+      toast.error("No hints remaining!");
+      return;
+    }
+
+    const hints = gameLogic.useHint();
+    if (hints.length > 0) {
+      toast.info(`💡 Hint: ${hints[0]}`);
+      setGameStats(gameLogic.getGameStats());
+    } else {
+      toast.error("No hints available!");
+    }
+  };
 
   // Reset current game
   const handleResetGame = () => {
@@ -145,13 +210,29 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
 
   // Start new game
   const handleNewGame = () => {
-    startGame();
+    setCurrentView("difficulty");
   };
 
   // Show character hint
   const handleShowHint = () => {
     setShowCharacterHint(true);
     toast.info("Here are some of the characters I can guess! 💡");
+  };
+
+  // Navigate to stats
+  const handleShowStats = () => {
+    if (gameLogic) {
+      setGameStats(gameLogic.getGameStats());
+    }
+    setCurrentView("stats");
+  };
+
+  // Navigate to achievements
+  const handleShowAchievements = () => {
+    if (gameLogic) {
+      setAchievements(gameLogic.getAchievements());
+    }
+    setCurrentView("achievements");
   };
 
   // Cleanup on unmount
@@ -171,6 +252,97 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
           <div className="text-center">
             <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-lg font-semibold">Starting Akinator...</p>
+          </div>
+        </div>
+      </MobileContainer>
+    );
+  }
+
+  // Difficulty Selection View
+  if (currentView === "difficulty") {
+    return (
+      <MobileContainer>
+        <div className="space-y-4">
+          <Card className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCurrentView("menu")}
+                  className="text-white hover:bg-white/20"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Button>
+              </div>
+              <CardTitle className="text-center text-2xl">
+                Choose Difficulty
+              </CardTitle>
+            </CardHeader>
+          </Card>
+
+          {/* Difficulty Options */}
+          <div className="space-y-3">
+            {[
+              {
+                level: "easy" as const,
+                name: "Easy",
+                description: "Popular characters, up to 5 hints",
+                icon: "😊",
+                color: "bg-green-500 hover:bg-green-600",
+              },
+              {
+                level: "medium" as const,
+                name: "Medium",
+                description: "Mix of characters, up to 3 hints",
+                icon: "🎯",
+                color: "bg-blue-500 hover:bg-blue-600",
+              },
+              {
+                level: "hard" as const,
+                name: "Hard",
+                description: "Challenging characters, 1 hint only",
+                icon: "💪",
+                color: "bg-orange-500 hover:bg-orange-600",
+              },
+              {
+                level: "expert" as const,
+                name: "Expert",
+                description: "Obscure characters, no hints",
+                icon: "🔥",
+                color: "bg-red-500 hover:bg-red-600",
+              },
+            ].map((difficulty) => (
+              <Button
+                key={difficulty.level}
+                onClick={() => {
+                  setSelectedDifficulty(difficulty.level);
+                  startGame(difficulty.level);
+                }}
+                className={`w-full p-6 ${difficulty.color} text-white`}
+                size="lg"
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{difficulty.icon}</span>
+                    <div className="text-left">
+                      <div className="font-bold text-lg">{difficulty.name}</div>
+                      <div className="text-sm opacity-90">
+                        {difficulty.description}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {gameStats.difficultiesCompleted[difficulty.level] && (
+                      <Badge className="bg-white/20">
+                        {gameStats.difficultiesCompleted[difficulty.level]} wins
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </Button>
+            ))}
           </div>
         </div>
       </MobileContainer>
@@ -198,7 +370,10 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
 
                 <div className="flex items-center gap-2">
                   <Badge className="bg-white/20 text-white border-white/30">
-                    Question {gameState.questionCount + 1}
+                    {gameState.difficulty.toUpperCase()}
+                  </Badge>
+                  <Badge className="bg-white/20 text-white border-white/30">
+                    Q{gameState.questionCount + 1}
                   </Badge>
                   <Badge className="bg-white/20 text-white border-white/30">
                     <Users className="h-3 w-3 mr-1" />
@@ -217,29 +392,46 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
               </div>
 
               {/* Game Stats */}
-              <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="grid grid-cols-4 gap-3 text-center">
                 <div>
-                  <div className="text-xl font-bold text-yellow-300">
+                  <div className="text-lg font-bold text-yellow-300">
                     {gameState.score}
                   </div>
-                  <div className="text-sm text-purple-100">Score</div>
+                  <div className="text-xs text-purple-100">Score</div>
                 </div>
 
                 <div>
-                  <div className="text-xl font-bold text-blue-300 flex items-center justify-center gap-1">
-                    <Clock className="h-4 w-4" />
+                  <div className="text-lg font-bold text-blue-300 flex items-center justify-center gap-1">
+                    <Clock className="h-3 w-3" />
                     {AkinatorGameLogic.formatTime(gameState.timeElapsed)}
                   </div>
-                  <div className="text-sm text-purple-100">Time</div>
+                  <div className="text-xs text-purple-100">Time</div>
                 </div>
 
                 <div>
-                  <div className="text-xl font-bold text-green-300">
+                  <div className="text-lg font-bold text-green-300">
                     {gameState.questionCount}
                   </div>
-                  <div className="text-sm text-purple-100">Questions</div>
+                  <div className="text-xs text-purple-100">Questions</div>
+                </div>
+
+                <div>
+                  <div className="text-lg font-bold text-orange-300">
+                    {gameState.maxHints - gameState.hintsUsed}
+                  </div>
+                  <div className="text-xs text-purple-100">Hints</div>
                 </div>
               </div>
+
+              {/* Current Streak */}
+              {gameStats.currentStreak > 0 && (
+                <div className="text-center">
+                  <Badge className="bg-yellow-500 text-yellow-900">
+                    <Fire className="h-3 w-3 mr-1" />
+                    {gameStats.currentStreak} Win Streak
+                  </Badge>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -255,6 +447,17 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
                   <p className="text-gray-600">
                     Think carefully about your character...
                   </p>
+
+                  {/* Question Difficulty Indicator */}
+                  <div className="flex justify-center">
+                    <Badge variant="outline" className="text-xs">
+                      {gameState.currentQuestion.category} •
+                      {Array.from(
+                        { length: gameState.currentQuestion.difficulty },
+                        (_, i) => "⭐",
+                      ).join("")}
+                    </Badge>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -296,9 +499,17 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
                     <div className="text-sm text-gray-600 mt-1">
                       {gameState.guessedCharacter.description}
                     </div>
-                    <Badge className="mt-2 bg-purple-100 text-purple-800">
-                      {gameState.guessedCharacter.category}
-                    </Badge>
+                    <div className="flex justify-center gap-2 mt-2">
+                      <Badge className="bg-purple-100 text-purple-800">
+                        {gameState.guessedCharacter.category}
+                      </Badge>
+                      <Badge variant="outline">
+                        {Array.from(
+                          { length: gameState.guessedCharacter.difficulty },
+                          (_, i) => "⭐",
+                        ).join("")}
+                      </Badge>
+                    </div>
                   </div>
                   <p className="text-gray-600">Was I right?</p>
                 </div>
@@ -336,20 +547,27 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="grid grid-cols-1 gap-2 text-sm">
                   {gameLogic
                     ?.getPossibleCharacters()
-                    .slice(0, 8)
+                    .slice(0, 6)
                     .map((char) => (
-                      <div
-                        key={char.id}
-                        className="p-2 bg-gray-50 rounded-lg text-center"
-                      >
-                        <div className="font-semibold text-purple-600">
-                          {char.name}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {char.category}
+                      <div key={char.id} className="p-3 bg-gray-50 rounded-lg">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <div className="font-semibold text-purple-600">
+                              {char.name}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {char.category}
+                            </div>
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {Array.from(
+                              { length: char.difficulty },
+                              (_, i) => "⭐",
+                            ).join("")}
+                          </Badge>
                         </div>
                       </div>
                     ))}
@@ -363,7 +581,7 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
           )}
 
           {/* Game Controls */}
-          <div className="flex justify-center gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <Button
               onClick={handleShowHint}
               variant="outline"
@@ -375,6 +593,19 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
             </Button>
 
             <Button
+              onClick={handleUseHint}
+              variant="outline"
+              disabled={
+                gameState.hintsUsed >= gameState.maxHints ||
+                gameState.isGameComplete
+              }
+              className="flex items-center gap-2"
+            >
+              <HelpCircle className="h-4 w-4" />
+              Use Hint ({gameState.maxHints - gameState.hintsUsed})
+            </Button>
+
+            <Button
               onClick={handleResetGame}
               variant="outline"
               disabled={gameState.isGameComplete}
@@ -382,6 +613,15 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
             >
               <RotateCcw className="h-4 w-4" />
               Reset
+            </Button>
+
+            <Button
+              onClick={handleShowStats}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <TrendingUp className="h-4 w-4" />
+              Stats
             </Button>
           </div>
         </div>
@@ -415,15 +655,23 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
                     </span>
                   </p>
                   <div className="text-sm text-green-200 mt-2">
-                    I guessed it in {stats.questionsAsked} questions!
+                    I guessed it in {stats.questionsAsked} questions on{" "}
+                    {stats.difficulty} mode!
                   </div>
+                  {stats.hintsUsed > 0 && (
+                    <div className="text-sm text-green-200">
+                      You used {stats.hintsUsed} hint
+                      {stats.hintsUsed > 1 ? "s" : ""}
+                    </div>
+                  )}
                 </>
               ) : (
                 <>
                   <div className="text-6xl mb-4">😅</div>
                   <h2 className="text-2xl font-bold mb-2">You Stumped Me!</h2>
                   <p className="text-purple-100">
-                    Great job! You thought of a character I couldn't guess.
+                    Great job! You thought of a character I couldn't guess on{" "}
+                    {stats.difficulty} mode.
                   </p>
                   <div className="text-sm text-purple-200 mt-2">
                     I asked {stats.questionsAsked} questions but couldn't figure
@@ -481,6 +729,20 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
                   </p>
                 </div>
               )}
+
+              {/* New Achievement Alert */}
+              {achievements.length > 0 && (
+                <div className="mt-4">
+                  <Button
+                    onClick={handleShowAchievements}
+                    variant="outline"
+                    className="w-full flex items-center gap-2"
+                  >
+                    <Award className="h-4 w-4" />
+                    View Achievements ({achievements.length})
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -504,6 +766,323 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
               <Home className="h-5 w-5 mr-2" />
               Main Menu
             </Button>
+          </div>
+        </div>
+      </MobileContainer>
+    );
+  }
+
+  // Statistics View
+  if (currentView === "stats") {
+    return (
+      <MobileContainer>
+        <div className="space-y-4">
+          <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCurrentView("menu")}
+                  className="text-white hover:bg-white/20"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Button>
+              </div>
+              <CardTitle className="text-center text-2xl">
+                Your Statistics
+              </CardTitle>
+            </CardHeader>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Overall Performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {gameStats.gamesPlayed}
+                  </div>
+                  <div className="text-sm text-gray-600">Games Played</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-green-600">
+                    {gameStats.gamesWon}
+                  </div>
+                  <div className="text-sm text-gray-600">Games Won</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {gameStats.totalScore.toLocaleString()}
+                  </div>
+                  <div className="text-sm text-gray-600">Total Score</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-purple-600">
+                    {gameStats.perfectGames}
+                  </div>
+                  <div className="text-sm text-gray-600">Perfect Games</div>
+                </div>
+              </div>
+
+              {gameStats.gamesPlayed > 0 && (
+                <div className="mt-4 space-y-2">
+                  <div className="p-3 bg-blue-50 rounded-lg">
+                    <div className="text-center">
+                      <span className="text-blue-800 font-semibold">
+                        My Success Rate:{" "}
+                        {Math.round(
+                          (gameStats.gamesWon / gameStats.gamesPlayed) * 100,
+                        )}
+                        %
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="p-2 bg-green-50 rounded text-center">
+                      <div className="text-green-800 font-semibold">
+                        {gameStats.averageQuestions}
+                      </div>
+                      <div className="text-xs text-green-600">
+                        Avg Questions
+                      </div>
+                    </div>
+                    <div className="p-2 bg-orange-50 rounded text-center">
+                      <div className="text-orange-800 font-semibold">
+                        {gameStats.bestTime > 0
+                          ? AkinatorGameLogic.formatTime(gameStats.bestTime)
+                          : "N/A"}
+                      </div>
+                      <div className="text-xs text-orange-600">Best Time</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Streak Record</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <div className="text-2xl font-bold text-red-600 flex items-center justify-center gap-1">
+                    <Fire className="h-6 w-6" />
+                    {gameStats.currentStreak}
+                  </div>
+                  <div className="text-sm text-gray-600">Current Streak</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-orange-600 flex items-center justify-center gap-1">
+                    <Crown className="h-6 w-6" />
+                    {gameStats.longestStreak}
+                  </div>
+                  <div className="text-sm text-gray-600">Best Streak</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Difficulty Breakdown</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {[
+                  {
+                    level: "easy",
+                    name: "Easy",
+                    icon: "😊",
+                    color: "bg-green-100 text-green-800",
+                  },
+                  {
+                    level: "medium",
+                    name: "Medium",
+                    icon: "🎯",
+                    color: "bg-blue-100 text-blue-800",
+                  },
+                  {
+                    level: "hard",
+                    name: "Hard",
+                    icon: "💪",
+                    color: "bg-orange-100 text-orange-800",
+                  },
+                  {
+                    level: "expert",
+                    name: "Expert",
+                    icon: "🔥",
+                    color: "bg-red-100 text-red-800",
+                  },
+                ].map((difficulty) => (
+                  <div
+                    key={difficulty.level}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{difficulty.icon}</span>
+                      <span className="font-semibold">{difficulty.name}</span>
+                    </div>
+                    <Badge className={difficulty.color}>
+                      {gameStats.difficultiesCompleted[difficulty.level] || 0}{" "}
+                      wins
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </MobileContainer>
+    );
+  }
+
+  // Achievements View
+  if (currentView === "achievements") {
+    return (
+      <MobileContainer>
+        <div className="space-y-4">
+          <Card className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCurrentView("menu")}
+                  className="text-white hover:bg-white/20"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Button>
+              </div>
+              <CardTitle className="text-center text-2xl">
+                Achievements
+              </CardTitle>
+            </CardHeader>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Progress Overview</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-yellow-600">
+                  {achievements.length}
+                </div>
+                <div className="text-gray-600">Achievements Unlocked</div>
+                <div className="text-sm text-gray-500 mt-1">
+                  Total Points:{" "}
+                  {achievements.reduce((sum, ach) => sum + ach.points, 0)}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="space-y-3">
+            {[
+              {
+                id: "first_win",
+                name: "First Victory",
+                description: "Win your first game against Akinator",
+                icon: "🏆",
+                points: 100,
+              },
+              {
+                id: "perfect_game",
+                name: "Perfect Game",
+                description: "Win a game in 10 questions or less",
+                icon: "⭐",
+                points: 200,
+              },
+              {
+                id: "speed_demon",
+                name: "Speed Demon",
+                description: "Win a game in under 60 seconds",
+                icon: "⚡",
+                points: 300,
+              },
+              {
+                id: "streak_master",
+                name: "Streak Master",
+                description: "Win 5 games in a row",
+                icon: "🔥",
+                points: 400,
+              },
+              {
+                id: "stump_master",
+                name: "Stump Master",
+                description: "Stump Akinator 10 times",
+                icon: "🧩",
+                points: 500,
+              },
+              {
+                id: "no_hints",
+                name: "No Help Needed",
+                description: "Win a hard game without using hints",
+                icon: "🎯",
+                points: 600,
+              },
+            ].map((achievement) => {
+              const isUnlocked = achievements.some(
+                (ach) => ach.id === achievement.id,
+              );
+
+              return (
+                <Card
+                  key={achievement.id}
+                  className={
+                    isUnlocked
+                      ? "border-yellow-300 bg-yellow-50"
+                      : "border-gray-200 bg-gray-50"
+                  }
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`text-2xl ${isUnlocked ? "" : "grayscale opacity-50"}`}
+                      >
+                        {achievement.icon}
+                      </div>
+                      <div className="flex-1">
+                        <div
+                          className={`font-semibold ${isUnlocked ? "text-yellow-800" : "text-gray-600"}`}
+                        >
+                          {achievement.name}
+                        </div>
+                        <div
+                          className={`text-sm ${isUnlocked ? "text-yellow-700" : "text-gray-500"}`}
+                        >
+                          {achievement.description}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <Badge
+                          className={
+                            isUnlocked
+                              ? "bg-yellow-200 text-yellow-800"
+                              : "bg-gray-200 text-gray-600"
+                          }
+                        >
+                          {achievement.points} pts
+                        </Badge>
+                        {isUnlocked && (
+                          <div className="text-xs text-yellow-600 mt-1">
+                            Unlocked!
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </MobileContainer>
@@ -539,7 +1118,7 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
           </CardHeader>
         </Card>
 
-        {/* Game Stats */}
+        {/* Quick Stats */}
         <Card>
           <CardHeader>
             <CardTitle>Your Statistics</CardTitle>
@@ -559,16 +1138,18 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
                 <div className="text-sm text-gray-600">I Guessed Right</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-yellow-600">
-                  {gameStats.totalScore}
+                <div className="text-2xl font-bold text-yellow-600 flex items-center justify-center gap-1">
+                  <Fire className="h-5 w-5" />
+                  {gameStats.currentStreak}
                 </div>
-                <div className="text-sm text-gray-600">Total Score</div>
+                <div className="text-sm text-gray-600">Current Streak</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-purple-600">
-                  {gameStats.perfectGames}
+                <div className="text-2xl font-bold text-purple-600 flex items-center justify-center gap-1">
+                  <Award className="h-5 w-5" />
+                  {achievements.length}
                 </div>
-                <div className="text-sm text-gray-600">Perfect Games</div>
+                <div className="text-sm text-gray-600">Achievements</div>
               </div>
             </div>
 
@@ -598,12 +1179,13 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
               </h3>
               <p className="text-gray-600">
                 Think of any character from movies, books, games, history, or
-                cartoons. I'll try to guess who it is in 20 questions or less!
+                cartoons. Choose your difficulty and I'll try to guess who it
+                is!
               </p>
             </div>
 
             <Button
-              onClick={startGame}
+              onClick={() => setCurrentView("difficulty")}
               size="lg"
               className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white py-6"
             >
@@ -613,45 +1195,66 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
           </CardContent>
         </Card>
 
-        {/* Features */}
+        {/* Menu Options */}
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            onClick={handleShowStats}
+            variant="outline"
+            className="flex items-center gap-2 py-6"
+          >
+            <TrendingUp className="h-5 w-5" />
+            Statistics
+          </Button>
+
+          <Button
+            onClick={handleShowAchievements}
+            variant="outline"
+            className="flex items-center gap-2 py-6"
+          >
+            <Award className="h-5 w-5" />
+            Achievements
+          </Button>
+        </div>
+
+        {/* Enhanced Features */}
         <Card>
           <CardHeader>
-            <CardTitle>Game Features</CardTitle>
+            <CardTitle>Enhanced Features</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-purple-100 rounded-lg">
-                  <Brain className="h-5 w-5 text-purple-600" />
+                  <Gamepad2 className="h-5 w-5 text-purple-600" />
                 </div>
                 <div>
-                  <div className="font-semibold">Smart AI Questions</div>
+                  <div className="font-semibold">4 Difficulty Levels</div>
                   <div className="text-sm text-gray-600">
-                    I ask intelligent questions to narrow down possibilities
+                    From easy popular characters to expert level challenges
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-blue-100 rounded-lg">
-                  <Users className="h-5 w-5 text-blue-600" />
+                  <HelpCircle className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <div className="font-semibold">Large Character Database</div>
+                  <div className="font-semibold">Smart Hint System</div>
                   <div className="text-sm text-gray-600">
-                    Hundreds of characters from all categories
+                    Get helpful hints when you need them (difficulty dependent)
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-green-100 rounded-lg">
-                  <Zap className="h-5 w-5 text-green-600" />
+                  <Award className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <div className="font-semibold">Quick & Fun</div>
+                  <div className="font-semibold">Achievement System</div>
                   <div className="text-sm text-gray-600">
-                    Fast-paced guessing game perfect for mobile
+                    Unlock achievements and track your progress
                   </div>
                 </div>
               </div>
@@ -661,9 +1264,33 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
                   <Trophy className="h-5 w-5 text-yellow-600" />
                 </div>
                 <div>
-                  <div className="font-semibold">Score & Statistics</div>
+                  <div className="font-semibold">Advanced Scoring</div>
                   <div className="text-sm text-gray-600">
-                    Track your wins and challenge my accuracy
+                    Difficulty-based scoring with streak bonuses
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <Fire className="h-5 w-5 text-red-600" />
+                </div>
+                <div>
+                  <div className="font-semibold">Win Streaks</div>
+                  <div className="text-sm text-gray-600">
+                    Build winning streaks and challenge your best
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-indigo-100 rounded-lg">
+                  <Shield className="h-5 w-5 text-indigo-600" />
+                </div>
+                <div>
+                  <div className="font-semibold">Persistent Progress</div>
+                  <div className="text-sm text-gray-600">
+                    Your stats and achievements are automatically saved
                   </div>
                 </div>
               </div>
@@ -680,25 +1307,27 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
             <div className="space-y-3 text-sm">
               <div className="flex items-start gap-3">
                 <span className="text-purple-600 font-bold">1.</span>
-                <span>Think of any famous character (real or fictional)</span>
+                <span>Choose your difficulty level (Easy to Expert)</span>
               </div>
               <div className="flex items-start gap-3">
                 <span className="text-purple-600 font-bold">2.</span>
-                <span>Answer my yes/no questions honestly</span>
+                <span>Think of any famous character (real or fictional)</span>
               </div>
               <div className="flex items-start gap-3">
                 <span className="text-purple-600 font-bold">3.</span>
-                <span>I'll try to guess your character in 20 questions</span>
+                <span>Answer my yes/no questions honestly</span>
               </div>
               <div className="flex items-start gap-3">
                 <span className="text-purple-600 font-bold">4.</span>
-                <span>
-                  Confirm if my guess is correct or if you stumped me!
-                </span>
+                <span>Use hints if you need help (difficulty dependent)</span>
               </div>
               <div className="flex items-start gap-3">
                 <span className="text-purple-600 font-bold">5.</span>
-                <span>Try to beat my success rate and challenge my AI!</span>
+                <span>I'll try to guess your character in 20 questions</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-purple-600 font-bold">6.</span>
+                <span>Build win streaks and unlock achievements!</span>
               </div>
             </div>
           </CardContent>
