@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import {
   CheckCircle,
   XCircle,
@@ -17,6 +18,13 @@ import {
   Zap,
   BookOpen,
   Play,
+  Heart,
+  Smile,
+  ThumbsUp,
+  Gift,
+  Trophy,
+  Sparkles,
+  Rocket,
 } from "lucide-react";
 import { CodeLesson, CodeUnit, UserProgress, Exercise } from "./CodeLearnTypes";
 import { toast } from "sonner";
@@ -49,25 +57,33 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
     lesson.content.exercises.length === 0
   ) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6 text-center">
-            <div className="text-muted-foreground mb-4">
-              <BookOpen className="w-12 h-12 mx-auto mb-2" />
-              <h3 className="text-lg font-semibold">Lesson Not Available</h3>
-              <p className="text-sm">
-                This lesson doesn't have any exercises yet.
+      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
+          <CardContent className="p-8 text-center">
+            <div className="text-gray-600 mb-6">
+              <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                <BookOpen className="w-10 h-10 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                Oops! 🤔
+              </h3>
+              <p className="text-lg text-gray-600">
+                This lesson is still being prepared for you!
               </p>
             </div>
-            <Button onClick={onBackToUnits} variant="outline">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Units
+            <Button
+              onClick={onBackToUnits}
+              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Back to Lessons
             </Button>
           </CardContent>
         </Card>
       </div>
     );
   }
+
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [exerciseAnswers, setExerciseAnswers] = useState<
     Record<string, string>
@@ -82,6 +98,9 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   const [timeSpent, setTimeSpent] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [hearts, setHearts] = useState(3); // Lives system for kids
+  const [streakCount, setStreakCount] = useState(0);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   const currentExercise = lesson?.content?.exercises?.[currentExerciseIndex];
   const isLastExercise =
@@ -91,245 +110,112 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
       (ex) => ex?.id && exerciseAnswers[ex.id],
     ) ?? false;
 
+  const progressPercentage =
+    ((currentExerciseIndex + 1) / (lesson?.content?.exercises?.length ?? 1)) *
+    100;
+
   // Update time spent
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeSpent(Math.floor((Date.now() - startTime) / 1000));
     }, 1000);
-
     return () => clearInterval(interval);
   }, [startTime]);
 
-  const handleAnswerChange = (exerciseId: string, answer: string) => {
-    setExerciseAnswers((prev) => ({
-      ...prev,
-      [exerciseId]: answer,
-    }));
-  };
-
-  const checkAnswer = (exercise: Exercise, userAnswer: string): boolean => {
-    const correct = Array.isArray(exercise.correctAnswer)
-      ? exercise.correctAnswer.includes(userAnswer)
-      : exercise.correctAnswer.toLowerCase().trim() ===
-        userAnswer.toLowerCase().trim();
-
-    setExerciseResults((prev) => ({
-      ...prev,
-      [exercise.id]: correct,
-    }));
-
-    return correct;
-  };
-
-  const handleSubmitAnswer = () => {
-    if (!currentExercise) return;
-
-    const userAnswer = exerciseAnswers[currentExercise.id] || "";
-    const isCorrect = checkAnswer(currentExercise, userAnswer);
-
-    setShowExplanation(true);
-
-    if (isCorrect) {
-      toast.success("Correct! Well done! 🎉");
-    } else {
-      toast.error("Not quite right. Check the explanation below.");
+  // Handle answer submission with kid-friendly feedback
+  const handleAnswerSubmit = () => {
+    if (!currentExercise?.id || !exerciseAnswers[currentExercise.id]) {
+      toast.error("Please write your answer first! 📝");
+      return;
     }
 
-    // Auto-advance after showing explanation
-    setTimeout(() => {
-      if (isLastExercise) {
-        handleLessonComplete();
-      } else {
-        handleNextExercise();
-      }
-    }, 3000);
+    const userAnswer = exerciseAnswers[currentExercise.id].trim().toLowerCase();
+    const correctAnswers = currentExercise.expectedOutput || [];
+    const isCorrect = correctAnswers.some(
+      (answer) =>
+        answer.toLowerCase().trim() === userAnswer ||
+        userAnswer.includes(answer.toLowerCase().trim()),
+    );
+
+    setExerciseResults({
+      ...exerciseResults,
+      [currentExercise.id]: isCorrect,
+    });
+
+    if (isCorrect) {
+      setStreakCount((prev) => prev + 1);
+      setShowCelebration(true);
+
+      // Fun success messages for kids
+      const successMessages = [
+        "🎉 Amazing work! You're a coding superstar!",
+        "🚀 Fantastic! You nailed it!",
+        "⭐ Brilliant! You're getting so good at this!",
+        "🎯 Perfect! You're on fire!",
+        "👏 Excellent! You're a natural coder!",
+      ];
+
+      toast.success(
+        successMessages[Math.floor(Math.random() * successMessages.length)],
+      );
+
+      setTimeout(() => setShowCelebration(false), 2000);
+    } else {
+      setHearts((prev) => Math.max(0, prev - 1));
+
+      const encouragementMessages = [
+        "💪 Don't worry! Try again - you've got this!",
+        "🤗 Almost there! Give it another shot!",
+        "💡 Close one! Let's try a different approach!",
+        "🌟 Learning is fun! Try once more!",
+      ];
+
+      toast.error(
+        encouragementMessages[
+          Math.floor(Math.random() * encouragementMessages.length)
+        ],
+      );
+    }
+
+    setShowExplanation(true);
   };
 
   const handleNextExercise = () => {
-    setShowExplanation(false);
-    setShowHints(false);
-    setCurrentExerciseIndex((prev) => prev + 1);
+    if (isLastExercise) {
+      handleLessonComplete();
+    } else {
+      setCurrentExerciseIndex((prev) => prev + 1);
+      setShowExplanation(false);
+      setShowHints(false);
+    }
   };
 
   const handlePreviousExercise = () => {
     if (currentExerciseIndex > 0) {
+      setCurrentExerciseIndex((prev) => prev - 1);
       setShowExplanation(false);
       setShowHints(false);
-      setCurrentExerciseIndex((prev) => prev - 1);
     }
   };
 
   const handleLessonComplete = () => {
-    const exercises = lesson?.content?.exercises ?? [];
-    const correctAnswers = exercises.filter(
-      (ex) => ex?.id && exerciseResults[ex.id],
-    ).length;
-
-    const totalExercises = exercises.length;
+    const correctAnswers =
+      Object.values(exerciseResults).filter(Boolean).length;
+    const totalExercises = lesson.content.exercises.length;
     const accuracy = correctAnswers / totalExercises;
-    const score = accuracy * 100;
+    const score = Math.round(accuracy * 100 * (1 + streakCount * 0.1)); // Bonus for streak
 
     setIsComplete(true);
     setShowResults(true);
 
-    // Call completion callback after a delay to show results
-    setTimeout(() => {
-      onLessonComplete(lesson, score, accuracy, timeSpent);
-    }, 5000);
-  };
-
-  const handleShowHint = () => {
-    setShowHints(true);
-    setHintsUsed((prev) => prev + 1);
-  };
-
-  const renderExercise = (exercise: Exercise) => {
-    if (!exercise || !exercise.id) {
-      return (
-        <div className="text-center py-4">
-          <p className="text-muted-foreground">Invalid exercise data</p>
-        </div>
-      );
+    // Super celebratory completion message
+    if (accuracy >= 0.8) {
+      toast.success("🎊 WOW! You completed the lesson! You're amazing! 🌟");
+    } else {
+      toast.success("🎉 Great job completing the lesson! Keep practicing! 💪");
     }
 
-    const userAnswer = exerciseAnswers[exercise.id] || "";
-    const hasAnswered = exerciseResults.hasOwnProperty(exercise.id);
-    const isCorrect = exerciseResults[exercise.id];
-
-    switch (exercise.type) {
-      case "multiple-choice":
-        return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              {exercise.question}
-            </h3>
-
-            {exercise.code && (
-              <Card className="bg-gray-900 border border-gray-700">
-                <CardContent className="p-4">
-                  <pre className="text-green-400 font-mono text-sm overflow-x-auto">
-                    <code>{exercise.code}</code>
-                  </pre>
-                </CardContent>
-              </Card>
-            )}
-
-            <div className="grid gap-3">
-              {exercise.options?.map((option, index) => (
-                <Button
-                  key={index}
-                  variant={userAnswer === option ? "default" : "outline"}
-                  className={`text-left justify-start p-4 h-auto ${
-                    hasAnswered
-                      ? option === exercise.correctAnswer
-                        ? "bg-green-100 border-green-400 text-green-800"
-                        : userAnswer === option && !isCorrect
-                          ? "bg-red-100 border-red-400 text-red-800"
-                          : ""
-                      : ""
-                  }`}
-                  onClick={() =>
-                    !hasAnswered && handleAnswerChange(exercise.id, option)
-                  }
-                  disabled={hasAnswered}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full border-2 border-current flex items-center justify-center text-xs font-bold">
-                      {String.fromCharCode(65 + index)}
-                    </div>
-                    <span>{option}</span>
-                    {hasAnswered && option === exercise.correctAnswer && (
-                      <CheckCircle className="w-5 h-5 text-green-600 ml-auto" />
-                    )}
-                    {hasAnswered && userAnswer === option && !isCorrect && (
-                      <XCircle className="w-5 h-5 text-red-600 ml-auto" />
-                    )}
-                  </div>
-                </Button>
-              ))}
-            </div>
-          </div>
-        );
-
-      case "fill-blank":
-      case "code-completion":
-        return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              {exercise.question}
-            </h3>
-
-            {exercise.code && (
-              <Card className="bg-gray-900 border border-gray-700">
-                <CardContent className="p-4">
-                  <pre className="text-green-400 font-mono text-sm overflow-x-auto">
-                    <code>{exercise.code}</code>
-                  </pre>
-                </CardContent>
-              </Card>
-            )}
-
-            {exercise.type === "code-completion" ? (
-              <Textarea
-                placeholder="Write your code here..."
-                value={userAnswer}
-                onChange={(e) =>
-                  handleAnswerChange(exercise.id, e.target.value)
-                }
-                className="font-mono text-sm"
-                rows={6}
-                disabled={hasAnswered}
-              />
-            ) : (
-              <Input
-                placeholder="Your answer..."
-                value={userAnswer}
-                onChange={(e) =>
-                  handleAnswerChange(exercise.id, e.target.value)
-                }
-                className="font-mono"
-                disabled={hasAnswered}
-              />
-            )}
-
-            {hasAnswered && (
-              <div
-                className={`p-3 rounded-lg ${
-                  isCorrect
-                    ? "bg-green-100 border border-green-300"
-                    : "bg-red-100 border border-red-300"
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  {isCorrect ? (
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  ) : (
-                    <XCircle className="w-5 h-5 text-red-600" />
-                  )}
-                  <span
-                    className={`font-semibold ${
-                      isCorrect ? "text-green-800" : "text-red-800"
-                    }`}
-                  >
-                    {isCorrect ? "Correct!" : "Incorrect"}
-                  </span>
-                </div>
-                {!isCorrect && (
-                  <div className="text-sm text-gray-700">
-                    <strong>Correct answer:</strong>{" "}
-                    <code className="bg-gray-200 px-1 rounded">
-                      {exercise.correctAnswer}
-                    </code>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        );
-
-      default:
-        return <div>Exercise type not implemented</div>;
-    }
+    onLessonComplete(lesson, score, accuracy, timeSpent);
   };
 
   const formatTime = (seconds: number) => {
@@ -338,80 +224,79 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  if (showResults && isComplete) {
-    const exercises = lesson?.content?.exercises ?? [];
-    const correctAnswers = exercises.filter(
-      (ex) => ex?.id && exerciseResults[ex.id],
-    ).length;
-    const totalExercises = exercises.length;
+  if (showResults) {
+    const correctAnswers =
+      Object.values(exerciseResults).filter(Boolean).length;
+    const totalExercises = lesson.content.exercises.length;
     const accuracy = correctAnswers / totalExercises;
-    const score = accuracy * 100;
+    const score = Math.round(accuracy * 100 * (1 + streakCount * 0.1));
 
     return (
-      <div className="max-w-2xl mx-auto">
-        <Card className="bg-gradient-to-br from-green-50 to-blue-50 border-green-200">
-          <CardHeader className="text-center pb-4">
-            <div className="text-6xl mb-4">🎉</div>
-            <CardTitle className="text-3xl text-gray-800 mb-2">
-              Lesson Complete!
-            </CardTitle>
-            <p className="text-gray-600">
-              Great job completing "{lesson.title}"
-            </p>
-          </CardHeader>
+      <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-100 to-purple-100 flex items-center justify-center p-4">
+        <Card className="w-full max-w-2xl border-0 shadow-2xl bg-white/90 backdrop-blur-sm">
+          <CardContent className="p-8 text-center">
+            <div className="mb-6">
+              <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center animate-bounce">
+                <Trophy className="w-12 h-12 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-gray-800 mb-2">
+                🎉 Lesson Complete! 🎉
+              </h2>
+              <p className="text-xl text-gray-600 mb-6">
+                You're doing amazing! Keep up the great work!
+              </p>
+            </div>
 
-          <CardContent className="space-y-6">
-            {/* Score Summary */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-4 bg-white rounded-lg border">
-                <div className="text-3xl font-bold text-blue-600">
-                  {Math.round(score)}%
-                </div>
-                <div className="text-sm text-gray-600">Score</div>
+            <div className="grid grid-cols-2 gap-6 mb-8">
+              <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl p-6">
+                <div className="text-3xl font-bold text-blue-700">{score}</div>
+                <div className="text-blue-600 font-semibold">Points Earned</div>
               </div>
-              <div className="text-center p-4 bg-white rounded-lg border">
-                <div className="text-3xl font-bold text-green-600">
-                  {correctAnswers}/{totalExercises}
+
+              <div className="bg-gradient-to-br from-green-100 to-green-200 rounded-xl p-6">
+                <div className="text-3xl font-bold text-green-700">
+                  {Math.round(accuracy * 100)}%
                 </div>
-                <div className="text-sm text-gray-600">Correct</div>
+                <div className="text-green-600 font-semibold">Accuracy</div>
               </div>
-              <div className="text-center p-4 bg-white rounded-lg border">
-                <div className="text-3xl font-bold text-purple-600">
-                  +{lesson.xpReward}
-                </div>
-                <div className="text-sm text-gray-600">XP Earned</div>
-              </div>
-              <div className="text-center p-4 bg-white rounded-lg border">
-                <div className="text-3xl font-bold text-orange-600">
+
+              <div className="bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl p-6">
+                <div className="text-3xl font-bold text-purple-700">
                   {formatTime(timeSpent)}
                 </div>
-                <div className="text-sm text-gray-600">Time</div>
+                <div className="text-purple-600 font-semibold">Time Taken</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-xl p-6">
+                <div className="text-3xl font-bold text-yellow-700">
+                  {streakCount}
+                </div>
+                <div className="text-yellow-600 font-semibold">
+                  Streak Bonus
+                </div>
               </div>
             </div>
 
-            {/* Performance Badge */}
-            <div className="text-center">
-              {accuracy === 1.0 ? (
-                <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 text-lg">
-                  🏆 Perfect Score!
-                </Badge>
-              ) : accuracy >= 0.8 ? (
-                <Badge className="bg-gradient-to-r from-green-400 to-blue-500 text-white px-4 py-2 text-lg">
-                  ⭐ Excellent Work!
-                </Badge>
-              ) : accuracy >= 0.6 ? (
-                <Badge className="bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 text-lg">
-                  👍 Good Job!
-                </Badge>
-              ) : (
-                <Badge className="bg-gradient-to-r from-gray-400 to-gray-600 text-white px-4 py-2 text-lg">
-                  📚 Keep Practicing!
-                </Badge>
-              )}
-            </div>
+            {accuracy >= 0.9 && (
+              <div className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-xl p-4 mb-6 border-2 border-pink-300">
+                <div className="flex items-center justify-center gap-2 text-pink-700">
+                  <Sparkles className="w-6 h-6" />
+                  <span className="text-lg font-bold">
+                    Perfect Score! You're a coding genius! 🌟
+                  </span>
+                  <Sparkles className="w-6 h-6" />
+                </div>
+              </div>
+            )}
 
-            <div className="text-center text-gray-600 text-sm">
-              Advancing to next lesson in 3 seconds...
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                onClick={onBackToUnits}
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                <Rocket className="w-5 h-5 mr-2" />
+                Continue Learning!
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -420,211 +305,268 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Lesson Header */}
-      <Card className="bg-gradient-to-r from-white/10 to-white/5 border border-white/20 backdrop-blur-sm">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center text-xl text-white"
-                style={{ backgroundColor: unit.color }}
-              >
-                {unit.icon}
-              </div>
-              <div>
-                <CardTitle className="text-xl text-white mb-1">
-                  {lesson.title}
-                </CardTitle>
-                <p className="text-white/80 text-sm">{lesson.description}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4 text-white">
-              <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
-                <span className="text-sm">{formatTime(timeSpent)}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Target className="w-4 h-4" />
-                <span className="text-sm">+{lesson.xpReward} XP</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mt-4">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-white/80 text-sm">
-                Exercise {currentExerciseIndex + 1} of{" "}
-                {lesson.content.exercises.length}
-              </span>
-              <span className="text-white text-sm">
-                {Math.round(
-                  ((currentExerciseIndex + 1) /
-                    lesson.content.exercises.length) *
-                    100,
-                )}
-                %
-              </span>
-            </div>
-            <div className="w-full bg-white/20 rounded-full h-2">
-              <div
-                className="bg-gradient-to-r from-green-400 to-blue-400 h-2 rounded-full transition-all duration-300"
-                style={{
-                  width: `${((currentExerciseIndex + 1) / lesson.content.exercises.length) * 100}%`,
-                }}
-              />
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
-
-      {/* Lesson Content */}
-      {lesson.content.explanation && currentExerciseIndex === 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5" />
-              Concept Overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-700 mb-4">{lesson.content.explanation}</p>
-
-            {lesson.content.codeExample && (
-              <Card className="bg-gray-900 border border-gray-700">
-                <CardContent className="p-4">
-                  <pre className="text-green-400 font-mono text-sm overflow-x-auto">
-                    <code>{lesson.content.codeExample}</code>
-                  </pre>
-                </CardContent>
-              </Card>
-            )}
-          </CardContent>
-        </Card>
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-4">
+      {/* Celebration Animation */}
+      {showCelebration && (
+        <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
+          <div className="text-6xl animate-ping">🎉</div>
+        </div>
       )}
 
-      {/* Current Exercise */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Code className="w-5 h-5" />
-            Exercise {currentExerciseIndex + 1}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {currentExercise ? (
-            renderExercise(currentExercise)
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">
-                No exercises available for this lesson.
+      <div className="max-w-4xl mx-auto">
+        {/* Header with Progress */}
+        <Card className="mb-6 border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <Button
+                onClick={onBackToUnits}
+                variant="outline"
+                className="bg-white/80 hover:bg-white border-2 border-gray-200 rounded-xl"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+
+              <div className="flex items-center gap-4">
+                {/* Hearts/Lives */}
+                <div className="flex items-center gap-1">
+                  {[...Array(3)].map((_, i) => (
+                    <Heart
+                      key={i}
+                      className={`w-6 h-6 ${
+                        i < hearts
+                          ? "text-red-500 fill-red-500"
+                          : "text-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                {/* Timer */}
+                <div className="flex items-center gap-2 bg-blue-100 px-3 py-1 rounded-full">
+                  <Clock className="w-4 h-4 text-blue-600" />
+                  <span className="text-blue-700 font-semibold">
+                    {formatTime(timeSpent)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <div className="flex items-center justify-between mb-2">
+                <h1 className="text-2xl font-bold text-gray-800">
+                  {lesson.title}
+                </h1>
+                <Badge className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
+                  {currentExerciseIndex + 1} of{" "}
+                  {lesson.content.exercises.length}
+                </Badge>
+              </div>
+
+              <Progress
+                value={progressPercentage}
+                className="h-3 bg-gray-200"
+              />
+              <p className="text-sm text-gray-600 mt-1">
+                {Math.round(progressPercentage)}% complete
               </p>
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardHeader>
+        </Card>
 
-      {/* Hints */}
-      {lesson.content.hints && lesson.content.hints.length > 0 && (
-        <Card className="bg-blue-50 border-blue-200">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-blue-800">
-                <Lightbulb className="w-5 h-5" />
-                Need Help?
+        {/* Main Exercise Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Exercise Question */}
+          <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                  <Code className="w-4 h-4 text-white" />
+                </div>
+                Exercise {currentExerciseIndex + 1}
               </CardTitle>
-              {!showHints && (
-                <Button
-                  onClick={handleShowHint}
-                  variant="outline"
-                  size="sm"
-                  className="text-blue-600 border-blue-300 hover:bg-blue-100"
-                >
-                  Show Hint
-                </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4">
+                <p className="text-lg text-gray-800 leading-relaxed">
+                  {currentExercise?.question}
+                </p>
+              </div>
+
+              {currentExercise?.codeSnippet && (
+                <div className="bg-gray-900 rounded-xl p-4 font-mono text-sm overflow-x-auto">
+                  <pre className="text-green-400 whitespace-pre-wrap">
+                    {currentExercise.codeSnippet}
+                  </pre>
+                </div>
               )}
-            </div>
-          </CardHeader>
-          {showHints && (
-            <CardContent>
-              <ul className="space-y-2">
-                {lesson.content.hints.map((hint, index) => (
-                  <li
-                    key={index}
-                    className="flex items-start gap-2 text-blue-700"
-                  >
-                    <span className="text-blue-500 font-bold">•</span>
-                    <span className="text-sm">{hint}</span>
-                  </li>
-                ))}
-              </ul>
+
+              {/* Hints Button */}
+              <Button
+                onClick={() => setShowHints(!showHints)}
+                variant="outline"
+                className="w-full bg-yellow-100 hover:bg-yellow-200 border-yellow-300 text-yellow-800"
+              >
+                <Lightbulb className="w-4 h-4 mr-2" />
+                {showHints ? "Hide Hints" : "Need a Hint?"} 💡
+              </Button>
+
+              {showHints && currentExercise?.hints && (
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 rounded-r-xl p-4">
+                  <h4 className="font-semibold text-yellow-800 mb-2">
+                    Helpful Hints:
+                  </h4>
+                  <ul className="space-y-1">
+                    {currentExercise.hints.map((hint, index) => (
+                      <li key={index} className="text-yellow-700 text-sm">
+                        💡 {hint}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </CardContent>
-          )}
-        </Card>
-      )}
+          </Card>
 
-      {/* Explanation */}
-      {showExplanation && currentExercise && currentExercise.explanation && (
-        <Card className="bg-green-50 border-green-200">
-          <CardHeader>
-            <CardTitle className="text-green-800">Explanation</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-green-700">{currentExercise.explanation}</p>
-          </CardContent>
-        </Card>
-      )}
+          {/* Answer Section */}
+          <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center">
+                  <Target className="w-4 h-4 text-white" />
+                </div>
+                Your Answer
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {currentExercise?.type === "code" ? (
+                <Textarea
+                  placeholder="Write your code here... 🚀"
+                  value={exerciseAnswers[currentExercise?.id || ""] || ""}
+                  onChange={(e) =>
+                    setExerciseAnswers({
+                      ...exerciseAnswers,
+                      [currentExercise?.id || ""]: e.target.value,
+                    })
+                  }
+                  className="font-mono text-sm min-h-[200px] bg-gray-50 border-2 border-gray-200 rounded-xl"
+                  disabled={showExplanation}
+                />
+              ) : (
+                <Input
+                  placeholder="Type your answer here... ✨"
+                  value={exerciseAnswers[currentExercise?.id || ""] || ""}
+                  onChange={(e) =>
+                    setExerciseAnswers({
+                      ...exerciseAnswers,
+                      [currentExercise?.id || ""]: e.target.value,
+                    })
+                  }
+                  className="text-lg p-4 bg-gray-50 border-2 border-gray-200 rounded-xl"
+                  disabled={showExplanation}
+                />
+              )}
 
-      {/* Navigation */}
-      <div className="flex items-center justify-between">
-        <Button
-          onClick={handlePreviousExercise}
-          variant="outline"
-          disabled={currentExerciseIndex === 0}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Previous
-        </Button>
+              {!showExplanation ? (
+                <Button
+                  onClick={handleAnswerSubmit}
+                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white py-3 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  disabled={!exerciseAnswers[currentExercise?.id || ""]}
+                >
+                  <Play className="w-5 h-5 mr-2" />
+                  Check My Answer! 🎯
+                </Button>
+              ) : (
+                <div className="space-y-4">
+                  {/* Result Display */}
+                  <div
+                    className={`p-4 rounded-xl ${
+                      exerciseResults[currentExercise?.id || ""]
+                        ? "bg-green-100 border-2 border-green-300"
+                        : "bg-red-100 border-2 border-red-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      {exerciseResults[currentExercise?.id || ""] ? (
+                        <>
+                          <CheckCircle className="w-6 h-6 text-green-600" />
+                          <span className="text-lg font-bold text-green-700">
+                            Awesome! That's correct! 🎉
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="w-6 h-6 text-red-600" />
+                          <span className="text-lg font-bold text-red-700">
+                            Not quite right, but great try! 💪
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
 
-        <div className="flex items-center gap-3">
-          {currentExercise &&
-            exerciseAnswers[currentExercise.id] &&
-            !exerciseResults.hasOwnProperty(currentExercise.id) && (
-              <Button
-                onClick={handleSubmitAnswer}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-              >
-                Submit Answer
-              </Button>
-            )}
+                  {/* Explanation */}
+                  {currentExercise?.explanation && (
+                    <div className="bg-blue-50 border-l-4 border-blue-400 rounded-r-xl p-4">
+                      <h4 className="font-semibold text-blue-800 mb-2">
+                        📚 Learn More:
+                      </h4>
+                      <p className="text-blue-700">
+                        {currentExercise.explanation}
+                      </p>
+                    </div>
+                  )}
 
-          {currentExercise &&
-            exerciseResults.hasOwnProperty(currentExercise.id) &&
-            !isLastExercise && (
-              <Button
-                onClick={handleNextExercise}
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 flex items-center gap-2"
-              >
-                Next Exercise
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            )}
+                  {/* Navigation */}
+                  <div className="flex gap-3">
+                    {currentExerciseIndex > 0 && (
+                      <Button
+                        onClick={handlePreviousExercise}
+                        variant="outline"
+                        className="flex-1 bg-gray-100 hover:bg-gray-200 border-2 border-gray-300 rounded-xl"
+                      >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Previous
+                      </Button>
+                    )}
 
-          {currentExercise &&
-            exerciseResults.hasOwnProperty(currentExercise.id) &&
-            isLastExercise && (
-              <Button
-                onClick={handleLessonComplete}
-                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 flex items-center gap-2"
-              >
-                Complete Lesson
-                <Star className="w-4 h-4" />
-              </Button>
-            )}
+                    <Button
+                      onClick={handleNextExercise}
+                      className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-xl font-semibold"
+                    >
+                      {isLastExercise ? (
+                        <>
+                          <Trophy className="w-4 h-4 mr-2" />
+                          Complete Lesson! 🏆
+                        </>
+                      ) : (
+                        <>
+                          Next
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
+
+        {/* Streak Display */}
+        {streakCount > 0 && (
+          <Card className="mt-6 border-0 shadow-xl bg-gradient-to-r from-orange-100 to-yellow-100">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-center gap-2 text-orange-700">
+                <Zap className="w-6 h-6" />
+                <span className="text-lg font-bold">
+                  {streakCount} correct in a row! You're on fire! 🔥
+                </span>
+                <Zap className="w-6 h-6" />
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
