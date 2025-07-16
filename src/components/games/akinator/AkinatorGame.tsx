@@ -24,7 +24,7 @@ import {
   TrendingUp,
   Settings,
   Gamepad2,
-  Fire,
+  Flame,
   Gem,
   Crown,
   Shield,
