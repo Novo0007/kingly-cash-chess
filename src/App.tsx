@@ -19,6 +19,7 @@ import { MathRulesPage } from "./pages/MathRulesPage";
 import WordSearchRulesPage from "./pages/WordSearchRulesPage";
 import FourPicsRulesPage from "./pages/FourPicsRulesPage";
 import HangmanRulesPage from "./pages/HangmanRulesPage";
+import AkinatorRulesPage from "./pages/AkinatorRulesPage";
 import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { DraggableMusicControl } from "@/components/music/DraggableMusicControl";
 import { AppLoadingScreen } from "@/components/ui/app-loading-screen";
@@ -134,6 +135,7 @@ const App = () => {
                 />
                 <Route path="/fourpics-rules" element={<FourPicsRulesPage />} />
                 <Route path="/hangman-rules" element={<HangmanRulesPage />} />
+                <Route path="/akinator-rules" element={<AkinatorRulesPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
