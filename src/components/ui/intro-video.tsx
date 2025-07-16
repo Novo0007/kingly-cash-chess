@@ -146,9 +146,10 @@ export const IntroVideo: React.FC<IntroVideoProps> = ({
 
   const toggleMute = () => {
     const video = videoRef.current;
-    if (video && hasUserInteracted) {
+    if (video) {
       video.muted = !video.muted;
       setIsMuted(video.muted);
+      setHasUserInteracted(true);
     }
   };
 
