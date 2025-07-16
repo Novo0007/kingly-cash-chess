@@ -168,33 +168,43 @@ export const IntroVideo: React.FC<IntroVideoProps> = ({
       </div>
 
       {/* Control Buttons */}
-      <div className="absolute top-4 right-4 flex gap-2">
-        {/* Mute/Unmute Button */}
-        <button
-          onClick={toggleMute}
-          className="w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/70 transition-colors border border-white/20"
-        >
-          {isMuted ? (
-            <VolumeX className="w-5 h-5 text-white" />
-          ) : (
-            <Volume2 className="w-5 h-5 text-white" />
-          )}
-        </button>
+      <div
+        className={`absolute ${isMobile ? "top-2 right-2" : "top-4 right-4"} flex gap-2`}
+      >
+        {/* Mute/Unmute Button - Only show if user has interacted */}
+        {hasUserInteracted && (
+          <button
+            onClick={toggleMute}
+            className={`${isMobile ? "w-12 h-12" : "w-10 h-10"} bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/70 active:bg-black/80 transition-colors border border-white/20 touch-manipulation`}
+          >
+            {isMuted ? (
+              <VolumeX
+                className={`${isMobile ? "w-6 h-6" : "w-5 h-5"} text-white`}
+              />
+            ) : (
+              <Volume2
+                className={`${isMobile ? "w-6 h-6" : "w-5 h-5"} text-white`}
+              />
+            )}
+          </button>
+        )}
 
         {/* Skip Button */}
         <button
           onClick={handleSkip}
-          className="w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/70 transition-colors border border-white/20"
+          className={`${isMobile ? "w-12 h-12" : "w-10 h-10"} bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-black/70 active:bg-black/80 transition-colors border border-white/20 touch-manipulation`}
         >
-          <X className="w-5 h-5 text-white" />
+          <X className={`${isMobile ? "w-6 h-6" : "w-5 h-5"} text-white`} />
         </button>
       </div>
 
       {/* Skip Text */}
-      <div className="absolute bottom-4 right-4">
+      <div
+        className={`absolute ${isMobile ? "bottom-2 right-2" : "bottom-4 right-4"}`}
+      >
         <button
           onClick={handleSkip}
-          className="text-white/70 hover:text-white transition-colors text-sm font-medium"
+          className={`text-white/70 hover:text-white active:text-white/90 transition-colors ${isMobile ? "text-base py-2 px-3" : "text-sm"} font-medium touch-manipulation`}
         >
           Skip Intro
         </button>
