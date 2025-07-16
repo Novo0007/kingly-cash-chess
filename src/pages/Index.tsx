@@ -24,6 +24,7 @@ import { WordSearchGame } from "@/components/games/wordsearch/WordSearchGame";
 import { CodeLearnGame } from "@/components/games/codelearn/CodeLearnGame";
 import { FourPicsGame } from "@/components/games/fourpics/FourPicsGame";
 import { HangmanGame } from "@/components/games/hangman/HangmanGame";
+import { AkinatorGame } from "@/components/games/akinator/AkinatorGame";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -51,6 +52,7 @@ const Index = () => {
     | "codelearn"
     | "fourpics"
     | "hangman"
+    | "akinator"
     | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -194,7 +196,8 @@ const Index = () => {
       | "wordsearch"
       | "codelearn"
       | "fourpics"
-      | "hangman",
+      | "hangman"
+      | "akinator",
   ) => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
@@ -215,6 +218,8 @@ const Index = () => {
       setCurrentView("fourpics-game");
     } else if (gameType === "hangman") {
       setCurrentView("hangman-game");
+    } else if (gameType === "akinator") {
+      setCurrentView("akinator-game");
     }
   };
 
@@ -374,6 +379,8 @@ const Index = () => {
         return <FourPicsGame onBack={handleBackToGameSelection} user={user} />;
       case "hangman-game":
         return <HangmanGame onBack={handleBackToGameSelection} user={user} />;
+      case "akinator-game":
+        return <AkinatorGame onBack={handleBackToGameSelection} user={user} />;
       case "wallet":
         return <WalletManager />;
       case "friends":
