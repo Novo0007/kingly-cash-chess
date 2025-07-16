@@ -1273,7 +1273,7 @@ export const AkinatorGame: React.FC<AkinatorGameProps> = ({ onBack, user }) => {
 
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-red-100 rounded-lg">
-                  <Fire className="h-5 w-5 text-red-600" />
+                  <Flame className="h-5 w-5 text-red-600" />
                 </div>
                 <div>
                   <div className="font-semibold">Win Streaks</div>
