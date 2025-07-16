@@ -48,6 +48,10 @@ const App = () => {
     fadeInDuration: 4000,
   });
 
+  const handleIntroVideoEnd = () => {
+    setShowIntroVideo(false);
+  };
+
   useEffect(() => {
     // Simulate loading progress
     const progressInterval = setInterval(() => {
