@@ -97,7 +97,7 @@ export const MobileContainer: React.FC<MobileContainerProps> = ({
       </div>
 
       {/* Professional Game Enhancement Styles */}
-      <style jsx global>{`
+      <style>{`
         /* Enhanced Scrolling for Mobile */
         @media (max-width: 768px) {
           html {
