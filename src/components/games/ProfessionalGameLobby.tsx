@@ -22,6 +22,7 @@ import {
   X,
   Image,
   FileText,
+  Sparkles,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
@@ -37,7 +38,8 @@ interface ProfessionalGameLobbyProps {
       | "wordsearch"
       | "codelearn"
       | "fourpics"
-      | "hangman",
+      | "hangman"
+      | "akinator",
   ) => void;
 }
 
@@ -221,6 +223,24 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       features: ["3 Difficulty Levels", "Word Categories", "Hints Available"],
       highlight: false,
       priority: 9,
+    },
+    {
+      id: "akinator",
+      title: "Akinator",
+      subtitle: "Mind Reading Genie",
+      description: "AI genie that can guess any character you think of",
+      icon: Sparkles,
+      category: "free",
+      gradient: "from-violet-500 to-purple-600",
+      cardBg: "from-violet-50 to-purple-50",
+      iconBg: "bg-violet-100",
+      iconColor: "text-violet-600",
+      players: "120+ Playing",
+      status: "🔮 NEW",
+      earning: "Free Play",
+      features: ["AI Mind Reading", "Smart Questions", "Character Database"],
+      highlight: false,
+      priority: 10,
     },
   ];
 

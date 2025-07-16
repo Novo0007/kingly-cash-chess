@@ -41,7 +41,8 @@ interface GameSelectionProps {
       | "wordsearch"
       | "codelearn"
       | "fourpics"
-      | "hangman",
+      | "hangman"
+      | "akinator",
   ) => void;
 }
 
@@ -75,7 +76,8 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         | "wordsearch"
         | "codelearn"
         | "fourpics"
-        | "hangman",
+        | "hangman"
+        | "akinator",
     ) => {
       onSelectGame(gameType);
     },
@@ -273,6 +275,26 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
         ],
         status: "NEW",
         players: "50+ Playing",
+        isMoneyGame: false,
+      },
+      {
+        id: "akinator",
+        title: "Akinator",
+        description:
+          "Mind-reading AI genie that guesses any character you think of!",
+        icon: Sparkles,
+        emoji: "🔮",
+        color: "violet",
+        gradient: "from-violet-700 via-purple-700 to-indigo-700",
+        lightGradient: "from-violet-100 via-purple-100 to-indigo-100",
+        features: [
+          "🆓 Free to Play",
+          "🔮 AI Mind Reading",
+          "🧠 Smart Questions",
+          "🌟 Hundreds of Characters",
+        ],
+        status: "NEW",
+        players: "120+ Playing",
         isMoneyGame: false,
       },
     ],
@@ -545,7 +567,8 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                             | "wordsearch"
                             | "codelearn"
                             | "fourpics"
-                            | "hangman",
+                            | "hangman"
+                            | "akinator",
                         )
                       }
                       className={`w-full relative overflow-hidden bg-gradient-to-r ${game.gradient} hover:from-opacity-90 text-white border-0 py-4 md:py-5 lg:py-6 text-sm md:text-base lg:text-lg font-bold rounded-2xl md:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 ease-out transform hover:scale-[1.03] hover:-translate-y-1 group/btn will-change-transform`}
@@ -922,6 +945,35 @@ export const GameSelection: React.FC<GameSelectionProps> = ({
                 </div>
                 <Button
                   onClick={() => navigate("/hangman-rules")}
+                  variant="secondary"
+                  className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
+                >
+                  Learn
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="relative bg-gradient-to-br from-violet-500 to-purple-600 border-0 rounded-2xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-violet-400/20 to-purple-400/20"></div>
+            <CardContent className="relative p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                    <Sparkles className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-lg font-heading">
+                      Akinator Rules
+                    </h4>
+                    <p className="text-white/90 text-sm font-medium">
+                      Master the mind-reading guessing game
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => navigate("/akinator-rules")}
                   variant="secondary"
                   className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30 px-4 py-2 rounded-xl font-semibold"
                 >
