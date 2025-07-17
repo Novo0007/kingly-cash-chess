@@ -35,14 +35,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       return savedTheme;
     }
 
-    // Default to system preference
-    if (
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
-      return "dark";
-    }
-    return "light";
+    // Default to Sakura Love theme
+    return "sakura-love";
   });
 
   const currentTheme =
