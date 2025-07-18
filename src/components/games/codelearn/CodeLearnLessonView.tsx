@@ -526,18 +526,56 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
             </CardHeader>
             <CardContent className="space-y-4">
               {currentExercise?.type === "code" ? (
-                <Textarea
-                  placeholder="Write your code here... 🚀"
-                  value={exerciseAnswers[currentExercise?.id || ""] || ""}
-                  onChange={(e) =>
-                    setExerciseAnswers({
-                      ...exerciseAnswers,
-                      [currentExercise?.id || ""]: e.target.value,
-                    })
-                  }
-                  className="font-mono text-sm min-h-[200px] bg-gray-50 border-2 border-gray-200 rounded-xl"
-                  disabled={showExplanation}
-                />
+                <div className="space-y-4">
+                  <Textarea
+                    placeholder="Write your code here... 🚀"
+                    value={exerciseAnswers[currentExercise?.id || ""] || ""}
+                    onChange={(e) =>
+                      setExerciseAnswers({
+                        ...exerciseAnswers,
+                        [currentExercise?.id || ""]: e.target.value,
+                      })
+                    }
+                    className="font-mono text-sm min-h-[200px] bg-gray-50 border-2 border-gray-200 rounded-xl"
+                    disabled={showExplanation}
+                  />
+
+                  {/* Terminal Toggle Button */}
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => setShowTerminal(!showTerminal)}
+                      variant="outline"
+                      className="bg-gray-900 text-green-400 border-gray-700 hover:bg-gray-800"
+                    >
+                      <Terminal className="w-4 h-4 mr-2" />
+                      {showTerminal ? "Hide Terminal" : "Show Terminal"}
+                    </Button>
+
+                    {exerciseAnswers[currentExercise?.id || ""] && (
+                      <Button
+                        onClick={() => {
+                          if (!showTerminal) setShowTerminal(true);
+                          handleTerminalExecute("run");
+                        }}
+                        variant="outline"
+                        className="bg-green-600 text-white hover:bg-green-700"
+                      >
+                        <Play className="w-4 h-4 mr-2" />
+                        Run Code
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Terminal Component */}
+                  {showTerminal && (
+                    <CodeTerminal
+                      onExecute={handleTerminalExecute}
+                      initialMessage="Welcome to Code Terminal! Type 'run' to execute your code, or try other commands."
+                      disabled={showExplanation}
+                      className="mt-4"
+                    />
+                  )}
+                </div>
               ) : (
                 <Input
                   placeholder="Type your answer here... ✨"
