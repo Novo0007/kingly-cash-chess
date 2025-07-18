@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Terminal, Play, Clear, Copy, Check } from "lucide-react";
+import { Terminal, Play, Trash2, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 
 interface TerminalLine {
