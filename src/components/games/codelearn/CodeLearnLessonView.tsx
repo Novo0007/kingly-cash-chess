@@ -103,6 +103,8 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
   const [hearts, setHearts] = useState(3); // Lives system for kids
   const [streakCount, setStreakCount] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [terminalOutput, setTerminalOutput] = useState<string>("");
+  const [showTerminal, setShowTerminal] = useState(false);
 
   const currentExercise = lesson?.content?.exercises?.[currentExerciseIndex];
   const isLastExercise =
