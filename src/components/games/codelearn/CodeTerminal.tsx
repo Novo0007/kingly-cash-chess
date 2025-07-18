@@ -297,7 +297,7 @@ drwxr-xr-x 3 codelearner codelearner 4096 $(date +%b) $(date +%d) $(date +%H:%M)
               size="sm"
               className="text-gray-400 hover:text-white hover:bg-gray-700"
             >
-              <Clear className="w-4 h-4" />
+              <Trash2 className="w-4 h-4" />
             </Button>
           </div>
         </div>
