@@ -32,12 +32,9 @@ interface ProfessionalGameLobbyProps {
     gameType:
       | "chess"
       | "ludo"
-      | "maze"
-      | "game2048"
       | "math"
       | "wordsearch"
       | "codelearn"
-      | "fourpics"
       | "hangman"
       | "akinator",
   ) => void;
@@ -116,42 +113,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       highlight: true,
       priority: 3,
     },
-    {
-      id: "maze",
-      title: "Maze Explorer",
-      subtitle: "Puzzle Adventure",
-      description: "Navigate complex mazes and challenge your mind",
-      icon: Target,
-      category: "free",
-      gradient: "from-indigo-500 to-blue-600",
-      cardBg: "from-indigo-50 to-blue-50",
-      iconBg: "bg-indigo-100",
-      iconColor: "text-indigo-600",
-      players: "500+ Exploring",
-      status: "🧩 PUZZLE",
-      earning: "Free Play",
-      features: ["Brain Training", "Multiple Levels", "Achievements"],
-      highlight: false,
-      priority: 4,
-    },
-    {
-      id: "game2048",
-      title: "2048 Challenge",
-      subtitle: "Number Puzzle",
-      description: "Combine tiles to reach the ultimate 2048 goal",
-      icon: Gamepad2,
-      category: "free",
-      gradient: "from-cyan-500 to-blue-600",
-      cardBg: "from-cyan-50 to-blue-50",
-      iconBg: "bg-cyan-100",
-      iconColor: "text-cyan-600",
-      players: "300+ Playing",
-      status: "🎯 FOCUS",
-      earning: "Free Play",
-      features: ["3 Difficulty Modes", "Best Score", "Smooth Animations"],
-      highlight: false,
-      priority: 5,
-    },
+
     {
       id: "math",
       title: "Math Genius",
@@ -168,7 +130,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       earning: "Free Play",
       features: ["6 Question Types", "Timed Challenges", "Progress Stats"],
       highlight: false,
-      priority: 6,
+      priority: 4,
     },
     {
       id: "wordsearch",
@@ -186,26 +148,9 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       earning: "Coin Rewards",
       features: ["Multiplayer Mode", "Smart Hints", "Daily Rewards"],
       highlight: false,
-      priority: 7,
+      priority: 5,
     },
-    {
-      id: "fourpics",
-      title: "4 Pics 1 Word",
-      subtitle: "Visual Word Puzzle",
-      description: "Guess the word from four pictures and earn coins",
-      icon: Image,
-      category: "earn",
-      gradient: "from-orange-500 to-red-600",
-      cardBg: "from-orange-50 to-red-50",
-      iconBg: "bg-orange-100",
-      iconColor: "text-orange-600",
-      players: "80+ Playing",
-      status: "🖼️ NEW",
-      earning: "Coin Rewards",
-      features: ["99 Levels", "Smart Hints", "Visual Puzzles"],
-      highlight: false,
-      priority: 8,
-    },
+
     {
       id: "hangman",
       title: "Hangman Classic",
@@ -222,7 +167,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       earning: "Free Play",
       features: ["3 Difficulty Levels", "Word Categories", "Hints Available"],
       highlight: false,
-      priority: 9,
+      priority: 6,
     },
     {
       id: "akinator",
@@ -240,7 +185,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       earning: "Free Play",
       features: ["AI Mind Reading", "Smart Questions", "Character Database"],
       highlight: false,
-      priority: 10,
+      priority: 7,
     },
   ];
 
