@@ -25,8 +25,10 @@ import {
   Trophy,
   Sparkles,
   Rocket,
+  Terminal,
 } from "lucide-react";
 import { CodeLesson, CodeUnit, UserProgress, Exercise } from "./CodeLearnTypes";
+import { CodeTerminal } from "./CodeTerminal";
 import { toast } from "sonner";
 
 interface CodeLearnLessonViewProps {
