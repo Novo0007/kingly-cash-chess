@@ -35,7 +35,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       return savedTheme;
     }
 
-    // Default to Sakura Love theme for new users
+
     return "sakura-love";
   });
 
