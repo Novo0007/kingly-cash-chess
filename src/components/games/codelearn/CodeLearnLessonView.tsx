@@ -126,6 +126,88 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
     return () => clearInterval(interval);
   }, [startTime]);
 
+  // Handle terminal command execution
+  const handleTerminalExecute = async (
+    command: string,
+  ): Promise<string | { output: string; error?: string }> => {
+    const userCode = exerciseAnswers[currentExercise?.id || ""] || "";
+
+    // Simulate code execution based on the command and user's code
+    try {
+      if (command.startsWith("python ") && userCode) {
+        // Simulate Python execution
+        const output = simulatePythonExecution(userCode);
+        setTerminalOutput(output);
+        return { output };
+      } else if (command.startsWith("node ") && userCode) {
+        // Simulate JavaScript execution
+        const output = simulateJavaScriptExecution(userCode);
+        setTerminalOutput(output);
+        return { output };
+      } else if (command === "run" && userCode) {
+        // Generic run command
+        const output = simulateCodeExecution(
+          userCode,
+          currentExercise?.language || "python",
+        );
+        setTerminalOutput(output);
+        return { output };
+      } else {
+        return `Command executed: ${command}`;
+      }
+    } catch (error) {
+      return {
+        output: "",
+        error: `Error executing command: ${error instanceof Error ? error.message : "Unknown error"}`,
+      };
+    }
+  };
+
+  const simulatePythonExecution = (code: string): string => {
+    // Simple simulation of Python code execution
+    if (code.includes("print(")) {
+      const match = code.match(/print\(["'](.+?)["']\)/);
+      if (match) {
+        return match[1];
+      }
+    }
+    if (code.includes("Hello World") || code.includes("hello world")) {
+      return "Hello World";
+    }
+    if (code.includes("2 + 2") || code.includes("2+2")) {
+      return "4";
+    }
+    return "Code executed successfully!";
+  };
+
+  const simulateJavaScriptExecution = (code: string): string => {
+    // Simple simulation of JavaScript code execution
+    if (code.includes("console.log(")) {
+      const match = code.match(/console\.log\(["'](.+?)["']\)/);
+      if (match) {
+        return match[1];
+      }
+    }
+    if (code.includes("Hello World") || code.includes("hello world")) {
+      return "Hello World";
+    }
+    if (code.includes("2 + 2") || code.includes("2+2")) {
+      return "4";
+    }
+    return "Code executed successfully!";
+  };
+
+  const simulateCodeExecution = (code: string, language: string): string => {
+    switch (language) {
+      case "python":
+        return simulatePythonExecution(code);
+      case "javascript":
+        return simulateJavaScriptExecution(code);
+      default:
+        return "Code executed successfully!";
+    }
+  };
+
   // Handle answer submission with kid-friendly feedback
   const handleAnswerSubmit = () => {
     if (!currentExercise?.id || !exerciseAnswers[currentExercise.id]) {
