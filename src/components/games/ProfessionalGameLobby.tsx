@@ -31,7 +31,7 @@ import { GlassSurface } from "@/components/ui/glass-surface";
 import { BackgroundIridescence } from "@/components/ui/background-iridescence";
 import { GlitchText } from "@/components/ui/glitch-text";
 import { SplitText } from "@/components/ui/split-text";
-import { AdvancedPhotoEditor } from "./AdvancedPhotoEditor";
+import { MobilePhotoEditor } from "./MobilePhotoEditor";
 
 interface ProfessionalGameLobbyProps {
   onSelectGame: (
