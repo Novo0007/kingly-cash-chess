@@ -30,24 +30,30 @@ const commands = {
       console.error('Please provide a component name: npm run comp:create <name>');
       return;
     }
-    
+
+    // Convert kebab-case to PascalCase
+    const pascalName = componentName
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join('');
+
     const componentDir = path.join(process.cwd(), 'src/components/ui');
     const componentFile = path.join(componentDir, `${componentName}.tsx`);
-    
+
     if (fs.existsSync(componentFile)) {
       console.error(`Component ${componentName} already exists!`);
       return;
     }
-    
+
     const template = `import * as React from "react"
 import { cn } from "@/lib/utils"
 
-export interface ${componentName.charAt(0).toUpperCase() + componentName.slice(1)}Props
+export interface ${pascalName}Props
   extends React.HTMLAttributes<HTMLDivElement> {}
 
-const ${componentName.charAt(0).toUpperCase() + componentName.slice(1)} = React.forwardRef<
+const ${pascalName} = React.forwardRef<
   HTMLDivElement,
-  ${componentName.charAt(0).toUpperCase() + componentName.slice(1)}Props
+  ${pascalName}Props
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -55,9 +61,9 @@ const ${componentName.charAt(0).toUpperCase() + componentName.slice(1)} = React.
     {...props}
   />
 ))
-${componentName.charAt(0).toUpperCase() + componentName.slice(1)}.displayName = "${componentName.charAt(0).toUpperCase() + componentName.slice(1)}"
+${pascalName}.displayName = "${pascalName}"
 
-export { ${componentName.charAt(0).toUpperCase() + componentName.slice(1)} }
+export { ${pascalName} }
 `;
 
     fs.writeFileSync(componentFile, template);
