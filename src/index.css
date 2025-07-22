@@ -10,6 +10,8 @@
 @import "./styles/fuzzy-text.css";
 /* Import reactbits effects */
 @import "./styles/reactbits-effects.css";
+/* Import memory flip game styles */
+@import "./styles/memory-flip.css";
 
 
 @tailwind base;
