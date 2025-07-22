@@ -244,17 +244,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
 
   // Show photo editor if selected
   if (showPhotoEditor) {
-    return (
-      <BackgroundIridescence
-        intensity="low"
-        speed="slow"
-        className="min-h-screen"
-      >
-        <div className="container mx-auto px-4 py-8">
-          <MobilePhotoEditor onClose={() => setShowPhotoEditor(false)} />
-        </div>
-      </BackgroundIridescence>
-    );
+    return <MobilePhotoEditor onClose={() => setShowPhotoEditor(false)} />;
   }
 
   return (
