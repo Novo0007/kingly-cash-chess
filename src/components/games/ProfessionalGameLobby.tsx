@@ -240,6 +240,21 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
     return "grid-cols-2"; // 2x2 grid for all screen sizes
   };
 
+  // Show photo editor if selected
+  if (showPhotoEditor) {
+    return (
+      <BackgroundIridescence
+        intensity="low"
+        speed="slow"
+        className="min-h-screen"
+      >
+        <div className="container mx-auto px-4 py-8">
+          <PhotoEditor onClose={() => setShowPhotoEditor(false)} />
+        </div>
+      </BackgroundIridescence>
+    );
+  }
+
   return (
     <BackgroundIridescence
       intensity="low"
