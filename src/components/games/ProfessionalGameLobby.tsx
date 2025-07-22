@@ -435,7 +435,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
           </div>
         )}
         {/* Quick Stats Footer */}
-        <div className="mt-12 p-6 bg-white rounded-2xl shadow-sm border border-gray-200">
+        <GlassSurface className="mt-12 p-6 rounded-2xl shadow-sm" blur="lg" opacity={0.1}>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
             <div>
               <div className="text-2xl font-bold text-gray-900">
@@ -456,7 +456,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
               <SplitText text="Support" animation="fade" stagger={50} splitBy="char" trigger={true} className="text-sm text-gray-500" />
             </div>
           </div>
-        </div>
+        </GlassSurface>
       </div>
 
         {/* Floating Action Button for Mobile */}
