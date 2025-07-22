@@ -2057,24 +2057,29 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                         background: "#f8f9fa"
                       }}
                       onMouseDown={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+
                         if (currentTool === "brush") {
                           setIsDrawing(true);
-                          const rect = e.currentTarget.getBoundingClientRect();
-                          const x = e.clientX - rect.left;
-                          const y = e.clientY - rect.top;
                           // Start drawing at this position
+                        } else if (currentTool === "crop" && cropMode) {
+                          setCropStart({ x, y });
+                          setCropEnd({ x, y });
+                          setIsDragging(true);
                         }
                       }}
                       onMouseMove={(e) => {
+                        const canvas = canvasRef.current;
+                        if (!canvas) return;
+                        const rect = canvas.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+
                         if (isDrawing && currentTool === "brush") {
-                          const canvas = canvasRef.current;
-                          if (!canvas) return;
                           const ctx = canvas.getContext("2d");
                           if (!ctx) return;
-
-                          const rect = canvas.getBoundingClientRect();
-                          const x = e.clientX - rect.left;
-                          const y = e.clientY - rect.top;
 
                           ctx.lineWidth = brushSize;
                           ctx.lineCap = "round";
@@ -2083,6 +2088,38 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                           ctx.stroke();
                           ctx.beginPath();
                           ctx.moveTo(x, y);
+                        } else if (isDragging && currentTool === "crop" && cropMode && cropStart) {
+                          setCropEnd({ x, y });
+
+                          // Draw crop selection overlay
+                          const ctx = canvas.getContext("2d");
+                          if (ctx && originalImage) {
+                            // Redraw original image
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+
+                            // Draw crop overlay
+                            const cropX = Math.min(cropStart.x, x);
+                            const cropY = Math.min(cropStart.y, y);
+                            const cropWidth = Math.abs(x - cropStart.x);
+                            const cropHeight = Math.abs(y - cropStart.y);
+
+                            // Dark overlay
+                            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                            // Clear crop area
+                            ctx.globalCompositeOperation = "destination-out";
+                            ctx.fillRect(cropX, cropY, cropWidth, cropHeight);
+
+                            // Draw crop border
+                            ctx.globalCompositeOperation = "source-over";
+                            ctx.strokeStyle = "#00ff00";
+                            ctx.lineWidth = 2;
+                            ctx.setLineDash([5, 5]);
+                            ctx.strokeRect(cropX, cropY, cropWidth, cropHeight);
+                            ctx.setLineDash([]);
+                          }
                         }
                       }}
                       onMouseUp={() => {
@@ -2095,31 +2132,38 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                               ctx.beginPath();
                             }
                           }
+                        } else if (currentTool === "crop" && cropMode) {
+                          setIsDragging(false);
                         }
                       }}
                       onTouchStart={(e) => {
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = touch.clientX - rect.left;
+                        const y = touch.clientY - rect.top;
+
                         if (currentTool === "brush") {
-                          e.preventDefault();
                           setIsDrawing(true);
-                          const touch = e.touches[0];
-                          const rect = e.currentTarget.getBoundingClientRect();
-                          const x = touch.clientX - rect.left;
-                          const y = touch.clientY - rect.top;
                           // Start drawing at this position
+                        } else if (currentTool === "crop" && cropMode) {
+                          setCropStart({ x, y });
+                          setCropEnd({ x, y });
+                          setIsDragging(true);
                         }
                       }}
                       onTouchMove={(e) => {
+                        e.preventDefault();
+                        const canvas = canvasRef.current;
+                        if (!canvas) return;
+                        const touch = e.touches[0];
+                        const rect = canvas.getBoundingClientRect();
+                        const x = touch.clientX - rect.left;
+                        const y = touch.clientY - rect.top;
+
                         if (isDrawing && currentTool === "brush") {
-                          e.preventDefault();
-                          const canvas = canvasRef.current;
-                          if (!canvas) return;
                           const ctx = canvas.getContext("2d");
                           if (!ctx) return;
-
-                          const touch = e.touches[0];
-                          const rect = canvas.getBoundingClientRect();
-                          const x = touch.clientX - rect.left;
-                          const y = touch.clientY - rect.top;
 
                           ctx.lineWidth = brushSize;
                           ctx.lineCap = "round";
@@ -2128,6 +2172,33 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                           ctx.stroke();
                           ctx.beginPath();
                           ctx.moveTo(x, y);
+                        } else if (isDragging && currentTool === "crop" && cropMode && cropStart) {
+                          setCropEnd({ x, y });
+
+                          // Draw crop selection overlay (same as mouse)
+                          const ctx = canvas.getContext("2d");
+                          if (ctx && originalImage) {
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+
+                            const cropX = Math.min(cropStart.x, x);
+                            const cropY = Math.min(cropStart.y, y);
+                            const cropWidth = Math.abs(x - cropStart.x);
+                            const cropHeight = Math.abs(y - cropStart.y);
+
+                            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                            ctx.globalCompositeOperation = "destination-out";
+                            ctx.fillRect(cropX, cropY, cropWidth, cropHeight);
+
+                            ctx.globalCompositeOperation = "source-over";
+                            ctx.strokeStyle = "#00ff00";
+                            ctx.lineWidth = 3; // Thicker for mobile
+                            ctx.setLineDash([5, 5]);
+                            ctx.strokeRect(cropX, cropY, cropWidth, cropHeight);
+                            ctx.setLineDash([]);
+                          }
                         }
                       }}
                       onTouchEnd={() => {
@@ -2140,6 +2211,8 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                               ctx.beginPath();
                             }
                           }
+                        } else if (currentTool === "crop" && cropMode) {
+                          setIsDragging(false);
                         }
                       }}
                     />
