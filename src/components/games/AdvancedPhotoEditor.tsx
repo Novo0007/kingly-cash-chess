@@ -519,6 +519,12 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Validate file type
+    if (!file.type.startsWith('audio/')) {
+      alert('Please select a valid audio file.');
+      return;
+    }
+
     const track: MusicTrack = {
       id: Date.now().toString(),
       name: file.name,
@@ -529,22 +535,52 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
       loop: false,
     };
 
-    setMusicTracks(prev => [...prev, track]);
+    // Get audio duration
+    const audio = new Audio();
+    const url = URL.createObjectURL(file);
+    audio.src = url;
+    audio.onloadedmetadata = () => {
+      track.duration = audio.duration;
+      setMusicTracks(prev => [...prev, track]);
+      URL.revokeObjectURL(url);
+    };
+
+    // Clear the input value to allow re-uploading the same file
+    if (event.target) {
+      event.target.value = '';
+    }
   }, []);
 
   const playMusic = useCallback((trackId: string) => {
     const track = musicTracks.find(t => t.id === trackId);
     if (!track || !audioRef.current) return;
 
+    // Stop current music if playing
+    if (isPlaying && currentTrack) {
+      audioRef.current.pause();
+    }
+
     const url = URL.createObjectURL(track.file);
     audioRef.current.src = url;
     audioRef.current.volume = track.volume;
     audioRef.current.loop = track.loop;
-    audioRef.current.play();
-    
-    setCurrentTrack(trackId);
-    setIsPlaying(true);
-  }, [musicTracks]);
+
+    audioRef.current.play().then(() => {
+      setCurrentTrack(trackId);
+      setIsPlaying(true);
+    }).catch((error) => {
+      console.error('Failed to play audio:', error);
+      alert('Failed to play audio. Please try again.');
+    });
+
+    // Handle audio end event
+    audioRef.current.onended = () => {
+      if (!track.loop) {
+        setIsPlaying(false);
+        setCurrentTrack('');
+      }
+    };
+  }, [musicTracks, isPlaying, currentTrack]);
 
   const stopMusic = useCallback(() => {
     if (audioRef.current) {
@@ -554,6 +590,23 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
     setIsPlaying(false);
     setCurrentTrack("");
   }, []);
+
+  const pauseMusic = useCallback(() => {
+    if (audioRef.current && isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  }, [isPlaying]);
+
+  const resumeMusic = useCallback(() => {
+    if (audioRef.current && !isPlaying && currentTrack) {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch((error) => {
+        console.error('Failed to resume audio:', error);
+      });
+    }
+  }, [isPlaying, currentTrack]);
 
   // Handle file upload with preserved quality
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
