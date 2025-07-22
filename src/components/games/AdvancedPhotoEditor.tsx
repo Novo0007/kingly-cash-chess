@@ -1147,129 +1147,246 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
 
   return (
     <div className="space-y-6">
-      {/* Professional Header */}
-      <div className="relative overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 rounded-2xl opacity-60" />
+      {/* Ultra Professional Video Studio Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative overflow-hidden"
+      >
+        {/* Dynamic animated background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 opacity-95" />
+          <div className={"absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.05\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"1\"%3E%3C/circle%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"} />
+          <motion.div
+            animate={{
+              background: [
+                'radial-gradient(600px circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%)',
+                'radial-gradient(600px circle at 80% 50%, rgba(255, 119, 198, 0.3), transparent 50%)',
+                'radial-gradient(600px circle at 50% 50%, rgba(119, 255, 198, 0.3), transparent 50%)'
+              ]
+            }}
+            transition={{ duration: 8, repeat: Infinity, repeatType: 'reverse' }}
+            className="absolute inset-0"
+          />
+        </div>
 
-        <div className="relative p-6 border-2 border-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 rounded-2xl">
+        <div className="relative p-8 border border-purple-500/20 rounded-3xl backdrop-blur-xl">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {/* Professional logo */}
+            <div className="flex items-center gap-6">
+              {/* Cinematic Logo */}
               <div className="relative">
-                <div className={`w-16 h-16 bg-gradient-to-br ${currentTheme.gradients.primary} rounded-2xl flex items-center justify-center shadow-xl`}>
-                  <Cpu className="w-8 h-8 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
-                  <Sparkles className="w-3 h-3 text-white" />
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="w-20 h-20 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 rounded-3xl flex items-center justify-center shadow-2xl border border-white/20"
+                >
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                  >
+                    <Film className="w-10 h-10 text-white" />
+                  </motion.div>
+                </motion.div>
+
+                {/* Video-like recording indicator */}
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center border-3 border-white shadow-lg"
+                >
+                  <div className="w-3 h-3 bg-white rounded-full" />
+                </motion.div>
+
+                {/* Pro badge */}
+                <div className="absolute -bottom-2 -left-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs font-bold px-2 py-1 rounded-full border-2 border-white">
+                  PRO
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <SplitText
-                  text="Professional Photo Studio"
-                  animation="slide"
-                  direction="up"
-                  stagger={30}
-                  splitBy="char"
-                  trigger={true}
-                  className={`${isMobile ? "text-xl" : "text-3xl"} font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent`}
-                />
-                <div className="flex items-center gap-3">
-                  <p className={`${isMobile ? "text-sm" : "text-base"} text-muted-foreground font-medium`}>
-                    AI-Powered Editor with Music Integration
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    <span className="text-xs text-green-600 font-medium">Live</span>
-                  </div>
-                </div>
+              <div className="space-y-2">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <SplitText
+                    text="AI Video Studio Pro"
+                    animation="slide"
+                    direction="up"
+                    stagger={50}
+                    splitBy="char"
+                    trigger={true}
+                    className={`${isMobile ? "text-2xl" : "text-4xl"} font-black bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent tracking-tight`}
+                  />
+                </motion.div>
 
-                {/* Feature badges */}
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge className="bg-blue-100 text-blue-700 border-blue-200">
-                    <Brain className="w-3 h-3 mr-1" />
-                    AI Tools
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="flex items-center gap-4"
+                >
+                  <p className={`${isMobile ? "text-sm" : "text-lg"} text-gray-300 font-medium`}>
+                    Create Cinematic Photo Stories with AI & Music
+                  </p>
+
+                  {/* Live indicator */}
+                  <div className="flex items-center gap-2 bg-red-500/20 px-3 py-1 rounded-full border border-red-500/30">
+                    <motion.div
+                      animate={{ opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                      className="w-2 h-2 bg-red-500 rounded-full"
+                    />
+                    <span className="text-xs text-red-400 font-bold uppercase tracking-wide">RECORDING</span>
+                  </div>
+                </motion.div>
+
+                {/* Enhanced Feature badges */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className="flex items-center gap-3 mt-3"
+                >
+                  <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 px-3 py-1">
+                    <Brain className="w-4 h-4 mr-2" />
+                    AI Enhanced
                   </Badge>
-                  <Badge className="bg-purple-100 text-purple-700 border-purple-200">
-                    <Music className="w-3 h-3 mr-1" />
-                    Music
+                  <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 px-3 py-1">
+                    <Video className="w-4 h-4 mr-2" />
+                    Video Style
                   </Badge>
-                  <Badge className="bg-green-100 text-green-700 border-green-200">
-                    <Zap className="w-3 h-3 mr-1" />
-                    Pro
+                  <Badge className="bg-pink-500/20 text-pink-300 border-pink-500/30 px-3 py-1">
+                    <Music className="w-4 h-4 mr-2" />
+                    Music Sync
                   </Badge>
-                </div>
+                  <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 px-3 py-1">
+                    <Crown className="w-4 h-4 mr-2" />
+                    Premium
+                  </Badge>
+                </motion.div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              {/* Status indicators */}
-              <div className="hidden md:flex flex-col items-end gap-1">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Eye className="w-4 h-4" />
-                  <span>Real-time Preview</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Settings className="w-4 h-4" />
-                  <span>Professional Tools</span>
+            <div className="flex items-center gap-4">
+              {/* Video-like controls */}
+              <div className="hidden lg:flex items-center gap-3 bg-black/30 backdrop-blur-sm rounded-2xl p-3 border border-white/10">
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center cursor-pointer"
+                  onClick={() => setIsPreviewMode(!isPreviewMode)}
+                >
+                  {isPreviewMode ? <PauseCircle className="w-5 h-5 text-white" /> : <PlayCircle className="w-5 h-5 text-white" />}
+                </motion.div>
+
+                <div className="flex items-center gap-2 text-white/80">
+                  <MonitorPlay className="w-4 h-4" />
+                  <span className="text-sm font-medium">Preview</span>
                 </div>
               </div>
 
-              {/* AI Processing indicator */}
-              {isAIProcessing && (
-                <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-lg p-3 border shadow-sm">
-                  <Brain className="w-5 h-5 text-blue-500 animate-pulse" />
-                  <div className="flex flex-col gap-1">
-                    <span className="text-sm font-medium text-blue-800">AI Processing</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 bg-blue-200 rounded-full h-2">
-                        <div
-                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${aiProgress}%` }}
-                        />
+              {/* AI Processing with cinematic style */}
+              <AnimatePresence>
+                {isAIProcessing && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="flex items-center gap-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 backdrop-blur-sm rounded-2xl p-4 border border-blue-500/30"
+                  >
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                    >
+                      <Brain className="w-6 h-6 text-blue-400" />
+                    </motion.div>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-sm font-bold text-blue-300 uppercase tracking-wide">
+                        AI PROCESSING
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-32 bg-black/30 rounded-full h-2 overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${aiProgress}%` }}
+                            className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                          />
+                        </div>
+                        <span className="text-xs text-blue-400 font-bold">{Math.round(aiProgress)}%</span>
                       </div>
-                      <span className="text-xs text-blue-600 font-medium">{Math.round(aiProgress)}%</span>
                     </div>
-                  </div>
-                </div>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-              {/* Close button */}
+              {/* Close button with style */}
               {onClose && (
-                <Button
-                  onClick={onClose}
-                  variant="outline"
-                  size={isMobile ? "sm" : "default"}
-                  className="rounded-full bg-white/80 backdrop-blur-sm border-2 hover:bg-white/90 transition-all"
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <X className="w-4 h-4" />
-                </Button>
+                  <Button
+                    onClick={onClose}
+                    variant="outline"
+                    size={isMobile ? "sm" : "default"}
+                    className="rounded-full bg-black/30 backdrop-blur-sm border-white/20 text-white hover:bg-white/10 transition-all"
+                  >
+                    <X className="w-5 h-5" />
+                  </Button>
+                </motion.div>
               )}
             </div>
           </div>
 
-          {/* Quick stats */}
-          {isEditing && (
-            <div className="mt-4 pt-4 border-t border-gray-200/50">
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <div className="flex items-center gap-4">
-                  <span>Image: {originalDimensions.width} × {originalDimensions.height}px</span>
-                  <span>Tools: {advancedTools.length} available</span>
-                  <span>Filters: {filters.length} styles</span>
+          {/* Professional Stats Bar */}
+          <AnimatePresence>
+            {isEditing && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="mt-6 pt-6 border-t border-white/10"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-6 text-sm text-gray-300">
+                    <div className="flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4 text-blue-400" />
+                      <span>{originalDimensions.width} × {originalDimensions.height}px</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <LayoutGrid className="w-4 h-4 text-purple-400" />
+                      <span>{dynamicTemplates.length} Templates</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Filter className="w-4 h-4 text-pink-400" />
+                      <span>{filters.length} Effects</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Music className="w-4 h-4 text-orange-400" />
+                      <span>{musicTracks.length} Tracks</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                      <CheckCircle className="w-3 h-3 mr-2" />
+                      STUDIO READY
+                    </Badge>
+
+                    {videoLikeMode && (
+                      <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+                        <Video className="w-3 h-3 mr-2" />
+                        VIDEO MODE
+                      </Badge>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span>Status:</span>
-                  <Badge className="bg-green-100 text-green-700">
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Ready
-                  </Badge>
-                </div>
-              </div>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
+      </motion.div>
 
       {/* Professional Upload Section */}
       {!isEditing && (
