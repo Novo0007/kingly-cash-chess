@@ -14,7 +14,7 @@ export interface FuzzyTextAnimationProps
 const FuzzyTextAnimation = React.forwardRef<
   HTMLDivElement,
   FuzzyTextAnimationProps
->(({ className, text, duration = 2000, characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?", trigger = true, ...props }, ref) => {
+>(({ className, text, duration = 2000, characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?", trigger = true, enableGlow = true, enableShimmer = true, ...props }, ref) => {
   const [displayText, setDisplayText] = React.useState(text)
   const [isAnimating, setIsAnimating] = React.useState(false)
   const intervalRef = React.useRef<NodeJS.Timeout>()
