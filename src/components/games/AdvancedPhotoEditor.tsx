@@ -65,7 +65,7 @@ import {
   Layers3,
   PenTool,
 
-  Text,
+
 } from "lucide-react";
 
 export interface AdvancedPhotoEditorProps {
