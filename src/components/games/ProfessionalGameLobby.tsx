@@ -221,6 +221,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
     .filter((game) => {
       if (selectedCategory === "free") return game.category === "free";
       if (selectedCategory === "earn") return game.category === "earn";
+      if (selectedCategory === "creative") return game.category === "creative";
       return true;
     })
     .sort((a, b) => a.priority - b.priority);
