@@ -1613,55 +1613,110 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                 <div className="flex items-center justify-between">
                   <h4 className="font-medium text-foreground">Background Music</h4>
                   <Button
-                    onClick={() => audioInputRef.current?.click()}
-                    variant="outline"
+                    onClick={() => {
+                      console.log('Add track button clicked');
+                      audioInputRef.current?.click();
+                    }}
+                    className="bg-gradient-to-r from-purple-500 to-pink-600 text-white border-0"
                     size="sm"
                   >
                     <FileAudio className="w-4 h-4 mr-2" />
                     Add Track
                   </Button>
                 </div>
-                
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {musicTracks.map((track) => (
-                    <div key={track.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                      <div className="flex gap-1">
+
+                {/* Music player controls */}
+                {musicTracks.length > 0 && (
+                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
+                    <div className="flex items-center gap-2">
+                      <Music className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-800">
+                        {musicTracks.length} track{musicTracks.length > 1 ? 's' : ''} loaded
+                      </span>
+                    </div>
+
+                    {isPlaying && (
+                      <div className="flex items-center gap-2 text-green-600">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span className="text-xs font-medium">Playing</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Mobile-optimized music tracks list */}
+                <div className={`space-y-2 ${isMobile ? "max-h-60" : "max-h-40"} overflow-y-auto`}>
+                  {musicTracks.map((track, index) => (
+                    <div key={track.id} className={`${isMobile ? "p-4" : "p-3"} bg-muted/50 rounded-lg border transition-all hover:bg-muted/70`}>
+                      {/* Track header */}
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">{track.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Track {index + 1} • {track.duration ? `${Math.floor(track.duration / 60)}:${Math.floor(track.duration % 60).toString().padStart(2, '0')}` : 'Loading...'}
+                          </p>
+                        </div>
+
                         <Button
                           onClick={() => {
+                            console.log('Removing track:', track.name);
+                            setMusicTracks(prev => prev.filter(t => t.id !== track.id));
                             if (currentTrack === track.id) {
-                              if (isPlaying) {
-                                pauseMusic();
-                              } else {
-                                resumeMusic();
-                              }
-                            } else {
-                              playMusic(track.id);
+                              stopMusic();
                             }
                           }}
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
+                          className="text-red-500 hover:text-red-700"
                         >
-                          {currentTrack === track.id && isPlaying ?
-                            <Pause className="w-4 h-4" /> :
-                            <Play className="w-4 h-4" />
-                          }
+                          <Trash2 className="w-4 h-4" />
                         </Button>
-
-                        {currentTrack === track.id && (
-                          <Button
-                            onClick={stopMusic}
-                            variant="outline"
-                            size="sm"
-                          >
-                            <StopCircle className="w-4 h-4" />
-                          </Button>
-                        )}
                       </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground truncate">{track.name}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Volume2 className="w-3 h-3" />
+
+                      {/* Controls row */}
+                      <div className="flex items-center gap-3">
+                        {/* Play controls */}
+                        <div className="flex gap-1">
+                          <Button
+                            onClick={() => {
+                              console.log('Play/pause clicked for track:', track.name);
+                              if (currentTrack === track.id) {
+                                if (isPlaying) {
+                                  pauseMusic();
+                                } else {
+                                  resumeMusic();
+                                }
+                              } else {
+                                playMusic(track.id);
+                              }
+                            }}
+                            variant={currentTrack === track.id ? "default" : "outline"}
+                            size="sm"
+                            className={currentTrack === track.id ? "bg-blue-600 text-white" : ""}
+                          >
+                            {currentTrack === track.id && isPlaying ?
+                              <Pause className="w-4 h-4" /> :
+                              <Play className="w-4 h-4" />
+                            }
+                          </Button>
+
+                          {currentTrack === track.id && (
+                            <Button
+                              onClick={() => {
+                                console.log('Stop clicked');
+                                stopMusic();
+                              }}
+                              variant="outline"
+                              size="sm"
+                            >
+                              <StopCircle className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+
+                        {/* Volume control */}
+                        <div className="flex-1 flex items-center gap-2">
+                          <Volume2 className="w-3 h-3 text-muted-foreground" />
                           <input
                             type="range"
                             min="0"
@@ -1670,33 +1725,75 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                             value={track.volume}
                             onChange={(e) => {
                               const newVolume = parseFloat(e.target.value);
-                              setMusicTracks(prev => 
+                              console.log('Volume changed:', newVolume);
+                              setMusicTracks(prev =>
                                 prev.map(t => t.id === track.id ? { ...t, volume: newVolume } : t)
                               );
                               if (audioRef.current && currentTrack === track.id) {
                                 audioRef.current.volume = newVolume;
                               }
                             }}
-                            className="flex-1 h-1"
+                            className={`flex-1 ${isMobile ? "h-2" : "h-1"}`}
                           />
+                          <span className="text-xs text-muted-foreground min-w-[3ch]">
+                            {Math.round(track.volume * 100)}%
+                          </span>
                         </div>
+
+                        {/* Loop toggle */}
+                        <Button
+                          onClick={() => {
+                            const newLoop = !track.loop;
+                            console.log('Loop toggled:', newLoop);
+                            setMusicTracks(prev =>
+                              prev.map(t => t.id === track.id ? { ...t, loop: newLoop } : t)
+                            );
+                            if (audioRef.current && currentTrack === track.id) {
+                              audioRef.current.loop = newLoop;
+                            }
+                          }}
+                          variant={track.loop ? "default" : "outline"}
+                          size="sm"
+                          className={track.loop ? "bg-green-600 text-white" : ""}
+                        >
+                          <Shuffle className="w-4 h-4" />
+                        </Button>
                       </div>
-                      
-                      <Button
-                        onClick={() => setMusicTracks(prev => prev.filter(t => t.id !== track.id))}
-                        variant="ghost"
-                        size="sm"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
                     </div>
                   ))}
                 </div>
-                
+
+                {/* Empty state */}
                 {musicTracks.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
-                    <Headphones className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                    <p>No music tracks added yet</p>
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center">
+                      <Headphones className="w-8 h-8 text-purple-600" />
+                    </div>
+                    <p className="font-medium mb-1">No music tracks yet</p>
+                    <p className="text-sm">
+                      Add background music to enhance your photo editing experience
+                    </p>
+                    <Button
+                      onClick={() => audioInputRef.current?.click()}
+                      className="mt-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white border-0"
+                      size="sm"
+                    >
+                      <Music className="w-4 h-4 mr-2" />
+                      Add Your First Track
+                    </Button>
+                  </div>
+                )}
+
+                {/* Mobile audio tips */}
+                {isMobile && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Headphones className="w-4 h-4 text-yellow-600" />
+                      <span className="text-sm font-medium text-yellow-800">Mobile Audio Tips</span>
+                    </div>
+                    <p className="text-xs text-yellow-700">
+                      Tap the screen first to enable audio. Use headphones for best experience.
+                    </p>
                   </div>
                 )}
               </div>
