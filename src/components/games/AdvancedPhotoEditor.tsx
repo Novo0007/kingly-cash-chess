@@ -1178,23 +1178,57 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
             )}
 
             {currentTool === "filters" && (
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                {filters.map((filter) => (
-                  <Button
-                    key={filter.id}
-                    onClick={() => setEditState(prev => ({ ...prev, filter: filter.filter }))}
-                    variant={editState.filter === filter.filter ? "default" : "outline"}
-                    className={`p-3 h-auto flex flex-col items-center gap-2 filter-preview ${
-                      editState.filter === filter.filter
-                        ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white`
-                        : ""
-                    }`}
-                  >
-                    <div className="w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-500 rounded" 
-                         style={{ filter: filter.filter }} />
-                    <span className="text-xs">{filter.name}</span>
-                  </Button>
-                ))}
+              <div className="space-y-3">
+                <h4 className="text-sm font-medium text-foreground">Photo Filters</h4>
+                {/* Mobile scrollable filters */}
+                <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                  <div className={`${
+                    isMobile
+                      ? "flex gap-3 min-w-max"
+                      : "grid grid-cols-2 md:grid-cols-5 gap-3"
+                  }`}>
+                    {filters.map((filter) => (
+                      <Button
+                        key={filter.id}
+                        onClick={() => setEditState(prev => ({ ...prev, filter: filter.filter }))}
+                        variant={editState.filter === filter.filter ? "default" : "outline"}
+                        className={`p-3 h-auto flex flex-col items-center gap-2 filter-preview ${
+                          isMobile ? "min-w-[80px] flex-shrink-0" : ""
+                        } ${
+                          editState.filter === filter.filter
+                            ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white`
+                            : ""
+                        }`}
+                      >
+                        <div className="w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-500 rounded"
+                             style={{ filter: filter.filter }} />
+                        <span className="text-xs text-center">{filter.name}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                {/* Filter intensity control */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Filter Intensity</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    defaultValue="100"
+                    className="w-full photo-editor-slider"
+                    onChange={(e) => {
+                      const intensity = parseInt(e.target.value) / 100;
+                      // Apply filter with custom intensity - this is a simplified version
+                      const currentFilter = editState.filter;
+                      if (currentFilter !== "none" && intensity < 1) {
+                        // Blend between no filter and full filter based on intensity
+                        const blended = `opacity(${intensity}) ${currentFilter}`;
+                        setEditState(prev => ({ ...prev, filter: blended }));
+                      }
+                    }}
+                  />
+                  <span className="text-xs text-muted-foreground">Adjust filter strength</span>
+                </div>
               </div>
             )}
           </GlassSurface>
