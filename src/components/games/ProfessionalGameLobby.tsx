@@ -399,7 +399,9 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
                     ? games.length
                     : category.id === "free"
                       ? games.filter((g) => g.category === "free").length
-                      : games.filter((g) => g.category === "earn").length}
+                      : category.id === "earn"
+                        ? games.filter((g) => g.category === "earn").length
+                        : games.filter((g) => g.category === "creative").length}
                 </Badge>
               </Button>
             ))}
