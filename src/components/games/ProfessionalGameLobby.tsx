@@ -237,13 +237,17 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
           trigger={true}
           className={`${isMobile ? "text-2xl" : "text-3xl lg:text-4xl"} font-bold bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent`}
         />
-        <p
-          className={`${isMobile ? "text-sm" : "text-lg"} text-muted-foreground max-w-2xl mx-auto`}
-        >
-          {isMobile
+        <SplitText
+          text={isMobile
             ? "Choose from exciting games and start playing!"
             : "Choose from our collection of exciting games and start playing now!"}
-        </p>
+          animation="slide"
+          direction="up"
+          stagger={30}
+          splitBy="word"
+          trigger={true}
+          className={`${isMobile ? "text-sm" : "text-lg"} text-muted-foreground max-w-2xl mx-auto`}
+        />
 
         {/* Stats - Mobile Responsive */}
         <div
