@@ -1049,16 +1049,38 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   {musicTracks.map((track) => (
                     <div key={track.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                      <Button
-                        onClick={() => currentTrack === track.id ? stopMusic() : playMusic(track.id)}
-                        variant="outline"
-                        size="sm"
-                      >
-                        {currentTrack === track.id && isPlaying ? 
-                          <Pause className="w-4 h-4" /> : 
-                          <Play className="w-4 h-4" />
-                        }
-                      </Button>
+                      <div className="flex gap-1">
+                        <Button
+                          onClick={() => {
+                            if (currentTrack === track.id) {
+                              if (isPlaying) {
+                                pauseMusic();
+                              } else {
+                                resumeMusic();
+                              }
+                            } else {
+                              playMusic(track.id);
+                            }
+                          }}
+                          variant="outline"
+                          size="sm"
+                        >
+                          {currentTrack === track.id && isPlaying ?
+                            <Pause className="w-4 h-4" /> :
+                            <Play className="w-4 h-4" />
+                          }
+                        </Button>
+
+                        {currentTrack === track.id && (
+                          <Button
+                            onClick={stopMusic}
+                            variant="outline"
+                            size="sm"
+                          >
+                            <StopCircle className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
                       
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{track.name}</p>
