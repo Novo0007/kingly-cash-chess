@@ -1054,48 +1054,118 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
 
             {currentTool === "text" && (
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Font</label>
-                    <select
-                      value={selectedFont}
-                      onChange={(e) => setSelectedFont(e.target.value)}
-                      className="w-full p-2 rounded border bg-background"
-                    >
-                      {fonts.map(font => (
-                        <option key={font} value={font}>{font}</option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Size</label>
-                    <input
-                      type="range"
-                      min="12"
-                      max="120"
-                      value={textSize}
-                      onChange={(e) => setTextSize(parseInt(e.target.value))}
-                      className="w-full photo-editor-slider"
-                    />
-                    <span className="text-xs text-muted-foreground">{textSize}px</span>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Color</label>
-                    <input
-                      type="color"
-                      value={brushColor}
-                      onChange={(e) => setBrushColor(e.target.value)}
-                      className="w-full h-10 rounded border"
-                    />
+                <h4 className="text-sm font-medium text-foreground">Text Tool</h4>
+
+                {/* Mobile scrollable text controls */}
+                <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                  <div className={`${isMobile ? "flex gap-4 min-w-max" : "grid grid-cols-1 md:grid-cols-3 gap-4"}`}>
+                    <div className={`space-y-2 ${isMobile ? "min-w-[160px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Font</label>
+                      <select
+                        value={selectedFont}
+                        onChange={(e) => setSelectedFont(e.target.value)}
+                        className="w-full p-2 rounded border bg-background text-sm"
+                      >
+                        {fonts.map(font => (
+                          <option key={font} value={font}>{font}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[160px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Size</label>
+                      <input
+                        type="range"
+                        min="12"
+                        max="120"
+                        value={textSize}
+                        onChange={(e) => setTextSize(parseInt(e.target.value))}
+                        className="w-full photo-editor-slider"
+                      />
+                      <span className="text-xs text-muted-foreground">{textSize}px</span>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[160px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Color</label>
+                      <input
+                        type="color"
+                        value={brushColor}
+                        onChange={(e) => setBrushColor(e.target.value)}
+                        className="w-full h-10 rounded border"
+                      />
+                      <div className="text-xs text-muted-foreground">{brushColor}</div>
+                    </div>
                   </div>
                 </div>
-                
-                <Button onClick={addTextOverlay} className="w-full">
-                  <Type className="w-4 h-4 mr-2" />
-                  Add Text
-                </Button>
+
+                {/* Text input area */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Text Content</label>
+                  <input
+                    type="text"
+                    placeholder="Enter your text here..."
+                    className="w-full p-2 rounded border bg-background"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const text = e.currentTarget.value;
+                        if (text.trim()) {
+                          const newText: TextOverlay = {
+                            id: Date.now().toString(),
+                            text: text.trim(),
+                            x: 100,
+                            y: 100,
+                            fontSize: textSize,
+                            color: brushColor,
+                            fontFamily: selectedFont,
+                            rotation: 0,
+                          };
+                          setTextOverlays(prev => [...prev, newText]);
+                          e.currentTarget.value = '';
+                        }
+                      }
+                    }}
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <Button onClick={addTextOverlay} className="flex-1">
+                    <Type className="w-4 h-4 mr-2" />
+                    Add Text
+                  </Button>
+
+                  {textOverlays.length > 0 && (
+                    <Button
+                      onClick={() => setTextOverlays([])}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Clear All
+                    </Button>
+                  )}
+                </div>
+
+                {/* Active text overlays */}
+                {textOverlays.length > 0 && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Text Overlays ({textOverlays.length})</label>
+                    <div className="max-h-24 overflow-y-auto space-y-1">
+                      {textOverlays.map((overlay, index) => (
+                        <div key={overlay.id} className="flex items-center justify-between p-2 bg-muted/50 rounded text-xs">
+                          <span className="truncate flex-1">{overlay.text}</span>
+                          <Button
+                            onClick={() => setTextOverlays(prev => prev.filter(t => t.id !== overlay.id))}
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0"
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
