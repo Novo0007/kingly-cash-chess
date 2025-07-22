@@ -12,6 +12,8 @@
 @import "./styles/reactbits-effects.css";
 /* Import photo editor styles */
 @import "./styles/photo-editor.css";
+/* Import mobile photo editor styles */
+@import "./styles/mobile-photo-editor.css";
 
 @tailwind base;
 @tailwind components;
