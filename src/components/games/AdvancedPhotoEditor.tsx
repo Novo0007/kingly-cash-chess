@@ -2217,23 +2217,126 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                       }}
                     />
                     
-                    {/* Text overlays */}
-                    {textOverlays.map((overlay) => (
-                      <div
-                        key={overlay.id}
-                        className="absolute cursor-move text-white border border-dashed border-white/50 p-1"
-                        style={{
-                          left: overlay.x,
-                          top: overlay.y,
-                          fontSize: overlay.fontSize,
-                          fontFamily: overlay.fontFamily,
-                          color: overlay.color,
-                          transform: `rotate(${overlay.rotation}deg)`,
-                        }}
-                      >
-                        {overlay.text}
-                      </div>
-                    ))}
+                    {/* Enhanced Text overlays for mobile */}
+                    {textOverlays.map((overlay) => {
+                      const [isDraggingText, setIsDraggingText] = useState(false);
+                      const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+
+                      return (
+                        <div
+                          key={overlay.id}
+                          className={`absolute select-none border border-dashed p-2 transition-all ${
+                            isMobile
+                              ? "cursor-grab active:cursor-grabbing border-blue-400 bg-blue-500/20"
+                              : "cursor-move border-white/50"
+                          } ${isDraggingText ? "z-50 scale-110" : "z-10"}`}
+                          style={{
+                            left: overlay.x,
+                            top: overlay.y,
+                            fontSize: overlay.fontSize,
+                            fontFamily: overlay.fontFamily,
+                            color: overlay.color,
+                            transform: `rotate(${overlay.rotation}deg) ${isDraggingText ? 'scale(1.1)' : 'scale(1)'}`,
+                            minWidth: isMobile ? '60px' : '40px',
+                            minHeight: isMobile ? '40px' : '30px',
+                            touchAction: 'none',
+                          }}
+                          onMouseDown={(e) => {
+                            if (!isMobile) {
+                              setIsDraggingText(true);
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              setDragOffset({
+                                x: e.clientX - rect.left,
+                                y: e.clientY - rect.top
+                              });
+                            }
+                          }}
+                          onMouseMove={(e) => {
+                            if (isDraggingText && !isMobile) {
+                              const canvas = canvasRef.current;
+                              if (!canvas) return;
+                              const canvasRect = canvas.getBoundingClientRect();
+                              const newX = e.clientX - canvasRect.left - dragOffset.x;
+                              const newY = e.clientY - canvasRect.top - dragOffset.y;
+
+                              setTextOverlays(prev =>
+                                prev.map(t => t.id === overlay.id
+                                  ? { ...t, x: Math.max(0, Math.min(newX, canvas.width - 100)), y: Math.max(0, Math.min(newY, canvas.height - 30)) }
+                                  : t
+                                )
+                              );
+                            }
+                          }}
+                          onMouseUp={() => {
+                            setIsDraggingText(false);
+                          }}
+                          onTouchStart={(e) => {
+                            e.preventDefault();
+                            setIsDraggingText(true);
+                            const touch = e.touches[0];
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            setDragOffset({
+                              x: touch.clientX - rect.left,
+                              y: touch.clientY - rect.top
+                            });
+                          }}
+                          onTouchMove={(e) => {
+                            if (isDraggingText) {
+                              e.preventDefault();
+                              const touch = e.touches[0];
+                              const canvas = canvasRef.current;
+                              if (!canvas) return;
+                              const canvasRect = canvas.getBoundingClientRect();
+                              const newX = touch.clientX - canvasRect.left - dragOffset.x;
+                              const newY = touch.clientY - canvasRect.top - dragOffset.y;
+
+                              setTextOverlays(prev =>
+                                prev.map(t => t.id === overlay.id
+                                  ? { ...t, x: Math.max(0, Math.min(newX, canvas.width - 100)), y: Math.max(0, Math.min(newY, canvas.height - 30)) }
+                                  : t
+                                )
+                              );
+                            }
+                          }}
+                          onTouchEnd={() => {
+                            setIsDraggingText(false);
+                          }}
+                          onDoubleClick={() => {
+                            const newText = prompt('Edit text:', overlay.text);
+                            if (newText !== null && newText.trim()) {
+                              setTextOverlays(prev =>
+                                prev.map(t => t.id === overlay.id ? { ...t, text: newText.trim() } : t)
+                              );
+                            }
+                          }}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="flex-1">{overlay.text}</span>
+                            {isMobile && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setTextOverlays(prev => prev.filter(t => t.id !== overlay.id));
+                                }}
+                                className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                              >
+                                ×
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Mobile resize handle */}
+                          {isMobile && (
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white cursor-se-resize"
+                              onTouchStart={(e) => {
+                                e.stopPropagation();
+                                // Handle resize logic here
+                              }}
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </GlassSurface>
