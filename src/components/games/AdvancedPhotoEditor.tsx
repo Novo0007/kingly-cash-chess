@@ -1085,42 +1085,118 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
         </div>
       </div>
 
-      {/* Upload Section */}
+      {/* Professional Upload Section */}
       {!isEditing && (
-        <GlassSurface className="p-8 rounded-2xl text-center" blur="md" opacity={0.1}>
-          <div className="space-y-6">
-            <div className="w-20 h-20 mx-auto bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <Upload className="w-10 h-10 text-white" />
+        <div className="relative">
+          {/* Animated background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-3xl opacity-60 animate-pulse" />
+
+          <GlassSurface className="relative p-10 rounded-3xl text-center border-2 border-dashed border-purple-200" blur="md" opacity={0.1}>
+            <div className="space-y-8">
+              {/* Professional upload icon */}
+              <div className="relative mx-auto w-28 h-28">
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl animate-pulse opacity-75" />
+                <div className="relative w-full h-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-3xl flex items-center justify-center shadow-2xl">
+                  <Upload className="w-12 h-12 text-white" />
+                </div>
+                {/* Floating elements */}
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce">
+                  <Sparkles className="w-4 h-4 text-white" />
+                </div>
+                <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center animate-pulse">
+                  <Zap className="w-3 h-3 text-white" />
+                </div>
+              </div>
+
+              {/* Enhanced title and description */}
+              <div className="space-y-4">
+                <h3 className={`${isMobile ? "text-2xl" : "text-3xl"} font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent`}>
+                  Start Your Creative Journey
+                </h3>
+                <p className={`${isMobile ? "text-base" : "text-lg"} text-muted-foreground max-w-2xl mx-auto font-medium`}>
+                  Upload high-resolution images and transform them with professional AI tools, filters, and music integration.
+                </p>
+
+                {/* Feature highlights */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto mt-6">
+                  <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg border">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Brain className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">AI Enhancement</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg border">
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <Filter className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">Pro Filters</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg border">
+                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                      <Music className="w-4 h-4 text-green-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">Music Sync</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Enhanced action buttons */}
+              <div className="space-y-4">
+                <div className="flex flex-col md:flex-row gap-4 max-w-md mx-auto">
+                  <Button
+                    onClick={() => {
+                      console.log('Upload button clicked');
+                      fileInputRef.current?.click();
+                    }}
+                    className={`flex-1 py-4 px-6 bg-gradient-to-r ${currentTheme.gradients.primary} text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 rounded-xl text-lg font-semibold`}
+                  >
+                    <Upload className="w-6 h-6 mr-3" />
+                    Choose Your Image
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      console.log('Music upload button clicked');
+                      audioInputRef.current?.click();
+                    }}
+                    variant="outline"
+                    className="flex-1 py-4 px-6 border-2 border-purple-300 text-purple-700 hover:bg-purple-50 transition-all duration-300 rounded-xl text-lg font-semibold"
+                  >
+                    <Music className="w-6 h-6 mr-3" />
+                    Add Background Music
+                  </Button>
+                </div>
+
+                {/* Quick tips */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-muted-foreground max-w-lg mx-auto">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>Supports JPG, PNG, GIF formats</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>Maximum file size: 10MB</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>High-resolution recommended</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>Real-time preview available</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Professional touch */}
+              <div className="pt-6 border-t border-gray-200/50">
+                <p className="text-xs text-muted-foreground">
+                  Professional-grade photo editing powered by AI • Trusted by creators worldwide
+                </p>
+              </div>
             </div>
-            
-            <div className="space-y-2">
-              <h3 className={`${isMobile ? "text-lg" : "text-xl"} font-semibold text-foreground`}>
-                Upload Your Photo
-              </h3>
-              <p className={`${isMobile ? "text-sm" : "text-base"} text-muted-foreground max-w-md mx-auto`}>
-                Start with high-resolution images for best results. Supports all formats.
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                className={`py-3 bg-gradient-to-r ${currentTheme.gradients.primary} text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300`}
-              >
-                <Upload className="w-5 h-5 mr-2" />
-                Choose Image
-              </Button>
-              
-              <Button
-                onClick={() => audioInputRef.current?.click()}
-                variant="outline"
-                className="py-3"
-              >
-                <Music className="w-5 h-5 mr-2" />
-                Add Music
-              </Button>
-            </div>
-            
+
+            {/* Hidden inputs */}
             <input
               ref={fileInputRef}
               type="file"
@@ -1128,7 +1204,7 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
               onChange={handleFileUpload}
               className="hidden"
             />
-            
+
             <input
               ref={audioInputRef}
               type="file"
@@ -1136,8 +1212,8 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
               onChange={handleMusicUpload}
               className="hidden"
             />
-          </div>
-        </GlassSurface>
+          </GlassSurface>
+        </div>
       )}
 
       {/* Advanced Editor Interface */}
