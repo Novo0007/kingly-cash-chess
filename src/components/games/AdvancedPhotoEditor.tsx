@@ -286,7 +286,12 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
   const setupCanvas = useCallback((img: HTMLImageElement) => {
     const canvas = canvasRef.current;
     const originalCanvas = originalCanvasRef.current;
-    if (!canvas || !originalCanvas) return;
+    if (!canvas || !originalCanvas) {
+      console.error('Canvas references not available');
+      return;
+    }
+
+    console.log('Setting up canvas with image:', img.width, 'x', img.height);
 
     // Store original dimensions
     setOriginalDimensions({ width: img.width, height: img.height });
@@ -299,31 +304,45 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
       originalCtx.drawImage(img, 0, 0);
     }
 
-    // Set up display canvas with appropriate scaling
-    const maxDisplayWidth = isMobile ? 350 : 800;
-    const maxDisplayHeight = isMobile ? 500 : 600;
+    // Set up display canvas with appropriate scaling for mobile
+    const maxDisplayWidth = isMobile ? window.innerWidth - 40 : 800;
+    const maxDisplayHeight = isMobile ? window.innerHeight * 0.4 : 600;
 
     let displayWidth = img.width;
     let displayHeight = img.height;
 
-    if (displayWidth > maxDisplayWidth) {
-      displayHeight = (displayHeight * maxDisplayWidth) / displayWidth;
-      displayWidth = maxDisplayWidth;
-    }
+    // Calculate scaling to fit within mobile constraints
+    const scaleX = maxDisplayWidth / displayWidth;
+    const scaleY = maxDisplayHeight / displayHeight;
+    const scale = Math.min(scaleX, scaleY, 1); // Don't scale up
 
-    if (displayHeight > maxDisplayHeight) {
-      displayWidth = (displayWidth * maxDisplayHeight) / displayHeight;
-      displayHeight = maxDisplayHeight;
-    }
+    displayWidth = Math.floor(displayWidth * scale);
+    displayHeight = Math.floor(displayHeight * scale);
 
+    console.log('Canvas display size:', displayWidth, 'x', displayHeight);
+
+    // Set canvas dimensions
     canvas.width = displayWidth;
     canvas.height = displayHeight;
+
+    // Set CSS size to match canvas size
+    canvas.style.width = `${displayWidth}px`;
+    canvas.style.height = `${displayHeight}px`;
 
     // Draw the image on the display canvas immediately
     const ctx = canvas.getContext("2d");
     if (ctx) {
+      // Enable high-quality rendering
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      // Clear and draw
       ctx.clearRect(0, 0, displayWidth, displayHeight);
       ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+
+      console.log('Image drawn to canvas successfully');
+    } else {
+      console.error('Failed to get canvas context');
     }
 
     // Create initial layer
@@ -345,6 +364,14 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
 
     setLayers([initialLayer]);
     setCurrentLayer("background");
+
+    // Force a re-render
+    setTimeout(() => {
+      if (canvas && ctx) {
+        ctx.clearRect(0, 0, displayWidth, displayHeight);
+        ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+      }
+    }, 100);
   }, [isMobile]);
 
   // AI Processing functions (simulated)
