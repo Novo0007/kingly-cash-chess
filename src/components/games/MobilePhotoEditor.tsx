@@ -580,10 +580,10 @@ export const MobilePhotoEditor: React.FC<MobilePhotoEditorProps> = ({ onClose })
               </div>
             )}
             
-            <div className="relative">
+            <div className="canvas-container">
               <canvas
                 ref={canvasRef}
-                className="rounded-2xl shadow-lg border-4 border-white max-w-full max-h-full"
+                className="responsive-canvas rounded-2xl shadow-lg border-4 border-white"
                 style={{
                   width: displayDimensions.width,
                   height: displayDimensions.height,
