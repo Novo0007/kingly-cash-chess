@@ -229,9 +229,11 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
           <Gamepad2 className="w-8 h-8 text-white" />
         </div>
 
-        <FuzzyTextAnimation
+        <GlitchText
           text="Game Hub"
-          duration={1500}
+          intensity="medium"
+          speed="medium"
+          continuous={false}
           trigger={true}
           className={`${isMobile ? "text-2xl" : "text-3xl lg:text-4xl"} font-bold bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent`}
         />
