@@ -289,34 +289,28 @@ const MemoryCard: React.FC<MemoryCardProps> = ({
 
   return (
     <div
-      className={`${size} perspective-1000 cursor-pointer ${
+      className={`memory-card-container ${size} ${
         isDisabled ? "pointer-events-none" : ""
       }`}
       onClick={handleClick}
     >
       <div
-        className={`relative w-full h-full transition-transform duration-300 transform-style-preserve-3d ${
-          card.isFlipped || card.isMatched ? "rotate-y-180" : ""
+        className={`memory-card ${
+          card.isFlipped || card.isMatched ? "flipped" : ""
         } ${isAnimating ? "scale-105" : ""}`}
       >
         {/* Card Back */}
-        <div className="absolute inset-0 w-full h-full backface-hidden">
-          <Card className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-400 to-pink-500 border-2 border-purple-300 shadow-lg hover:shadow-xl transition-all duration-200">
-            <div className="text-white text-lg font-bold">?</div>
-          </Card>
+        <div className="memory-card-face memory-card-front">
+          ?
         </div>
 
         {/* Card Front */}
-        <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180">
-          <Card 
-            className={`w-full h-full flex items-center justify-center border-2 shadow-lg transition-all duration-200 ${
-              card.isMatched 
-                ? "bg-gradient-to-br from-green-100 to-emerald-100 border-green-300" 
-                : "bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-300"
-            }`}
-          >
-            <div className="text-2xl">{card.symbol}</div>
-          </Card>
+        <div
+          className={`memory-card-face memory-card-back ${
+            card.isMatched ? "matched" : ""
+          }`}
+        >
+          {card.symbol}
         </div>
       </div>
     </div>
