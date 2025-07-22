@@ -961,53 +961,126 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className={`w-12 h-12 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-xl flex items-center justify-center shadow-lg`}>
-            <Cpu className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <SplitText
-              text="Advanced Photo Studio"
-              animation="slide"
-              direction="up"
-              stagger={30}
-              splitBy="char"
-              trigger={true}
-              className={`${isMobile ? "text-xl" : "text-2xl"} font-bold text-foreground`}
-            />
-            <p className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground`}>
-              Professional editing with AI tools & music
-            </p>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          {isAIProcessing && (
-            <div className="flex items-center gap-2 text-blue-500">
-              <Brain className="w-4 h-4 animate-pulse" />
-              <div className="flex flex-col gap-1">
-                <span className="text-sm">AI Processing: {currentAITask}</span>
-                <div className="w-20 bg-gray-200 rounded-full h-1">
-                  <div
-                    className="bg-blue-500 h-1 rounded-full transition-all duration-300"
-                    style={{ width: `${aiProgress}%` }}
-                  />
+      {/* Professional Header */}
+      <div className="relative overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 rounded-2xl opacity-60" />
+
+        <div className="relative p-6 border-2 border-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 rounded-2xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {/* Professional logo */}
+              <div className="relative">
+                <div className={`w-16 h-16 bg-gradient-to-br ${currentTheme.gradients.primary} rounded-2xl flex items-center justify-center shadow-xl`}>
+                  <Cpu className="w-8 h-8 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
+                  <Sparkles className="w-3 h-3 text-white" />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <SplitText
+                  text="Professional Photo Studio"
+                  animation="slide"
+                  direction="up"
+                  stagger={30}
+                  splitBy="char"
+                  trigger={true}
+                  className={`${isMobile ? "text-xl" : "text-3xl"} font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent`}
+                />
+                <div className="flex items-center gap-3">
+                  <p className={`${isMobile ? "text-sm" : "text-base"} text-muted-foreground font-medium`}>
+                    AI-Powered Editor with Music Integration
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    <span className="text-xs text-green-600 font-medium">Live</span>
+                  </div>
+                </div>
+
+                {/* Feature badges */}
+                <div className="flex items-center gap-2 mt-2">
+                  <Badge className="bg-blue-100 text-blue-700 border-blue-200">
+                    <Brain className="w-3 h-3 mr-1" />
+                    AI Tools
+                  </Badge>
+                  <Badge className="bg-purple-100 text-purple-700 border-purple-200">
+                    <Music className="w-3 h-3 mr-1" />
+                    Music
+                  </Badge>
+                  <Badge className="bg-green-100 text-green-700 border-green-200">
+                    <Zap className="w-3 h-3 mr-1" />
+                    Pro
+                  </Badge>
                 </div>
               </div>
             </div>
-          )}
-          
-          {onClose && (
-            <Button
-              onClick={onClose}
-              variant="outline"
-              size={isMobile ? "sm" : "default"}
-              className="rounded-full"
-            >
-              <X className="w-4 h-4" />
-            </Button>
+
+            <div className="flex items-center gap-3">
+              {/* Status indicators */}
+              <div className="hidden md:flex flex-col items-end gap-1">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Eye className="w-4 h-4" />
+                  <span>Real-time Preview</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Settings className="w-4 h-4" />
+                  <span>Professional Tools</span>
+                </div>
+              </div>
+
+              {/* AI Processing indicator */}
+              {isAIProcessing && (
+                <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-lg p-3 border shadow-sm">
+                  <Brain className="w-5 h-5 text-blue-500 animate-pulse" />
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm font-medium text-blue-800">AI Processing</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 bg-blue-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${aiProgress}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-blue-600 font-medium">{Math.round(aiProgress)}%</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Close button */}
+              {onClose && (
+                <Button
+                  onClick={onClose}
+                  variant="outline"
+                  size={isMobile ? "sm" : "default"}
+                  className="rounded-full bg-white/80 backdrop-blur-sm border-2 hover:bg-white/90 transition-all"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Quick stats */}
+          {isEditing && (
+            <div className="mt-4 pt-4 border-t border-gray-200/50">
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <div className="flex items-center gap-4">
+                  <span>Image: {originalDimensions.width} × {originalDimensions.height}px</span>
+                  <span>Tools: {advancedTools.length} available</span>
+                  <span>Filters: {filters.length} styles</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>Status:</span>
+                  <Badge className="bg-green-100 text-green-700">
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Ready
+                  </Badge>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
