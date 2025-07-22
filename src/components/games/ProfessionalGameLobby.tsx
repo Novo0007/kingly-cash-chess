@@ -67,6 +67,25 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
 
   const games = [
     {
+      id: "photoeditor",
+      title: "Photo Editor",
+      subtitle: "Creative Studio",
+      description:
+        "Professional photo editing with filters, adjustments, and creative tools",
+      icon: Image,
+      category: "free",
+      gradient: "from-pink-500 to-rose-600",
+      cardBg: "from-pink-50 to-rose-50",
+      iconBg: "bg-pink-100",
+      iconColor: "text-pink-600",
+      players: "500+ Creating",
+      status: "🎨 NEW",
+      earning: "Free Creation",
+      features: ["Advanced Filters", "Crop & Rotate", "Export HD"],
+      highlight: true,
+      priority: 0,
+    },
+    {
       id: "codelearn",
       title: "CodeMaster",
       subtitle: "Master Programming",
