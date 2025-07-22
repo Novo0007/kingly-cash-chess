@@ -53,7 +53,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
   const { currentTheme } = useTheme();
   const isMobile = useIsMobile();
   const [selectedCategory, setSelectedCategory] = useState<
-    "all" | "free" | "earn"
+    "all" | "free" | "earn" | "creative"
   >("all");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showAllGames, setShowAllGames] = useState(false);
