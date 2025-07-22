@@ -224,6 +224,14 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
   const [currentAITask, setCurrentAITask] = useState<string>("");
   const [showLayers, setShowLayers] = useState(false);
   const [showMusic, setShowMusic] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<DynamicTemplate | null>(null);
+  const [videoLikeMode, setVideoLikeMode] = useState(false);
+  const [currentProject, setCurrentProject] = useState<VideoLikeProject | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackTime, setPlaybackTime] = useState(0);
+  const [projectImages, setProjectImages] = useState<File[]>([]);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
   
   const [editState, setEditState] = useState<EditState>({
     brightness: 0,
