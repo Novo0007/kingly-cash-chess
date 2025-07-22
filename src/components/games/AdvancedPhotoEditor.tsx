@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -64,8 +65,45 @@ import {
   Target,
   Layers3,
   PenTool,
-
-
+  Video,
+  Camera,
+  Film,
+  Clapperboard,
+  PlayCircle,
+  PauseCircle,
+  FastForward,
+  Rewind,
+  SkipBack,
+  SkipForward,
+  Maximize2,
+  Minimize2,
+  MonitorPlay,
+  Smartphone,
+  Tablet,
+  Laptop,
+  Tv,
+  Layout,
+  LayoutGrid,
+  LayoutTemplate,
+  ImageIcon,
+  FileImage,
+  Images,
+  Gallery,
+  FolderImage,
+  Star,
+  Heart,
+  Bookmark,
+  TrendingUp,
+  Award,
+  Crown,
+  Gem,
+  Timer,
+  Clock,
+  Calendar,
+  Users,
+  Share2,
+  Link,
+  Magnet
 } from "lucide-react";
 
 export interface AdvancedPhotoEditorProps {
@@ -129,6 +167,36 @@ interface HistoryState {
   textOverlays: TextOverlay[];
 }
 
+interface DynamicTemplate {
+  id: string;
+  name: string;
+  category: string;
+  thumbnail: string;
+  description: string;
+  aspectRatio: string;
+  effects: string[];
+  musicSuggestions: string[];
+  popularity: number;
+  isPro: boolean;
+  animation: {
+    type: 'slideshow' | 'zoom' | 'pan' | 'fade' | 'cinematic' | 'parallax';
+    duration: number;
+    easing: string;
+  };
+}
+
+interface VideoLikeProject {
+  id: string;
+  name: string;
+  template: DynamicTemplate;
+  images: File[];
+  music?: MusicTrack;
+  duration: number;
+  effects: string[];
+  transitions: string[];
+  createdAt: Date;
+}
+
 export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClose }) => {
   const { currentTheme } = useTheme();
   const isMobile = useIsMobile();
@@ -152,8 +220,18 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState<string>("");
   const [isAIProcessing, setIsAIProcessing] = useState(false);
+  const [aiProgress, setAiProgress] = useState(0);
+  const [currentAITask, setCurrentAITask] = useState<string>("");
   const [showLayers, setShowLayers] = useState(false);
   const [showMusic, setShowMusic] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<DynamicTemplate | null>(null);
+  const [videoLikeMode, setVideoLikeMode] = useState(false);
+  const [currentProject, setCurrentProject] = useState<VideoLikeProject | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackTime, setPlaybackTime] = useState(0);
+  const [projectImages, setProjectImages] = useState<File[]>([]);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
   
   const [editState, setEditState] = useState<EditState>({
     brightness: 0,
@@ -180,7 +258,74 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
   const [selectedFont, setSelectedFont] = useState("Arial");
   const [textSize, setTextSize] = useState(24);
 
+  // Canvas rendering function
+  const renderCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    const originalCanvas = originalCanvasRef.current;
+    if (!canvas || !originalCanvas || !originalImage) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Save context
+    ctx.save();
+
+    // Apply transformations
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate((editState.rotation * Math.PI) / 180);
+    ctx.scale(editState.flipX ? -1 : 1, editState.flipY ? -1 : 1);
+
+    // Apply filters
+    const filterString = [
+      `brightness(${100 + editState.brightness}%)`,
+      `contrast(${100 + editState.contrast}%)`,
+      `saturate(${100 + editState.saturation}%)`,
+      `hue-rotate(${editState.hue}deg)`,
+      editState.filter !== "none" ? editState.filter : "",
+    ].filter(Boolean).join(" ");
+
+    ctx.filter = filterString;
+
+    // Draw the main image
+    ctx.drawImage(
+      originalImage,
+      -canvas.width / 2,
+      -canvas.height / 2,
+      canvas.width,
+      canvas.height
+    );
+
+    // Draw layers
+    layers.forEach(layer => {
+      if (layer.visible && layer.canvas) {
+        ctx.globalAlpha = layer.opacity / 100;
+        ctx.globalCompositeOperation = layer.blendMode as GlobalCompositeOperation;
+        ctx.drawImage(
+          layer.canvas,
+          -canvas.width / 2,
+          -canvas.height / 2,
+          canvas.width,
+          canvas.height
+        );
+      }
+    });
+
+    ctx.restore();
+  }, [originalImage, editState, layers]);
+
+  // Update canvas when edit state changes
+  useEffect(() => {
+    if (originalImage) {
+      renderCanvas();
+    }
+  }, [renderCanvas, originalImage]);
+
   const advancedTools = [
+    { id: "templates", label: "Templates", icon: LayoutTemplate, color: "purple" },
+    { id: "video", label: "Video Style", icon: Video, color: "red" },
     { id: "adjust", label: "Adjust", icon: Sliders, color: "blue" },
     { id: "filters", label: "Filters", icon: Filter, color: "purple" },
     { id: "crop", label: "Crop", icon: Crop, color: "green" },
@@ -215,15 +360,128 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
 
   const fonts = ["Arial", "Helvetica", "Times New Roman", "Courier New", "Georgia", "Verdana", "Impact", "Comic Sans MS"];
 
+  // Dynamic Photo Templates
+  const dynamicTemplates: DynamicTemplate[] = [
+    {
+      id: 'modern-slideshow',
+      name: 'Modern Slideshow',
+      category: 'Popular',
+      thumbnail: '🎬',
+      description: 'Clean, modern slideshow with smooth transitions',
+      aspectRatio: '16:9',
+      effects: ['fade', 'zoom', 'slide'],
+      musicSuggestions: ['upbeat', 'corporate', 'modern'],
+      popularity: 95,
+      isPro: false,
+      animation: { type: 'slideshow', duration: 3000, easing: 'ease-in-out' }
+    },
+    {
+      id: 'cinematic-story',
+      name: 'Cinematic Story',
+      category: 'Cinematic',
+      thumbnail: '🎭',
+      description: 'Film-like presentation with dramatic effects',
+      aspectRatio: '21:9',
+      effects: ['blur', 'vignette', 'color-grade'],
+      musicSuggestions: ['cinematic', 'epic', 'emotional'],
+      popularity: 88,
+      isPro: true,
+      animation: { type: 'cinematic', duration: 4000, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
+    },
+    {
+      id: 'instagram-reel',
+      name: 'Instagram Reel',
+      category: 'Social',
+      thumbnail: '📱',
+      description: 'Vertical format perfect for social media',
+      aspectRatio: '9:16',
+      effects: ['quick-cut', 'beat-sync', 'text-overlay'],
+      musicSuggestions: ['trendy', 'pop', 'energetic'],
+      popularity: 92,
+      isPro: false,
+      animation: { type: 'zoom', duration: 1500, easing: 'ease-out' }
+    },
+    {
+      id: 'parallax-journey',
+      name: 'Parallax Journey',
+      category: 'Advanced',
+      thumbnail: '🌌',
+      description: 'Dynamic parallax effect with depth',
+      aspectRatio: '16:9',
+      effects: ['parallax', 'depth', 'motion-blur'],
+      musicSuggestions: ['ambient', 'electronic', 'progressive'],
+      popularity: 78,
+      isPro: true,
+      animation: { type: 'parallax', duration: 5000, easing: 'linear' }
+    },
+    {
+      id: 'wedding-memories',
+      name: 'Wedding Memories',
+      category: 'Events',
+      thumbnail: '💕',
+      description: 'Romantic slideshow for special moments',
+      aspectRatio: '4:3',
+      effects: ['soft-glow', 'romantic-filter', 'heart-overlay'],
+      musicSuggestions: ['romantic', 'acoustic', 'classical'],
+      popularity: 85,
+      isPro: false,
+      animation: { type: 'fade', duration: 3500, easing: 'ease-in-out' }
+    },
+    {
+      id: 'business-presentation',
+      name: 'Business Presentation',
+      category: 'Professional',
+      thumbnail: '💼',
+      description: 'Clean, professional presentation style',
+      aspectRatio: '16:9',
+      effects: ['clean-cut', 'corporate-branding', 'data-viz'],
+      musicSuggestions: ['corporate', 'minimal', 'uplifting'],
+      popularity: 72,
+      isPro: false,
+      animation: { type: 'slide', duration: 2500, easing: 'ease' }
+    },
+    {
+      id: 'travel-adventure',
+      name: 'Travel Adventure',
+      category: 'Lifestyle',
+      thumbnail: '✈️',
+      description: 'Dynamic travel showcase with maps and effects',
+      aspectRatio: '16:9',
+      effects: ['map-overlay', 'location-pins', 'travel-filters'],
+      musicSuggestions: ['adventure', 'world-music', 'upbeat'],
+      popularity: 90,
+      isPro: true,
+      animation: { type: 'pan', duration: 4000, easing: 'ease-in-out' }
+    },
+    {
+      id: 'minimal-gallery',
+      name: 'Minimal Gallery',
+      category: 'Artistic',
+      thumbnail: '🎨',
+      description: 'Clean, minimal artistic presentation',
+      aspectRatio: '1:1',
+      effects: ['minimal-frame', 'artistic-filter', 'gallery-lighting'],
+      musicSuggestions: ['ambient', 'minimal', 'classical'],
+      popularity: 76,
+      isPro: false,
+      animation: { type: 'fade', duration: 4000, easing: 'ease-in-out' }
+    }
+  ];
+
   // Preserve original dimensions and quality
   const setupCanvas = useCallback((img: HTMLImageElement) => {
     const canvas = canvasRef.current;
     const originalCanvas = originalCanvasRef.current;
-    if (!canvas || !originalCanvas) return;
+    if (!canvas || !originalCanvas) {
+      console.error('Canvas references not available');
+      return;
+    }
+
+    console.log('Setting up canvas with image:', img.width, 'x', img.height);
 
     // Store original dimensions
     setOriginalDimensions({ width: img.width, height: img.height });
-    
+
     // Set up original quality canvas
     originalCanvas.width = img.width;
     originalCanvas.height = img.height;
@@ -232,26 +490,47 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
       originalCtx.drawImage(img, 0, 0);
     }
 
-    // Set up display canvas with appropriate scaling
-    const maxDisplayWidth = isMobile ? 350 : 800;
-    const maxDisplayHeight = isMobile ? 500 : 600;
-    
+    // Set up display canvas with appropriate scaling for mobile
+    const maxDisplayWidth = isMobile ? window.innerWidth - 40 : 800;
+    const maxDisplayHeight = isMobile ? window.innerHeight * 0.4 : 600;
+
     let displayWidth = img.width;
     let displayHeight = img.height;
-    
-    if (displayWidth > maxDisplayWidth) {
-      displayHeight = (displayHeight * maxDisplayWidth) / displayWidth;
-      displayWidth = maxDisplayWidth;
-    }
-    
-    if (displayHeight > maxDisplayHeight) {
-      displayWidth = (displayWidth * maxDisplayHeight) / displayHeight;
-      displayHeight = maxDisplayHeight;
-    }
-    
+
+    // Calculate scaling to fit within mobile constraints
+    const scaleX = maxDisplayWidth / displayWidth;
+    const scaleY = maxDisplayHeight / displayHeight;
+    const scale = Math.min(scaleX, scaleY, 1); // Don't scale up
+
+    displayWidth = Math.floor(displayWidth * scale);
+    displayHeight = Math.floor(displayHeight * scale);
+
+    console.log('Canvas display size:', displayWidth, 'x', displayHeight);
+
+    // Set canvas dimensions
     canvas.width = displayWidth;
     canvas.height = displayHeight;
-    
+
+    // Set CSS size to match canvas size
+    canvas.style.width = `${displayWidth}px`;
+    canvas.style.height = `${displayHeight}px`;
+
+    // Draw the image on the display canvas immediately
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      // Enable high-quality rendering
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      // Clear and draw
+      ctx.clearRect(0, 0, displayWidth, displayHeight);
+      ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+
+      console.log('Image drawn to canvas successfully');
+    } else {
+      console.error('Failed to get canvas context');
+    }
+
     // Create initial layer
     const initialLayer: Layer = {
       id: "background",
@@ -261,27 +540,43 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
       blendMode: "normal",
       canvas: document.createElement("canvas"),
     };
-    
+
     initialLayer.canvas.width = img.width;
     initialLayer.canvas.height = img.height;
     const layerCtx = initialLayer.canvas.getContext("2d");
     if (layerCtx) {
       layerCtx.drawImage(img, 0, 0);
     }
-    
+
     setLayers([initialLayer]);
     setCurrentLayer("background");
+
+    // Force a re-render
+    setTimeout(() => {
+      if (canvas && ctx) {
+        ctx.clearRect(0, 0, displayWidth, displayHeight);
+        ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+      }
+    }, 100);
   }, [isMobile]);
 
   // AI Processing functions (simulated)
   const processAI = useCallback(async (tool: string) => {
     setIsAIProcessing(true);
-    
-    // Simulate AI processing delay
-    await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
-    
+    setCurrentAITask(tool);
+    setAiProgress(0);
+
+    // Simulate progressive AI processing
+    const steps = 20;
+    for (let i = 0; i <= steps; i++) {
+      await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
+      setAiProgress((i / steps) * 100);
+    }
+
     if (!canvasRef.current || !originalImage) {
       setIsAIProcessing(false);
+      setCurrentAITask("");
+      setAiProgress(0);
       return;
     }
 
@@ -289,8 +584,13 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
     const ctx = canvas.getContext("2d");
     if (!ctx) {
       setIsAIProcessing(false);
+      setCurrentAITask("");
+      setAiProgress(0);
       return;
     }
+
+    // First re-render the current state
+    renderCanvas();
 
     switch (tool) {
       case "remove-bg":
@@ -311,26 +611,26 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
         }
         ctx.globalCompositeOperation = "source-over";
         break;
-        
+
       case "object-detect":
-        // Draw detection boxes
+        // Draw detection boxes over the current image
         ctx.strokeStyle = "#00ff00";
         ctx.lineWidth = 3;
         ctx.setLineDash([5, 5]);
-        
+
         // Simulate object detection boxes
         const boxes = [
           { x: canvas.width * 0.2, y: canvas.height * 0.3, width: canvas.width * 0.3, height: canvas.height * 0.4 },
           { x: canvas.width * 0.6, y: canvas.height * 0.1, width: canvas.width * 0.25, height: canvas.height * 0.3 },
         ];
-        
+
         boxes.forEach(box => {
           ctx.strokeRect(box.x, box.y, box.width, box.height);
           ctx.fillStyle = "rgba(0, 255, 0, 0.1)";
           ctx.fillRect(box.x, box.y, box.width, box.height);
         });
         break;
-        
+
       case "style-transfer":
         // Apply artistic style effect
         setEditState(prev => ({
@@ -338,7 +638,7 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
           filter: "contrast(130%) saturate(150%) hue-rotate(15deg) sepia(20%)"
         }));
         break;
-        
+
       case "enhance":
         // Auto-enhance
         setEditState(prev => ({
@@ -348,7 +648,7 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
           saturation: 20
         }));
         break;
-        
+
       case "colorize":
         // Add color to B&W
         setEditState(prev => ({
@@ -356,7 +656,7 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
           filter: "sepia(100%) saturate(200%) hue-rotate(180deg)"
         }));
         break;
-        
+
       case "upscale":
         // Simulate upscaling by applying sharpening
         setEditState(prev => ({
@@ -365,111 +665,334 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
         }));
         break;
     }
-    
+
     setIsAIProcessing(false);
-  }, [originalImage]);
+    setCurrentAITask("");
+    setAiProgress(0);
+  }, [originalImage, renderCanvas]);
 
-  // High-quality export function
+  // Enhanced export function with mobile support
   const exportHighQuality = useCallback(() => {
+    console.log('Export function called');
+
+    // Try to use the current canvas if no original image available
+    const canvas = canvasRef.current;
     const originalCanvas = originalCanvasRef.current;
-    if (!originalCanvas) return;
 
-    // Create export canvas with original dimensions
-    const exportCanvas = document.createElement("canvas");
-    exportCanvas.width = originalDimensions.width;
-    exportCanvas.height = originalDimensions.height;
-    const exportCtx = exportCanvas.getContext("2d");
-    if (!exportCtx) return;
+    if (!canvas) {
+      alert('No image to export. Please upload an image first.');
+      return;
+    }
 
-    // Apply all transformations at original resolution
-    exportCtx.save();
-    
-    // Apply transformations
-    exportCtx.translate(exportCanvas.width / 2, exportCanvas.height / 2);
-    exportCtx.rotate((editState.rotation * Math.PI) / 180);
-    exportCtx.scale(editState.flipX ? -1 : 1, editState.flipY ? -1 : 1);
-    
-    // Apply filters
-    const filterString = [
-      `brightness(${100 + editState.brightness}%)`,
-      `contrast(${100 + editState.contrast}%)`,
-      `saturate(${100 + editState.saturation}%)`,
-      `hue-rotate(${editState.hue}deg)`,
-      editState.filter !== "none" ? editState.filter : "",
-    ].filter(Boolean).join(" ");
-    
-    exportCtx.filter = filterString;
-    
-    // Draw layers
-    layers.forEach(layer => {
-      if (layer.visible) {
-        exportCtx.globalAlpha = layer.opacity / 100;
-        exportCtx.globalCompositeOperation = layer.blendMode as GlobalCompositeOperation;
+    try {
+      // Use current canvas for export if it has content
+      const sourceCanvas = originalCanvas && originalImage ? originalCanvas : canvas;
+
+      // Create export canvas
+      const exportCanvas = document.createElement("canvas");
+      const exportCtx = exportCanvas.getContext("2d");
+      if (!exportCtx) {
+        throw new Error('Failed to create export context');
+      }
+
+      // Set export dimensions
+      if (originalImage && originalDimensions.width > 0) {
+        exportCanvas.width = originalDimensions.width;
+        exportCanvas.height = originalDimensions.height;
+      } else {
+        exportCanvas.width = canvas.width;
+        exportCanvas.height = canvas.height;
+      }
+
+      console.log('Export canvas size:', exportCanvas.width, 'x', exportCanvas.height);
+
+      // Apply all transformations
+      exportCtx.save();
+
+      // Apply transformations if we have original image
+      if (originalImage) {
+        exportCtx.translate(exportCanvas.width / 2, exportCanvas.height / 2);
+        exportCtx.rotate((editState.rotation * Math.PI) / 180);
+        exportCtx.scale(editState.flipX ? -1 : 1, editState.flipY ? -1 : 1);
+
+        // Apply filters
+        const filterString = [
+          `brightness(${100 + editState.brightness}%)`,
+          `contrast(${100 + editState.contrast}%)`,
+          `saturate(${100 + editState.saturation}%)`,
+          `hue-rotate(${editState.hue}deg)`,
+          editState.filter !== "none" ? editState.filter : "",
+        ].filter(Boolean).join(" ");
+
+        if (filterString) {
+          exportCtx.filter = filterString;
+        }
+
+        // Draw the original image with transformations
         exportCtx.drawImage(
-          layer.canvas,
+          originalImage,
           -exportCanvas.width / 2,
           -exportCanvas.height / 2,
           exportCanvas.width,
           exportCanvas.height
         );
-      }
-    });
-    
-    // Draw text overlays
-    textOverlays.forEach(overlay => {
-      exportCtx.font = `${overlay.fontSize}px ${overlay.fontFamily}`;
-      exportCtx.fillStyle = overlay.color;
-      exportCtx.fillText(overlay.text, overlay.x, overlay.y);
-    });
-    
-    exportCtx.restore();
-    
-    // Export with maximum quality
-    exportCanvas.toBlob((blob) => {
-      if (!blob) return;
-      
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `edited-image-hq-${Date.now()}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, "image/png", 1.0); // Maximum quality
-  }, [originalDimensions, editState, layers, textOverlays]);
 
-  // Music handling functions
+        // Draw layers
+        layers.forEach(layer => {
+          if (layer.visible && layer.canvas) {
+            exportCtx.globalAlpha = layer.opacity / 100;
+            exportCtx.globalCompositeOperation = layer.blendMode as GlobalCompositeOperation;
+            exportCtx.drawImage(
+              layer.canvas,
+              -exportCanvas.width / 2,
+              -exportCanvas.height / 2,
+              exportCanvas.width,
+              exportCanvas.height
+            );
+          }
+        });
+
+        // Draw text overlays
+        textOverlays.forEach(overlay => {
+          exportCtx.font = `${overlay.fontSize}px ${overlay.fontFamily}`;
+          exportCtx.fillStyle = overlay.color;
+          exportCtx.fillText(overlay.text, overlay.x, overlay.y);
+        });
+      } else {
+        // Fallback: just copy current canvas
+        exportCtx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
+      }
+
+      exportCtx.restore();
+
+      console.log('About to create blob');
+
+      // Export with maximum quality
+      exportCanvas.toBlob((blob) => {
+        if (!blob) {
+          alert('Failed to create image file. Please try again.');
+          return;
+        }
+
+        console.log('Blob created, size:', blob.size);
+
+        // For mobile, use different download approach
+        if (isMobile) {
+          // Create image URL and open in new tab for mobile
+          const url = URL.createObjectURL(blob);
+          const newWindow = window.open(url, '_blank');
+          if (!newWindow) {
+            // Fallback to direct download
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `edited-image-${Date.now()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }
+
+          // Clean up URL after a delay
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+        } else {
+          // Standard download for desktop
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `edited-image-hq-${Date.now()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+
+        // Show success message
+        alert('Image exported successfully!');
+      }, "image/png", 1.0);
+
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed. Please try again.');
+    }
+  }, [originalDimensions, editState, layers, textOverlays, originalImage, isMobile]);
+
+  // Simple save function for mobile fallback
+  const saveImage = useCallback(() => {
+    console.log('Simple save function called');
+
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      alert('No image to save. Please upload an image first.');
+      return;
+    }
+
+    try {
+      // Convert canvas to data URL
+      const dataURL = canvas.toDataURL('image/png', 1.0);
+
+      if (isMobile) {
+        // For mobile, create a link that opens the image
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = `edited-image-${Date.now()}.png`;
+
+        // Try to trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Also try opening in new tab as fallback
+        const newWindow = window.open();
+        if (newWindow) {
+          newWindow.document.write(`<img src="${dataURL}" style="max-width:100%;height:auto;" />`);
+          newWindow.document.title = 'Your Edited Image - Long press to save';
+        }
+      } else {
+        // Desktop download
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = `edited-image-${Date.now()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      alert('Image saved! Check your downloads folder or long-press the image to save on mobile.');
+    } catch (error) {
+      console.error('Save failed:', error);
+      alert('Save failed. Please try the Export HQ button.');
+    }
+  }, [isMobile]);
+
+  // Enhanced music handling functions
   const handleMusicUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    console.log('Music file selected:', file.name, file.type, file.size);
+
+    // Validate file type
+    if (!file.type.startsWith('audio/')) {
+      alert('Please select a valid audio file (MP3, WAV, OGG, etc).');
+      return;
+    }
+
+    // Check file size (limit to 50MB for audio)
+    if (file.size > 50 * 1024 * 1024) {
+      alert('Audio file is too large. Please select a file smaller than 50MB.');
+      return;
+    }
 
     const track: MusicTrack = {
       id: Date.now().toString(),
       name: file.name,
       file,
       duration: 0,
-      volume: 1,
+      volume: 0.5, // Default to 50% volume
       startTime: 0,
       loop: false,
     };
 
-    setMusicTracks(prev => [...prev, track]);
+    try {
+      // Get audio duration
+      const audio = new Audio();
+      const url = URL.createObjectURL(file);
+
+      audio.onloadedmetadata = () => {
+        track.duration = audio.duration;
+        setMusicTracks(prev => [...prev, track]);
+        URL.revokeObjectURL(url);
+        console.log('Music track added successfully:', track.name);
+
+        // Show success message
+        alert(`Music track "${track.name}" added successfully!`);
+      };
+
+      audio.onerror = (error) => {
+        console.error('Failed to load audio metadata:', error);
+        URL.revokeObjectURL(url);
+        alert('Failed to load audio file. Please try a different file.');
+      };
+
+      audio.src = url;
+    } catch (error) {
+      console.error('Error processing audio file:', error);
+      alert('Error processing audio file. Please try again.');
+    }
+
+    // Clear the input value to allow re-uploading the same file
+    if (event.target) {
+      event.target.value = '';
+    }
   }, []);
 
   const playMusic = useCallback((trackId: string) => {
     const track = musicTracks.find(t => t.id === trackId);
-    if (!track || !audioRef.current) return;
+    if (!track || !audioRef.current) {
+      console.error('Track or audio reference not found');
+      return;
+    }
 
-    const url = URL.createObjectURL(track.file);
-    audioRef.current.src = url;
-    audioRef.current.volume = track.volume;
-    audioRef.current.loop = track.loop;
-    audioRef.current.play();
-    
-    setCurrentTrack(trackId);
-    setIsPlaying(true);
-  }, [musicTracks]);
+    console.log('Playing music track:', track.name);
+
+    try {
+      // Stop current music if playing
+      if (isPlaying && currentTrack && currentTrack !== trackId) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+
+      // Only create new URL if it's a different track
+      if (currentTrack !== trackId) {
+        const url = URL.createObjectURL(track.file);
+        audioRef.current.src = url;
+
+        // Clean up URL when audio loads
+        audioRef.current.onloadeddata = () => {
+          URL.revokeObjectURL(url);
+        };
+      }
+
+      audioRef.current.volume = track.volume;
+      audioRef.current.loop = track.loop;
+
+      // Add error handling for mobile playback
+      audioRef.current.oncanplaythrough = () => {
+        audioRef.current?.play().then(() => {
+          setCurrentTrack(trackId);
+          setIsPlaying(true);
+          console.log('Music playback started successfully');
+        }).catch((error) => {
+          console.error('Failed to play audio:', error);
+          // Try to enable audio context for mobile
+          if (error.name === 'NotAllowedError') {
+            alert('Please tap anywhere on the screen first to enable audio playback.');
+          } else {
+            alert('Failed to play audio. Please try again or check if the file is corrupted.');
+          }
+        });
+      };
+
+      // Handle audio end event
+      audioRef.current.onended = () => {
+        console.log('Music track ended');
+        if (!track.loop) {
+          setIsPlaying(false);
+          setCurrentTrack('');
+        }
+      };
+
+      audioRef.current.onerror = (error) => {
+        console.error('Audio playback error:', error);
+        alert('Audio playback failed. Please try a different file.');
+        setIsPlaying(false);
+        setCurrentTrack('');
+      };
+
+    } catch (error) {
+      console.error('Error in playMusic:', error);
+      alert('Failed to play music. Please try again.');
+    }
+  }, [musicTracks, isPlaying, currentTrack]);
 
   const stopMusic = useCallback(() => {
     if (audioRef.current) {
@@ -480,19 +1003,66 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
     setCurrentTrack("");
   }, []);
 
+  const pauseMusic = useCallback(() => {
+    if (audioRef.current && isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  }, [isPlaying]);
+
+  const resumeMusic = useCallback(() => {
+    if (audioRef.current && !isPlaying && currentTrack) {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch((error) => {
+        console.error('Failed to resume audio:', error);
+      });
+    }
+  }, [isPlaying, currentTrack]);
+
   // Handle file upload with preserved quality
   const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    console.log('File selected:', file.name, file.type, file.size);
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file (JPG, PNG, GIF, etc).');
+      return;
+    }
+
+    // Check file size (limit to 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image file is too large. Please select an image smaller than 10MB.');
+      return;
+    }
+
+    // Show loading state
+    setIsEditing(false);
+
     const reader = new FileReader();
     reader.onload = (e) => {
+      console.log('File read successfully');
+
       const img = new Image();
       img.onload = () => {
+        console.log('Image loaded successfully:', img.width, 'x', img.height);
+
         setOriginalImage(img);
         setIsEditing(true);
-        setupCanvas(img);
-        
+
+        // Setup canvas
+        try {
+          setupCanvas(img);
+          console.log('Canvas setup completed');
+        } catch (error) {
+          console.error('Canvas setup failed:', error);
+          alert('Failed to setup canvas. Please try again.');
+          return;
+        }
+
         // Reset edit state
         setEditState({
           brightness: 0,
@@ -508,11 +1078,36 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
           panX: 0,
           panY: 0,
         });
+
+        // Clear text overlays
+        setTextOverlays([]);
+
+        // Show success message
+        if (isMobile) {
+          alert('Image loaded successfully! You can now edit your photo.');
+        }
       };
+
+      img.onerror = (error) => {
+        console.error('Image load failed:', error);
+        alert('Failed to load image. Please try a different file or check if the image is corrupted.');
+      };
+
       img.src = e.target?.result as string;
     };
+
+    reader.onerror = (error) => {
+      console.error('File read failed:', error);
+      alert('Failed to read file. Please try again.');
+    };
+
     reader.readAsDataURL(file);
-  }, [setupCanvas]);
+
+    // Clear input to allow re-uploading same file
+    if (event.target) {
+      event.target.value = '';
+    }
+  }, [setupCanvas, isMobile]);
 
   // Add text overlay
   const addTextOverlay = useCallback(() => {
@@ -552,85 +1147,359 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className={`w-12 h-12 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-xl flex items-center justify-center shadow-lg`}>
-            <Cpu className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <SplitText
-              text="Advanced Photo Studio"
-              animation="slide"
-              direction="up"
-              stagger={30}
-              splitBy="char"
-              trigger={true}
-              className={`${isMobile ? "text-xl" : "text-2xl"} font-bold text-foreground`}
-            />
-            <p className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground`}>
-              Professional editing with AI tools & music
-            </p>
-          </div>
+      {/* Ultra Professional Video Studio Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative overflow-hidden"
+      >
+        {/* Dynamic animated background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 opacity-95" />
+          <div className={"absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.05\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"1\"%3E%3C/circle%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"} />
+          <motion.div
+            animate={{
+              background: [
+                'radial-gradient(600px circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%)',
+                'radial-gradient(600px circle at 80% 50%, rgba(255, 119, 198, 0.3), transparent 50%)',
+                'radial-gradient(600px circle at 50% 50%, rgba(119, 255, 198, 0.3), transparent 50%)'
+              ]
+            }}
+            transition={{ duration: 8, repeat: Infinity, repeatType: 'reverse' }}
+            className="absolute inset-0"
+          />
         </div>
-        
-        <div className="flex items-center gap-2">
-          {isAIProcessing && (
-            <div className="flex items-center gap-2 text-blue-500">
-              <Brain className="w-4 h-4 animate-pulse" />
-              <span className="text-sm">AI Processing...</span>
-            </div>
-          )}
-          
-          {onClose && (
-            <Button
-              onClick={onClose}
-              variant="outline"
-              size={isMobile ? "sm" : "default"}
-              className="rounded-full"
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          )}
-        </div>
-      </div>
 
-      {/* Upload Section */}
+        <div className="relative p-8 border border-purple-500/20 rounded-3xl backdrop-blur-xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              {/* Cinematic Logo */}
+              <div className="relative">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="w-20 h-20 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 rounded-3xl flex items-center justify-center shadow-2xl border border-white/20"
+                >
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                  >
+                    <Film className="w-10 h-10 text-white" />
+                  </motion.div>
+                </motion.div>
+
+                {/* Video-like recording indicator */}
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center border-3 border-white shadow-lg"
+                >
+                  <div className="w-3 h-3 bg-white rounded-full" />
+                </motion.div>
+
+                {/* Pro badge */}
+                <div className="absolute -bottom-2 -left-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs font-bold px-2 py-1 rounded-full border-2 border-white">
+                  PRO
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <SplitText
+                    text="AI Video Studio Pro"
+                    animation="slide"
+                    direction="up"
+                    stagger={50}
+                    splitBy="char"
+                    trigger={true}
+                    className={`${isMobile ? "text-2xl" : "text-4xl"} font-black bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent tracking-tight`}
+                  />
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="flex items-center gap-4"
+                >
+                  <p className={`${isMobile ? "text-sm" : "text-lg"} text-gray-300 font-medium`}>
+                    Create Cinematic Photo Stories with AI & Music
+                  </p>
+
+                  {/* Live indicator */}
+                  <div className="flex items-center gap-2 bg-red-500/20 px-3 py-1 rounded-full border border-red-500/30">
+                    <motion.div
+                      animate={{ opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                      className="w-2 h-2 bg-red-500 rounded-full"
+                    />
+                    <span className="text-xs text-red-400 font-bold uppercase tracking-wide">RECORDING</span>
+                  </div>
+                </motion.div>
+
+                {/* Enhanced Feature badges */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className="flex items-center gap-3 mt-3"
+                >
+                  <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 px-3 py-1">
+                    <Brain className="w-4 h-4 mr-2" />
+                    AI Enhanced
+                  </Badge>
+                  <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 px-3 py-1">
+                    <Video className="w-4 h-4 mr-2" />
+                    Video Style
+                  </Badge>
+                  <Badge className="bg-pink-500/20 text-pink-300 border-pink-500/30 px-3 py-1">
+                    <Music className="w-4 h-4 mr-2" />
+                    Music Sync
+                  </Badge>
+                  <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 px-3 py-1">
+                    <Crown className="w-4 h-4 mr-2" />
+                    Premium
+                  </Badge>
+                </motion.div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              {/* Video-like controls */}
+              <div className="hidden lg:flex items-center gap-3 bg-black/30 backdrop-blur-sm rounded-2xl p-3 border border-white/10">
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center cursor-pointer"
+                  onClick={() => setIsPreviewMode(!isPreviewMode)}
+                >
+                  {isPreviewMode ? <PauseCircle className="w-5 h-5 text-white" /> : <PlayCircle className="w-5 h-5 text-white" />}
+                </motion.div>
+
+                <div className="flex items-center gap-2 text-white/80">
+                  <MonitorPlay className="w-4 h-4" />
+                  <span className="text-sm font-medium">Preview</span>
+                </div>
+              </div>
+
+              {/* AI Processing with cinematic style */}
+              <AnimatePresence>
+                {isAIProcessing && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="flex items-center gap-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 backdrop-blur-sm rounded-2xl p-4 border border-blue-500/30"
+                  >
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                    >
+                      <Brain className="w-6 h-6 text-blue-400" />
+                    </motion.div>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-sm font-bold text-blue-300 uppercase tracking-wide">
+                        AI PROCESSING
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-32 bg-black/30 rounded-full h-2 overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${aiProgress}%` }}
+                            className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                          />
+                        </div>
+                        <span className="text-xs text-blue-400 font-bold">{Math.round(aiProgress)}%</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Close button with style */}
+              {onClose && (
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    onClick={onClose}
+                    variant="outline"
+                    size={isMobile ? "sm" : "default"}
+                    className="rounded-full bg-black/30 backdrop-blur-sm border-white/20 text-white hover:bg-white/10 transition-all"
+                  >
+                    <X className="w-5 h-5" />
+                  </Button>
+                </motion.div>
+              )}
+            </div>
+          </div>
+
+          {/* Professional Stats Bar */}
+          <AnimatePresence>
+            {isEditing && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="mt-6 pt-6 border-t border-white/10"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-6 text-sm text-gray-300">
+                    <div className="flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4 text-blue-400" />
+                      <span>{originalDimensions.width} × {originalDimensions.height}px</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <LayoutGrid className="w-4 h-4 text-purple-400" />
+                      <span>{dynamicTemplates.length} Templates</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Filter className="w-4 h-4 text-pink-400" />
+                      <span>{filters.length} Effects</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Music className="w-4 h-4 text-orange-400" />
+                      <span>{musicTracks.length} Tracks</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                      <CheckCircle className="w-3 h-3 mr-2" />
+                      STUDIO READY
+                    </Badge>
+
+                    {videoLikeMode && (
+                      <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+                        <Video className="w-3 h-3 mr-2" />
+                        VIDEO MODE
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+
+      {/* Professional Upload Section */}
       {!isEditing && (
-        <GlassSurface className="p-8 rounded-2xl text-center" blur="md" opacity={0.1}>
-          <div className="space-y-6">
-            <div className="w-20 h-20 mx-auto bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <Upload className="w-10 h-10 text-white" />
+        <div className="relative">
+          {/* Animated background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-3xl opacity-60 animate-pulse" />
+
+          <GlassSurface className="relative p-10 rounded-3xl text-center border-2 border-dashed border-purple-200" blur="md" opacity={0.1}>
+            <div className="space-y-8">
+              {/* Professional upload icon */}
+              <div className="relative mx-auto w-28 h-28">
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl animate-pulse opacity-75" />
+                <div className="relative w-full h-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-3xl flex items-center justify-center shadow-2xl">
+                  <Upload className="w-12 h-12 text-white" />
+                </div>
+                {/* Floating elements */}
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce">
+                  <Sparkles className="w-4 h-4 text-white" />
+                </div>
+                <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center animate-pulse">
+                  <Zap className="w-3 h-3 text-white" />
+                </div>
+              </div>
+
+              {/* Enhanced title and description */}
+              <div className="space-y-4">
+                <h3 className={`${isMobile ? "text-2xl" : "text-3xl"} font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent`}>
+                  Start Your Creative Journey
+                </h3>
+                <p className={`${isMobile ? "text-base" : "text-lg"} text-muted-foreground max-w-2xl mx-auto font-medium`}>
+                  Upload high-resolution images and transform them with professional AI tools, filters, and music integration.
+                </p>
+
+                {/* Feature highlights */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto mt-6">
+                  <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg border">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Brain className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">AI Enhancement</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg border">
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <Filter className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">Pro Filters</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg border">
+                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                      <Music className="w-4 h-4 text-green-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">Music Sync</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Enhanced action buttons */}
+              <div className="space-y-4">
+                <div className="flex flex-col md:flex-row gap-4 max-w-md mx-auto">
+                  <Button
+                    onClick={() => {
+                      console.log('Upload button clicked');
+                      fileInputRef.current?.click();
+                    }}
+                    className={`flex-1 py-4 px-6 bg-gradient-to-r ${currentTheme.gradients.primary} text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 rounded-xl text-lg font-semibold`}
+                  >
+                    <Upload className="w-6 h-6 mr-3" />
+                    Choose Your Image
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      console.log('Music upload button clicked');
+                      audioInputRef.current?.click();
+                    }}
+                    variant="outline"
+                    className="flex-1 py-4 px-6 border-2 border-purple-300 text-purple-700 hover:bg-purple-50 transition-all duration-300 rounded-xl text-lg font-semibold"
+                  >
+                    <Music className="w-6 h-6 mr-3" />
+                    Add Background Music
+                  </Button>
+                </div>
+
+                {/* Quick tips */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-muted-foreground max-w-lg mx-auto">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>Supports JPG, PNG, GIF formats</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>Maximum file size: 10MB</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>High-resolution recommended</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>Real-time preview available</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Professional touch */}
+              <div className="pt-6 border-t border-gray-200/50">
+                <p className="text-xs text-muted-foreground">
+                  Professional-grade photo editing powered by AI • Trusted by creators worldwide
+                </p>
+              </div>
             </div>
-            
-            <div className="space-y-2">
-              <h3 className={`${isMobile ? "text-lg" : "text-xl"} font-semibold text-foreground`}>
-                Upload Your Photo
-              </h3>
-              <p className={`${isMobile ? "text-sm" : "text-base"} text-muted-foreground max-w-md mx-auto`}>
-                Start with high-resolution images for best results. Supports all formats.
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                className={`py-3 bg-gradient-to-r ${currentTheme.gradients.primary} text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300`}
-              >
-                <Upload className="w-5 h-5 mr-2" />
-                Choose Image
-              </Button>
-              
-              <Button
-                onClick={() => audioInputRef.current?.click()}
-                variant="outline"
-                className="py-3"
-              >
-                <Music className="w-5 h-5 mr-2" />
-                Add Music
-              </Button>
-            </div>
-            
+
+            {/* Hidden inputs */}
             <input
               ref={fileInputRef}
               type="file"
@@ -638,7 +1507,7 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
               onChange={handleFileUpload}
               className="hidden"
             />
-            
+
             <input
               ref={audioInputRef}
               type="file"
@@ -646,8 +1515,8 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
               onChange={handleMusicUpload}
               className="hidden"
             />
-          </div>
-        </GlassSurface>
+          </GlassSurface>
+        </div>
       )}
 
       {/* Advanced Editor Interface */}
@@ -694,79 +1563,451 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                   <Music className="w-4 h-4" />
                 </Button>
                 
-                <Button
-                  onClick={exportHighQuality}
-                  className={`bg-gradient-to-r ${currentTheme.gradients.accent} text-white border-0 export-animation`}
-                  size={isMobile ? "sm" : "default"}
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export HQ
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={saveImage}
+                    className={`bg-gradient-to-r ${currentTheme.gradients.primary} text-white border-0`}
+                    size={isMobile ? "sm" : "default"}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save
+                  </Button>
+
+                  <Button
+                    onClick={exportHighQuality}
+                    className={`bg-gradient-to-r ${currentTheme.gradients.accent} text-white border-0 export-animation`}
+                    size={isMobile ? "sm" : "default"}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Export HQ
+                  </Button>
+                </div>
               </div>
             </div>
+
+            {/* Dynamic Templates Section */}
+            {currentTool === "templates" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="flex items-center justify-between">
+                  <h4 className="text-lg font-bold text-white flex items-center gap-3">
+                    <LayoutTemplate className="w-6 h-6 text-purple-400" />
+                    Dynamic Photo Templates
+                  </h4>
+                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1">
+                    {dynamicTemplates.length} Available
+                  </Badge>
+                </div>
+
+                {/* Template Categories */}
+                <div className="space-y-4">
+                  {['Popular', 'Cinematic', 'Social', 'Professional'].map((category) => (
+                    <div key={category} className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <h5 className="font-semibold text-gray-200">{category}</h5>
+                        <div className="h-px bg-gradient-to-r from-purple-500/50 to-transparent flex-1" />
+                      </div>
+
+                      <div className={`${isMobile ? "overflow-x-auto pb-3" : ""}`}>
+                        <div className={`${
+                          isMobile
+                            ? "flex gap-4 min-w-max"
+                            : "grid grid-cols-2 lg:grid-cols-4 gap-4"
+                        }`}>
+                          {dynamicTemplates
+                            .filter(template => template.category === category)
+                            .map((template) => (
+                            <motion.div
+                              key={template.id}
+                              whileHover={{ scale: 1.05, y: -5 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => {
+                                setSelectedTemplate(template);
+                                setVideoLikeMode(true);
+                                console.log('Template selected:', template.name);
+                              }}
+                              className={`${isMobile ? "min-w-[200px]" : ""} relative group cursor-pointer`}
+                            >
+                              <div className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-300 ${
+                                selectedTemplate?.id === template.id
+                                  ? "border-purple-500 shadow-2xl shadow-purple-500/25"
+                                  : "border-gray-600 hover:border-purple-400"
+                              }`}>
+                                {/* Template thumbnail */}
+                                <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative overflow-hidden">
+                                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20" />
+                                  <span className="text-4xl">{template.thumbnail}</span>
+
+                                  {/* Play overlay */}
+                                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <motion.div
+                                      whileHover={{ scale: 1.2 }}
+                                      className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30"
+                                    >
+                                      <PlayCircle className="w-8 h-8 text-white" />
+                                    </motion.div>
+                                  </div>
+
+                                  {/* Pro badge */}
+                                  {template.isPro && (
+                                    <div className="absolute top-2 right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs font-bold px-2 py-1 rounded-full">
+                                      PRO
+                                    </div>
+                                  )}
+
+                                  {/* Popularity indicator */}
+                                  <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+                                    <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                                    <span className="text-xs text-white font-medium">{template.popularity}%</span>
+                                  </div>
+                                </div>
+
+                                {/* Template info */}
+                                <div className="p-4 bg-gray-800/50 backdrop-blur-sm">
+                                  <h6 className="font-semibold text-white mb-1">{template.name}</h6>
+                                  <p className="text-xs text-gray-300 mb-2">{template.description}</p>
+
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+                                        {template.aspectRatio}
+                                      </Badge>
+                                      <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+                                        {template.animation.type}
+                                      </Badge>
+                                    </div>
+
+                                    <div className="flex items-center gap-1">
+                                      <Heart className="w-3 h-3 text-gray-400" />
+                                      <span className="text-xs text-gray-400">{Math.floor(template.popularity * 1.2)}</span>
+                                    </div>
+                                  </div>
+
+                                  {/* Effects preview */}
+                                  <div className="mt-2 flex flex-wrap gap-1">
+                                    {template.effects.slice(0, 3).map((effect, index) => (
+                                      <span key={index} className="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full">
+                                        {effect}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Selected template details */}
+                <AnimatePresence>
+                  {selectedTemplate && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/30"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-3">
+                          <h5 className="text-xl font-bold text-white flex items-center gap-3">
+                            <span className="text-2xl">{selectedTemplate.thumbnail}</span>
+                            {selectedTemplate.name}
+                            {selectedTemplate.isPro && (
+                              <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black">
+                                PRO
+                              </Badge>
+                            )}
+                          </h5>
+
+                          <p className="text-gray-300">{selectedTemplate.description}</p>
+
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div>
+                              <span className="text-gray-400">Aspect Ratio:</span>
+                              <p className="text-white font-medium">{selectedTemplate.aspectRatio}</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Animation:</span>
+                              <p className="text-white font-medium">{selectedTemplate.animation.type}</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Duration:</span>
+                              <p className="text-white font-medium">{selectedTemplate.animation.duration}ms</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Popularity:</span>
+                              <p className="text-white font-medium">{selectedTemplate.popularity}%</p>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <span className="text-gray-400 text-sm">Effects:</span>
+                            <div className="flex flex-wrap gap-2">
+                              {selectedTemplate.effects.map((effect, index) => (
+                                <Badge key={index} className="bg-purple-500/20 text-purple-300 border-purple-500/30">
+                                  {effect}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <span className="text-gray-400 text-sm">Music Suggestions:</span>
+                            <div className="flex flex-wrap gap-2">
+                              {selectedTemplate.musicSuggestions.map((music, index) => (
+                                <Badge key={index} className="bg-pink-500/20 text-pink-300 border-pink-500/30">
+                                  {music}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <Button
+                            onClick={() => {
+                              setCurrentTool('video');
+                              setVideoLikeMode(true);
+                              console.log('Starting video mode with template:', selectedTemplate.name);
+                            }}
+                            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                          >
+                            <Video className="w-4 h-4 mr-2" />
+                            Use Template
+                          </Button>
+
+                          <Button
+                            onClick={() => setSelectedTemplate(null)}
+                            variant="outline"
+                            className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+
+            {/* Video-like editing mode */}
+            {currentTool === "video" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="flex items-center justify-between">
+                  <h4 className="text-lg font-bold text-white flex items-center gap-3">
+                    <Video className="w-6 h-6 text-red-400" />
+                    Video-Style Editor
+                  </h4>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2" />
+                      RECORDING
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Video timeline simulation */}
+                <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-4 border border-gray-600">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-gray-300 font-medium">Timeline</span>
+                    <span className="text-sm text-gray-400">{playbackTime.toFixed(1)}s / 30.0s</span>
+                  </div>
+
+                  {/* Timeline bar */}
+                  <div className="relative h-3 bg-gray-800 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(playbackTime / 30) * 100}%` }}
+                      className="h-full bg-gradient-to-r from-red-500 to-pink-500 rounded-full"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="h-1 w-full bg-white/20 rounded-full" />
+                    </div>
+                  </div>
+
+                  {/* Playback controls */}
+                  <div className="flex items-center justify-center gap-4 mt-4">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setPlaybackTime(Math.max(0, playbackTime - 5))}
+                      className="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors"
+                    >
+                      <Rewind className="w-5 h-5 text-white" />
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        setIsPlaying(!isPlaying);
+                        if (!isPlaying) {
+                          const interval = setInterval(() => {
+                            setPlaybackTime(prev => {
+                              if (prev >= 30) {
+                                clearInterval(interval);
+                                setIsPlaying(false);
+                                return 0;
+                              }
+                              return prev + 0.1;
+                            });
+                          }, 100);
+                        }
+                      }}
+                      className="w-12 h-12 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 rounded-full flex items-center justify-center transition-all shadow-lg"
+                    >
+                      {isPlaying ?
+                        <Pause className="w-6 h-6 text-white" /> :
+                        <Play className="w-6 h-6 text-white ml-0.5" />
+                      }
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setPlaybackTime(Math.min(30, playbackTime + 5))}
+                      className="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors"
+                    >
+                      <FastForward className="w-5 h-5 text-white" />
+                    </motion.button>
+                  </div>
+                </div>
+
+                {/* Photo sequence */}
+                <div className="space-y-3">
+                  <h5 className="font-semibold text-gray-200">Photo Sequence</h5>
+                  <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                    {[1, 2, 3, 4, 5, 6].map((index) => (
+                      <motion.div
+                        key={index}
+                        whileHover={{ scale: 1.05 }}
+                        className="aspect-square bg-gray-800 rounded-lg border-2 border-gray-600 hover:border-purple-500 transition-colors cursor-pointer flex items-center justify-center"
+                        onClick={() => {
+                          // Trigger file input for multiple images
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = 'image/*';
+                          input.multiple = true;
+                          input.onchange = (e) => {
+                            const files = Array.from((e.target as HTMLInputElement).files || []);
+                            setProjectImages(prev => [...prev, ...files]);
+                          };
+                          input.click();
+                        }}
+                      >
+                        {projectImages[index - 1] ? (
+                          <img
+                            src={URL.createObjectURL(projectImages[index - 1])}
+                            alt={`Photo ${index}`}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        ) : (
+                          <div className="text-gray-500 text-center">
+                            <ImageIcon className="w-6 h-6 mx-auto mb-1" />
+                            <span className="text-xs">Photo {index}</span>
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Video effects */}
+                <div className="space-y-3">
+                  <h5 className="font-semibold text-gray-200">Video Effects</h5>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {['Fade In/Out', 'Zoom & Pan', 'Slide Transition', 'Cross Dissolve'].map((effect) => (
+                      <Button
+                        key={effect}
+                        variant="outline"
+                        className="border-gray-600 text-gray-300 hover:bg-purple-600 hover:text-white hover:border-purple-500 transition-all"
+                      >
+                        {effect}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
             {/* Tool-specific controls */}
             {currentTool === "adjust" && (
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Brightness</label>
-                    <input
-                      type="range"
-                      min="-100"
-                      max="100"
-                      value={editState.brightness}
-                      onChange={(e) => setEditState(prev => ({ ...prev, brightness: parseInt(e.target.value) }))}
-                      className="w-full photo-editor-slider"
-                    />
-                    <span className="text-xs text-muted-foreground">{editState.brightness}</span>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Contrast</label>
-                    <input
-                      type="range"
-                      min="-100"
-                      max="100"
-                      value={editState.contrast}
-                      onChange={(e) => setEditState(prev => ({ ...prev, contrast: parseInt(e.target.value) }))}
-                      className="w-full photo-editor-slider"
-                    />
-                    <span className="text-xs text-muted-foreground">{editState.contrast}</span>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Saturation</label>
-                    <input
-                      type="range"
-                      min="-100"
-                      max="100"
-                      value={editState.saturation}
-                      onChange={(e) => setEditState(prev => ({ ...prev, saturation: parseInt(e.target.value) }))}
-                      className="w-full photo-editor-slider"
-                    />
-                    <span className="text-xs text-muted-foreground">{editState.saturation}</span>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Hue</label>
-                    <input
-                      type="range"
-                      min="-180"
-                      max="180"
-                      value={editState.hue}
-                      onChange={(e) => setEditState(prev => ({ ...prev, hue: parseInt(e.target.value) }))}
-                      className="w-full photo-editor-slider"
-                    />
-                    <span className="text-xs text-muted-foreground">{editState.hue}°</span>
+                {/* Scrollable adjust controls for mobile */}
+                <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                  <div className={`${isMobile ? "flex gap-4 min-w-max" : "grid grid-cols-1 md:grid-cols-4 gap-4"}`}>
+                    <div className={`space-y-2 ${isMobile ? "min-w-[200px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Brightness</label>
+                      <input
+                        type="range"
+                        min="-100"
+                        max="100"
+                        value={editState.brightness}
+                        onChange={(e) => setEditState(prev => ({ ...prev, brightness: parseInt(e.target.value) }))}
+                        className="w-full photo-editor-slider"
+                      />
+                      <span className="text-xs text-muted-foreground">{editState.brightness}</span>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[200px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Contrast</label>
+                      <input
+                        type="range"
+                        min="-100"
+                        max="100"
+                        value={editState.contrast}
+                        onChange={(e) => setEditState(prev => ({ ...prev, contrast: parseInt(e.target.value) }))}
+                        className="w-full photo-editor-slider"
+                      />
+                      <span className="text-xs text-muted-foreground">{editState.contrast}</span>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[200px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Saturation</label>
+                      <input
+                        type="range"
+                        min="-100"
+                        max="100"
+                        value={editState.saturation}
+                        onChange={(e) => setEditState(prev => ({ ...prev, saturation: parseInt(e.target.value) }))}
+                        className="w-full photo-editor-slider"
+                      />
+                      <span className="text-xs text-muted-foreground">{editState.saturation}</span>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[200px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Hue</label>
+                      <input
+                        type="range"
+                        min="-180"
+                        max="180"
+                        value={editState.hue}
+                        onChange={(e) => setEditState(prev => ({ ...prev, hue: parseInt(e.target.value) }))}
+                        className="w-full photo-editor-slider"
+                      />
+                      <span className="text-xs text-muted-foreground">{editState.hue}°</span>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="flex gap-2 flex-wrap">
+
+                {/* Transform controls */}
+                <div className={`flex gap-2 ${isMobile ? "overflow-x-auto pb-2" : "flex-wrap"}`}>
                   <Button
                     onClick={() => setEditState(prev => ({ ...prev, rotation: prev.rotation + 90 }))}
                     variant="outline"
                     size="sm"
+                    className={isMobile ? "min-w-max" : ""}
                   >
                     <RotateCw className="w-4 h-4 mr-2" />
                     Rotate
@@ -775,6 +2016,7 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                     onClick={() => setEditState(prev => ({ ...prev, flipX: !prev.flipX }))}
                     variant="outline"
                     size="sm"
+                    className={isMobile ? "min-w-max" : ""}
                   >
                     <Move className="w-4 h-4 mr-2" />
                     Flip H
@@ -783,9 +2025,32 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                     onClick={() => setEditState(prev => ({ ...prev, flipY: !prev.flipY }))}
                     variant="outline"
                     size="sm"
+                    className={isMobile ? "min-w-max" : ""}
                   >
                     <Move className="w-4 h-4 mr-2" />
                     Flip V
+                  </Button>
+                  <Button
+                    onClick={() => setEditState({
+                      brightness: 0,
+                      contrast: 0,
+                      saturation: 0,
+                      hue: 0,
+                      rotation: 0,
+                      flipX: false,
+                      flipY: false,
+                      filter: "none",
+                      crop: null,
+                      zoom: 1,
+                      panX: 0,
+                      panY: 0,
+                    })}
+                    variant="outline"
+                    size="sm"
+                    className={isMobile ? "min-w-max" : ""}
+                  >
+                    <Undo className="w-4 h-4 mr-2" />
+                    Reset
                   </Button>
                 </div>
               </div>
@@ -793,57 +2058,330 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
 
             {currentTool === "ai" && (
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {aiTools.map((tool) => (
-                    <Button
-                      key={tool.id}
-                      onClick={() => processAI(tool.id)}
-                      disabled={isAIProcessing}
-                      variant="outline"
-                      className="p-4 h-auto flex flex-col items-start gap-2 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50"
-                    >
-                      <div className="flex items-center gap-2 w-full">
-                        <tool.icon className="w-5 h-5 text-blue-600" />
-                        <span className="font-medium">{tool.label}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground text-left">{tool.description}</p>
-                    </Button>
-                  ))}
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-sm font-medium text-foreground">AI Tools</h4>
+                  {isAIProcessing && (
+                    <div className="flex items-center gap-2 text-blue-500">
+                      <Brain className="w-4 h-4 animate-pulse" />
+                      <span className="text-xs">Processing...</span>
+                    </div>
+                  )}
                 </div>
+
+                {/* Mobile scrollable AI tools */}
+                <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                  <div className={`${
+                    isMobile
+                      ? "flex gap-3 min-w-max"
+                      : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                  }`}>
+                    {aiTools.map((tool) => (
+                      <Button
+                        key={tool.id}
+                        onClick={() => processAI(tool.id)}
+                        disabled={isAIProcessing}
+                        variant="outline"
+                        className={`p-4 h-auto flex flex-col items-start gap-2 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 ${
+                          isMobile ? "min-w-[180px] flex-shrink-0" : ""
+                        } ${isAIProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
+                      >
+                        <div className="flex items-center gap-2 w-full">
+                          <tool.icon className="w-5 h-5 text-blue-600" />
+                          <span className="font-medium text-sm">{tool.label}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground text-left leading-tight">{tool.description}</p>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* AI Processing Status */}
+                {isAIProcessing && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Cpu className="w-4 h-4 text-blue-600 animate-pulse" />
+                      <span className="text-sm font-medium text-blue-800">AI Processing: {currentAITask}</span>
+                    </div>
+                    <div className="w-full bg-blue-200 rounded-full h-2">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${aiProgress}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-xs text-blue-600 mt-1">
+                      <span>Processing...</span>
+                      <span>{Math.round(aiProgress)}%</span>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
             {currentTool === "text" && (
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Font</label>
-                    <select
-                      value={selectedFont}
-                      onChange={(e) => setSelectedFont(e.target.value)}
-                      className="w-full p-2 rounded border bg-background"
+                <h4 className="text-sm font-medium text-foreground">Text Tool</h4>
+
+                {/* Mobile scrollable text controls */}
+                <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                  <div className={`${isMobile ? "flex gap-4 min-w-max" : "grid grid-cols-1 md:grid-cols-3 gap-4"}`}>
+                    <div className={`space-y-2 ${isMobile ? "min-w-[160px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Font</label>
+                      <select
+                        value={selectedFont}
+                        onChange={(e) => setSelectedFont(e.target.value)}
+                        className="w-full p-2 rounded border bg-background text-sm"
+                      >
+                        {fonts.map(font => (
+                          <option key={font} value={font}>{font}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[160px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Size</label>
+                      <input
+                        type="range"
+                        min="12"
+                        max="120"
+                        value={textSize}
+                        onChange={(e) => setTextSize(parseInt(e.target.value))}
+                        className="w-full photo-editor-slider"
+                      />
+                      <span className="text-xs text-muted-foreground">{textSize}px</span>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[160px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Color</label>
+                      <input
+                        type="color"
+                        value={brushColor}
+                        onChange={(e) => setBrushColor(e.target.value)}
+                        className="w-full h-10 rounded border"
+                      />
+                      <div className="text-xs text-muted-foreground">{brushColor}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Text input area */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Text Content</label>
+                  <input
+                    type="text"
+                    placeholder="Enter your text here..."
+                    className="w-full p-2 rounded border bg-background"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const text = e.currentTarget.value;
+                        if (text.trim()) {
+                          const newText: TextOverlay = {
+                            id: Date.now().toString(),
+                            text: text.trim(),
+                            x: 100,
+                            y: 100,
+                            fontSize: textSize,
+                            color: brushColor,
+                            fontFamily: selectedFont,
+                            rotation: 0,
+                          };
+                          setTextOverlays(prev => [...prev, newText]);
+                          e.currentTarget.value = '';
+                        }
+                      }
+                    }}
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <Button onClick={addTextOverlay} className="flex-1">
+                    <Type className="w-4 h-4 mr-2" />
+                    Add Text
+                  </Button>
+
+                  {textOverlays.length > 0 && (
+                    <Button
+                      onClick={() => setTextOverlays([])}
+                      variant="outline"
+                      className="flex-1"
                     >
-                      {fonts.map(font => (
-                        <option key={font} value={font}>{font}</option>
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Clear All
+                    </Button>
+                  )}
+                </div>
+
+                {/* Active text overlays */}
+                {textOverlays.length > 0 && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Text Overlays ({textOverlays.length})</label>
+                    <div className="max-h-24 overflow-y-auto space-y-1">
+                      {textOverlays.map((overlay, index) => (
+                        <div key={overlay.id} className="flex items-center justify-between p-2 bg-muted/50 rounded text-xs">
+                          <span className="truncate flex-1">{overlay.text}</span>
+                          <Button
+                            onClick={() => setTextOverlays(prev => prev.filter(t => t.id !== overlay.id))}
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0"
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
                       ))}
-                    </select>
+                    </div>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Size</label>
-                    <input
-                      type="range"
-                      min="12"
-                      max="120"
-                      value={textSize}
-                      onChange={(e) => setTextSize(parseInt(e.target.value))}
-                      className="w-full photo-editor-slider"
-                    />
-                    <span className="text-xs text-muted-foreground">{textSize}px</span>
+                )}
+              </div>
+            )}
+
+            {currentTool === "brush" && (
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-foreground">Brush Tool</h4>
+
+                {/* Mobile scrollable brush controls */}
+                <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                  <div className={`${isMobile ? "flex gap-4 min-w-max" : "grid grid-cols-1 md:grid-cols-3 gap-4"}`}>
+                    <div className={`space-y-2 ${isMobile ? "min-w-[150px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Brush Size</label>
+                      <input
+                        type="range"
+                        min="1"
+                        max="100"
+                        value={brushSize}
+                        onChange={(e) => setBrushSize(parseInt(e.target.value))}
+                        className="w-full photo-editor-slider"
+                      />
+                      <span className="text-xs text-muted-foreground">{brushSize}px</span>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[150px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Color</label>
+                      <input
+                        type="color"
+                        value={brushColor}
+                        onChange={(e) => setBrushColor(e.target.value)}
+                        className="w-full h-10 rounded border"
+                      />
+                      <div className="text-xs text-muted-foreground">{brushColor}</div>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[200px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Brush Tools</label>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => {
+                            // Set brush mode
+                            console.log('Brush mode activated');
+                          }}
+                        >
+                          <Brush className="w-4 h-4 mr-1" />
+                          Paint
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => {
+                            // Set eraser mode
+                            setBrushColor('#FFFFFF');
+                          }}
+                        >
+                          <Eraser className="w-4 h-4 mr-1" />
+                          Erase
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                  
+                </div>
+
+                {/* Brush Tips */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Brush className="w-4 h-4 text-blue-600" />
+                    <span className="text-sm font-medium text-blue-800">Drawing Tips</span>
+                  </div>
+                  <p className="text-xs text-blue-600">
+                    {isMobile ? "Touch and drag to draw on the canvas" : "Click and drag to draw on the canvas"}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {currentTool === "shapes" && (
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-foreground">Shapes Tool</h4>
+
+                {/* Mobile scrollable shapes */}
+                <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                  <div className={`${isMobile ? "flex gap-3 min-w-max" : "grid grid-cols-3 md:grid-cols-6 gap-3"}`}>
+                    {[
+                      { id: 'rectangle', icon: Square, name: 'Rectangle' },
+                      { id: 'circle', icon: Circle, name: 'Circle' },
+                      { id: 'line', icon: Move, name: 'Line' },
+                      { id: 'arrow', icon: MousePointer, name: 'Arrow' },
+                    ].map((shape) => (
+                      <Button
+                        key={shape.id}
+                        variant="outline"
+                        className={`p-3 h-auto flex flex-col items-center gap-2 ${
+                          isMobile ? "min-w-[80px] flex-shrink-0" : ""
+                        }`}
+                        onClick={() => {
+                          // Add shape to canvas
+                          const canvas = canvasRef.current;
+                          if (!canvas) return;
+                          const ctx = canvas.getContext('2d');
+                          if (!ctx) return;
+
+                          ctx.strokeStyle = brushColor;
+                          ctx.lineWidth = 3;
+
+                          const centerX = canvas.width / 2;
+                          const centerY = canvas.height / 2;
+                          const size = 50;
+
+                          switch (shape.id) {
+                            case 'rectangle':
+                              ctx.strokeRect(centerX - size, centerY - size, size * 2, size * 2);
+                              break;
+                            case 'circle':
+                              ctx.beginPath();
+                              ctx.arc(centerX, centerY, size, 0, 2 * Math.PI);
+                              ctx.stroke();
+                              break;
+                            case 'line':
+                              ctx.beginPath();
+                              ctx.moveTo(centerX - size, centerY);
+                              ctx.lineTo(centerX + size, centerY);
+                              ctx.stroke();
+                              break;
+                            case 'arrow':
+                              // Draw arrow
+                              ctx.beginPath();
+                              ctx.moveTo(centerX - size, centerY);
+                              ctx.lineTo(centerX + size, centerY);
+                              ctx.moveTo(centerX + size - 10, centerY - 10);
+                              ctx.lineTo(centerX + size, centerY);
+                              ctx.lineTo(centerX + size - 10, centerY + 10);
+                              ctx.stroke();
+                              break;
+                          }
+                        }}
+                      >
+                        <shape.icon className="w-6 h-6" />
+                        <span className="text-xs">{shape.name}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Shape properties */}
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Color</label>
+                    <label className="text-sm font-medium text-foreground">Stroke Color</label>
                     <input
                       type="color"
                       value={brushColor}
@@ -851,55 +2389,29 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                       className="w-full h-10 rounded border"
                     />
                   </div>
-                </div>
-                
-                <Button onClick={addTextOverlay} className="w-full">
-                  <Type className="w-4 h-4 mr-2" />
-                  Add Text
-                </Button>
-              </div>
-            )}
 
-            {currentTool === "brush" && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Brush Size</label>
+                    <label className="text-sm font-medium text-foreground">Stroke Width</label>
                     <input
                       type="range"
                       min="1"
-                      max="100"
+                      max="20"
                       value={brushSize}
                       onChange={(e) => setBrushSize(parseInt(e.target.value))}
                       className="w-full photo-editor-slider"
                     />
                     <span className="text-xs text-muted-foreground">{brushSize}px</span>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Color</label>
-                    <input
-                      type="color"
-                      value={brushColor}
-                      onChange={(e) => setBrushColor(e.target.value)}
-                      className="w-full h-10 rounded border"
-                    />
+                </div>
+
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Square className="w-4 h-4 text-green-600" />
+                    <span className="text-sm font-medium text-green-800">Shapes Info</span>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Tools</label>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        <Brush className="w-4 h-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Eraser className="w-4 h-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Pipette className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
+                  <p className="text-xs text-green-600">
+                    Click on any shape to add it to the center of your canvas
+                  </p>
                 </div>
               </div>
             )}
@@ -909,33 +2421,110 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                 <div className="flex items-center justify-between">
                   <h4 className="font-medium text-foreground">Background Music</h4>
                   <Button
-                    onClick={() => audioInputRef.current?.click()}
-                    variant="outline"
+                    onClick={() => {
+                      console.log('Add track button clicked');
+                      audioInputRef.current?.click();
+                    }}
+                    className="bg-gradient-to-r from-purple-500 to-pink-600 text-white border-0"
                     size="sm"
                   >
                     <FileAudio className="w-4 h-4 mr-2" />
                     Add Track
                   </Button>
                 </div>
-                
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {musicTracks.map((track) => (
-                    <div key={track.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                      <Button
-                        onClick={() => currentTrack === track.id ? stopMusic() : playMusic(track.id)}
-                        variant="outline"
-                        size="sm"
-                      >
-                        {currentTrack === track.id && isPlaying ? 
-                          <Pause className="w-4 h-4" /> : 
-                          <Play className="w-4 h-4" />
-                        }
-                      </Button>
-                      
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground truncate">{track.name}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Volume2 className="w-3 h-3" />
+
+                {/* Music player controls */}
+                {musicTracks.length > 0 && (
+                  <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
+                    <div className="flex items-center gap-2">
+                      <Music className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-800">
+                        {musicTracks.length} track{musicTracks.length > 1 ? 's' : ''} loaded
+                      </span>
+                    </div>
+
+                    {isPlaying && (
+                      <div className="flex items-center gap-2 text-green-600">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span className="text-xs font-medium">Playing</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Mobile-optimized music tracks list */}
+                <div className={`space-y-2 ${isMobile ? "max-h-60" : "max-h-40"} overflow-y-auto`}>
+                  {musicTracks.map((track, index) => (
+                    <div key={track.id} className={`${isMobile ? "p-4" : "p-3"} bg-muted/50 rounded-lg border transition-all hover:bg-muted/70`}>
+                      {/* Track header */}
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">{track.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Track {index + 1} • {track.duration ? `${Math.floor(track.duration / 60)}:${Math.floor(track.duration % 60).toString().padStart(2, '0')}` : 'Loading...'}
+                          </p>
+                        </div>
+
+                        <Button
+                          onClick={() => {
+                            console.log('Removing track:', track.name);
+                            setMusicTracks(prev => prev.filter(t => t.id !== track.id));
+                            if (currentTrack === track.id) {
+                              stopMusic();
+                            }
+                          }}
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+
+                      {/* Controls row */}
+                      <div className="flex items-center gap-3">
+                        {/* Play controls */}
+                        <div className="flex gap-1">
+                          <Button
+                            onClick={() => {
+                              console.log('Play/pause clicked for track:', track.name);
+                              if (currentTrack === track.id) {
+                                if (isPlaying) {
+                                  pauseMusic();
+                                } else {
+                                  resumeMusic();
+                                }
+                              } else {
+                                playMusic(track.id);
+                              }
+                            }}
+                            variant={currentTrack === track.id ? "default" : "outline"}
+                            size="sm"
+                            className={currentTrack === track.id ? "bg-blue-600 text-white" : ""}
+                          >
+                            {currentTrack === track.id && isPlaying ?
+                              <Pause className="w-4 h-4" /> :
+                              <Play className="w-4 h-4" />
+                            }
+                          </Button>
+
+                          {currentTrack === track.id && (
+                            <Button
+                              onClick={() => {
+                                console.log('Stop clicked');
+                                stopMusic();
+                              }}
+                              variant="outline"
+                              size="sm"
+                            >
+                              <StopCircle className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+
+                        {/* Volume control */}
+                        <div className="flex-1 flex items-center gap-2">
+                          <Volume2 className="w-3 h-3 text-muted-foreground" />
                           <input
                             type="range"
                             min="0"
@@ -944,56 +2533,468 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                             value={track.volume}
                             onChange={(e) => {
                               const newVolume = parseFloat(e.target.value);
-                              setMusicTracks(prev => 
+                              console.log('Volume changed:', newVolume);
+                              setMusicTracks(prev =>
                                 prev.map(t => t.id === track.id ? { ...t, volume: newVolume } : t)
                               );
                               if (audioRef.current && currentTrack === track.id) {
                                 audioRef.current.volume = newVolume;
                               }
                             }}
-                            className="flex-1 h-1"
+                            className={`flex-1 ${isMobile ? "h-2" : "h-1"}`}
                           />
+                          <span className="text-xs text-muted-foreground min-w-[3ch]">
+                            {Math.round(track.volume * 100)}%
+                          </span>
                         </div>
+
+                        {/* Loop toggle */}
+                        <Button
+                          onClick={() => {
+                            const newLoop = !track.loop;
+                            console.log('Loop toggled:', newLoop);
+                            setMusicTracks(prev =>
+                              prev.map(t => t.id === track.id ? { ...t, loop: newLoop } : t)
+                            );
+                            if (audioRef.current && currentTrack === track.id) {
+                              audioRef.current.loop = newLoop;
+                            }
+                          }}
+                          variant={track.loop ? "default" : "outline"}
+                          size="sm"
+                          className={track.loop ? "bg-green-600 text-white" : ""}
+                        >
+                          <Shuffle className="w-4 h-4" />
+                        </Button>
                       </div>
-                      
-                      <Button
-                        onClick={() => setMusicTracks(prev => prev.filter(t => t.id !== track.id))}
-                        variant="ghost"
-                        size="sm"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
                     </div>
                   ))}
                 </div>
-                
+
+                {/* Empty state */}
                 {musicTracks.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
-                    <Headphones className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                    <p>No music tracks added yet</p>
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center">
+                      <Headphones className="w-8 h-8 text-purple-600" />
+                    </div>
+                    <p className="font-medium mb-1">No music tracks yet</p>
+                    <p className="text-sm">
+                      Add background music to enhance your photo editing experience
+                    </p>
+                    <Button
+                      onClick={() => audioInputRef.current?.click()}
+                      className="mt-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white border-0"
+                      size="sm"
+                    >
+                      <Music className="w-4 h-4 mr-2" />
+                      Add Your First Track
+                    </Button>
+                  </div>
+                )}
+
+                {/* Mobile audio tips */}
+                {isMobile && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Headphones className="w-4 h-4 text-yellow-600" />
+                      <span className="text-sm font-medium text-yellow-800">Mobile Audio Tips</span>
+                    </div>
+                    <p className="text-xs text-yellow-700">
+                      Tap the screen first to enable audio. Use headphones for best experience.
+                    </p>
                   </div>
                 )}
               </div>
             )}
 
-            {currentTool === "filters" && (
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                {filters.map((filter) => (
+            {currentTool === "crop" && (
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-foreground">Crop Tool</h4>
+
+                {/* Crop presets for mobile */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-foreground">Crop Presets</label>
+                  <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                    <div className={`${isMobile ? "flex gap-2 min-w-max" : "grid grid-cols-3 gap-2"}`}>
+                      {[
+                        { id: 'square', name: '1:1 Square', ratio: 1 },
+                        { id: 'landscape', name: '16:9 Wide', ratio: 16/9 },
+                        { id: 'portrait', name: '9:16 Tall', ratio: 9/16 },
+                        { id: 'photo', name: '4:3 Photo', ratio: 4/3 },
+                        { id: 'golden', name: '3:2 Golden', ratio: 3/2 },
+                        { id: 'custom', name: 'Free Form', ratio: 0 },
+                      ].map((preset) => (
+                        <Button
+                          key={preset.id}
+                          onClick={() => {
+                            if (!originalImage || !canvasRef.current) return;
+
+                            const canvas = canvasRef.current;
+                            const ctx = canvas.getContext('2d');
+                            if (!ctx) return;
+
+                            if (preset.ratio === 0) {
+                              // Free form - enable manual cropping
+                              setCropMode(true);
+                              alert('Click and drag on the image to select crop area');
+                            } else {
+                              // Apply preset crop
+                              const canvasWidth = canvas.width;
+                              const canvasHeight = canvas.height;
+
+                              let cropWidth, cropHeight;
+
+                              if (preset.ratio > canvasWidth / canvasHeight) {
+                                cropWidth = canvasWidth;
+                                cropHeight = canvasWidth / preset.ratio;
+                              } else {
+                                cropHeight = canvasHeight;
+                                cropWidth = canvasHeight * preset.ratio;
+                              }
+
+                              const cropX = (canvasWidth - cropWidth) / 2;
+                              const cropY = (canvasHeight - cropHeight) / 2;
+
+                              // Create new canvas with cropped dimensions
+                              const croppedCanvas = document.createElement('canvas');
+                              croppedCanvas.width = cropWidth;
+                              croppedCanvas.height = cropHeight;
+                              const croppedCtx = croppedCanvas.getContext('2d');
+
+                              if (croppedCtx) {
+                                croppedCtx.drawImage(
+                                  canvas,
+                                  cropX, cropY, cropWidth, cropHeight,
+                                  0, 0, cropWidth, cropHeight
+                                );
+
+                                // Update main canvas
+                                canvas.width = cropWidth;
+                                canvas.height = cropHeight;
+                                ctx.clearRect(0, 0, cropWidth, cropHeight);
+                                ctx.drawImage(croppedCanvas, 0, 0);
+
+                                console.log(`Applied ${preset.name} crop`);
+                              }
+                            }
+                          }}
+                          variant="outline"
+                          size="sm"
+                          className={`${isMobile ? "min-w-[120px] flex-shrink-0" : ""} flex flex-col items-center gap-1 h-auto p-3`}
+                        >
+                          <div className="w-6 h-6 border-2 border-current rounded flex items-center justify-center">
+                            <div
+                              className="bg-current"
+                              style={{
+                                width: preset.ratio > 1 ? '16px' : '12px',
+                                height: preset.ratio > 1 ? '9px' : '16px',
+                              }}
+                            />
+                          </div>
+                          <span className="text-xs">{preset.name}</span>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Crop controls */}
+                <div className="grid grid-cols-2 gap-3">
                   <Button
-                    key={filter.id}
-                    onClick={() => setEditState(prev => ({ ...prev, filter: filter.filter }))}
-                    variant={editState.filter === filter.filter ? "default" : "outline"}
-                    className={`p-3 h-auto flex flex-col items-center gap-2 filter-preview ${
-                      editState.filter === filter.filter
-                        ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white`
-                        : ""
-                    }`}
+                    onClick={() => {
+                      setCropMode(!cropMode);
+                      if (!cropMode) {
+                        alert(isMobile ? 'Touch and drag to select crop area' : 'Click and drag to select crop area');
+                      }
+                    }}
+                    variant={cropMode ? "default" : "outline"}
+                    className={cropMode ? "bg-green-600 text-white" : ""}
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-500 rounded" 
-                         style={{ filter: filter.filter }} />
-                    <span className="text-xs">{filter.name}</span>
+                    <Crop className="w-4 h-4 mr-2" />
+                    {cropMode ? 'Exit Crop' : 'Manual Crop'}
                   </Button>
-                ))}
+
+                  <Button
+                    onClick={() => {
+                      // Reset to original size
+                      if (originalImage && canvasRef.current) {
+                        const canvas = canvasRef.current;
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                          canvas.width = originalImage.width;
+                          canvas.height = originalImage.height;
+                          ctx.drawImage(originalImage, 0, 0);
+                          setCropMode(false);
+                          setCropStart(null);
+                          setCropEnd(null);
+                        }
+                      }
+                    }}
+                    variant="outline"
+                  >
+                    <Undo className="w-4 h-4 mr-2" />
+                    Reset Crop
+                  </Button>
+                </div>
+
+                {/* Crop instructions */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Crop className="w-4 h-4 text-green-600" />
+                    <span className="text-sm font-medium text-green-800">Crop Instructions</span>
+                  </div>
+                  <p className="text-xs text-green-700">
+                    {cropMode
+                      ? (isMobile ? 'Touch and drag on the image to select crop area, then tap "Apply Crop"' : 'Click and drag on the image to select crop area, then click "Apply Crop"')
+                      : 'Choose a preset ratio or enable manual crop mode'
+                    }
+                  </p>
+
+                  {cropMode && (
+                    <Button
+                      onClick={() => {
+                        if (cropStart && cropEnd && canvasRef.current) {
+                          const canvas = canvasRef.current;
+                          const ctx = canvas.getContext('2d');
+                          if (!ctx) return;
+
+                          const x = Math.min(cropStart.x, cropEnd.x);
+                          const y = Math.min(cropStart.y, cropEnd.y);
+                          const width = Math.abs(cropEnd.x - cropStart.x);
+                          const height = Math.abs(cropEnd.y - cropStart.y);
+
+                          if (width > 10 && height > 10) {
+                            // Create cropped image
+                            const imageData = ctx.getImageData(x, y, width, height);
+                            canvas.width = width;
+                            canvas.height = height;
+                            ctx.putImageData(imageData, 0, 0);
+
+                            setCropMode(false);
+                            setCropStart(null);
+                            setCropEnd(null);
+
+                            alert('Crop applied successfully!');
+                          } else {
+                            alert('Please select a larger crop area.');
+                          }
+                        } else {
+                          alert('Please select a crop area first.');
+                        }
+                      }}
+                      className="mt-2 w-full bg-green-600 text-white"
+                      size="sm"
+                    >
+                      Apply Crop
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {currentTool === "filters" && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-foreground">Photo Filters</h4>
+                  <Badge variant="outline" className="text-xs">
+                    {filters.length} filters
+                  </Badge>
+                </div>
+
+                {/* Filter categories for professional look */}
+                <div className="space-y-4">
+                  {/* Popular filters */}
+                  <div className="space-y-2">
+                    <h5 className="text-sm font-medium text-muted-foreground">Popular</h5>
+                    <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                      <div className={`${
+                        isMobile
+                          ? "flex gap-3 min-w-max"
+                          : "grid grid-cols-3 md:grid-cols-6 gap-3"
+                      }`}>
+                        {filters.filter(f => ['none', 'vintage', 'dramatic', 'neon'].includes(f.id)).map((filter) => (
+                          <Button
+                            key={filter.id}
+                            onClick={() => {
+                              setEditState(prev => ({ ...prev, filter: filter.filter }));
+                              console.log('Applied filter:', filter.name);
+                            }}
+                            variant={editState.filter === filter.filter ? "default" : "outline"}
+                            className={`${isMobile ? "min-w-[100px] p-4" : "p-3"} h-auto flex flex-col items-center gap-2 filter-preview transition-all hover:scale-105 ${
+                              editState.filter === filter.filter
+                                ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-lg border-2 border-primary`
+                                : "hover:shadow-md"
+                            }`}
+                          >
+                            <div className={`${isMobile ? "w-12 h-12" : "w-10 h-10"} bg-gradient-to-br from-gray-300 to-gray-600 rounded-lg shadow-sm border-2 border-gray-200`}
+                                 style={{ filter: filter.filter }} />
+                            <span className="text-xs font-medium text-center leading-tight">{filter.name}</span>
+                            {editState.filter === filter.filter && (
+                              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                            )}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Color filters */}
+                  <div className="space-y-2">
+                    <h5 className="text-sm font-medium text-muted-foreground">Color Effects</h5>
+                    <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                      <div className={`${
+                        isMobile
+                          ? "flex gap-3 min-w-max"
+                          : "grid grid-cols-3 md:grid-cols-6 gap-3"
+                      }`}>
+                        {filters.filter(f => ['sepia', 'cool', 'warm', 'cyberpunk'].includes(f.id)).map((filter) => (
+                          <Button
+                            key={filter.id}
+                            onClick={() => {
+                              setEditState(prev => ({ ...prev, filter: filter.filter }));
+                              console.log('Applied filter:', filter.name);
+                            }}
+                            variant={editState.filter === filter.filter ? "default" : "outline"}
+                            className={`${isMobile ? "min-w-[100px] p-4" : "p-3"} h-auto flex flex-col items-center gap-2 filter-preview transition-all hover:scale-105 ${
+                              editState.filter === filter.filter
+                                ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-lg border-2 border-primary`
+                                : "hover:shadow-md"
+                            }`}
+                          >
+                            <div className={`${isMobile ? "w-12 h-12" : "w-10 h-10"} bg-gradient-to-br from-gray-300 to-gray-600 rounded-lg shadow-sm border-2 border-gray-200`}
+                                 style={{ filter: filter.filter }} />
+                            <span className="text-xs font-medium text-center leading-tight">{filter.name}</span>
+                            {editState.filter === filter.filter && (
+                              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                            )}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Classic filters */}
+                  <div className="space-y-2">
+                    <h5 className="text-sm font-medium text-muted-foreground">Classic</h5>
+                    <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                      <div className={`${
+                        isMobile
+                          ? "flex gap-3 min-w-max"
+                          : "grid grid-cols-3 md:grid-cols-6 gap-3"
+                      }`}>
+                        {filters.filter(f => ['grayscale', 'soft'].includes(f.id)).map((filter) => (
+                          <Button
+                            key={filter.id}
+                            onClick={() => {
+                              setEditState(prev => ({ ...prev, filter: filter.filter }));
+                              console.log('Applied filter:', filter.name);
+                            }}
+                            variant={editState.filter === filter.filter ? "default" : "outline"}
+                            className={`${isMobile ? "min-w-[100px] p-4" : "p-3"} h-auto flex flex-col items-center gap-2 filter-preview transition-all hover:scale-105 ${
+                              editState.filter === filter.filter
+                                ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-lg border-2 border-primary`
+                                : "hover:shadow-md"
+                            }`}
+                          >
+                            <div className={`${isMobile ? "w-12 h-12" : "w-10 h-10"} bg-gradient-to-br from-gray-300 to-gray-600 rounded-lg shadow-sm border-2 border-gray-200`}
+                                 style={{ filter: filter.filter }} />
+                            <span className="text-xs font-medium text-center leading-tight">{filter.name}</span>
+                            {editState.filter === filter.filter && (
+                              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                            )}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Advanced filter controls */}
+                <div className="space-y-3 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
+                  <div className="flex items-center gap-2">
+                    <Sliders className="w-4 h-4 text-blue-600" />
+                    <span className="text-sm font-medium text-blue-800">Filter Controls</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Filter intensity */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                        <Zap className="w-3 h-3" />
+                        Intensity
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        defaultValue="100"
+                        className="w-full photo-editor-slider"
+                        onChange={(e) => {
+                          const intensity = parseInt(e.target.value) / 100;
+                          console.log('Filter intensity changed:', intensity);
+                          // Apply filter with custom intensity
+                          const currentFilter = editState.filter;
+                          if (currentFilter !== "none") {
+                            if (intensity < 1) {
+                              const blended = `opacity(${intensity}) brightness(${1 + (intensity - 1) * 0.2}) ${currentFilter}`;
+                              setEditState(prev => ({ ...prev, filter: blended }));
+                            } else {
+                              setEditState(prev => ({ ...prev, filter: currentFilter }));
+                            }
+                          }
+                        }}
+                      />
+                    </div>
+
+                    {/* Quick reset */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                        <Undo className="w-3 h-3" />
+                        Quick Actions
+                      </label>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => {
+                            setEditState(prev => ({ ...prev, filter: "none" }));
+                            console.log('Filter reset to none');
+                          }}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                        >
+                          Reset
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            // Apply a random filter
+                            const randomFilter = filters[Math.floor(Math.random() * filters.length)];
+                            setEditState(prev => ({ ...prev, filter: randomFilter.filter }));
+                            console.log('Random filter applied:', randomFilter.name);
+                          }}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                        >
+                          <Shuffle className="w-3 h-3 mr-1" />
+                          Random
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Filter info */}
+                {editState.filter !== "none" && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-800">Filter Applied</span>
+                    </div>
+                    <p className="text-xs text-green-700">
+                      Current filter: <strong>{filters.find(f => f.filter === editState.filter)?.name || 'Custom'}</strong>
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </GlassSurface>
@@ -1007,31 +3008,294 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                   <div className="relative">
                     <canvas
                       ref={canvasRef}
-                      className="photo-editor-canvas max-w-full h-auto rounded-lg shadow-lg"
-                      style={{ 
+                      className="photo-editor-canvas max-w-full h-auto rounded-lg shadow-lg border-2 border-gray-200"
+                      style={{
                         cursor: currentTool === "crop" ? "crosshair" : currentTool === "brush" ? "crosshair" : "default",
                         maxHeight: isMobile ? "400px" : "600px",
-                        imageRendering: "high-quality"
+                        imageRendering: "high-quality",
+                        background: "#f8f9fa"
+                      }}
+                      onMouseDown={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+
+                        if (currentTool === "brush") {
+                          setIsDrawing(true);
+                          // Start drawing at this position
+                        } else if (currentTool === "crop" && cropMode) {
+                          setCropStart({ x, y });
+                          setCropEnd({ x, y });
+                          setIsDragging(true);
+                        }
+                      }}
+                      onMouseMove={(e) => {
+                        const canvas = canvasRef.current;
+                        if (!canvas) return;
+                        const rect = canvas.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+
+                        if (isDrawing && currentTool === "brush") {
+                          const ctx = canvas.getContext("2d");
+                          if (!ctx) return;
+
+                          ctx.lineWidth = brushSize;
+                          ctx.lineCap = "round";
+                          ctx.strokeStyle = brushColor;
+                          ctx.lineTo(x, y);
+                          ctx.stroke();
+                          ctx.beginPath();
+                          ctx.moveTo(x, y);
+                        } else if (isDragging && currentTool === "crop" && cropMode && cropStart) {
+                          setCropEnd({ x, y });
+
+                          // Draw crop selection overlay
+                          const ctx = canvas.getContext("2d");
+                          if (ctx && originalImage) {
+                            // Redraw original image
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+
+                            // Draw crop overlay
+                            const cropX = Math.min(cropStart.x, x);
+                            const cropY = Math.min(cropStart.y, y);
+                            const cropWidth = Math.abs(x - cropStart.x);
+                            const cropHeight = Math.abs(y - cropStart.y);
+
+                            // Dark overlay
+                            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                            // Clear crop area
+                            ctx.globalCompositeOperation = "destination-out";
+                            ctx.fillRect(cropX, cropY, cropWidth, cropHeight);
+
+                            // Draw crop border
+                            ctx.globalCompositeOperation = "source-over";
+                            ctx.strokeStyle = "#00ff00";
+                            ctx.lineWidth = 2;
+                            ctx.setLineDash([5, 5]);
+                            ctx.strokeRect(cropX, cropY, cropWidth, cropHeight);
+                            ctx.setLineDash([]);
+                          }
+                        }
+                      }}
+                      onMouseUp={() => {
+                        if (currentTool === "brush") {
+                          setIsDrawing(false);
+                          const canvas = canvasRef.current;
+                          if (canvas) {
+                            const ctx = canvas.getContext("2d");
+                            if (ctx) {
+                              ctx.beginPath();
+                            }
+                          }
+                        } else if (currentTool === "crop" && cropMode) {
+                          setIsDragging(false);
+                        }
+                      }}
+                      onTouchStart={(e) => {
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = touch.clientX - rect.left;
+                        const y = touch.clientY - rect.top;
+
+                        if (currentTool === "brush") {
+                          setIsDrawing(true);
+                          // Start drawing at this position
+                        } else if (currentTool === "crop" && cropMode) {
+                          setCropStart({ x, y });
+                          setCropEnd({ x, y });
+                          setIsDragging(true);
+                        }
+                      }}
+                      onTouchMove={(e) => {
+                        e.preventDefault();
+                        const canvas = canvasRef.current;
+                        if (!canvas) return;
+                        const touch = e.touches[0];
+                        const rect = canvas.getBoundingClientRect();
+                        const x = touch.clientX - rect.left;
+                        const y = touch.clientY - rect.top;
+
+                        if (isDrawing && currentTool === "brush") {
+                          const ctx = canvas.getContext("2d");
+                          if (!ctx) return;
+
+                          ctx.lineWidth = brushSize;
+                          ctx.lineCap = "round";
+                          ctx.strokeStyle = brushColor;
+                          ctx.lineTo(x, y);
+                          ctx.stroke();
+                          ctx.beginPath();
+                          ctx.moveTo(x, y);
+                        } else if (isDragging && currentTool === "crop" && cropMode && cropStart) {
+                          setCropEnd({ x, y });
+
+                          // Draw crop selection overlay (same as mouse)
+                          const ctx = canvas.getContext("2d");
+                          if (ctx && originalImage) {
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+
+                            const cropX = Math.min(cropStart.x, x);
+                            const cropY = Math.min(cropStart.y, y);
+                            const cropWidth = Math.abs(x - cropStart.x);
+                            const cropHeight = Math.abs(y - cropStart.y);
+
+                            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                            ctx.globalCompositeOperation = "destination-out";
+                            ctx.fillRect(cropX, cropY, cropWidth, cropHeight);
+
+                            ctx.globalCompositeOperation = "source-over";
+                            ctx.strokeStyle = "#00ff00";
+                            ctx.lineWidth = 3; // Thicker for mobile
+                            ctx.setLineDash([5, 5]);
+                            ctx.strokeRect(cropX, cropY, cropWidth, cropHeight);
+                            ctx.setLineDash([]);
+                          }
+                        }
+                      }}
+                      onTouchEnd={() => {
+                        if (currentTool === "brush") {
+                          setIsDrawing(false);
+                          const canvas = canvasRef.current;
+                          if (canvas) {
+                            const ctx = canvas.getContext("2d");
+                            if (ctx) {
+                              ctx.beginPath();
+                            }
+                          }
+                        } else if (currentTool === "crop" && cropMode) {
+                          setIsDragging(false);
+                        }
                       }}
                     />
                     
-                    {/* Text overlays */}
-                    {textOverlays.map((overlay) => (
-                      <div
-                        key={overlay.id}
-                        className="absolute cursor-move text-white border border-dashed border-white/50 p-1"
-                        style={{
-                          left: overlay.x,
-                          top: overlay.y,
-                          fontSize: overlay.fontSize,
-                          fontFamily: overlay.fontFamily,
-                          color: overlay.color,
-                          transform: `rotate(${overlay.rotation}deg)`,
-                        }}
-                      >
-                        {overlay.text}
-                      </div>
-                    ))}
+                    {/* Enhanced Text overlays for mobile */}
+                    {textOverlays.map((overlay) => {
+                      const [isDraggingText, setIsDraggingText] = useState(false);
+                      const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+
+                      return (
+                        <div
+                          key={overlay.id}
+                          className={`absolute select-none border border-dashed p-2 transition-all ${
+                            isMobile
+                              ? "cursor-grab active:cursor-grabbing border-blue-400 bg-blue-500/20"
+                              : "cursor-move border-white/50"
+                          } ${isDraggingText ? "z-50 scale-110" : "z-10"}`}
+                          style={{
+                            left: overlay.x,
+                            top: overlay.y,
+                            fontSize: overlay.fontSize,
+                            fontFamily: overlay.fontFamily,
+                            color: overlay.color,
+                            transform: `rotate(${overlay.rotation}deg) ${isDraggingText ? 'scale(1.1)' : 'scale(1)'}`,
+                            minWidth: isMobile ? '60px' : '40px',
+                            minHeight: isMobile ? '40px' : '30px',
+                            touchAction: 'none',
+                          }}
+                          onMouseDown={(e) => {
+                            if (!isMobile) {
+                              setIsDraggingText(true);
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              setDragOffset({
+                                x: e.clientX - rect.left,
+                                y: e.clientY - rect.top
+                              });
+                            }
+                          }}
+                          onMouseMove={(e) => {
+                            if (isDraggingText && !isMobile) {
+                              const canvas = canvasRef.current;
+                              if (!canvas) return;
+                              const canvasRect = canvas.getBoundingClientRect();
+                              const newX = e.clientX - canvasRect.left - dragOffset.x;
+                              const newY = e.clientY - canvasRect.top - dragOffset.y;
+
+                              setTextOverlays(prev =>
+                                prev.map(t => t.id === overlay.id
+                                  ? { ...t, x: Math.max(0, Math.min(newX, canvas.width - 100)), y: Math.max(0, Math.min(newY, canvas.height - 30)) }
+                                  : t
+                                )
+                              );
+                            }
+                          }}
+                          onMouseUp={() => {
+                            setIsDraggingText(false);
+                          }}
+                          onTouchStart={(e) => {
+                            e.preventDefault();
+                            setIsDraggingText(true);
+                            const touch = e.touches[0];
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            setDragOffset({
+                              x: touch.clientX - rect.left,
+                              y: touch.clientY - rect.top
+                            });
+                          }}
+                          onTouchMove={(e) => {
+                            if (isDraggingText) {
+                              e.preventDefault();
+                              const touch = e.touches[0];
+                              const canvas = canvasRef.current;
+                              if (!canvas) return;
+                              const canvasRect = canvas.getBoundingClientRect();
+                              const newX = touch.clientX - canvasRect.left - dragOffset.x;
+                              const newY = touch.clientY - canvasRect.top - dragOffset.y;
+
+                              setTextOverlays(prev =>
+                                prev.map(t => t.id === overlay.id
+                                  ? { ...t, x: Math.max(0, Math.min(newX, canvas.width - 100)), y: Math.max(0, Math.min(newY, canvas.height - 30)) }
+                                  : t
+                                )
+                              );
+                            }
+                          }}
+                          onTouchEnd={() => {
+                            setIsDraggingText(false);
+                          }}
+                          onDoubleClick={() => {
+                            const newText = prompt('Edit text:', overlay.text);
+                            if (newText !== null && newText.trim()) {
+                              setTextOverlays(prev =>
+                                prev.map(t => t.id === overlay.id ? { ...t, text: newText.trim() } : t)
+                              );
+                            }
+                          }}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="flex-1">{overlay.text}</span>
+                            {isMobile && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setTextOverlays(prev => prev.filter(t => t.id !== overlay.id));
+                                }}
+                                className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                              >
+                                ×
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Mobile resize handle */}
+                          {isMobile && (
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white cursor-se-resize"
+                              onTouchStart={(e) => {
+                                e.stopPropagation();
+                                // Handle resize logic here
+                              }}
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </GlassSurface>
