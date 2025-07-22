@@ -1014,14 +1014,25 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                   <Music className="w-4 h-4" />
                 </Button>
                 
-                <Button
-                  onClick={exportHighQuality}
-                  className={`bg-gradient-to-r ${currentTheme.gradients.accent} text-white border-0 export-animation`}
-                  size={isMobile ? "sm" : "default"}
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export HQ
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={saveImage}
+                    className={`bg-gradient-to-r ${currentTheme.gradients.primary} text-white border-0`}
+                    size={isMobile ? "sm" : "default"}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save
+                  </Button>
+
+                  <Button
+                    onClick={exportHighQuality}
+                    className={`bg-gradient-to-r ${currentTheme.gradients.accent} text-white border-0 export-animation`}
+                    size={isMobile ? "sm" : "default"}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Export HQ
+                  </Button>
+                </div>
               </div>
             </div>
 
