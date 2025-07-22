@@ -81,7 +81,7 @@ const App = () => {
     return (
       <IntroVideo
         onVideoEnd={handleIntroVideoEnd}
-        videoUrl="https://firebasestorage.googleapis.com/v0/b/nopeca-106bd.appspot.com/o/videos%2FWho's%20better%20camellya%20or%20changli.....%23edit%20%23instagram%20%23wutheringwaves%20%23wutheringwavesedit%20%23wuwu%20.mp4?alt=media&token=fd96a2b4-c936-4d42-83bf-107280c425eb"
+        videoUrl="https://cdn.pixabay.com/video/2025/04/13/271761_tiny.mp4"
       />
     );
   }
