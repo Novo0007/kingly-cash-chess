@@ -52,7 +52,7 @@ import {
   MousePointer,
   PaintBucket,
   Eraser,
-  Dropper,
+  Pipette,
   Grid3X3,
   Maximize,
   Minimize,
