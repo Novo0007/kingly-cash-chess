@@ -42,7 +42,7 @@ interface ProfessionalGameLobbyProps {
       | "codelearn"
       | "hangman"
       | "akinator"
-
+      | "memory"
   ) => void;
 }
 
