@@ -24,6 +24,7 @@ import { CodeLearnGame } from "@/components/games/codelearn/CodeLearnGame";
 import { FourPicsGame } from "@/components/games/fourpics/FourPicsGame";
 import { HangmanGame } from "@/components/games/hangman/HangmanGame";
 import { AkinatorGame } from "@/components/games/akinator/AkinatorGame";
+import { MemoryFlipGame } from "@/components/games/memory/MemoryFlipGame";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -52,6 +53,7 @@ const Index = () => {
     | "fourpics"
     | "hangman"
     | "akinator"
+    | "memory"
     | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -218,6 +220,8 @@ const Index = () => {
       setCurrentView("hangman-game");
     } else if (gameType === "akinator") {
       setCurrentView("akinator-game");
+    } else if (gameType === "memory") {
+      setCurrentView("memory-game");
     }
   };
 
@@ -375,6 +379,8 @@ const Index = () => {
         return <HangmanGame onBack={handleBackToGameSelection} user={user} />;
       case "akinator-game":
         return <AkinatorGame onBack={handleBackToGameSelection} user={user} />;
+      case "memory-game":
+        return <MemoryFlipGame onBack={handleBackToGameSelection} user={user} />;
       case "wallet":
         return <WalletManager />;
       case "friends":
