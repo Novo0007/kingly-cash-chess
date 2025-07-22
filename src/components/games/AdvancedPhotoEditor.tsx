@@ -348,10 +348,10 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
   // AI Processing functions (simulated)
   const processAI = useCallback(async (tool: string) => {
     setIsAIProcessing(true);
-    
+
     // Simulate AI processing delay
     await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
-    
+
     if (!canvasRef.current || !originalImage) {
       setIsAIProcessing(false);
       return;
@@ -363,6 +363,9 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
       setIsAIProcessing(false);
       return;
     }
+
+    // First re-render the current state
+    renderCanvas();
 
     switch (tool) {
       case "remove-bg":
@@ -383,26 +386,26 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
         }
         ctx.globalCompositeOperation = "source-over";
         break;
-        
+
       case "object-detect":
-        // Draw detection boxes
+        // Draw detection boxes over the current image
         ctx.strokeStyle = "#00ff00";
         ctx.lineWidth = 3;
         ctx.setLineDash([5, 5]);
-        
+
         // Simulate object detection boxes
         const boxes = [
           { x: canvas.width * 0.2, y: canvas.height * 0.3, width: canvas.width * 0.3, height: canvas.height * 0.4 },
           { x: canvas.width * 0.6, y: canvas.height * 0.1, width: canvas.width * 0.25, height: canvas.height * 0.3 },
         ];
-        
+
         boxes.forEach(box => {
           ctx.strokeRect(box.x, box.y, box.width, box.height);
           ctx.fillStyle = "rgba(0, 255, 0, 0.1)";
           ctx.fillRect(box.x, box.y, box.width, box.height);
         });
         break;
-        
+
       case "style-transfer":
         // Apply artistic style effect
         setEditState(prev => ({
@@ -410,7 +413,7 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
           filter: "contrast(130%) saturate(150%) hue-rotate(15deg) sepia(20%)"
         }));
         break;
-        
+
       case "enhance":
         // Auto-enhance
         setEditState(prev => ({
@@ -420,7 +423,7 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
           saturation: 20
         }));
         break;
-        
+
       case "colorize":
         // Add color to B&W
         setEditState(prev => ({
@@ -428,7 +431,7 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
           filter: "sepia(100%) saturate(200%) hue-rotate(180deg)"
         }));
         break;
-        
+
       case "upscale":
         // Simulate upscaling by applying sharpening
         setEditState(prev => ({
@@ -437,9 +440,9 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
         }));
         break;
     }
-    
+
     setIsAIProcessing(false);
-  }, [originalImage]);
+  }, [originalImage, renderCanvas]);
 
   // High-quality export function
   const exportHighQuality = useCallback(() => {
