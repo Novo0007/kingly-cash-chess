@@ -324,6 +324,8 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
   }, [renderCanvas, originalImage]);
 
   const advancedTools = [
+    { id: "templates", label: "Templates", icon: LayoutTemplate, color: "purple" },
+    { id: "video", label: "Video Style", icon: Video, color: "red" },
     { id: "adjust", label: "Adjust", icon: Sliders, color: "blue" },
     { id: "filters", label: "Filters", icon: Filter, color: "purple" },
     { id: "crop", label: "Crop", icon: Crop, color: "green" },
