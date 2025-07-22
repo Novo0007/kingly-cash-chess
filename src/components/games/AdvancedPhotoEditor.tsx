@@ -64,7 +64,7 @@ import {
   Target,
   Layers3,
   PenTool,
-  Shapes,
+
   Text,
 } from "lucide-react";
 
