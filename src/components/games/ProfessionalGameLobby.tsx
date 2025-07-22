@@ -74,7 +74,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       description:
         "Professional photo editing with filters, adjustments, and creative tools",
       icon: Image,
-      category: "free",
+      category: "creative",
       gradient: "from-pink-500 to-rose-600",
       cardBg: "from-pink-50 to-rose-50",
       iconBg: "bg-pink-100",
