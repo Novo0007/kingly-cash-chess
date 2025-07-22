@@ -1242,11 +1242,98 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                   <div className="relative">
                     <canvas
                       ref={canvasRef}
-                      className="photo-editor-canvas max-w-full h-auto rounded-lg shadow-lg"
-                      style={{ 
+                      className="photo-editor-canvas max-w-full h-auto rounded-lg shadow-lg border-2 border-gray-200"
+                      style={{
                         cursor: currentTool === "crop" ? "crosshair" : currentTool === "brush" ? "crosshair" : "default",
                         maxHeight: isMobile ? "400px" : "600px",
-                        imageRendering: "high-quality"
+                        imageRendering: "high-quality",
+                        background: "#f8f9fa"
+                      }}
+                      onMouseDown={(e) => {
+                        if (currentTool === "brush") {
+                          setIsDrawing(true);
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const x = e.clientX - rect.left;
+                          const y = e.clientY - rect.top;
+                          // Start drawing at this position
+                        }
+                      }}
+                      onMouseMove={(e) => {
+                        if (isDrawing && currentTool === "brush") {
+                          const canvas = canvasRef.current;
+                          if (!canvas) return;
+                          const ctx = canvas.getContext("2d");
+                          if (!ctx) return;
+
+                          const rect = canvas.getBoundingClientRect();
+                          const x = e.clientX - rect.left;
+                          const y = e.clientY - rect.top;
+
+                          ctx.lineWidth = brushSize;
+                          ctx.lineCap = "round";
+                          ctx.strokeStyle = brushColor;
+                          ctx.lineTo(x, y);
+                          ctx.stroke();
+                          ctx.beginPath();
+                          ctx.moveTo(x, y);
+                        }
+                      }}
+                      onMouseUp={() => {
+                        if (currentTool === "brush") {
+                          setIsDrawing(false);
+                          const canvas = canvasRef.current;
+                          if (canvas) {
+                            const ctx = canvas.getContext("2d");
+                            if (ctx) {
+                              ctx.beginPath();
+                            }
+                          }
+                        }
+                      }}
+                      onTouchStart={(e) => {
+                        if (currentTool === "brush") {
+                          e.preventDefault();
+                          setIsDrawing(true);
+                          const touch = e.touches[0];
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const x = touch.clientX - rect.left;
+                          const y = touch.clientY - rect.top;
+                          // Start drawing at this position
+                        }
+                      }}
+                      onTouchMove={(e) => {
+                        if (isDrawing && currentTool === "brush") {
+                          e.preventDefault();
+                          const canvas = canvasRef.current;
+                          if (!canvas) return;
+                          const ctx = canvas.getContext("2d");
+                          if (!ctx) return;
+
+                          const touch = e.touches[0];
+                          const rect = canvas.getBoundingClientRect();
+                          const x = touch.clientX - rect.left;
+                          const y = touch.clientY - rect.top;
+
+                          ctx.lineWidth = brushSize;
+                          ctx.lineCap = "round";
+                          ctx.strokeStyle = brushColor;
+                          ctx.lineTo(x, y);
+                          ctx.stroke();
+                          ctx.beginPath();
+                          ctx.moveTo(x, y);
+                        }
+                      }}
+                      onTouchEnd={() => {
+                        if (currentTool === "brush") {
+                          setIsDrawing(false);
+                          const canvas = canvasRef.current;
+                          if (canvas) {
+                            const ctx = canvas.getContext("2d");
+                            if (ctx) {
+                              ctx.beginPath();
+                            }
+                          }
+                        }
                       }}
                     />
                     
