@@ -152,6 +152,8 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState<string>("");
   const [isAIProcessing, setIsAIProcessing] = useState(false);
+  const [aiProgress, setAiProgress] = useState(0);
+  const [currentAITask, setCurrentAITask] = useState<string>("");
   const [showLayers, setShowLayers] = useState(false);
   const [showMusic, setShowMusic] = useState(false);
   
@@ -348,12 +350,20 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
   // AI Processing functions (simulated)
   const processAI = useCallback(async (tool: string) => {
     setIsAIProcessing(true);
+    setCurrentAITask(tool);
+    setAiProgress(0);
 
-    // Simulate AI processing delay
-    await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
+    // Simulate progressive AI processing
+    const steps = 20;
+    for (let i = 0; i <= steps; i++) {
+      await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
+      setAiProgress((i / steps) * 100);
+    }
 
     if (!canvasRef.current || !originalImage) {
       setIsAIProcessing(false);
+      setCurrentAITask("");
+      setAiProgress(0);
       return;
     }
 
@@ -361,6 +371,8 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
     const ctx = canvas.getContext("2d");
     if (!ctx) {
       setIsAIProcessing(false);
+      setCurrentAITask("");
+      setAiProgress(0);
       return;
     }
 
@@ -442,6 +454,8 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
     }
 
     setIsAIProcessing(false);
+    setCurrentAITask("");
+    setAiProgress(0);
   }, [originalImage, renderCanvas]);
 
   // High-quality export function
