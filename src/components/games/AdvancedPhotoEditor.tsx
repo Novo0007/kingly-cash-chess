@@ -896,7 +896,7 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                         <Eraser className="w-4 h-4" />
                       </Button>
                       <Button variant="outline" size="sm">
-                        <Dropper className="w-4 h-4" />
+                        <Pipette className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
