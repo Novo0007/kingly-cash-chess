@@ -465,7 +465,7 @@ export const PhotoEditor: React.FC<PhotoEditorProps> = ({ onClose }) => {
                       max="100"
                       value={editState.brightness}
                       onChange={(e) => setEditState(prev => ({ ...prev, brightness: parseInt(e.target.value) }))}
-                      className="w-full"
+                      className="w-full photo-editor-slider"
                     />
                     <span className="text-xs text-muted-foreground">{editState.brightness}</span>
                   </div>
