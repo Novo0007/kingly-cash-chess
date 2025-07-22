@@ -478,7 +478,7 @@ export const PhotoEditor: React.FC<PhotoEditorProps> = ({ onClose }) => {
                       max="100"
                       value={editState.contrast}
                       onChange={(e) => setEditState(prev => ({ ...prev, contrast: parseInt(e.target.value) }))}
-                      className="w-full"
+                      className="w-full photo-editor-slider"
                     />
                     <span className="text-xs text-muted-foreground">{editState.contrast}</span>
                   </div>
@@ -491,7 +491,7 @@ export const PhotoEditor: React.FC<PhotoEditorProps> = ({ onClose }) => {
                       max="100"
                       value={editState.saturation}
                       onChange={(e) => setEditState(prev => ({ ...prev, saturation: parseInt(e.target.value) }))}
-                      className="w-full"
+                      className="w-full photo-editor-slider"
                     />
                     <span className="text-xs text-muted-foreground">{editState.saturation}</span>
                   </div>
@@ -585,7 +585,7 @@ export const PhotoEditor: React.FC<PhotoEditorProps> = ({ onClose }) => {
                   onMouseDown={handleCanvasMouseDown}
                   onMouseMove={handleCanvasMouseMove}
                   onMouseUp={handleCanvasMouseUp}
-                  className="max-w-full h-auto rounded-lg shadow-lg cursor-crosshair"
+                  className="photo-editor-canvas max-w-full h-auto rounded-lg shadow-lg cursor-crosshair"
                   style={{ 
                     cursor: currentTool === "crop" ? "crosshair" : "default",
                     maxHeight: isMobile ? "400px" : "500px"
