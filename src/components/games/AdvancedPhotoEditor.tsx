@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -64,8 +65,45 @@ import {
   Target,
   Layers3,
   PenTool,
-
-
+  Video,
+  Camera,
+  Film,
+  Clapperboard,
+  PlayCircle,
+  PauseCircle,
+  FastForward,
+  Rewind,
+  SkipBack,
+  SkipForward,
+  Maximize2,
+  Minimize2,
+  MonitorPlay,
+  Smartphone,
+  Tablet,
+  Laptop,
+  Tv,
+  Layout,
+  LayoutGrid,
+  LayoutTemplate,
+  ImageIcon,
+  FileImage,
+  Images,
+  Gallery,
+  FolderImage,
+  Star,
+  Heart,
+  Bookmark,
+  TrendingUp,
+  Award,
+  Crown,
+  Gem,
+  Timer,
+  Clock,
+  Calendar,
+  Users,
+  Share2,
+  Link,
+  Magnet
 } from "lucide-react";
 
 export interface AdvancedPhotoEditorProps {
