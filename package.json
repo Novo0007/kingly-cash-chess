@@ -9,10 +9,11 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "bits:add": "npx react-bits add",
-    "bits:init": "npx react-bits init",
-    "bits:list": "npx react-bits list",
-    "bits:remove": "npx react-bits remove"
+    "comp:create": "node scripts/component-cli.js create",
+    "comp:list": "node scripts/component-cli.js list",
+    "comp:template": "node scripts/component-cli.js template",
+    "shadcn:add": "npx shadcn@latest add",
+    "shadcn:init": "npx shadcn@latest init"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -82,6 +83,7 @@
     "globals": "^15.9.0",
     "lovable-tagger": "^1.1.7",
     "postcss": "^8.4.47",
+    "react-bits": "^1.0.5",
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
