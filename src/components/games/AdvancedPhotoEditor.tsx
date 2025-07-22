@@ -358,6 +358,114 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
 
   const fonts = ["Arial", "Helvetica", "Times New Roman", "Courier New", "Georgia", "Verdana", "Impact", "Comic Sans MS"];
 
+  // Dynamic Photo Templates
+  const dynamicTemplates: DynamicTemplate[] = [
+    {
+      id: 'modern-slideshow',
+      name: 'Modern Slideshow',
+      category: 'Popular',
+      thumbnail: '🎬',
+      description: 'Clean, modern slideshow with smooth transitions',
+      aspectRatio: '16:9',
+      effects: ['fade', 'zoom', 'slide'],
+      musicSuggestions: ['upbeat', 'corporate', 'modern'],
+      popularity: 95,
+      isPro: false,
+      animation: { type: 'slideshow', duration: 3000, easing: 'ease-in-out' }
+    },
+    {
+      id: 'cinematic-story',
+      name: 'Cinematic Story',
+      category: 'Cinematic',
+      thumbnail: '🎭',
+      description: 'Film-like presentation with dramatic effects',
+      aspectRatio: '21:9',
+      effects: ['blur', 'vignette', 'color-grade'],
+      musicSuggestions: ['cinematic', 'epic', 'emotional'],
+      popularity: 88,
+      isPro: true,
+      animation: { type: 'cinematic', duration: 4000, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
+    },
+    {
+      id: 'instagram-reel',
+      name: 'Instagram Reel',
+      category: 'Social',
+      thumbnail: '📱',
+      description: 'Vertical format perfect for social media',
+      aspectRatio: '9:16',
+      effects: ['quick-cut', 'beat-sync', 'text-overlay'],
+      musicSuggestions: ['trendy', 'pop', 'energetic'],
+      popularity: 92,
+      isPro: false,
+      animation: { type: 'zoom', duration: 1500, easing: 'ease-out' }
+    },
+    {
+      id: 'parallax-journey',
+      name: 'Parallax Journey',
+      category: 'Advanced',
+      thumbnail: '🌌',
+      description: 'Dynamic parallax effect with depth',
+      aspectRatio: '16:9',
+      effects: ['parallax', 'depth', 'motion-blur'],
+      musicSuggestions: ['ambient', 'electronic', 'progressive'],
+      popularity: 78,
+      isPro: true,
+      animation: { type: 'parallax', duration: 5000, easing: 'linear' }
+    },
+    {
+      id: 'wedding-memories',
+      name: 'Wedding Memories',
+      category: 'Events',
+      thumbnail: '💕',
+      description: 'Romantic slideshow for special moments',
+      aspectRatio: '4:3',
+      effects: ['soft-glow', 'romantic-filter', 'heart-overlay'],
+      musicSuggestions: ['romantic', 'acoustic', 'classical'],
+      popularity: 85,
+      isPro: false,
+      animation: { type: 'fade', duration: 3500, easing: 'ease-in-out' }
+    },
+    {
+      id: 'business-presentation',
+      name: 'Business Presentation',
+      category: 'Professional',
+      thumbnail: '💼',
+      description: 'Clean, professional presentation style',
+      aspectRatio: '16:9',
+      effects: ['clean-cut', 'corporate-branding', 'data-viz'],
+      musicSuggestions: ['corporate', 'minimal', 'uplifting'],
+      popularity: 72,
+      isPro: false,
+      animation: { type: 'slide', duration: 2500, easing: 'ease' }
+    },
+    {
+      id: 'travel-adventure',
+      name: 'Travel Adventure',
+      category: 'Lifestyle',
+      thumbnail: '✈️',
+      description: 'Dynamic travel showcase with maps and effects',
+      aspectRatio: '16:9',
+      effects: ['map-overlay', 'location-pins', 'travel-filters'],
+      musicSuggestions: ['adventure', 'world-music', 'upbeat'],
+      popularity: 90,
+      isPro: true,
+      animation: { type: 'pan', duration: 4000, easing: 'ease-in-out' }
+    },
+    {
+      id: 'minimal-gallery',
+      name: 'Minimal Gallery',
+      category: 'Artistic',
+      thumbnail: '🎨',
+      description: 'Clean, minimal artistic presentation',
+      aspectRatio: '1:1',
+      effects: ['minimal-frame', 'artistic-filter', 'gallery-lighting'],
+      musicSuggestions: ['ambient', 'minimal', 'classical'],
+      popularity: 76,
+      isPro: false,
+      animation: { type: 'fade', duration: 4000, easing: 'ease-in-out' }
+    }
+  ];
+
   // Preserve original dimensions and quality
   const setupCanvas = useCallback((img: HTMLImageElement) => {
     const canvas = canvasRef.current;
