@@ -485,75 +485,149 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
     setAiProgress(0);
   }, [originalImage, renderCanvas]);
 
-  // High-quality export function
+  // Enhanced export function with mobile support
   const exportHighQuality = useCallback(() => {
+    console.log('Export function called');
+
+    // Try to use the current canvas if no original image available
+    const canvas = canvasRef.current;
     const originalCanvas = originalCanvasRef.current;
-    if (!originalCanvas) return;
 
-    // Create export canvas with original dimensions
-    const exportCanvas = document.createElement("canvas");
-    exportCanvas.width = originalDimensions.width;
-    exportCanvas.height = originalDimensions.height;
-    const exportCtx = exportCanvas.getContext("2d");
-    if (!exportCtx) return;
+    if (!canvas) {
+      alert('No image to export. Please upload an image first.');
+      return;
+    }
 
-    // Apply all transformations at original resolution
-    exportCtx.save();
-    
-    // Apply transformations
-    exportCtx.translate(exportCanvas.width / 2, exportCanvas.height / 2);
-    exportCtx.rotate((editState.rotation * Math.PI) / 180);
-    exportCtx.scale(editState.flipX ? -1 : 1, editState.flipY ? -1 : 1);
-    
-    // Apply filters
-    const filterString = [
-      `brightness(${100 + editState.brightness}%)`,
-      `contrast(${100 + editState.contrast}%)`,
-      `saturate(${100 + editState.saturation}%)`,
-      `hue-rotate(${editState.hue}deg)`,
-      editState.filter !== "none" ? editState.filter : "",
-    ].filter(Boolean).join(" ");
-    
-    exportCtx.filter = filterString;
-    
-    // Draw layers
-    layers.forEach(layer => {
-      if (layer.visible) {
-        exportCtx.globalAlpha = layer.opacity / 100;
-        exportCtx.globalCompositeOperation = layer.blendMode as GlobalCompositeOperation;
+    try {
+      // Use current canvas for export if it has content
+      const sourceCanvas = originalCanvas && originalImage ? originalCanvas : canvas;
+
+      // Create export canvas
+      const exportCanvas = document.createElement("canvas");
+      const exportCtx = exportCanvas.getContext("2d");
+      if (!exportCtx) {
+        throw new Error('Failed to create export context');
+      }
+
+      // Set export dimensions
+      if (originalImage && originalDimensions.width > 0) {
+        exportCanvas.width = originalDimensions.width;
+        exportCanvas.height = originalDimensions.height;
+      } else {
+        exportCanvas.width = canvas.width;
+        exportCanvas.height = canvas.height;
+      }
+
+      console.log('Export canvas size:', exportCanvas.width, 'x', exportCanvas.height);
+
+      // Apply all transformations
+      exportCtx.save();
+
+      // Apply transformations if we have original image
+      if (originalImage) {
+        exportCtx.translate(exportCanvas.width / 2, exportCanvas.height / 2);
+        exportCtx.rotate((editState.rotation * Math.PI) / 180);
+        exportCtx.scale(editState.flipX ? -1 : 1, editState.flipY ? -1 : 1);
+
+        // Apply filters
+        const filterString = [
+          `brightness(${100 + editState.brightness}%)`,
+          `contrast(${100 + editState.contrast}%)`,
+          `saturate(${100 + editState.saturation}%)`,
+          `hue-rotate(${editState.hue}deg)`,
+          editState.filter !== "none" ? editState.filter : "",
+        ].filter(Boolean).join(" ");
+
+        if (filterString) {
+          exportCtx.filter = filterString;
+        }
+
+        // Draw the original image with transformations
         exportCtx.drawImage(
-          layer.canvas,
+          originalImage,
           -exportCanvas.width / 2,
           -exportCanvas.height / 2,
           exportCanvas.width,
           exportCanvas.height
         );
+
+        // Draw layers
+        layers.forEach(layer => {
+          if (layer.visible && layer.canvas) {
+            exportCtx.globalAlpha = layer.opacity / 100;
+            exportCtx.globalCompositeOperation = layer.blendMode as GlobalCompositeOperation;
+            exportCtx.drawImage(
+              layer.canvas,
+              -exportCanvas.width / 2,
+              -exportCanvas.height / 2,
+              exportCanvas.width,
+              exportCanvas.height
+            );
+          }
+        });
+
+        // Draw text overlays
+        textOverlays.forEach(overlay => {
+          exportCtx.font = `${overlay.fontSize}px ${overlay.fontFamily}`;
+          exportCtx.fillStyle = overlay.color;
+          exportCtx.fillText(overlay.text, overlay.x, overlay.y);
+        });
+      } else {
+        // Fallback: just copy current canvas
+        exportCtx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
       }
-    });
-    
-    // Draw text overlays
-    textOverlays.forEach(overlay => {
-      exportCtx.font = `${overlay.fontSize}px ${overlay.fontFamily}`;
-      exportCtx.fillStyle = overlay.color;
-      exportCtx.fillText(overlay.text, overlay.x, overlay.y);
-    });
-    
-    exportCtx.restore();
-    
-    // Export with maximum quality
-    exportCanvas.toBlob((blob) => {
-      if (!blob) return;
-      
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `edited-image-hq-${Date.now()}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, "image/png", 1.0); // Maximum quality
-  }, [originalDimensions, editState, layers, textOverlays]);
+
+      exportCtx.restore();
+
+      console.log('About to create blob');
+
+      // Export with maximum quality
+      exportCanvas.toBlob((blob) => {
+        if (!blob) {
+          alert('Failed to create image file. Please try again.');
+          return;
+        }
+
+        console.log('Blob created, size:', blob.size);
+
+        // For mobile, use different download approach
+        if (isMobile) {
+          // Create image URL and open in new tab for mobile
+          const url = URL.createObjectURL(blob);
+          const newWindow = window.open(url, '_blank');
+          if (!newWindow) {
+            // Fallback to direct download
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `edited-image-${Date.now()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }
+
+          // Clean up URL after a delay
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+        } else {
+          // Standard download for desktop
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `edited-image-hq-${Date.now()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+
+        // Show success message
+        alert('Image exported successfully!');
+      }, "image/png", 1.0);
+
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed. Please try again.');
+    }
+  }, [originalDimensions, editState, layers, textOverlays, originalImage, isMobile]);
 
   // Music handling functions
   const handleMusicUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
