@@ -720,7 +720,15 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
           {isAIProcessing && (
             <div className="flex items-center gap-2 text-blue-500">
               <Brain className="w-4 h-4 animate-pulse" />
-              <span className="text-sm">AI Processing...</span>
+              <div className="flex flex-col gap-1">
+                <span className="text-sm">AI Processing: {currentAITask}</span>
+                <div className="w-20 bg-gray-200 rounded-full h-1">
+                  <div
+                    className="bg-blue-500 h-1 rounded-full transition-all duration-300"
+                    style={{ width: `${aiProgress}%` }}
+                  />
+                </div>
+              </div>
             </div>
           )}
           
