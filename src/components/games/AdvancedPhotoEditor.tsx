@@ -993,23 +993,62 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
 
             {currentTool === "ai" && (
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {aiTools.map((tool) => (
-                    <Button
-                      key={tool.id}
-                      onClick={() => processAI(tool.id)}
-                      disabled={isAIProcessing}
-                      variant="outline"
-                      className="p-4 h-auto flex flex-col items-start gap-2 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50"
-                    >
-                      <div className="flex items-center gap-2 w-full">
-                        <tool.icon className="w-5 h-5 text-blue-600" />
-                        <span className="font-medium">{tool.label}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground text-left">{tool.description}</p>
-                    </Button>
-                  ))}
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-sm font-medium text-foreground">AI Tools</h4>
+                  {isAIProcessing && (
+                    <div className="flex items-center gap-2 text-blue-500">
+                      <Brain className="w-4 h-4 animate-pulse" />
+                      <span className="text-xs">Processing...</span>
+                    </div>
+                  )}
                 </div>
+
+                {/* Mobile scrollable AI tools */}
+                <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                  <div className={`${
+                    isMobile
+                      ? "flex gap-3 min-w-max"
+                      : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                  }`}>
+                    {aiTools.map((tool) => (
+                      <Button
+                        key={tool.id}
+                        onClick={() => processAI(tool.id)}
+                        disabled={isAIProcessing}
+                        variant="outline"
+                        className={`p-4 h-auto flex flex-col items-start gap-2 hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 ${
+                          isMobile ? "min-w-[180px] flex-shrink-0" : ""
+                        } ${isAIProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
+                      >
+                        <div className="flex items-center gap-2 w-full">
+                          <tool.icon className="w-5 h-5 text-blue-600" />
+                          <span className="font-medium text-sm">{tool.label}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground text-left leading-tight">{tool.description}</p>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* AI Processing Status */}
+                {isAIProcessing && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Cpu className="w-4 h-4 text-blue-600 animate-pulse" />
+                      <span className="text-sm font-medium text-blue-800">AI Processing: {currentAITask}</span>
+                    </div>
+                    <div className="w-full bg-blue-200 rounded-full h-2">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${aiProgress}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-xs text-blue-600 mt-1">
+                      <span>Processing...</span>
+                      <span>{Math.round(aiProgress)}%</span>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
