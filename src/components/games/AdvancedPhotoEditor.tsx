@@ -627,14 +627,21 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
+        console.log('Image loaded:', img.width, 'x', img.height);
         setOriginalImage(img);
         setIsEditing(true);
         setupCanvas(img);
-        
+
         // Reset edit state
         setEditState({
           brightness: 0,
@@ -650,10 +657,24 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
           panX: 0,
           panY: 0,
         });
+
+        // Clear text overlays
+        setTextOverlays([]);
+      };
+      img.onerror = () => {
+        alert('Failed to load image. Please try a different file.');
       };
       img.src = e.target?.result as string;
     };
+    reader.onerror = () => {
+      alert('Failed to read file.');
+    };
     reader.readAsDataURL(file);
+
+    // Clear input to allow re-uploading same file
+    if (event.target) {
+      event.target.value = '';
+    }
   }, [setupCanvas]);
 
   // Add text overlay
