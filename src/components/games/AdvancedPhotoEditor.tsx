@@ -1245,6 +1245,112 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
               </div>
             )}
 
+            {currentTool === "shapes" && (
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-foreground">Shapes Tool</h4>
+
+                {/* Mobile scrollable shapes */}
+                <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                  <div className={`${isMobile ? "flex gap-3 min-w-max" : "grid grid-cols-3 md:grid-cols-6 gap-3"}`}>
+                    {[
+                      { id: 'rectangle', icon: Square, name: 'Rectangle' },
+                      { id: 'circle', icon: Circle, name: 'Circle' },
+                      { id: 'line', icon: Move, name: 'Line' },
+                      { id: 'arrow', icon: MousePointer, name: 'Arrow' },
+                    ].map((shape) => (
+                      <Button
+                        key={shape.id}
+                        variant="outline"
+                        className={`p-3 h-auto flex flex-col items-center gap-2 ${
+                          isMobile ? "min-w-[80px] flex-shrink-0" : ""
+                        }`}
+                        onClick={() => {
+                          // Add shape to canvas
+                          const canvas = canvasRef.current;
+                          if (!canvas) return;
+                          const ctx = canvas.getContext('2d');
+                          if (!ctx) return;
+
+                          ctx.strokeStyle = brushColor;
+                          ctx.lineWidth = 3;
+
+                          const centerX = canvas.width / 2;
+                          const centerY = canvas.height / 2;
+                          const size = 50;
+
+                          switch (shape.id) {
+                            case 'rectangle':
+                              ctx.strokeRect(centerX - size, centerY - size, size * 2, size * 2);
+                              break;
+                            case 'circle':
+                              ctx.beginPath();
+                              ctx.arc(centerX, centerY, size, 0, 2 * Math.PI);
+                              ctx.stroke();
+                              break;
+                            case 'line':
+                              ctx.beginPath();
+                              ctx.moveTo(centerX - size, centerY);
+                              ctx.lineTo(centerX + size, centerY);
+                              ctx.stroke();
+                              break;
+                            case 'arrow':
+                              // Draw arrow
+                              ctx.beginPath();
+                              ctx.moveTo(centerX - size, centerY);
+                              ctx.lineTo(centerX + size, centerY);
+                              ctx.moveTo(centerX + size - 10, centerY - 10);
+                              ctx.lineTo(centerX + size, centerY);
+                              ctx.lineTo(centerX + size - 10, centerY + 10);
+                              ctx.stroke();
+                              break;
+                          }
+                        }}
+                      >
+                        <shape.icon className="w-6 h-6" />
+                        <span className="text-xs">{shape.name}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Shape properties */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Stroke Color</label>
+                    <input
+                      type="color"
+                      value={brushColor}
+                      onChange={(e) => setBrushColor(e.target.value)}
+                      className="w-full h-10 rounded border"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Stroke Width</label>
+                    <input
+                      type="range"
+                      min="1"
+                      max="20"
+                      value={brushSize}
+                      onChange={(e) => setBrushSize(parseInt(e.target.value))}
+                      className="w-full photo-editor-slider"
+                    />
+                    <span className="text-xs text-muted-foreground">{brushSize}px</span>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Square className="w-4 h-4 text-green-600" />
+                    <span className="text-sm font-medium text-green-800">Shapes Info</span>
+                  </div>
+                  <p className="text-xs text-green-600">
+                    Click on any shape to add it to the center of your canvas
+                  </p>
+                </div>
+              </div>
+            )}
+
             {currentTool === "music" && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
