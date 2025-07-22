@@ -1585,6 +1585,362 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
               </div>
             </div>
 
+            {/* Dynamic Templates Section */}
+            {currentTool === "templates" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="flex items-center justify-between">
+                  <h4 className="text-lg font-bold text-white flex items-center gap-3">
+                    <LayoutTemplate className="w-6 h-6 text-purple-400" />
+                    Dynamic Photo Templates
+                  </h4>
+                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1">
+                    {dynamicTemplates.length} Available
+                  </Badge>
+                </div>
+
+                {/* Template Categories */}
+                <div className="space-y-4">
+                  {['Popular', 'Cinematic', 'Social', 'Professional'].map((category) => (
+                    <div key={category} className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <h5 className="font-semibold text-gray-200">{category}</h5>
+                        <div className="h-px bg-gradient-to-r from-purple-500/50 to-transparent flex-1" />
+                      </div>
+
+                      <div className={`${isMobile ? "overflow-x-auto pb-3" : ""}`}>
+                        <div className={`${
+                          isMobile
+                            ? "flex gap-4 min-w-max"
+                            : "grid grid-cols-2 lg:grid-cols-4 gap-4"
+                        }`}>
+                          {dynamicTemplates
+                            .filter(template => template.category === category)
+                            .map((template) => (
+                            <motion.div
+                              key={template.id}
+                              whileHover={{ scale: 1.05, y: -5 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => {
+                                setSelectedTemplate(template);
+                                setVideoLikeMode(true);
+                                console.log('Template selected:', template.name);
+                              }}
+                              className={`${isMobile ? "min-w-[200px]" : ""} relative group cursor-pointer`}
+                            >
+                              <div className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-300 ${
+                                selectedTemplate?.id === template.id
+                                  ? "border-purple-500 shadow-2xl shadow-purple-500/25"
+                                  : "border-gray-600 hover:border-purple-400"
+                              }`}>
+                                {/* Template thumbnail */}
+                                <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative overflow-hidden">
+                                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20" />
+                                  <span className="text-4xl">{template.thumbnail}</span>
+
+                                  {/* Play overlay */}
+                                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <motion.div
+                                      whileHover={{ scale: 1.2 }}
+                                      className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30"
+                                    >
+                                      <PlayCircle className="w-8 h-8 text-white" />
+                                    </motion.div>
+                                  </div>
+
+                                  {/* Pro badge */}
+                                  {template.isPro && (
+                                    <div className="absolute top-2 right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs font-bold px-2 py-1 rounded-full">
+                                      PRO
+                                    </div>
+                                  )}
+
+                                  {/* Popularity indicator */}
+                                  <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+                                    <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                                    <span className="text-xs text-white font-medium">{template.popularity}%</span>
+                                  </div>
+                                </div>
+
+                                {/* Template info */}
+                                <div className="p-4 bg-gray-800/50 backdrop-blur-sm">
+                                  <h6 className="font-semibold text-white mb-1">{template.name}</h6>
+                                  <p className="text-xs text-gray-300 mb-2">{template.description}</p>
+
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+                                        {template.aspectRatio}
+                                      </Badge>
+                                      <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
+                                        {template.animation.type}
+                                      </Badge>
+                                    </div>
+
+                                    <div className="flex items-center gap-1">
+                                      <Heart className="w-3 h-3 text-gray-400" />
+                                      <span className="text-xs text-gray-400">{Math.floor(template.popularity * 1.2)}</span>
+                                    </div>
+                                  </div>
+
+                                  {/* Effects preview */}
+                                  <div className="mt-2 flex flex-wrap gap-1">
+                                    {template.effects.slice(0, 3).map((effect, index) => (
+                                      <span key={index} className="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full">
+                                        {effect}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Selected template details */}
+                <AnimatePresence>
+                  {selectedTemplate && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/30"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-3">
+                          <h5 className="text-xl font-bold text-white flex items-center gap-3">
+                            <span className="text-2xl">{selectedTemplate.thumbnail}</span>
+                            {selectedTemplate.name}
+                            {selectedTemplate.isPro && (
+                              <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black">
+                                PRO
+                              </Badge>
+                            )}
+                          </h5>
+
+                          <p className="text-gray-300">{selectedTemplate.description}</p>
+
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div>
+                              <span className="text-gray-400">Aspect Ratio:</span>
+                              <p className="text-white font-medium">{selectedTemplate.aspectRatio}</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Animation:</span>
+                              <p className="text-white font-medium">{selectedTemplate.animation.type}</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Duration:</span>
+                              <p className="text-white font-medium">{selectedTemplate.animation.duration}ms</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Popularity:</span>
+                              <p className="text-white font-medium">{selectedTemplate.popularity}%</p>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <span className="text-gray-400 text-sm">Effects:</span>
+                            <div className="flex flex-wrap gap-2">
+                              {selectedTemplate.effects.map((effect, index) => (
+                                <Badge key={index} className="bg-purple-500/20 text-purple-300 border-purple-500/30">
+                                  {effect}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <span className="text-gray-400 text-sm">Music Suggestions:</span>
+                            <div className="flex flex-wrap gap-2">
+                              {selectedTemplate.musicSuggestions.map((music, index) => (
+                                <Badge key={index} className="bg-pink-500/20 text-pink-300 border-pink-500/30">
+                                  {music}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                          <Button
+                            onClick={() => {
+                              setCurrentTool('video');
+                              setVideoLikeMode(true);
+                              console.log('Starting video mode with template:', selectedTemplate.name);
+                            }}
+                            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                          >
+                            <Video className="w-4 h-4 mr-2" />
+                            Use Template
+                          </Button>
+
+                          <Button
+                            onClick={() => setSelectedTemplate(null)}
+                            variant="outline"
+                            className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+
+            {/* Video-like editing mode */}
+            {currentTool === "video" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="flex items-center justify-between">
+                  <h4 className="text-lg font-bold text-white flex items-center gap-3">
+                    <Video className="w-6 h-6 text-red-400" />
+                    Video-Style Editor
+                  </h4>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2" />
+                      RECORDING
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Video timeline simulation */}
+                <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-4 border border-gray-600">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-gray-300 font-medium">Timeline</span>
+                    <span className="text-sm text-gray-400">{playbackTime.toFixed(1)}s / 30.0s</span>
+                  </div>
+
+                  {/* Timeline bar */}
+                  <div className="relative h-3 bg-gray-800 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(playbackTime / 30) * 100}%` }}
+                      className="h-full bg-gradient-to-r from-red-500 to-pink-500 rounded-full"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="h-1 w-full bg-white/20 rounded-full" />
+                    </div>
+                  </div>
+
+                  {/* Playback controls */}
+                  <div className="flex items-center justify-center gap-4 mt-4">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setPlaybackTime(Math.max(0, playbackTime - 5))}
+                      className="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors"
+                    >
+                      <Rewind className="w-5 h-5 text-white" />
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        setIsPlaying(!isPlaying);
+                        if (!isPlaying) {
+                          const interval = setInterval(() => {
+                            setPlaybackTime(prev => {
+                              if (prev >= 30) {
+                                clearInterval(interval);
+                                setIsPlaying(false);
+                                return 0;
+                              }
+                              return prev + 0.1;
+                            });
+                          }, 100);
+                        }
+                      }}
+                      className="w-12 h-12 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 rounded-full flex items-center justify-center transition-all shadow-lg"
+                    >
+                      {isPlaying ?
+                        <Pause className="w-6 h-6 text-white" /> :
+                        <Play className="w-6 h-6 text-white ml-0.5" />
+                      }
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setPlaybackTime(Math.min(30, playbackTime + 5))}
+                      className="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors"
+                    >
+                      <FastForward className="w-5 h-5 text-white" />
+                    </motion.button>
+                  </div>
+                </div>
+
+                {/* Photo sequence */}
+                <div className="space-y-3">
+                  <h5 className="font-semibold text-gray-200">Photo Sequence</h5>
+                  <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                    {[1, 2, 3, 4, 5, 6].map((index) => (
+                      <motion.div
+                        key={index}
+                        whileHover={{ scale: 1.05 }}
+                        className="aspect-square bg-gray-800 rounded-lg border-2 border-gray-600 hover:border-purple-500 transition-colors cursor-pointer flex items-center justify-center"
+                        onClick={() => {
+                          // Trigger file input for multiple images
+                          const input = document.createElement('input');
+                          input.type = 'file';
+                          input.accept = 'image/*';
+                          input.multiple = true;
+                          input.onchange = (e) => {
+                            const files = Array.from((e.target as HTMLInputElement).files || []);
+                            setProjectImages(prev => [...prev, ...files]);
+                          };
+                          input.click();
+                        }}
+                      >
+                        {projectImages[index - 1] ? (
+                          <img
+                            src={URL.createObjectURL(projectImages[index - 1])}
+                            alt={`Photo ${index}`}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        ) : (
+                          <div className="text-gray-500 text-center">
+                            <ImageIcon className="w-6 h-6 mx-auto mb-1" />
+                            <span className="text-xs">Photo {index}</span>
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Video effects */}
+                <div className="space-y-3">
+                  <h5 className="font-semibold text-gray-200">Video Effects</h5>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {['Fade In/Out', 'Zoom & Pan', 'Slide Transition', 'Cross Dissolve'].map((effect) => (
+                      <Button
+                        key={effect}
+                        variant="outline"
+                        className="border-gray-600 text-gray-300 hover:bg-purple-600 hover:text-white hover:border-purple-500 transition-all"
+                      >
+                        {effect}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {/* Tool-specific controls */}
             {currentTool === "adjust" && (
               <div className="space-y-4">
