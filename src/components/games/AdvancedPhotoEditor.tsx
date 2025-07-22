@@ -1101,44 +1101,76 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
 
             {currentTool === "brush" && (
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Brush Size</label>
-                    <input
-                      type="range"
-                      min="1"
-                      max="100"
-                      value={brushSize}
-                      onChange={(e) => setBrushSize(parseInt(e.target.value))}
-                      className="w-full photo-editor-slider"
-                    />
-                    <span className="text-xs text-muted-foreground">{brushSize}px</span>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Color</label>
-                    <input
-                      type="color"
-                      value={brushColor}
-                      onChange={(e) => setBrushColor(e.target.value)}
-                      className="w-full h-10 rounded border"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Tools</label>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        <Brush className="w-4 h-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Eraser className="w-4 h-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Pipette className="w-4 h-4" />
-                      </Button>
+                <h4 className="text-sm font-medium text-foreground">Brush Tool</h4>
+
+                {/* Mobile scrollable brush controls */}
+                <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                  <div className={`${isMobile ? "flex gap-4 min-w-max" : "grid grid-cols-1 md:grid-cols-3 gap-4"}`}>
+                    <div className={`space-y-2 ${isMobile ? "min-w-[150px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Brush Size</label>
+                      <input
+                        type="range"
+                        min="1"
+                        max="100"
+                        value={brushSize}
+                        onChange={(e) => setBrushSize(parseInt(e.target.value))}
+                        className="w-full photo-editor-slider"
+                      />
+                      <span className="text-xs text-muted-foreground">{brushSize}px</span>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[150px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Color</label>
+                      <input
+                        type="color"
+                        value={brushColor}
+                        onChange={(e) => setBrushColor(e.target.value)}
+                        className="w-full h-10 rounded border"
+                      />
+                      <div className="text-xs text-muted-foreground">{brushColor}</div>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[200px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Brush Tools</label>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => {
+                            // Set brush mode
+                            console.log('Brush mode activated');
+                          }}
+                        >
+                          <Brush className="w-4 h-4 mr-1" />
+                          Paint
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => {
+                            // Set eraser mode
+                            setBrushColor('#FFFFFF');
+                          }}
+                        >
+                          <Eraser className="w-4 h-4 mr-1" />
+                          Erase
+                        </Button>
+                      </div>
                     </div>
                   </div>
+                </div>
+
+                {/* Brush Tips */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Brush className="w-4 h-4 text-blue-600" />
+                    <span className="text-sm font-medium text-blue-800">Drawing Tips</span>
+                  </div>
+                  <p className="text-xs text-blue-600">
+                    {isMobile ? "Touch and drag to draw on the canvas" : "Click and drag to draw on the canvas"}
+                  </p>
                 </div>
               </div>
             )}
