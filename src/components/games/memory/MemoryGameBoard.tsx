@@ -186,10 +186,11 @@ export const MemoryGameBoard: React.FC<MemoryGameBoardProps> = ({
       <Card className="p-4 sm:p-6">
         <div className="flex justify-center">
           <div
-            className={`grid ${getGridCols()} gap-2 sm:gap-3 justify-center`}
-            style={{
-              gridTemplateColumns: `repeat(${gameState.gridSize.cols}, minmax(0, 1fr))`,
-            }}
+            className={`memory-game-board ${
+              gameState.gridSize.cols <= 3 ? 'memory-grid-easy' :
+              gameState.gridSize.cols <= 4 ? 'memory-grid-medium' :
+              'memory-grid-hard'
+            }`}
           >
             {gameState.cards.map((card) => (
               <MemoryCard
