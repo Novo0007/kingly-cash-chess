@@ -629,9 +629,9 @@ export const MobilePhotoEditor: React.FC<MobilePhotoEditorProps> = ({ onClose })
                     setShowBottomSheet(true);
                   }}
                   variant="ghost"
-                  className={`flex-shrink-0 flex flex-col items-center gap-1 p-3 rounded-2xl min-w-[70px] ${
-                    currentTool === tool.id 
-                      ? `bg-gradient-to-br ${tool.color} text-white shadow-lg` 
+                  className={`mobile-tool-button press-animation flex-shrink-0 flex flex-col items-center gap-1 p-3 rounded-2xl min-w-[70px] touch-control ${
+                    currentTool === tool.id
+                      ? `bg-gradient-to-br ${tool.color} text-white app-shadow-lg`
                       : "text-gray-600 hover:bg-gray-100"
                   }`}
                 >
