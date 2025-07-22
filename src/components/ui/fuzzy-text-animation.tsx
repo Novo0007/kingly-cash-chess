@@ -7,6 +7,8 @@ export interface FuzzyTextAnimationProps
   duration?: number
   characters?: string
   trigger?: boolean
+  enableGlow?: boolean
+  enableShimmer?: boolean
 }
 
 const FuzzyTextAnimation = React.forwardRef<
