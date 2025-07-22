@@ -382,9 +382,14 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
                   </div>
 
                   {/* Game Name */}
-                  <h3 className="text-lg font-bold text-foreground text-center leading-tight">
-                    {game.title}
-                  </h3>
+                  <SplitText
+                    text={game.title}
+                    animation="bounce"
+                    stagger={80}
+                    splitBy="char"
+                    trigger={true}
+                    className="text-lg font-bold text-foreground text-center leading-tight"
+                  />
                 </div>
               </Card>
             ),
