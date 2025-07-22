@@ -677,14 +677,22 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
     }
   }, [isMobile]);
 
-  // Music handling functions
+  // Enhanced music handling functions
   const handleMusicUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    console.log('Music file selected:', file.name, file.type, file.size);
+
     // Validate file type
     if (!file.type.startsWith('audio/')) {
-      alert('Please select a valid audio file.');
+      alert('Please select a valid audio file (MP3, WAV, OGG, etc).');
+      return;
+    }
+
+    // Check file size (limit to 50MB for audio)
+    if (file.size > 50 * 1024 * 1024) {
+      alert('Audio file is too large. Please select a file smaller than 50MB.');
       return;
     }
 
@@ -693,20 +701,37 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
       name: file.name,
       file,
       duration: 0,
-      volume: 1,
+      volume: 0.5, // Default to 50% volume
       startTime: 0,
       loop: false,
     };
 
-    // Get audio duration
-    const audio = new Audio();
-    const url = URL.createObjectURL(file);
-    audio.src = url;
-    audio.onloadedmetadata = () => {
-      track.duration = audio.duration;
-      setMusicTracks(prev => [...prev, track]);
-      URL.revokeObjectURL(url);
-    };
+    try {
+      // Get audio duration
+      const audio = new Audio();
+      const url = URL.createObjectURL(file);
+
+      audio.onloadedmetadata = () => {
+        track.duration = audio.duration;
+        setMusicTracks(prev => [...prev, track]);
+        URL.revokeObjectURL(url);
+        console.log('Music track added successfully:', track.name);
+
+        // Show success message
+        alert(`Music track "${track.name}" added successfully!`);
+      };
+
+      audio.onerror = (error) => {
+        console.error('Failed to load audio metadata:', error);
+        URL.revokeObjectURL(url);
+        alert('Failed to load audio file. Please try a different file.');
+      };
+
+      audio.src = url;
+    } catch (error) {
+      console.error('Error processing audio file:', error);
+      alert('Error processing audio file. Please try again.');
+    }
 
     // Clear the input value to allow re-uploading the same file
     if (event.target) {
