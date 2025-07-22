@@ -69,10 +69,10 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
   const games = [
     {
       id: "photoeditor",
-      title: "Photo Editor",
-      subtitle: "Creative Studio",
+      title: "AI Photo Studio",
+      subtitle: "Advanced Creative Suite",
       description:
-        "Professional photo editing with filters, adjustments, and creative tools",
+        "Professional photo editing with AI tools, music integration, and high-quality export",
       icon: Image,
       category: "creative",
       gradient: "from-pink-500 to-rose-600",
