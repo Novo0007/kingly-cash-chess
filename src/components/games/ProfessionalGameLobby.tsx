@@ -63,6 +63,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
     { id: "all", label: "All Games", icon: Menu, color: "slate" },
     { id: "free", label: "Free Play", icon: Star, color: "green" },
     { id: "earn", label: "Earn Money", icon: Coins, color: "amber" },
+    { id: "creative", label: "Creative Tools", icon: Sparkles, color: "pink" },
   ];
 
   const games = [
