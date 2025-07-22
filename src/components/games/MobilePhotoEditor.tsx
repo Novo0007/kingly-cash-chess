@@ -556,8 +556,8 @@ export const MobilePhotoEditor: React.FC<MobilePhotoEditorProps> = ({ onClose })
           {/* Canvas Container */}
           <div ref={containerRef} className="flex-1 flex items-center justify-center p-4 relative">
             {isAIProcessing && (
-              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30 rounded-2xl mx-4">
-                <div className="bg-white rounded-2xl p-6 max-w-xs w-full mx-4">
+              <div className="absolute inset-0 ai-processing-overlay flex items-center justify-center z-30 rounded-2xl mx-4">
+                <div className="glass-panel rounded-2xl p-6 max-w-xs w-full mx-4 app-shadow-xl">
                   <div className="text-center space-y-4">
                     <div className="w-16 h-16 mx-auto bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
                       <Brain className="w-8 h-8 text-white animate-pulse" />
