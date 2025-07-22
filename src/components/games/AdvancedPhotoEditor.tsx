@@ -776,20 +776,43 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
     const file = event.target.files?.[0];
     if (!file) return;
 
+    console.log('File selected:', file.name, file.type, file.size);
+
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select a valid image file.');
+      alert('Please select a valid image file (JPG, PNG, GIF, etc).');
       return;
     }
 
+    // Check file size (limit to 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image file is too large. Please select an image smaller than 10MB.');
+      return;
+    }
+
+    // Show loading state
+    setIsEditing(false);
+
     const reader = new FileReader();
     reader.onload = (e) => {
+      console.log('File read successfully');
+
       const img = new Image();
       img.onload = () => {
-        console.log('Image loaded:', img.width, 'x', img.height);
+        console.log('Image loaded successfully:', img.width, 'x', img.height);
+
         setOriginalImage(img);
         setIsEditing(true);
-        setupCanvas(img);
+
+        // Setup canvas
+        try {
+          setupCanvas(img);
+          console.log('Canvas setup completed');
+        } catch (error) {
+          console.error('Canvas setup failed:', error);
+          alert('Failed to setup canvas. Please try again.');
+          return;
+        }
 
         // Reset edit state
         setEditState({
@@ -809,22 +832,33 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
 
         // Clear text overlays
         setTextOverlays([]);
+
+        // Show success message
+        if (isMobile) {
+          alert('Image loaded successfully! You can now edit your photo.');
+        }
       };
-      img.onerror = () => {
-        alert('Failed to load image. Please try a different file.');
+
+      img.onerror = (error) => {
+        console.error('Image load failed:', error);
+        alert('Failed to load image. Please try a different file or check if the image is corrupted.');
       };
+
       img.src = e.target?.result as string;
     };
-    reader.onerror = () => {
-      alert('Failed to read file.');
+
+    reader.onerror = (error) => {
+      console.error('File read failed:', error);
+      alert('Failed to read file. Please try again.');
     };
+
     reader.readAsDataURL(file);
 
     // Clear input to allow re-uploading same file
     if (event.target) {
       event.target.value = '';
     }
-  }, [setupCanvas]);
+  }, [setupCanvas, isMobile]);
 
   // Add text overlay
   const addTextOverlay = useCallback(() => {
