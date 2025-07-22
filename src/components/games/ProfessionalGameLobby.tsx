@@ -226,7 +226,11 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
 
   const handleGameSelect = useCallback(
     (gameId: string) => {
-      onSelectGame(gameId as any);
+      if (gameId === "photoeditor") {
+        setShowPhotoEditor(true);
+      } else {
+        onSelectGame(gameId as any);
+      }
     },
     [onSelectGame],
   );
