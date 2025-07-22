@@ -6,6 +6,8 @@
 @import "./styles/theme-particles.css";
 /* Import mobile enhancements */
 @import "./styles/mobile-enhancements.css";
+/* Import fuzzy text animation styles */
+@import "./styles/fuzzy-text.css";
 
 @tailwind base;
 @tailwind components;
