@@ -1985,57 +1985,208 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
             )}
 
             {currentTool === "filters" && (
-              <div className="space-y-3">
-                <h4 className="text-sm font-medium text-foreground">Photo Filters</h4>
-                {/* Mobile scrollable filters */}
-                <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
-                  <div className={`${
-                    isMobile
-                      ? "flex gap-3 min-w-max"
-                      : "grid grid-cols-2 md:grid-cols-5 gap-3"
-                  }`}>
-                    {filters.map((filter) => (
-                      <Button
-                        key={filter.id}
-                        onClick={() => setEditState(prev => ({ ...prev, filter: filter.filter }))}
-                        variant={editState.filter === filter.filter ? "default" : "outline"}
-                        className={`p-3 h-auto flex flex-col items-center gap-2 filter-preview ${
-                          isMobile ? "min-w-[80px] flex-shrink-0" : ""
-                        } ${
-                          editState.filter === filter.filter
-                            ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white`
-                            : ""
-                        }`}
-                      >
-                        <div className="w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-500 rounded"
-                             style={{ filter: filter.filter }} />
-                        <span className="text-xs text-center">{filter.name}</span>
-                      </Button>
-                    ))}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-foreground">Photo Filters</h4>
+                  <Badge variant="outline" className="text-xs">
+                    {filters.length} filters
+                  </Badge>
+                </div>
+
+                {/* Filter categories for professional look */}
+                <div className="space-y-4">
+                  {/* Popular filters */}
+                  <div className="space-y-2">
+                    <h5 className="text-sm font-medium text-muted-foreground">Popular</h5>
+                    <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                      <div className={`${
+                        isMobile
+                          ? "flex gap-3 min-w-max"
+                          : "grid grid-cols-3 md:grid-cols-6 gap-3"
+                      }`}>
+                        {filters.filter(f => ['none', 'vintage', 'dramatic', 'neon'].includes(f.id)).map((filter) => (
+                          <Button
+                            key={filter.id}
+                            onClick={() => {
+                              setEditState(prev => ({ ...prev, filter: filter.filter }));
+                              console.log('Applied filter:', filter.name);
+                            }}
+                            variant={editState.filter === filter.filter ? "default" : "outline"}
+                            className={`${isMobile ? "min-w-[100px] p-4" : "p-3"} h-auto flex flex-col items-center gap-2 filter-preview transition-all hover:scale-105 ${
+                              editState.filter === filter.filter
+                                ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-lg border-2 border-primary`
+                                : "hover:shadow-md"
+                            }`}
+                          >
+                            <div className={`${isMobile ? "w-12 h-12" : "w-10 h-10"} bg-gradient-to-br from-gray-300 to-gray-600 rounded-lg shadow-sm border-2 border-gray-200`}
+                                 style={{ filter: filter.filter }} />
+                            <span className="text-xs font-medium text-center leading-tight">{filter.name}</span>
+                            {editState.filter === filter.filter && (
+                              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                            )}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Color filters */}
+                  <div className="space-y-2">
+                    <h5 className="text-sm font-medium text-muted-foreground">Color Effects</h5>
+                    <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                      <div className={`${
+                        isMobile
+                          ? "flex gap-3 min-w-max"
+                          : "grid grid-cols-3 md:grid-cols-6 gap-3"
+                      }`}>
+                        {filters.filter(f => ['sepia', 'cool', 'warm', 'cyberpunk'].includes(f.id)).map((filter) => (
+                          <Button
+                            key={filter.id}
+                            onClick={() => {
+                              setEditState(prev => ({ ...prev, filter: filter.filter }));
+                              console.log('Applied filter:', filter.name);
+                            }}
+                            variant={editState.filter === filter.filter ? "default" : "outline"}
+                            className={`${isMobile ? "min-w-[100px] p-4" : "p-3"} h-auto flex flex-col items-center gap-2 filter-preview transition-all hover:scale-105 ${
+                              editState.filter === filter.filter
+                                ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-lg border-2 border-primary`
+                                : "hover:shadow-md"
+                            }`}
+                          >
+                            <div className={`${isMobile ? "w-12 h-12" : "w-10 h-10"} bg-gradient-to-br from-gray-300 to-gray-600 rounded-lg shadow-sm border-2 border-gray-200`}
+                                 style={{ filter: filter.filter }} />
+                            <span className="text-xs font-medium text-center leading-tight">{filter.name}</span>
+                            {editState.filter === filter.filter && (
+                              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                            )}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Classic filters */}
+                  <div className="space-y-2">
+                    <h5 className="text-sm font-medium text-muted-foreground">Classic</h5>
+                    <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                      <div className={`${
+                        isMobile
+                          ? "flex gap-3 min-w-max"
+                          : "grid grid-cols-3 md:grid-cols-6 gap-3"
+                      }`}>
+                        {filters.filter(f => ['grayscale', 'soft'].includes(f.id)).map((filter) => (
+                          <Button
+                            key={filter.id}
+                            onClick={() => {
+                              setEditState(prev => ({ ...prev, filter: filter.filter }));
+                              console.log('Applied filter:', filter.name);
+                            }}
+                            variant={editState.filter === filter.filter ? "default" : "outline"}
+                            className={`${isMobile ? "min-w-[100px] p-4" : "p-3"} h-auto flex flex-col items-center gap-2 filter-preview transition-all hover:scale-105 ${
+                              editState.filter === filter.filter
+                                ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-lg border-2 border-primary`
+                                : "hover:shadow-md"
+                            }`}
+                          >
+                            <div className={`${isMobile ? "w-12 h-12" : "w-10 h-10"} bg-gradient-to-br from-gray-300 to-gray-600 rounded-lg shadow-sm border-2 border-gray-200`}
+                                 style={{ filter: filter.filter }} />
+                            <span className="text-xs font-medium text-center leading-tight">{filter.name}</span>
+                            {editState.filter === filter.filter && (
+                              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                            )}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                {/* Filter intensity control */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Filter Intensity</label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    defaultValue="100"
-                    className="w-full photo-editor-slider"
-                    onChange={(e) => {
-                      const intensity = parseInt(e.target.value) / 100;
-                      // Apply filter with custom intensity - this is a simplified version
-                      const currentFilter = editState.filter;
-                      if (currentFilter !== "none" && intensity < 1) {
-                        // Blend between no filter and full filter based on intensity
-                        const blended = `opacity(${intensity}) ${currentFilter}`;
-                        setEditState(prev => ({ ...prev, filter: blended }));
-                      }
-                    }}
-                  />
-                  <span className="text-xs text-muted-foreground">Adjust filter strength</span>
+
+                {/* Advanced filter controls */}
+                <div className="space-y-3 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
+                  <div className="flex items-center gap-2">
+                    <Sliders className="w-4 h-4 text-blue-600" />
+                    <span className="text-sm font-medium text-blue-800">Filter Controls</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Filter intensity */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                        <Zap className="w-3 h-3" />
+                        Intensity
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        defaultValue="100"
+                        className="w-full photo-editor-slider"
+                        onChange={(e) => {
+                          const intensity = parseInt(e.target.value) / 100;
+                          console.log('Filter intensity changed:', intensity);
+                          // Apply filter with custom intensity
+                          const currentFilter = editState.filter;
+                          if (currentFilter !== "none") {
+                            if (intensity < 1) {
+                              const blended = `opacity(${intensity}) brightness(${1 + (intensity - 1) * 0.2}) ${currentFilter}`;
+                              setEditState(prev => ({ ...prev, filter: blended }));
+                            } else {
+                              setEditState(prev => ({ ...prev, filter: currentFilter }));
+                            }
+                          }
+                        }}
+                      />
+                    </div>
+
+                    {/* Quick reset */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                        <Undo className="w-3 h-3" />
+                        Quick Actions
+                      </label>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => {
+                            setEditState(prev => ({ ...prev, filter: "none" }));
+                            console.log('Filter reset to none');
+                          }}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                        >
+                          Reset
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            // Apply a random filter
+                            const randomFilter = filters[Math.floor(Math.random() * filters.length)];
+                            setEditState(prev => ({ ...prev, filter: randomFilter.filter }));
+                            console.log('Random filter applied:', randomFilter.name);
+                          }}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                        >
+                          <Shuffle className="w-3 h-3 mr-1" />
+                          Random
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Filter info */}
+                {editState.filter !== "none" && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-800">Filter Applied</span>
+                    </div>
+                    <p className="text-xs text-green-700">
+                      Current filter: <strong>{filters.find(f => f.filter === editState.filter)?.name || 'Custom'}</strong>
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </GlassSurface>
