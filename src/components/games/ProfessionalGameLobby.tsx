@@ -20,7 +20,6 @@ import {
   ArrowRight,
   Menu,
   X,
-  Image,
   FileText,
   Sparkles,
 } from "lucide-react";
@@ -31,7 +30,7 @@ import { GlassSurface } from "@/components/ui/glass-surface";
 import { BackgroundIridescence } from "@/components/ui/background-iridescence";
 import { GlitchText } from "@/components/ui/glitch-text";
 import { SplitText } from "@/components/ui/split-text";
-import { MobilePhotoEditor } from "./MobilePhotoEditor";
+
 
 interface ProfessionalGameLobbyProps {
   onSelectGame: (
@@ -43,7 +42,7 @@ interface ProfessionalGameLobbyProps {
       | "codelearn"
       | "hangman"
       | "akinator"
-      | "photoeditor",
+      | "memory"
   ) => void;
 }
 
@@ -57,7 +56,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
   >("all");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showAllGames, setShowAllGames] = useState(false);
-  const [showPhotoEditor, setShowPhotoEditor] = useState(false);
+
 
   const categories = [
     { id: "all", label: "All Games", icon: Menu, color: "slate" },
@@ -67,22 +66,23 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
   ];
 
   const games = [
+
     {
-      id: "photoeditor",
-      title: "AI Photo Studio",
-      subtitle: "Advanced Creative Suite",
+      id: "memory",
+      title: "Memory Flip",
+      subtitle: "Brain Training Game",
       description:
-        "Professional photo editing with AI tools, music integration, and high-quality export",
-      icon: Image,
-      category: "creative",
-      gradient: "from-pink-500 to-rose-600",
-      cardBg: "from-pink-50 to-rose-50",
-      iconBg: "bg-pink-100",
-      iconColor: "text-pink-600",
-      players: "800+ Creating",
-      status: "🤖 AI POWERED",
-      earning: "Free Creation",
-      features: ["AI Tools", "Music Integration", "Ultra HD Export"],
+        "Test your memory skills by flipping cards to find matching pairs with different difficulty levels",
+      icon: Brain,
+      category: "free",
+      gradient: "from-purple-500 to-pink-600",
+      cardBg: "from-purple-50 to-pink-50",
+      iconBg: "bg-purple-100",
+      iconColor: "text-purple-600",
+      players: "350+ Playing",
+      status: "🧠 MEMORY",
+      earning: "Free Play",
+      features: ["3 Difficulty Levels", "Flip Animation", "Memory Training"],
       highlight: true,
       priority: 0,
     },
@@ -228,11 +228,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
 
   const handleGameSelect = useCallback(
     (gameId: string) => {
-      if (gameId === "photoeditor") {
-        setShowPhotoEditor(true);
-      } else {
-        onSelectGame(gameId as any);
-      }
+      onSelectGame(gameId as any);
     },
     [onSelectGame],
   );
@@ -242,10 +238,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
     return "grid-cols-2"; // 2x2 grid for all screen sizes
   };
 
-  // Show photo editor if selected
-  if (showPhotoEditor) {
-    return <MobilePhotoEditor onClose={() => setShowPhotoEditor(false)} />;
-  }
+
 
   return (
     <BackgroundIridescence

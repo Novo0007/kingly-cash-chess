@@ -8,8 +8,7 @@ import { MobileOptimized } from "@/components/layout/MobileOptimized";
 import { GameLobby } from "@/components/chess/GameLobby";
 import { GamePage } from "@/components/chess/GamePage";
 import { GameSelection } from "@/components/games/GameSelection";
-import { NealFunGameLobby } from "@/components/games/NealFunGameLobby";
-import { ModernGameLobby } from "@/components/games/ModernGameLobby";
+
 import { ProfessionalGameLobby } from "@/components/games/ProfessionalGameLobby";
 import {
   ProfessionalAppLayout,
@@ -25,6 +24,7 @@ import { CodeLearnGame } from "@/components/games/codelearn/CodeLearnGame";
 import { FourPicsGame } from "@/components/games/fourpics/FourPicsGame";
 import { HangmanGame } from "@/components/games/hangman/HangmanGame";
 import { AkinatorGame } from "@/components/games/akinator/AkinatorGame";
+import { MemoryFlipGame } from "@/components/games/memory/MemoryFlipGame";
 import { WalletManager } from "@/components/wallet/WalletManager";
 import { FriendsSystem } from "@/components/friends/FriendsSystem";
 import { ProfileSystem } from "@/components/profile/ProfileSystem";
@@ -53,11 +53,11 @@ const Index = () => {
     | "fourpics"
     | "hangman"
     | "akinator"
+    | "memory"
     | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [useNealFunStyle, setUseNealFunStyle] = useState(false);
-  const [useModernStyle, setUseModernStyle] = useState(false);
+
   const [useProfessionalStyle, setUseProfessionalStyle] = useState(true);
   const [useProfessionalLayout, setUseProfessionalLayout] = useState(true);
 
@@ -220,6 +220,8 @@ const Index = () => {
       setCurrentView("hangman-game");
     } else if (gameType === "akinator") {
       setCurrentView("akinator-game");
+    } else if (gameType === "memory") {
+      setCurrentView("memory-game");
     }
   };
 
@@ -303,10 +305,6 @@ const Index = () => {
       case "games":
         return useProfessionalStyle ? (
           <ProfessionalGameLobby onSelectGame={handleSelectGame} />
-        ) : useModernStyle ? (
-          <ModernGameLobby onSelectGame={handleSelectGame} />
-        ) : useNealFunStyle ? (
-          <NealFunGameLobby onSelectGame={handleSelectGame} />
         ) : (
           <GameSelection onSelectGame={handleSelectGame} />
         );
@@ -381,6 +379,8 @@ const Index = () => {
         return <HangmanGame onBack={handleBackToGameSelection} user={user} />;
       case "akinator-game":
         return <AkinatorGame onBack={handleBackToGameSelection} user={user} />;
+      case "memory-game":
+        return <MemoryFlipGame onBack={handleBackToGameSelection} user={user} />;
       case "wallet":
         return <WalletManager />;
       case "friends":
@@ -429,39 +429,7 @@ const Index = () => {
     );
   }
 
-  if (useModernStyle && currentView === "games") {
-    return (
-      <MobileOptimized>
-        <Header currentView={currentView} onViewChange={setCurrentView} />
-        <ModernGameLobby onSelectGame={handleSelectGame} />
-        {/* Bottom Nav for mobile */}
-        <div className="md:hidden relative z-30">
-          <BottomNav
-            currentView={currentView}
-            onViewChange={setCurrentView}
-            isAdmin={isAdmin}
-          />
-        </div>
-      </MobileOptimized>
-    );
-  }
 
-  if (useNealFunStyle && currentView === "games") {
-    return (
-      <MobileOptimized>
-        <Header currentView={currentView} onViewChange={setCurrentView} />
-        <NealFunGameLobby onSelectGame={handleSelectGame} />
-        {/* Bottom Nav for mobile */}
-        <div className="md:hidden relative z-30">
-          <BottomNav
-            currentView={currentView}
-            onViewChange={setCurrentView}
-            isAdmin={isAdmin}
-          />
-        </div>
-      </MobileOptimized>
-    );
-  }
 
   return (
     <MobileOptimized className="wood-bg">
