@@ -858,65 +858,70 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
             {/* Tool-specific controls */}
             {currentTool === "adjust" && (
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Brightness</label>
-                    <input
-                      type="range"
-                      min="-100"
-                      max="100"
-                      value={editState.brightness}
-                      onChange={(e) => setEditState(prev => ({ ...prev, brightness: parseInt(e.target.value) }))}
-                      className="w-full photo-editor-slider"
-                    />
-                    <span className="text-xs text-muted-foreground">{editState.brightness}</span>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Contrast</label>
-                    <input
-                      type="range"
-                      min="-100"
-                      max="100"
-                      value={editState.contrast}
-                      onChange={(e) => setEditState(prev => ({ ...prev, contrast: parseInt(e.target.value) }))}
-                      className="w-full photo-editor-slider"
-                    />
-                    <span className="text-xs text-muted-foreground">{editState.contrast}</span>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Saturation</label>
-                    <input
-                      type="range"
-                      min="-100"
-                      max="100"
-                      value={editState.saturation}
-                      onChange={(e) => setEditState(prev => ({ ...prev, saturation: parseInt(e.target.value) }))}
-                      className="w-full photo-editor-slider"
-                    />
-                    <span className="text-xs text-muted-foreground">{editState.saturation}</span>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Hue</label>
-                    <input
-                      type="range"
-                      min="-180"
-                      max="180"
-                      value={editState.hue}
-                      onChange={(e) => setEditState(prev => ({ ...prev, hue: parseInt(e.target.value) }))}
-                      className="w-full photo-editor-slider"
-                    />
-                    <span className="text-xs text-muted-foreground">{editState.hue}°</span>
+                {/* Scrollable adjust controls for mobile */}
+                <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                  <div className={`${isMobile ? "flex gap-4 min-w-max" : "grid grid-cols-1 md:grid-cols-4 gap-4"}`}>
+                    <div className={`space-y-2 ${isMobile ? "min-w-[200px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Brightness</label>
+                      <input
+                        type="range"
+                        min="-100"
+                        max="100"
+                        value={editState.brightness}
+                        onChange={(e) => setEditState(prev => ({ ...prev, brightness: parseInt(e.target.value) }))}
+                        className="w-full photo-editor-slider"
+                      />
+                      <span className="text-xs text-muted-foreground">{editState.brightness}</span>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[200px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Contrast</label>
+                      <input
+                        type="range"
+                        min="-100"
+                        max="100"
+                        value={editState.contrast}
+                        onChange={(e) => setEditState(prev => ({ ...prev, contrast: parseInt(e.target.value) }))}
+                        className="w-full photo-editor-slider"
+                      />
+                      <span className="text-xs text-muted-foreground">{editState.contrast}</span>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[200px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Saturation</label>
+                      <input
+                        type="range"
+                        min="-100"
+                        max="100"
+                        value={editState.saturation}
+                        onChange={(e) => setEditState(prev => ({ ...prev, saturation: parseInt(e.target.value) }))}
+                        className="w-full photo-editor-slider"
+                      />
+                      <span className="text-xs text-muted-foreground">{editState.saturation}</span>
+                    </div>
+
+                    <div className={`space-y-2 ${isMobile ? "min-w-[200px]" : ""}`}>
+                      <label className="text-sm font-medium text-foreground">Hue</label>
+                      <input
+                        type="range"
+                        min="-180"
+                        max="180"
+                        value={editState.hue}
+                        onChange={(e) => setEditState(prev => ({ ...prev, hue: parseInt(e.target.value) }))}
+                        className="w-full photo-editor-slider"
+                      />
+                      <span className="text-xs text-muted-foreground">{editState.hue}°</span>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="flex gap-2 flex-wrap">
+
+                {/* Transform controls */}
+                <div className={`flex gap-2 ${isMobile ? "overflow-x-auto pb-2" : "flex-wrap"}`}>
                   <Button
                     onClick={() => setEditState(prev => ({ ...prev, rotation: prev.rotation + 90 }))}
                     variant="outline"
                     size="sm"
+                    className={isMobile ? "min-w-max" : ""}
                   >
                     <RotateCw className="w-4 h-4 mr-2" />
                     Rotate
@@ -925,6 +930,7 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                     onClick={() => setEditState(prev => ({ ...prev, flipX: !prev.flipX }))}
                     variant="outline"
                     size="sm"
+                    className={isMobile ? "min-w-max" : ""}
                   >
                     <Move className="w-4 h-4 mr-2" />
                     Flip H
@@ -933,9 +939,32 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
                     onClick={() => setEditState(prev => ({ ...prev, flipY: !prev.flipY }))}
                     variant="outline"
                     size="sm"
+                    className={isMobile ? "min-w-max" : ""}
                   >
                     <Move className="w-4 h-4 mr-2" />
                     Flip V
+                  </Button>
+                  <Button
+                    onClick={() => setEditState({
+                      brightness: 0,
+                      contrast: 0,
+                      saturation: 0,
+                      hue: 0,
+                      rotation: 0,
+                      flipX: false,
+                      flipY: false,
+                      filter: "none",
+                      crop: null,
+                      zoom: 1,
+                      panX: 0,
+                      panY: 0,
+                    })}
+                    variant="outline"
+                    size="sm"
+                    className={isMobile ? "min-w-max" : ""}
+                  >
+                    <Undo className="w-4 h-4 mr-2" />
+                    Reset
                   </Button>
                 </div>
               </div>
