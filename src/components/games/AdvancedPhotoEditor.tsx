@@ -1799,6 +1799,191 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
               </div>
             )}
 
+            {currentTool === "crop" && (
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-foreground">Crop Tool</h4>
+
+                {/* Crop presets for mobile */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-foreground">Crop Presets</label>
+                  <div className={`${isMobile ? "overflow-x-auto pb-2" : ""}`}>
+                    <div className={`${isMobile ? "flex gap-2 min-w-max" : "grid grid-cols-3 gap-2"}`}>
+                      {[
+                        { id: 'square', name: '1:1 Square', ratio: 1 },
+                        { id: 'landscape', name: '16:9 Wide', ratio: 16/9 },
+                        { id: 'portrait', name: '9:16 Tall', ratio: 9/16 },
+                        { id: 'photo', name: '4:3 Photo', ratio: 4/3 },
+                        { id: 'golden', name: '3:2 Golden', ratio: 3/2 },
+                        { id: 'custom', name: 'Free Form', ratio: 0 },
+                      ].map((preset) => (
+                        <Button
+                          key={preset.id}
+                          onClick={() => {
+                            if (!originalImage || !canvasRef.current) return;
+
+                            const canvas = canvasRef.current;
+                            const ctx = canvas.getContext('2d');
+                            if (!ctx) return;
+
+                            if (preset.ratio === 0) {
+                              // Free form - enable manual cropping
+                              setCropMode(true);
+                              alert('Click and drag on the image to select crop area');
+                            } else {
+                              // Apply preset crop
+                              const canvasWidth = canvas.width;
+                              const canvasHeight = canvas.height;
+
+                              let cropWidth, cropHeight;
+
+                              if (preset.ratio > canvasWidth / canvasHeight) {
+                                cropWidth = canvasWidth;
+                                cropHeight = canvasWidth / preset.ratio;
+                              } else {
+                                cropHeight = canvasHeight;
+                                cropWidth = canvasHeight * preset.ratio;
+                              }
+
+                              const cropX = (canvasWidth - cropWidth) / 2;
+                              const cropY = (canvasHeight - cropHeight) / 2;
+
+                              // Create new canvas with cropped dimensions
+                              const croppedCanvas = document.createElement('canvas');
+                              croppedCanvas.width = cropWidth;
+                              croppedCanvas.height = cropHeight;
+                              const croppedCtx = croppedCanvas.getContext('2d');
+
+                              if (croppedCtx) {
+                                croppedCtx.drawImage(
+                                  canvas,
+                                  cropX, cropY, cropWidth, cropHeight,
+                                  0, 0, cropWidth, cropHeight
+                                );
+
+                                // Update main canvas
+                                canvas.width = cropWidth;
+                                canvas.height = cropHeight;
+                                ctx.clearRect(0, 0, cropWidth, cropHeight);
+                                ctx.drawImage(croppedCanvas, 0, 0);
+
+                                console.log(`Applied ${preset.name} crop`);
+                              }
+                            }
+                          }}
+                          variant="outline"
+                          size="sm"
+                          className={`${isMobile ? "min-w-[120px] flex-shrink-0" : ""} flex flex-col items-center gap-1 h-auto p-3`}
+                        >
+                          <div className="w-6 h-6 border-2 border-current rounded flex items-center justify-center">
+                            <div
+                              className="bg-current"
+                              style={{
+                                width: preset.ratio > 1 ? '16px' : '12px',
+                                height: preset.ratio > 1 ? '9px' : '16px',
+                              }}
+                            />
+                          </div>
+                          <span className="text-xs">{preset.name}</span>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Crop controls */}
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    onClick={() => {
+                      setCropMode(!cropMode);
+                      if (!cropMode) {
+                        alert(isMobile ? 'Touch and drag to select crop area' : 'Click and drag to select crop area');
+                      }
+                    }}
+                    variant={cropMode ? "default" : "outline"}
+                    className={cropMode ? "bg-green-600 text-white" : ""}
+                  >
+                    <Crop className="w-4 h-4 mr-2" />
+                    {cropMode ? 'Exit Crop' : 'Manual Crop'}
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      // Reset to original size
+                      if (originalImage && canvasRef.current) {
+                        const canvas = canvasRef.current;
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                          canvas.width = originalImage.width;
+                          canvas.height = originalImage.height;
+                          ctx.drawImage(originalImage, 0, 0);
+                          setCropMode(false);
+                          setCropStart(null);
+                          setCropEnd(null);
+                        }
+                      }
+                    }}
+                    variant="outline"
+                  >
+                    <Undo className="w-4 h-4 mr-2" />
+                    Reset Crop
+                  </Button>
+                </div>
+
+                {/* Crop instructions */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Crop className="w-4 h-4 text-green-600" />
+                    <span className="text-sm font-medium text-green-800">Crop Instructions</span>
+                  </div>
+                  <p className="text-xs text-green-700">
+                    {cropMode
+                      ? (isMobile ? 'Touch and drag on the image to select crop area, then tap "Apply Crop"' : 'Click and drag on the image to select crop area, then click "Apply Crop"')
+                      : 'Choose a preset ratio or enable manual crop mode'
+                    }
+                  </p>
+
+                  {cropMode && (
+                    <Button
+                      onClick={() => {
+                        if (cropStart && cropEnd && canvasRef.current) {
+                          const canvas = canvasRef.current;
+                          const ctx = canvas.getContext('2d');
+                          if (!ctx) return;
+
+                          const x = Math.min(cropStart.x, cropEnd.x);
+                          const y = Math.min(cropStart.y, cropEnd.y);
+                          const width = Math.abs(cropEnd.x - cropStart.x);
+                          const height = Math.abs(cropEnd.y - cropStart.y);
+
+                          if (width > 10 && height > 10) {
+                            // Create cropped image
+                            const imageData = ctx.getImageData(x, y, width, height);
+                            canvas.width = width;
+                            canvas.height = height;
+                            ctx.putImageData(imageData, 0, 0);
+
+                            setCropMode(false);
+                            setCropStart(null);
+                            setCropEnd(null);
+
+                            alert('Crop applied successfully!');
+                          } else {
+                            alert('Please select a larger crop area.');
+                          }
+                        } else {
+                          alert('Please select a crop area first.');
+                        }
+                      }}
+                      className="mt-2 w-full bg-green-600 text-white"
+                      size="sm"
+                    >
+                      Apply Crop
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+
             {currentTool === "filters" && (
               <div className="space-y-3">
                 <h4 className="text-sm font-medium text-foreground">Photo Filters</h4>
