@@ -251,7 +251,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
         className="min-h-screen"
       >
         <div className="container mx-auto px-4 py-8">
-          <AdvancedPhotoEditor onClose={() => setShowPhotoEditor(false)} />
+          <MobilePhotoEditor onClose={() => setShowPhotoEditor(false)} />
         </div>
       </BackgroundIridescence>
     );
