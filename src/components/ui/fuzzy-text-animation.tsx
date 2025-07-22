@@ -96,15 +96,25 @@ const FuzzyTextAnimation = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "font-mono transition-all duration-300",
+        "fuzzy-text-container relative transition-all duration-300",
         isAnimating && "animate-pulse",
+        enableGlow && isAnimating && "fuzzy-text-glow",
+        enableShimmer && isAnimating && "fuzzy-text-shimmer",
         className
       )}
       onClick={startAnimation}
       style={{ cursor: trigger ? 'pointer' : 'default' }}
       {...props}
     >
-      {displayText}
+      <span
+        className={cn(
+          "fuzzy-text-enhanced",
+          isAnimating && "relative z-10"
+        )}
+        data-text={text}
+      >
+        {displayText}
+      </span>
     </div>
   )
 })
