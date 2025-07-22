@@ -180,6 +180,71 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
   const [selectedFont, setSelectedFont] = useState("Arial");
   const [textSize, setTextSize] = useState(24);
 
+  // Canvas rendering function
+  const renderCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    const originalCanvas = originalCanvasRef.current;
+    if (!canvas || !originalCanvas || !originalImage) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Save context
+    ctx.save();
+
+    // Apply transformations
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate((editState.rotation * Math.PI) / 180);
+    ctx.scale(editState.flipX ? -1 : 1, editState.flipY ? -1 : 1);
+
+    // Apply filters
+    const filterString = [
+      `brightness(${100 + editState.brightness}%)`,
+      `contrast(${100 + editState.contrast}%)`,
+      `saturate(${100 + editState.saturation}%)`,
+      `hue-rotate(${editState.hue}deg)`,
+      editState.filter !== "none" ? editState.filter : "",
+    ].filter(Boolean).join(" ");
+
+    ctx.filter = filterString;
+
+    // Draw the main image
+    ctx.drawImage(
+      originalImage,
+      -canvas.width / 2,
+      -canvas.height / 2,
+      canvas.width,
+      canvas.height
+    );
+
+    // Draw layers
+    layers.forEach(layer => {
+      if (layer.visible && layer.canvas) {
+        ctx.globalAlpha = layer.opacity / 100;
+        ctx.globalCompositeOperation = layer.blendMode as GlobalCompositeOperation;
+        ctx.drawImage(
+          layer.canvas,
+          -canvas.width / 2,
+          -canvas.height / 2,
+          canvas.width,
+          canvas.height
+        );
+      }
+    });
+
+    ctx.restore();
+  }, [originalImage, editState, layers]);
+
+  // Update canvas when edit state changes
+  useEffect(() => {
+    if (originalImage) {
+      renderCanvas();
+    }
+  }, [renderCanvas, originalImage]);
+
   const advancedTools = [
     { id: "adjust", label: "Adjust", icon: Sliders, color: "blue" },
     { id: "filters", label: "Filters", icon: Filter, color: "purple" },
@@ -223,7 +288,7 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
 
     // Store original dimensions
     setOriginalDimensions({ width: img.width, height: img.height });
-    
+
     // Set up original quality canvas
     originalCanvas.width = img.width;
     originalCanvas.height = img.height;
@@ -235,23 +300,30 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
     // Set up display canvas with appropriate scaling
     const maxDisplayWidth = isMobile ? 350 : 800;
     const maxDisplayHeight = isMobile ? 500 : 600;
-    
+
     let displayWidth = img.width;
     let displayHeight = img.height;
-    
+
     if (displayWidth > maxDisplayWidth) {
       displayHeight = (displayHeight * maxDisplayWidth) / displayWidth;
       displayWidth = maxDisplayWidth;
     }
-    
+
     if (displayHeight > maxDisplayHeight) {
       displayWidth = (displayWidth * maxDisplayHeight) / displayHeight;
       displayHeight = maxDisplayHeight;
     }
-    
+
     canvas.width = displayWidth;
     canvas.height = displayHeight;
-    
+
+    // Draw the image on the display canvas immediately
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.clearRect(0, 0, displayWidth, displayHeight);
+      ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+    }
+
     // Create initial layer
     const initialLayer: Layer = {
       id: "background",
@@ -261,14 +333,14 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
       blendMode: "normal",
       canvas: document.createElement("canvas"),
     };
-    
+
     initialLayer.canvas.width = img.width;
     initialLayer.canvas.height = img.height;
     const layerCtx = initialLayer.canvas.getContext("2d");
     if (layerCtx) {
       layerCtx.drawImage(img, 0, 0);
     }
-    
+
     setLayers([initialLayer]);
     setCurrentLayer("background");
   }, [isMobile]);
