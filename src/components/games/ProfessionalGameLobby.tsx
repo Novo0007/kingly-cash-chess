@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
+import { FuzzyTextAnimation } from "@/components/ui/fuzzy-text-animation";
 
 interface ProfessionalGameLobbyProps {
   onSelectGame: (
@@ -219,11 +220,12 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
           <Gamepad2 className="w-8 h-8 text-white" />
         </div>
 
-        <h1
+        <FuzzyTextAnimation
+          text="Game Hub"
+          duration={1500}
+          trigger={true}
           className={`${isMobile ? "text-2xl" : "text-3xl lg:text-4xl"} font-bold bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent`}
-        >
-          Game Hub
-        </h1>
+        />
         <p
           className={`${isMobile ? "text-sm" : "text-lg"} text-muted-foreground max-w-2xl mx-auto`}
         >
