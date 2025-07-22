@@ -295,10 +295,16 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       {/* Quick Access Section - Mobile Only */}
       {isMobile && (
         <GlassSurface className="rounded-2xl p-4 shadow-sm" blur="md" opacity={0.15}>
-          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+          <div className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <Zap className="w-5 h-5 text-primary" />
-            Quick Access
-          </h3>
+            <SplitText
+              text="Quick Access"
+              animation="fade"
+              stagger={100}
+              splitBy="char"
+              trigger={true}
+            />
+          </div>
           <div className="grid grid-cols-4 gap-3">
             {games.slice(0, 4).map((game) => (
               <button
