@@ -629,6 +629,54 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
     }
   }, [originalDimensions, editState, layers, textOverlays, originalImage, isMobile]);
 
+  // Simple save function for mobile fallback
+  const saveImage = useCallback(() => {
+    console.log('Simple save function called');
+
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      alert('No image to save. Please upload an image first.');
+      return;
+    }
+
+    try {
+      // Convert canvas to data URL
+      const dataURL = canvas.toDataURL('image/png', 1.0);
+
+      if (isMobile) {
+        // For mobile, create a link that opens the image
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = `edited-image-${Date.now()}.png`;
+
+        // Try to trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Also try opening in new tab as fallback
+        const newWindow = window.open();
+        if (newWindow) {
+          newWindow.document.write(`<img src="${dataURL}" style="max-width:100%;height:auto;" />`);
+          newWindow.document.title = 'Your Edited Image - Long press to save';
+        }
+      } else {
+        // Desktop download
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = `edited-image-${Date.now()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      alert('Image saved! Check your downloads folder or long-press the image to save on mobile.');
+    } catch (error) {
+      console.error('Save failed:', error);
+      alert('Save failed. Please try the Export HQ button.');
+    }
+  }, [isMobile]);
+
   // Music handling functions
   const handleMusicUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
