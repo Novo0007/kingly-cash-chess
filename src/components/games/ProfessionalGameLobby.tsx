@@ -20,7 +20,6 @@ import {
   ArrowRight,
   Menu,
   X,
-  Image,
   FileText,
   Sparkles,
 } from "lucide-react";
