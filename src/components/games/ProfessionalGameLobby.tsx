@@ -68,6 +68,25 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
   const games = [
 
     {
+      id: "memory",
+      title: "Memory Flip",
+      subtitle: "Brain Training Game",
+      description:
+        "Test your memory skills by flipping cards to find matching pairs with different difficulty levels",
+      icon: Brain,
+      category: "free",
+      gradient: "from-purple-500 to-pink-600",
+      cardBg: "from-purple-50 to-pink-50",
+      iconBg: "bg-purple-100",
+      iconColor: "text-purple-600",
+      players: "350+ Playing",
+      status: "🧠 MEMORY",
+      earning: "Free Play",
+      features: ["3 Difficulty Levels", "Flip Animation", "Memory Training"],
+      highlight: true,
+      priority: 0,
+    },
+    {
       id: "codelearn",
       title: "CodeMaster",
       subtitle: "Master Programming",
