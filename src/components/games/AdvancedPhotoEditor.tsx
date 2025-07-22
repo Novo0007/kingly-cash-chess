@@ -167,6 +167,36 @@ interface HistoryState {
   textOverlays: TextOverlay[];
 }
 
+interface DynamicTemplate {
+  id: string;
+  name: string;
+  category: string;
+  thumbnail: string;
+  description: string;
+  aspectRatio: string;
+  effects: string[];
+  musicSuggestions: string[];
+  popularity: number;
+  isPro: boolean;
+  animation: {
+    type: 'slideshow' | 'zoom' | 'pan' | 'fade' | 'cinematic' | 'parallax';
+    duration: number;
+    easing: string;
+  };
+}
+
+interface VideoLikeProject {
+  id: string;
+  name: string;
+  template: DynamicTemplate;
+  images: File[];
+  music?: MusicTrack;
+  duration: number;
+  effects: string[];
+  transitions: string[];
+  createdAt: Date;
+}
+
 export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClose }) => {
   const { currentTheme } = useTheme();
   const isMobile = useIsMobile();
