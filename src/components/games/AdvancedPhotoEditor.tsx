@@ -741,33 +741,71 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
 
   const playMusic = useCallback((trackId: string) => {
     const track = musicTracks.find(t => t.id === trackId);
-    if (!track || !audioRef.current) return;
-
-    // Stop current music if playing
-    if (isPlaying && currentTrack) {
-      audioRef.current.pause();
+    if (!track || !audioRef.current) {
+      console.error('Track or audio reference not found');
+      return;
     }
 
-    const url = URL.createObjectURL(track.file);
-    audioRef.current.src = url;
-    audioRef.current.volume = track.volume;
-    audioRef.current.loop = track.loop;
+    console.log('Playing music track:', track.name);
 
-    audioRef.current.play().then(() => {
-      setCurrentTrack(trackId);
-      setIsPlaying(true);
-    }).catch((error) => {
-      console.error('Failed to play audio:', error);
-      alert('Failed to play audio. Please try again.');
-    });
+    try {
+      // Stop current music if playing
+      if (isPlaying && currentTrack && currentTrack !== trackId) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
 
-    // Handle audio end event
-    audioRef.current.onended = () => {
-      if (!track.loop) {
+      // Only create new URL if it's a different track
+      if (currentTrack !== trackId) {
+        const url = URL.createObjectURL(track.file);
+        audioRef.current.src = url;
+
+        // Clean up URL when audio loads
+        audioRef.current.onloadeddata = () => {
+          URL.revokeObjectURL(url);
+        };
+      }
+
+      audioRef.current.volume = track.volume;
+      audioRef.current.loop = track.loop;
+
+      // Add error handling for mobile playback
+      audioRef.current.oncanplaythrough = () => {
+        audioRef.current?.play().then(() => {
+          setCurrentTrack(trackId);
+          setIsPlaying(true);
+          console.log('Music playback started successfully');
+        }).catch((error) => {
+          console.error('Failed to play audio:', error);
+          // Try to enable audio context for mobile
+          if (error.name === 'NotAllowedError') {
+            alert('Please tap anywhere on the screen first to enable audio playback.');
+          } else {
+            alert('Failed to play audio. Please try again or check if the file is corrupted.');
+          }
+        });
+      };
+
+      // Handle audio end event
+      audioRef.current.onended = () => {
+        console.log('Music track ended');
+        if (!track.loop) {
+          setIsPlaying(false);
+          setCurrentTrack('');
+        }
+      };
+
+      audioRef.current.onerror = (error) => {
+        console.error('Audio playback error:', error);
+        alert('Audio playback failed. Please try a different file.');
         setIsPlaying(false);
         setCurrentTrack('');
-      }
-    };
+      };
+
+    } catch (error) {
+      console.error('Error in playMusic:', error);
+      alert('Failed to play music. Please try again.');
+    }
   }, [musicTracks, isPlaying, currentTrack]);
 
   const stopMusic = useCallback(() => {
