@@ -215,7 +215,12 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
   };
 
   return (
-    <div className="space-y-8">
+    <BackgroundIridescence
+      intensity="low"
+      speed="slow"
+      className="min-h-screen"
+    >
+      <div className="space-y-8">
       {/* Welcome Section - Mobile Optimized */}
       <div className="text-center space-y-4 px-4">
         <div
@@ -442,8 +447,9 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
         </div>
       </div>
 
-      {/* Floating Action Button for Mobile */}
-      <FloatingActionButton onGameSelect={handleGameSelect} />
-    </div>
+        {/* Floating Action Button for Mobile */}
+        <FloatingActionButton onGameSelect={handleGameSelect} />
+      </div>
+    </BackgroundIridescence>
   );
 };
