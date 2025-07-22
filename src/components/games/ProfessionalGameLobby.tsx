@@ -26,6 +26,12 @@ import {
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
+import { FuzzyTextAnimation } from "@/components/ui/fuzzy-text-animation";
+import { GlassSurface } from "@/components/ui/glass-surface";
+import { BackgroundIridescence } from "@/components/ui/background-iridescence";
+import { GlitchText } from "@/components/ui/glitch-text";
+import { SplitText } from "@/components/ui/split-text";
+import { MobilePhotoEditor } from "./MobilePhotoEditor";
 
 interface ProfessionalGameLobbyProps {
   onSelectGame: (
@@ -36,7 +42,8 @@ interface ProfessionalGameLobbyProps {
       | "wordsearch"
       | "codelearn"
       | "hangman"
-      | "akinator",
+      | "akinator"
+      | "photoeditor",
   ) => void;
 }
 
@@ -46,18 +53,39 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
   const { currentTheme } = useTheme();
   const isMobile = useIsMobile();
   const [selectedCategory, setSelectedCategory] = useState<
-    "all" | "free" | "earn"
+    "all" | "free" | "earn" | "creative"
   >("all");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showAllGames, setShowAllGames] = useState(false);
+  const [showPhotoEditor, setShowPhotoEditor] = useState(false);
 
   const categories = [
     { id: "all", label: "All Games", icon: Menu, color: "slate" },
     { id: "free", label: "Free Play", icon: Star, color: "green" },
     { id: "earn", label: "Earn Money", icon: Coins, color: "amber" },
+    { id: "creative", label: "Creative Tools", icon: Sparkles, color: "pink" },
   ];
 
   const games = [
+    {
+      id: "photoeditor",
+      title: "AI Photo Studio",
+      subtitle: "Advanced Creative Suite",
+      description:
+        "Professional photo editing with AI tools, music integration, and high-quality export",
+      icon: Image,
+      category: "creative",
+      gradient: "from-pink-500 to-rose-600",
+      cardBg: "from-pink-50 to-rose-50",
+      iconBg: "bg-pink-100",
+      iconColor: "text-pink-600",
+      players: "800+ Creating",
+      status: "🤖 AI POWERED",
+      earning: "Free Creation",
+      features: ["AI Tools", "Music Integration", "Ultra HD Export"],
+      highlight: true,
+      priority: 0,
+    },
     {
       id: "codelearn",
       title: "CodeMaster",
@@ -193,13 +221,18 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
     .filter((game) => {
       if (selectedCategory === "free") return game.category === "free";
       if (selectedCategory === "earn") return game.category === "earn";
+      if (selectedCategory === "creative") return game.category === "creative";
       return true;
     })
     .sort((a, b) => a.priority - b.priority);
 
   const handleGameSelect = useCallback(
     (gameId: string) => {
-      onSelectGame(gameId as any);
+      if (gameId === "photoeditor") {
+        setShowPhotoEditor(true);
+      } else {
+        onSelectGame(gameId as any);
+      }
     },
     [onSelectGame],
   );
@@ -209,8 +242,18 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
     return "grid-cols-2"; // 2x2 grid for all screen sizes
   };
 
+  // Show photo editor if selected
+  if (showPhotoEditor) {
+    return <MobilePhotoEditor onClose={() => setShowPhotoEditor(false)} />;
+  }
+
   return (
-    <div className="space-y-8">
+    <BackgroundIridescence
+      intensity="low"
+      speed="slow"
+      className="min-h-screen"
+    >
+      <div className="space-y-8">
       {/* Welcome Section - Mobile Optimized */}
       <div className="text-center space-y-4 px-4">
         <div
@@ -219,18 +262,25 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
           <Gamepad2 className="w-8 h-8 text-white" />
         </div>
 
-        <h1
+        <GlitchText
+          text="Game Hub"
+          intensity="medium"
+          speed="medium"
+          continuous={false}
+          trigger={true}
           className={`${isMobile ? "text-2xl" : "text-3xl lg:text-4xl"} font-bold bg-gradient-to-r ${currentTheme.gradients.accent} bg-clip-text text-transparent`}
-        >
-          Game Hub
-        </h1>
-        <p
-          className={`${isMobile ? "text-sm" : "text-lg"} text-muted-foreground max-w-2xl mx-auto`}
-        >
-          {isMobile
+        />
+        <SplitText
+          text={isMobile
             ? "Choose from exciting games and start playing!"
             : "Choose from our collection of exciting games and start playing now!"}
-        </p>
+          animation="slide"
+          direction="up"
+          stagger={30}
+          splitBy="word"
+          trigger={true}
+          className={`${isMobile ? "text-sm" : "text-lg"} text-muted-foreground max-w-2xl mx-auto`}
+        />
 
         {/* Stats - Mobile Responsive */}
         <div
@@ -277,11 +327,17 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
 
       {/* Quick Access Section - Mobile Only */}
       {isMobile && (
-        <div className="bg-card border border-border rounded-2xl p-4 shadow-sm">
-          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+        <GlassSurface className="rounded-2xl p-4 shadow-sm" blur="md" opacity={0.15}>
+          <div className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <Zap className="w-5 h-5 text-primary" />
-            Quick Access
-          </h3>
+            <SplitText
+              text="Quick Access"
+              animation="fade"
+              stagger={100}
+              splitBy="char"
+              trigger={true}
+            />
+          </div>
           <div className="grid grid-cols-4 gap-3">
             {games.slice(0, 4).map((game) => (
               <button
@@ -300,7 +356,7 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
               </button>
             ))}
           </div>
-        </div>
+        </GlassSurface>
       )}
 
       <div className="space-y-8">
@@ -333,7 +389,9 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
                     ? games.length
                     : category.id === "free"
                       ? games.filter((g) => g.category === "free").length
-                      : games.filter((g) => g.category === "earn").length}
+                      : category.id === "earn"
+                        ? games.filter((g) => g.category === "earn").length
+                        : games.filter((g) => g.category === "creative").length}
                 </Badge>
               </Button>
             ))}
@@ -359,9 +417,14 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
                   </div>
 
                   {/* Game Name */}
-                  <h3 className="text-lg font-bold text-foreground text-center leading-tight">
-                    {game.title}
-                  </h3>
+                  <SplitText
+                    text={game.title}
+                    animation="bounce"
+                    stagger={80}
+                    splitBy="char"
+                    trigger={true}
+                    className="text-lg font-bold text-foreground text-center leading-tight"
+                  />
                 </div>
               </Card>
             ),
@@ -412,32 +475,33 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
           </div>
         )}
         {/* Quick Stats Footer */}
-        <div className="mt-12 p-6 bg-white rounded-2xl shadow-sm border border-gray-200">
+        <GlassSurface className="mt-12 p-6 rounded-2xl shadow-sm" blur="lg" opacity={0.1}>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
             <div>
               <div className="text-2xl font-bold text-gray-900">
                 {games.length}
               </div>
-              <div className="text-sm text-gray-500">Total Games</div>
+              <SplitText text="Total Games" animation="fade" stagger={50} splitBy="char" trigger={true} className="text-sm text-gray-500" />
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">₹10L+</div>
-              <div className="text-sm text-gray-500">Total Prizes</div>
+              <SplitText text="Total Prizes" animation="fade" stagger={50} splitBy="char" trigger={true} className="text-sm text-gray-500" />
             </div>
             <div>
               <div className="text-2xl font-bold text-blue-600">5.2K+</div>
-              <div className="text-sm text-gray-500">Active Players</div>
+              <SplitText text="Active Players" animation="fade" stagger={50} splitBy="char" trigger={true} className="text-sm text-gray-500" />
             </div>
             <div>
               <div className="text-2xl font-bold text-purple-600">24/7</div>
-              <div className="text-sm text-gray-500">Support</div>
+              <SplitText text="Support" animation="fade" stagger={50} splitBy="char" trigger={true} className="text-sm text-gray-500" />
             </div>
           </div>
-        </div>
+        </GlassSurface>
       </div>
 
-      {/* Floating Action Button for Mobile */}
-      <FloatingActionButton onGameSelect={handleGameSelect} />
-    </div>
+        {/* Floating Action Button for Mobile */}
+        <FloatingActionButton onGameSelect={handleGameSelect} />
+      </div>
+    </BackgroundIridescence>
   );
 };

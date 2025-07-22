@@ -1,0 +1,346 @@
+/* Mobile Photo Editor App-like Styles */
+
+/* Custom slider styles */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(to right, #e5e7eb 0%, #e5e7eb 100%);
+  border-radius: 10px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+/* App-like animations */
+.mobile-tool-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-tool-button:active {
+  transform: scale(0.95);
+}
+
+.mobile-tool-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+}
+
+.mobile-tool-button:hover::before {
+  width: 100%;
+  height: 100%;
+}
+
+/* Bottom sheet animations */
+.bottom-sheet-enter {
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bottom-sheet-exit {
+  animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+/* Canvas container with app-like styling */
+.canvas-container {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.canvas-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* AI processing overlay */
+.ai-processing-overlay {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.ai-progress-ring {
+  width: 120px;
+  height: 120px;
+  position: relative;
+}
+
+.ai-progress-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ai-progress-ring circle {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.ai-progress-bg {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.ai-progress-bar {
+  stroke: url(#gradient);
+  stroke-dasharray: 314;
+  stroke-dashoffset: 314;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+/* Haptic feedback simulation */
+.haptic-light {
+  animation: hapticPulse 0.1s ease-out;
+}
+
+@keyframes hapticPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+/* Tool icons with gradient backgrounds */
+.tool-icon-adjust {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.tool-icon-filter {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.tool-icon-ai {
+  background: linear-gradient(135deg, #ec4899, #be185d);
+}
+
+.tool-icon-crop {
+  background: linear-gradient(135deg, #10b981, #047857);
+}
+
+.tool-icon-text {
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+}
+
+.tool-icon-music {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+/* Native app-like scrolling */
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Safe area support for iOS */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Enhanced shadows for depth */
+.app-shadow-sm {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.app-shadow-md {
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.app-shadow-lg {
+  box-shadow: 
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.app-shadow-xl {
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Improved glass morphism */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Button press animations */
+.press-animation {
+  transition: all 0.1s ease;
+}
+
+.press-animation:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+/* Quality indicator badges */
+.quality-badge {
+  background: linear-gradient(135deg, #059669, #047857);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Music visualizer bars */
+.music-visualizer-mobile {
+  display: flex;
+  align-items: end;
+  height: 24px;
+  gap: 2px;
+}
+
+.music-bar-mobile {
+  width: 3px;
+  background: linear-gradient(to top, #f59e0b, #d97706);
+  border-radius: 2px;
+  animation: musicBeatMobile 1.2s infinite ease-in-out;
+}
+
+.music-bar-mobile:nth-child(1) { animation-delay: 0s; }
+.music-bar-mobile:nth-child(2) { animation-delay: 0.1s; }
+.music-bar-mobile:nth-child(3) { animation-delay: 0.2s; }
+.music-bar-mobile:nth-child(4) { animation-delay: 0.3s; }
+
+@keyframes musicBeatMobile {
+  0%, 50%, 100% { height: 6px; }
+  25% { height: 20px; }
+  75% { height: 12px; }
+}
+
+/* Responsive canvas scaling */
+.responsive-canvas {
+  max-width: 100%;
+  max-height: 50vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Touch-friendly controls */
+.touch-control {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .glass-panel {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .slider {
+    background: linear-gradient(to right, #374151 0%, #374151 100%);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-tool-button,
+  .slider::-webkit-slider-thumb,
+  .slider::-moz-range-thumb,
+  .loading-shimmer,
+  .music-bar-mobile {
+    animation: none;
+    transition: none;
+  }
+}

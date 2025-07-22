@@ -1,0 +1,182 @@
+/* ReactBits Effects */
+
+/* Glitch Text Animations */
+@keyframes glitch-1 {
+  0%, 100% {
+    transform: translateX(0);
+    clip-path: inset(0 0 95% 0);
+  }
+  20% {
+    transform: translateX(-2px);
+    clip-path: inset(20% 0 75% 0);
+  }
+  40% {
+    transform: translateX(2px);
+    clip-path: inset(60% 0 35% 0);
+  }
+  60% {
+    transform: translateX(-1px);
+    clip-path: inset(10% 0 85% 0);
+  }
+  80% {
+    transform: translateX(1px);
+    clip-path: inset(80% 0 15% 0);
+  }
+}
+
+@keyframes glitch-2 {
+  0%, 100% {
+    transform: translateX(0);
+    clip-path: inset(85% 0 0 0);
+  }
+  25% {
+    transform: translateX(2px);
+    clip-path: inset(75% 0 20% 0);
+  }
+  50% {
+    transform: translateX(-2px);
+    clip-path: inset(45% 0 50% 0);
+  }
+  75% {
+    transform: translateX(1px);
+    clip-path: inset(95% 0 0 0);
+  }
+}
+
+@keyframes glitch-3 {
+  0%, 100% {
+    transform: translateX(0);
+    clip-path: inset(40% 0 50% 0);
+  }
+  33% {
+    transform: translateX(-1px);
+    clip-path: inset(30% 0 65% 0);
+  }
+  66% {
+    transform: translateX(1px);
+    clip-path: inset(70% 0 25% 0);
+  }
+}
+
+.animate-glitch-1 {
+  animation: glitch-1 0.3s infinite;
+}
+
+.animate-glitch-2 {
+  animation: glitch-2 0.3s infinite;
+}
+
+.animate-glitch-3 {
+  animation: glitch-3 0.3s infinite;
+}
+
+.text-shadow-glitch {
+  text-shadow: 
+    2px 0 #ff0000,
+    -2px 0 #00ffff,
+    0 2px #ffff00;
+}
+
+/* Background Iridescence */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-fast {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+.animate-spin-fast {
+  animation: spin-fast 2s linear infinite;
+}
+
+/* Glass Surface Effects */
+.glass-surface {
+  backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 32px 0 rgba(31, 38, 135, 0.37),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.glass-reflection {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.1) 25%,
+    transparent 50%,
+    transparent 75%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+}
+
+/* Split Text Animation */
+@keyframes bounce-once {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -10px, 0);
+  }
+  70% {
+    transform: translate3d(0, -5px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+.animate-bounce-once {
+  animation: bounce-once 0.6s ease-out;
+}
+
+/* Iridescent gradients */
+.bg-gradient-conic {
+  background: conic-gradient(from 0deg, #ff0080, #7928ca, #0070f3, #00dfd8, #ff0080);
+}
+
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
+}
+
+.bg-gradient-linear {
+  background: linear-gradient(45deg, var(--tw-gradient-stops));
+}
+
+/* Utility classes for better glass effect */
+.backdrop-saturate-150 {
+  backdrop-filter: saturate(1.5);
+}
+
+/* Enhanced glass morphism */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(31, 38, 135, 0.37),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Frosted glass effect */
+.frosted-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}

@@ -6,6 +6,14 @@
 @import "./styles/theme-particles.css";
 /* Import mobile enhancements */
 @import "./styles/mobile-enhancements.css";
+/* Import fuzzy text animation styles */
+@import "./styles/fuzzy-text.css";
+/* Import reactbits effects */
+@import "./styles/reactbits-effects.css";
+/* Import photo editor styles */
+@import "./styles/photo-editor.css";
+/* Import mobile photo editor styles */
+@import "./styles/mobile-photo-editor.css";
 
 @tailwind base;
 @tailwind components;
