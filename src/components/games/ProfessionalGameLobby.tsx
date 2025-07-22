@@ -441,19 +441,19 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
               <div className="text-2xl font-bold text-gray-900">
                 {games.length}
               </div>
-              <div className="text-sm text-gray-500">Total Games</div>
+              <SplitText text="Total Games" animation="fade" stagger={50} splitBy="char" trigger={true} className="text-sm text-gray-500" />
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">₹10L+</div>
-              <div className="text-sm text-gray-500">Total Prizes</div>
+              <SplitText text="Total Prizes" animation="fade" stagger={50} splitBy="char" trigger={true} className="text-sm text-gray-500" />
             </div>
             <div>
               <div className="text-2xl font-bold text-blue-600">5.2K+</div>
-              <div className="text-sm text-gray-500">Active Players</div>
+              <SplitText text="Active Players" animation="fade" stagger={50} splitBy="char" trigger={true} className="text-sm text-gray-500" />
             </div>
             <div>
               <div className="text-2xl font-bold text-purple-600">24/7</div>
-              <div className="text-sm text-gray-500">Support</div>
+              <SplitText text="Support" animation="fade" stagger={50} splitBy="char" trigger={true} className="text-sm text-gray-500" />
             </div>
           </div>
         </div>
