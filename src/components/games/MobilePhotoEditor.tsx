@@ -651,7 +651,7 @@ export const MobilePhotoEditor: React.FC<MobilePhotoEditorProps> = ({ onClose })
             className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
             onClick={() => setShowBottomSheet(false)}
           />
-          <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl z-50 max-h-[70vh] overflow-hidden">
+          <div className="fixed bottom-0 left-0 right-0 glass-panel rounded-t-3xl app-shadow-xl z-50 max-h-[70vh] overflow-hidden bottom-sheet-enter safe-area-bottom">
             <div className="p-4 border-b border-gray-200 flex items-center justify-between">
               <h3 className="font-semibold text-gray-900 capitalize">{currentTool}</h3>
               <Button
