@@ -186,7 +186,7 @@ export const AdvancedPhotoEditor: React.FC<AdvancedPhotoEditorProps> = ({ onClos
     { id: "crop", label: "Crop", icon: Crop, color: "green" },
     { id: "brush", label: "Brush", icon: Brush, color: "red" },
     { id: "text", label: "Text", icon: Type, color: "indigo" },
-    { id: "shapes", label: "Shapes", icon: Shapes, color: "pink" },
+    { id: "shapes", label: "Shapes", icon: Square, color: "pink" },
     { id: "ai", label: "AI Tools", icon: Cpu, color: "cyan" },
     { id: "music", label: "Music", icon: Music, color: "orange" },
   ];
