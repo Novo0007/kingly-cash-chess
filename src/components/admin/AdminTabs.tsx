@@ -5,6 +5,7 @@ import { AdminSettings } from "./AdminSettings";
 import { SystemOverview } from "./SystemOverview";
 import { UserManagement } from "./UserManagement";
 import { GameManagement } from "./GameManagement";
+import { TournamentManagement } from "./TournamentManagement";
 import { PaymentManagement } from "./PaymentManagement";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -37,7 +38,7 @@ export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps)
 
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="space-y-4">
-      <TabsList className="grid w-full grid-cols-6 bg-amber-100/50 border border-amber-200/50">
+      <TabsList className="grid w-full grid-cols-7 bg-amber-100/50 border border-amber-200/50">
         <TabsTrigger 
           value="overview" 
           className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
@@ -60,6 +61,15 @@ export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps)
             className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
           >
             Games
+          </TabsTrigger>
+        )}
+        
+        {canManageGames && (
+          <TabsTrigger 
+            value="tournaments" 
+            className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
+          >
+            Tournaments
           </TabsTrigger>
         )}
         
@@ -102,6 +112,12 @@ export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps)
       {canManageGames && (
         <TabsContent value="games">
           <GameManagement adminUser={adminUser} />
+        </TabsContent>
+      )}
+      
+      {canManageGames && (
+        <TabsContent value="tournaments">
+          <TournamentManagement />
         </TabsContent>
       )}
       

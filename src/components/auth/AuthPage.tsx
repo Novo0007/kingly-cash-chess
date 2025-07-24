@@ -1,63 +1,80 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Eye, EyeOff, Mail, Lock, User, GamepadIcon } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Crown, Zap, Sparkles, Heart, Star } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useNavigate } from "react-router-dom";
 
-export const AuthPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const [fullName, setFullName] = useState("");
+export const AuthPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [activeTab, setActiveTab] = useState("signin");
-  const { currentTheme } = useTheme();
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    username: "",
+    fullName: "",
+  });
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 300);
-    return () => clearTimeout(timer);
-  }, []);
+    // Check if user is already logged in
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/");
+      }
+    };
+    checkAuth();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        navigate("/");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    if (!formData.email || !formData.password || !formData.username) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
 
     try {
+      setLoading(true);
+      const redirectUrl = `${window.location.origin}/`;
+      
       const { error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: formData.email,
+        password: formData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: redirectUrl,
           data: {
-            username,
-            full_name: fullName,
+            username: formData.username,
+            full_name: formData.fullName,
           },
         },
       });
 
       if (error) {
-        toast.error(error.message);
+        if (error.message.includes("User already registered")) {
+          toast.error("An account with this email already exists. Please sign in instead.");
+        } else {
+          toast.error(error.message);
+        }
       } else {
-        toast.success(
-          "✨ Welcome to our magical world! Please check your email.",
-        );
+        toast.success("Account created successfully! Please check your email to verify your account.");
       }
-    } catch (networkError) {
-      console.warn("Network error during sign up:", networkError);
-      toast.error(
-        "Connection error. Please check your internet and try again.",
-      );
+    } catch (error) {
+      console.error("Error signing up:", error);
+      toast.error("Failed to create account");
     } finally {
       setLoading(false);
     }
@@ -65,436 +82,202 @@ export const AuthPage = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    if (!formData.email || !formData.password) {
+      toast.error("Please enter both email and password");
+      return;
+    }
 
     try {
+      setLoading(true);
       const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: formData.email,
+        password: formData.password,
       });
 
       if (error) {
-        toast.error(error.message);
+        if (error.message.includes("Invalid login credentials")) {
+          toast.error("Invalid email or password. Please check your credentials.");
+        } else {
+          toast.error(error.message);
+        }
       } else {
-        toast.success("🎌 Welcome back, dear player! ✨");
+        toast.success("Signed in successfully!");
       }
-    } catch (networkError) {
-      console.warn("Network error during sign in:", networkError);
-      toast.error(
-        "Connection error. Please check your internet and try again.",
-      );
+    } catch (error) {
+      console.error("Error signing in:", error);
+      toast.error("Failed to sign in");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleInputChange = (field: keyof typeof formData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
   return (
-    <div
-      className={`min-h-screen relative overflow-hidden flex items-center justify-center p-4 bg-gradient-to-br ${currentTheme.gradients.primary} via-${currentTheme.gradients.secondary} to-${currentTheme.gradients.accent}`}
-    >
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Floating particles */}
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute text-2xl opacity-30 animate-bounce"
-            style={{
-              animationDelay: `${i * 0.5}s`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDuration: "3s",
-            }}
-          >
-            {currentTheme.id.includes("love") ||
-            currentTheme.id.includes("sakura")
-              ? "🌸"
-              : "✨"}
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm shadow-2xl">
+        <CardHeader className="text-center space-y-4">
+          <div className="flex items-center justify-center gap-3">
+            <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full">
+              <GamepadIcon className="h-8 w-8 text-white" />
+            </div>
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Gaming Arena
+            </CardTitle>
           </div>
-        ))}
-
-        {/* Background shapes */}
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-pink-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "2s" }}
-        ></div>
-      </div>
-
-      {/* Main Auth Card */}
-      <Card
-        className={`w-full max-w-md mx-4 relative z-10 backdrop-blur-xl bg-white/90 border border-white/20 shadow-2xl transition-all duration-1000 ${
-          isLoaded
-            ? "opacity-100 translate-y-0 scale-100"
-            : "opacity-0 translate-y-8 scale-95"
-        } ${
-          currentTheme.id.includes("dark") ||
-          currentTheme.id.includes("midnight") ||
-          currentTheme.id.includes("neon") ||
-          currentTheme.id.includes("cosmic")
-            ? "bg-black/80 text-white"
-            : "bg-white/90 text-gray-800"
-        }`}
-      >
-        <CardHeader className="text-center space-y-6 relative z-10">
-          {/* Animated logo section */}
-          <div
-            className={`flex items-center justify-center gap-3 transition-all duration-700 ${isLoaded ? "scale-100" : "scale-75"}`}
-          >
-            <div className="relative">
-              <div
-                className={`absolute -inset-2 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full blur-lg opacity-60 animate-pulse`}
-              ></div>
-              <div
-                className={`relative w-12 h-12 bg-gradient-to-r ${currentTheme.gradients.primary} rounded-full flex items-center justify-center shadow-xl`}
-              >
-                <Crown
-                  className="h-6 w-6 text-white animate-bounce"
-                  style={{ animationDuration: "2s" }}
-                />
-              </div>
-            </div>
-
-            <div>
-              <h1
-                className={`text-3xl font-black bg-gradient-to-r ${currentTheme.gradients.primary} bg-clip-text text-transparent`}
-              >
-                GameCastle
-              </h1>
-              <div className="flex items-center justify-center gap-1 mt-1">
-                <Sparkles className="h-3 w-3 text-yellow-400 animate-pulse" />
-                <span className="text-xs font-medium text-muted-foreground">
-                  Where dreams come true
-                </span>
-                <Sparkles
-                  className="h-3 w-3 text-yellow-400 animate-pulse"
-                  style={{ animationDelay: "0.5s" }}
-                />
-              </div>
-            </div>
-
-            <div className="relative">
-              <div
-                className={`absolute -inset-2 bg-gradient-to-r ${currentTheme.gradients.secondary} rounded-full blur-lg opacity-60 animate-pulse`}
-              ></div>
-              <div
-                className={`relative w-12 h-12 bg-gradient-to-r ${currentTheme.gradients.accent} rounded-full flex items-center justify-center shadow-xl`}
-              >
-                {currentTheme.id.includes("love") ||
-                currentTheme.id.includes("sakura") ? (
-                  <Heart className="h-6 w-6 text-white animate-pulse" />
-                ) : currentTheme.id.includes("dream") ||
-                  currentTheme.id.includes("cosmic") ? (
-                  <Star
-                    className="h-6 w-6 text-white animate-spin"
-                    style={{ animationDuration: "3s" }}
-                  />
-                ) : (
-                  <Zap
-                    className="h-6 w-6 text-white animate-bounce"
-                    style={{ animationDuration: "1.5s" }}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-
-          <CardDescription
-            className={`text-base ${
-              currentTheme.id.includes("dark") ||
-              currentTheme.id.includes("midnight") ||
-              currentTheme.id.includes("neon") ||
-              currentTheme.id.includes("cosmic")
-                ? "text-gray-300"
-                : "text-gray-600"
-            }`}
-          >
-            ✨ Enter a world where legends are born and dreams become reality!
-            ✨
-          </CardDescription>
-
-          {/* Character indicators */}
-          <div className="flex justify-center gap-2">
-            <div
-              className="text-2xl animate-bounce"
-              style={{ animationDelay: "0s" }}
-            >
-              🎮
-            </div>
-            <div
-              className="text-2xl animate-bounce"
-              style={{ animationDelay: "0.3s" }}
-            >
-              👑
-            </div>
-            <div
-              className="text-2xl animate-bounce"
-              style={{ animationDelay: "0.6s" }}
-            >
-              ✨
-            </div>
-          </div>
+          <p className="text-gray-600">Join the ultimate gaming experience</p>
         </CardHeader>
 
-        <CardContent className="relative z-10">
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
-          >
-            <TabsList
-              className={`grid w-full grid-cols-2 rounded-xl p-1 ${
-                currentTheme.id.includes("dark") ||
-                currentTheme.id.includes("midnight") ||
-                currentTheme.id.includes("neon") ||
-                currentTheme.id.includes("cosmic")
-                  ? "bg-gray-800/50"
-                  : "bg-gray-100/80"
-              }`}
-            >
-              <TabsTrigger
-                value="signin"
-                className={`text-sm font-semibold transition-all duration-300 rounded-lg ${
-                  activeTab === "signin"
-                    ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-lg transform scale-105`
-                    : currentTheme.id.includes("dark") ||
-                        currentTheme.id.includes("midnight") ||
-                        currentTheme.id.includes("neon") ||
-                        currentTheme.id.includes("cosmic")
-                      ? "text-gray-300 hover:text-white"
-                      : "text-gray-600 hover:text-gray-800"
-                }`}
-              >
-                💫 Sign In
-              </TabsTrigger>
-              <TabsTrigger
-                value="signup"
-                className={`text-sm font-semibold transition-all duration-300 rounded-lg ${
-                  activeTab === "signup"
-                    ? `bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-lg transform scale-105`
-                    : currentTheme.id.includes("dark") ||
-                        currentTheme.id.includes("midnight") ||
-                        currentTheme.id.includes("neon") ||
-                        currentTheme.id.includes("cosmic")
-                      ? "text-gray-300 hover:text-white"
-                      : "text-gray-600 hover:text-gray-800"
-                }`}
-              >
-                ✨ Sign Up
-              </TabsTrigger>
+        <CardContent>
+          <Tabs defaultValue="signin" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="signin">Sign In</TabsTrigger>
+              <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="signin" className="space-y-6 mt-6">
+            <TabsContent value="signin" className="space-y-4 mt-6">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Input
-                    type="email"
-                    placeholder="✨ Email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    autoComplete="email"
-                    className={`w-full h-12 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
-                      currentTheme.id.includes("dark") ||
-                      currentTheme.id.includes("midnight") ||
-                      currentTheme.id.includes("neon") ||
-                      currentTheme.id.includes("cosmic")
-                        ? "bg-gray-800/70 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
-                        : "bg-white/90 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
-                    } focus:outline-none shadow-lg`}
-                  />
+                  <Label htmlFor="signin-email">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="signin-email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      className="pl-10"
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Input
-                    type="password"
-                    placeholder="🔮 Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    autoComplete="current-password"
-                    className={`w-full h-12 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
-                      currentTheme.id.includes("dark") ||
-                      currentTheme.id.includes("midnight") ||
-                      currentTheme.id.includes("neon") ||
-                      currentTheme.id.includes("cosmic")
-                        ? "bg-gray-800/70 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
-                        : "bg-white/90 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
-                    } focus:outline-none shadow-lg`}
-                  />
+                  <Label htmlFor="signin-password">Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="signin-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={formData.password}
+                      onChange={(e) => handleInputChange("password", e.target.value)}
+                      className="pl-10 pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
 
                 <Button
                   type="submit"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                   disabled={loading}
-                  className={`w-full h-12 text-base font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.98] bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-xl hover:shadow-2xl relative overflow-hidden group`}
                 >
-                  <div className="relative flex items-center justify-center gap-2">
-                    {loading ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        <span>Entering...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="h-5 w-5" />
-                        <span>Enter the Magic World!</span>
-                        <Heart className="h-5 w-5" />
-                      </>
-                    )}
-                  </div>
+                  {loading ? "Signing In..." : "Sign In"}
                 </Button>
               </form>
             </TabsContent>
 
-            <TabsContent value="signup" className="space-y-6 mt-6">
+            <TabsContent value="signup" className="space-y-4 mt-6">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
-                  <Input
-                    type="text"
-                    placeholder="🎭 Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                    autoComplete="username"
-                    className={`w-full h-12 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
-                      currentTheme.id.includes("dark") ||
-                      currentTheme.id.includes("midnight") ||
-                      currentTheme.id.includes("neon") ||
-                      currentTheme.id.includes("cosmic")
-                        ? "bg-gray-800/70 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
-                        : "bg-white/90 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
-                    } focus:outline-none shadow-lg`}
-                  />
+                  <Label htmlFor="signup-email">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="signup-email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      className="pl-10"
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Input
-                    type="text"
-                    placeholder="👑 Full Name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    autoComplete="name"
-                    className={`w-full h-12 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
-                      currentTheme.id.includes("dark") ||
-                      currentTheme.id.includes("midnight") ||
-                      currentTheme.id.includes("neon") ||
-                      currentTheme.id.includes("cosmic")
-                        ? "bg-gray-800/70 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
-                        : "bg-white/90 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
-                    } focus:outline-none shadow-lg`}
-                  />
+                  <Label htmlFor="signup-username">Username</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="signup-username"
+                      type="text"
+                      placeholder="Choose a username"
+                      value={formData.username}
+                      onChange={(e) => handleInputChange("username", e.target.value)}
+                      className="pl-10"
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Input
-                    type="email"
-                    placeholder="✨ Email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    autoComplete="email"
-                    className={`w-full h-12 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
-                      currentTheme.id.includes("dark") ||
-                      currentTheme.id.includes("midnight") ||
-                      currentTheme.id.includes("neon") ||
-                      currentTheme.id.includes("cosmic")
-                        ? "bg-gray-800/70 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
-                        : "bg-white/90 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
-                    } focus:outline-none shadow-lg`}
-                  />
+                  <Label htmlFor="signup-fullname">Full Name (Optional)</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="signup-fullname"
+                      type="text"
+                      placeholder="Enter your full name"
+                      value={formData.fullName}
+                      onChange={(e) => handleInputChange("fullName", e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Input
-                    type="password"
-                    placeholder="🔮 Create password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    autoComplete="new-password"
-                    className={`w-full h-12 px-4 text-base rounded-xl border-2 transition-all duration-300 ${
-                      currentTheme.id.includes("dark") ||
-                      currentTheme.id.includes("midnight") ||
-                      currentTheme.id.includes("neon") ||
-                      currentTheme.id.includes("cosmic")
-                        ? "bg-gray-800/70 border-gray-600 text-white placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
-                        : "bg-white/90 border-gray-300 text-gray-900 placeholder:text-gray-500 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20"
-                    } focus:outline-none shadow-lg`}
-                  />
+                  <Label htmlFor="signup-password">Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="signup-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Create a password"
+                      value={formData.password}
+                      onChange={(e) => handleInputChange("password", e.target.value)}
+                      className="pl-10 pr-10"
+                      required
+                      minLength={6}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
 
                 <Button
                   type="submit"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                   disabled={loading}
-                  className={`w-full h-12 text-base font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.98] bg-gradient-to-r ${currentTheme.gradients.primary} text-white shadow-xl hover:shadow-2xl relative overflow-hidden group`}
                 >
-                  <div className="relative flex items-center justify-center gap-2">
-                    {loading ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        <span>Creating...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Star className="h-5 w-5" />
-                        <span>Begin Your Adventure!</span>
-                        <Sparkles className="h-5 w-5" />
-                      </>
-                    )}
-                  </div>
+                  {loading ? "Creating Account..." : "Sign Up"}
                 </Button>
               </form>
             </TabsContent>
           </Tabs>
 
-          {/* Footer message */}
-          <div className="text-center mt-6 space-y-2">
-            <p
-              className={`text-xs ${
-                currentTheme.id.includes("dark") ||
-                currentTheme.id.includes("midnight") ||
-                currentTheme.id.includes("neon") ||
-                currentTheme.id.includes("cosmic")
-                  ? "text-gray-400"
-                  : "text-gray-500"
-              }`}
-            >
-              By joining us, you agree to spread joy and have fun! 🎮✨
-            </p>
-            <div className="flex justify-center gap-2 text-lg">
-              <span className="animate-pulse">💖</span>
-              <span
-                className="animate-pulse"
-                style={{ animationDelay: "0.5s" }}
-              >
-                🌟
-              </span>
-              <span className="animate-pulse" style={{ animationDelay: "1s" }}>
-                🎯
-              </span>
-            </div>
+          <div className="mt-6 text-center text-sm text-gray-600">
+            <p>🎮 Join millions of players worldwide</p>
+            <p className="mt-1">🏆 Compete in tournaments and win real prizes</p>
           </div>
         </CardContent>
       </Card>
-
-      {/* Additional floating elements */}
-      <div
-        className="absolute bottom-4 left-4 sm:bottom-10 sm:left-10 text-4xl sm:text-6xl opacity-20 animate-bounce"
-        style={{ animationDuration: "3s" }}
-      >
-        {currentTheme.id.includes("love") || currentTheme.id.includes("sakura")
-          ? "🌸"
-          : "✨"}
-      </div>
-      <div
-        className="absolute top-4 right-4 sm:top-10 sm:right-10 text-4xl sm:text-6xl opacity-20 animate-bounce"
-        style={{ animationDuration: "4s", animationDelay: "1s" }}
-      >
-        {currentTheme.id.includes("love") || currentTheme.id.includes("sakura")
-          ? "💖"
-          : "🌟"}
-      </div>
     </div>
   );
 };

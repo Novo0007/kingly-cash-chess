@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Trophy,
   Clock,
@@ -23,6 +24,7 @@ import {
 import type { Tournament } from "@/utils/tournamentDbHelper";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { TournamentRewards } from "@/components/tournaments/TournamentRewards";
 
 export const SimpleTournamentSection: React.FC = () => {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
@@ -246,8 +248,15 @@ export const SimpleTournamentSection: React.FC = () => {
         </Card>
       </div>
 
-      {/* Tournament List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Tabs defaultValue="tournaments" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
+          <TabsTrigger value="rewards">My Rewards</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="tournaments" className="space-y-6">
+          {/* Tournament List */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tournaments.length === 0 ? (
           <Card className="md:col-span-2 lg:col-span-3">
             <CardContent className="p-8 text-center">
@@ -421,7 +430,13 @@ export const SimpleTournamentSection: React.FC = () => {
             );
           })
         )}
-      </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="rewards">
+          <TournamentRewards />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
