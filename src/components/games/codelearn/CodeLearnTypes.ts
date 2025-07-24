@@ -44,9 +44,14 @@ export interface Exercise {
     | "code-completion"
     | "debug"
     | "write-function"
-    | "match-pairs";
+    | "match-pairs"
+    | "code";
   question: string;
   code?: string;
+  codeSnippet?: string;
+  language?: string;
+  expectedOutput?: string;
+  hints?: string[];
   options?: string[];
   correctAnswer: string | string[];
   explanation?: string;
@@ -289,6 +294,12 @@ export interface CodeLearnGameState {
   isLoading: boolean;
   showHints: boolean;
   showExplanation: boolean;
+}
+
+export interface CodeLearnProgressManager {
+  calculateXpForLevel: (level: number) => number;
+  calculateCoinReward: (difficulty: number) => number;
+  updateProgress: (userId: string, xpGained: number, coinsGained: number) => void;
 }
 
 // Study Materials

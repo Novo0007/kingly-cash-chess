@@ -116,6 +116,92 @@ export type Database = {
         }
         Relationships: []
       }
+      fourpics_coin_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          hint_type: string | null
+          id: string
+          level_id: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description: string
+          hint_type?: string | null
+          id?: string
+          level_id?: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          hint_type?: string | null
+          id?: string
+          level_id?: string | null
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fourpics_coin_transactions_level_id_fkey"
+            columns: ["level_id"]
+            isOneToOne: false
+            referencedRelation: "fourpics_levels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fourpics_levels: {
+        Row: {
+          category: string
+          coins_reward: number
+          created_at: string
+          difficulty: number
+          hint_image_cost: number
+          hint_letter_cost: number
+          hint_word_cost: number
+          id: string
+          images: Json
+          level_number: number
+          updated_at: string
+          word: string
+        }
+        Insert: {
+          category?: string
+          coins_reward?: number
+          created_at?: string
+          difficulty?: number
+          hint_image_cost?: number
+          hint_letter_cost?: number
+          hint_word_cost?: number
+          id?: string
+          images?: Json
+          level_number: number
+          updated_at?: string
+          word: string
+        }
+        Update: {
+          category?: string
+          coins_reward?: number
+          created_at?: string
+          difficulty?: number
+          hint_image_cost?: number
+          hint_letter_cost?: number
+          hint_word_cost?: number
+          id?: string
+          images?: Json
+          level_number?: number
+          updated_at?: string
+          word?: string
+        }
+        Relationships: []
+      }
       fourpics_progress: {
         Row: {
           created_at: string | null
@@ -157,6 +243,59 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      fourpics_scores: {
+        Row: {
+          attempts: number
+          coins_earned: number
+          coins_spent: number
+          completed_at: string
+          created_at: string
+          hints_used: Json
+          id: string
+          level_id: string
+          level_number: number
+          time_taken: number
+          user_id: string
+          word: string
+        }
+        Insert: {
+          attempts?: number
+          coins_earned?: number
+          coins_spent?: number
+          completed_at?: string
+          created_at?: string
+          hints_used?: Json
+          id?: string
+          level_id: string
+          level_number: number
+          time_taken?: number
+          user_id: string
+          word: string
+        }
+        Update: {
+          attempts?: number
+          coins_earned?: number
+          coins_spent?: number
+          completed_at?: string
+          created_at?: string
+          hints_used?: Json
+          id?: string
+          level_id?: string
+          level_number?: number
+          time_taken?: number
+          user_id?: string
+          word?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fourpics_scores_level_id_fkey"
+            columns: ["level_id"]
+            isOneToOne: false
+            referencedRelation: "fourpics_levels"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       friendships: {
         Row: {
@@ -242,6 +381,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      game2048_scores: {
+        Row: {
+          board_size: number
+          completed_at: string
+          created_at: string
+          difficulty: string
+          id: string
+          moves: number
+          score: number
+          target_reached: number
+          time_taken: number
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          board_size?: number
+          completed_at?: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          moves?: number
+          score?: number
+          target_reached?: number
+          time_taken?: number
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          board_size?: number
+          completed_at?: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          moves?: number
+          score?: number
+          target_reached?: number
+          time_taken?: number
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
       }
       global_chat: {
         Row: {
