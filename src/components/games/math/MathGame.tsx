@@ -798,7 +798,7 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
               </Badge>
             ) : (
               <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs">
-                {gameState.difficulty} • {gameState.gameMode}
+                {(gameState as MathGameState).difficulty} • {(gameState as MathGameState).gameMode}
               </Badge>
             )}
           </div>
@@ -829,7 +829,7 @@ export const MathGame: React.FC<MathGameProps> = ({ onBack, user }) => {
         {/* Game Board - Full Width */}
         <div className="w-full">
           <MathGameBoard
-            gameState={gameState}
+            gameState={gameState as MathGameState}
             onAnswer={handleAnswer}
             onUseHint={handleUseHint}
             onSkipQuestion={handleSkipQuestion}

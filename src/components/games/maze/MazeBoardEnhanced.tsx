@@ -176,7 +176,31 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
   const handleMove = (direction: "up" | "down" | "left" | "right") => {
     if (disabled || gameState.gameStatus !== "playing" || isPaused) return;
 
-    const newPosition = MazeGameLogic.movePlayer(gameState, direction);
+    const newPosition = { ...gameState.playerPosition };
+    
+    // Simple movement logic
+    switch (direction) {
+      case "up":
+        if (newPosition.x > 0 && !gameState.maze[newPosition.x - 1][newPosition.y].isWall) {
+          newPosition.x -= 1;
+        }
+        break;
+      case "down":
+        if (newPosition.x < gameState.maze.length - 1 && !gameState.maze[newPosition.x + 1][newPosition.y].isWall) {
+          newPosition.x += 1;
+        }
+        break;
+      case "left":
+        if (newPosition.y > 0 && !gameState.maze[newPosition.x][newPosition.y - 1].isWall) {
+          newPosition.y -= 1;
+        }
+        break;
+      case "right":
+        if (newPosition.y < gameState.maze[newPosition.x].length - 1 && !gameState.maze[newPosition.x][newPosition.y + 1].isWall) {
+          newPosition.y += 1;
+        }
+        break;
+    }
 
     if (
       newPosition.x !== gameState.playerPosition.x ||
@@ -190,12 +214,7 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
         newPosition.y === gameState.endPosition.y
       ) {
         const timeTaken = Math.floor((Date.now() - gameState.startTime) / 1000);
-        const score = MazeGameLogic.calculateScore(
-          gameState.difficulty,
-          timeTaken,
-          moves + 1,
-          gameState.size,
-        );
+        const score = Math.max(1000 - timeTaken - moves, 100);
 
         toast.success("🎉 Maze completed! Excellent work!");
         onGameComplete(score, timeTaken);
@@ -233,7 +252,7 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
   }, [handleKeyPress]);
 
   const renderMazeCell = (x: number, y: number) => {
-    const isWall = gameState.maze[x][y] === 1;
+    const isWall = gameState.maze[x][y].isWall;
     const isPlayer =
       x === gameState.playerPosition.x && y === gameState.playerPosition.y;
     const isEnd =
@@ -315,7 +334,7 @@ export const MazeBoardEnhanced: React.FC<MazeBoardEnhancedProps> = ({
         >
           {gameState.maze.map((row, x) =>
             row.map((cell, y) => {
-              const isWall = cell === 1;
+              const isWall = cell.isWall;
               const isPlayer =
                 x === gameState.playerPosition.x &&
                 y === gameState.playerPosition.y;

@@ -471,8 +471,7 @@ export const CodeLearnGame: React.FC<CodeLearnGameProps> = ({
         {currentView === "leaderboard" && (
           <CodeLearnLeaderboard
             currentUserId={user?.id}
-            userProgress={userProgress}
-            onBack={handleBackToLanguages}
+            onBack={() => setCurrentView("languages")}
           />
         )}
 

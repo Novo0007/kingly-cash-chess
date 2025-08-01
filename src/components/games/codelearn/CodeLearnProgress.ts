@@ -435,6 +435,19 @@ export class CodeLearnProgressManager {
     return { current, goal, percentage };
   }
 
+  public calculateXpForLevel(level: number): number {
+    // Calculate XP needed for a specific level
+    let totalXP = 0;
+    let increment = 100;
+    
+    for (let i = 1; i < level; i++) {
+      totalXP += increment;
+      increment = Math.floor(increment * 1.2);
+    }
+    
+    return totalXP;
+  }
+
   private recordCoinTransaction(transaction: CoinTransaction): void {
     try {
       const transactions = this.getCoinTransactions();

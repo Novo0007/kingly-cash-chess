@@ -23,6 +23,7 @@ export interface Game2048State {
   difficulty: "classic" | "challenge" | "expert";
   boardSize: number;
   targetTile: number;
+  timeElapsed?: number;
 }
 
 export interface Game2048Score {

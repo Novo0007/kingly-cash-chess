@@ -216,7 +216,9 @@ export const CodeLearnLessonView: React.FC<CodeLearnLessonViewProps> = ({
     }
 
     const userAnswer = exerciseAnswers[currentExercise.id].trim().toLowerCase();
-    const correctAnswers = currentExercise.expectedOutput || [];
+    const correctAnswers = Array.isArray(currentExercise.expectedOutput) 
+      ? currentExercise.expectedOutput 
+      : [currentExercise.expectedOutput].filter(Boolean);
     const isCorrect = correctAnswers.some(
       (answer) =>
         answer.toLowerCase().trim() === userAnswer ||

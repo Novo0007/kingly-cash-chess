@@ -298,8 +298,12 @@ export interface CodeLearnGameState {
 
 export interface CodeLearnProgressManager {
   calculateXpForLevel: (level: number) => number;
-  calculateCoinReward: (difficulty: number) => number;
+  calculateCoinReward: (exercisePoints: number, accuracy: number, timeBonus?: boolean, streakMultiplier?: number) => CoinReward;
   updateProgress: (userId: string, xpGained: number, coinsGained: number) => void;
+  getXPForNextLevel: (currentXP: number) => { current: number; needed: number; total: number; };
+  getDailyGoalProgress: () => { current: number; goal: number; percentage: number; };
+  getStreakInfo: () => { current: number; longest: number; daysUntilMilestone: number; };
+  getUnlockedAchievements: () => Achievement[];
 }
 
 // Study Materials

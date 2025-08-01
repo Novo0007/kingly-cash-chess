@@ -25,6 +25,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 
 interface CodeLearnLeaderboardProps {
   currentUserId?: string;
+  onBack?: () => void;
   onClose?: () => void;
 }
 
@@ -33,6 +34,7 @@ type TimePeriod = "daily" | "weekly" | "monthly" | "all-time";
 
 export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
   currentUserId,
+  onBack,
   onClose,
 }) => {
   const { currentTheme } = useTheme();
@@ -297,9 +299,9 @@ export const CodeLearnLeaderboard: React.FC<CodeLearnLeaderboardProps> = ({
                   className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
                 />
               </Button>
-              {onClose && (
-                <Button onClick={onClose} variant="outline" size="sm">
-                  Close
+              {(onClose || onBack) && (
+                <Button onClick={onClose || onBack} variant="outline" size="sm">
+                  {onClose ? "Close" : "Back"}
                 </Button>
               )}
             </div>

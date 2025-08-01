@@ -362,7 +362,7 @@ export const MathLevelSelector: React.FC<MathLevelSelectorProps> = ({
 
         {progress.currentLevel <= 99 && (
           <Button
-            onClick={() => handleLevelSelect(progress.currentLevel)}
+            onClick={() => handleLevelSelect(progress.currentLevel as any)}
             className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
           >
             <Play className="h-4 w-4 mr-2" />
