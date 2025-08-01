@@ -2,11 +2,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminInvitations } from "./AdminInvitations";
 import { AdminSettings } from "./AdminSettings";
+import { WalletSettings } from "./WalletSettings";
 import { SystemOverview } from "./SystemOverview";
 import { UserManagement } from "./UserManagement";
 import { GameManagement } from "./GameManagement";
 import { TournamentManagement } from "./TournamentManagement";
 import { PaymentManagement } from "./PaymentManagement";
+import { Settings, Wallet } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type AdminUser = Tables<"admin_users">;
@@ -38,7 +40,7 @@ export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps)
 
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="space-y-4">
-      <TabsList className="grid w-full grid-cols-7 bg-amber-100/50 border border-amber-200/50">
+      <TabsList className="grid w-full grid-cols-8 bg-amber-100/50 border border-amber-200/50">
         <TabsTrigger 
           value="overview" 
           className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
@@ -97,6 +99,13 @@ export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps)
         >
           Settings
         </TabsTrigger>
+        
+        <TabsTrigger 
+          value="wallet" 
+          className="data-[state=active]:bg-amber-200/80 data-[state=active]:text-amber-900"
+        >
+          Wallet
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="overview">
@@ -135,6 +144,10 @@ export const AdminTabs = ({ adminUser, activeTab, onTabChange }: AdminTabsProps)
 
       <TabsContent value="settings">
         <AdminSettings adminUser={adminUser} />
+      </TabsContent>
+
+      <TabsContent value="wallet">
+        <WalletSettings adminUser={adminUser} />
       </TabsContent>
     </Tabs>
   );

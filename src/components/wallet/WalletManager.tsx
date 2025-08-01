@@ -12,8 +12,10 @@ import {
   History,
   DollarSign,
   RefreshCw,
+  Coins,
 } from "lucide-react";
 import { WithdrawalForm } from "./WithdrawalForm";
+import { CoinTopUpSystem } from "./CoinTopUpSystem";
 import { useDeviceType } from "@/hooks/use-mobile";
 import { MobileContainer } from "@/components/layout/MobileContainer";
 import type { Tables } from "@/integrations/supabase/types";
@@ -32,6 +34,8 @@ export const WalletManager = () => {
     open: false,
     amount: 0,
   });
+  const [userCoins, setUserCoins] = useState(0);
+  const [withdrawalEnabled, setWithdrawalEnabled] = useState(true);
 
   const { isMobile, isTablet } = useDeviceType();
 
@@ -95,6 +99,43 @@ export const WalletManager = () => {
     }
   }, []);
 
+  const fetchUserCoins = useCallback(async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase.rpc("get_user_coins" as any, {
+        target_user_id: user.id,
+      });
+
+      if (error) {
+        console.error("Error fetching user coins:", error);
+      } else {
+        setUserCoins((data as any)?.coins_balance || 0);
+      }
+    } catch (error) {
+      console.error("Unexpected error fetching coins:", error);
+    }
+  }, []);
+
+  const fetchWithdrawalSettings = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from("admin_settings" as any)
+        .select("setting_value")
+        .eq("setting_key", "withdrawal_enabled")
+        .single();
+
+      if (error) {
+        console.error("Error fetching withdrawal settings:", error);
+      } else {
+        setWithdrawalEnabled((data as any).setting_value === "true" || (data as any).setting_value === true);
+      }
+    } catch (error) {
+      console.error("Error fetching withdrawal settings:", error);
+    }
+  }, []);
+
   const createWallet = async (userId: string) => {
     try {
       console.log("Creating wallet for user:", userId);
@@ -128,7 +169,7 @@ export const WalletManager = () => {
       setInitialLoading(true);
       
       try {
-        await Promise.all([fetchWallet(), fetchTransactions()]);
+        await Promise.all([fetchWallet(), fetchTransactions(), fetchUserCoins(), fetchWithdrawalSettings()]);
       } catch (error) {
         console.error("Initialization error:", error);
       } finally {
@@ -137,7 +178,7 @@ export const WalletManager = () => {
     };
 
     initializeWallet();
-  }, [fetchWallet, fetchTransactions]);
+  }, [fetchWallet, fetchTransactions, fetchUserCoins, fetchWithdrawalSettings]);
 
   // Real-time subscriptions with optimized channels
   useEffect(() => {
@@ -564,14 +605,16 @@ export const WalletManager = () => {
                 <ArrowDownLeft className="h-4 w-4 mr-2" />
                 {loading ? "Processing..." : "Add Money (Razorpay)"}
               </Button>
-              <Button
-                onClick={handleWithdrawClick}
-                disabled={loading}
-                className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg"
-              >
-                <ArrowUpRight className="h-4 w-4 mr-2" />
-                Withdraw (-20% fee)
-              </Button>
+              {withdrawalEnabled && (
+                <Button
+                  onClick={handleWithdrawClick}
+                  disabled={loading}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg"
+                >
+                  <ArrowUpRight className="h-4 w-4 mr-2" />
+                  Withdraw (-20% fee)
+                </Button>
+              )}
             </div>
 
             <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
@@ -582,6 +625,12 @@ export const WalletManager = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Coin Top-Up System */}
+        <CoinTopUpSystem 
+          userCoins={userCoins} 
+          onCoinsUpdated={(newBalance) => setUserCoins(newBalance)} 
+        />
 
         {/* Transaction History */}
         <Card className={`${cardGradient} ${animationClass} border-purple-600/30`}>
