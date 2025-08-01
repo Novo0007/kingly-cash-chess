@@ -55,7 +55,16 @@ export async function getFourPicsLevels(
       };
     }
 
-    return { success: true, data: data || [] };
+    return { 
+      success: true, 
+      data: (data || []).map(level => ({
+        ...level,
+        image_urls: Array.isArray(level.images) ? level.images as string[] : [],
+        difficulty: level.difficulty === 1 ? "easy" as const : 
+                   level.difficulty === 2 ? "medium" as const : 
+                   "hard" as const
+      }))
+    };
   } catch (error) {
     console.error("Unexpected error fetching 4 Pics levels:", error);
     return {
@@ -89,7 +98,16 @@ export async function getFourPicsLevel(
       };
     }
 
-    return { success: true, data };
+    return { 
+      success: true, 
+      data: {
+        ...data,
+        image_urls: Array.isArray(data.images) ? data.images as string[] : [],
+        difficulty: data.difficulty === 1 ? "easy" as const : 
+                   data.difficulty === 2 ? "medium" as const : 
+                   "hard" as const
+      }
+    };
   } catch (error) {
     console.error("Unexpected error fetching 4 Pics level:", error);
     return {
@@ -173,15 +191,16 @@ export async function completeFourPicsLevel(params: {
       return { success: false, error: error.message };
     }
 
-    if (!data.success) {
-      return { success: false, error: data.error };
+    const result = data as any;
+    if (!result.success) {
+      return { success: false, error: result.error };
     }
 
     return {
       success: true,
       data: {
-        coins_earned: data.coins_earned,
-        next_level: data.next_level,
+        coins_earned: result.coins_earned,
+        next_level: result.next_level,
       },
     };
   } catch (error) {
@@ -211,15 +230,16 @@ export async function recordFourPicsHint(
       return { success: false, error: error.message };
     }
 
-    if (!data.success) {
-      return { success: false, error: data.error };
+    const result = data as any;
+    if (!result.success) {
+      return { success: false, error: result.error };
     }
 
     return {
       success: true,
       data: {
-        hint_cost: data.hint_cost,
-        hint_type: data.hint_type,
+        hint_cost: result.hint_cost,
+        hint_type: result.hint_type,
       },
     };
   } catch (error) {
@@ -254,7 +274,13 @@ export async function getFourPicsScores(
       return { success: false, error: error.message };
     }
 
-    return { success: true, data: data || [] };
+    return { 
+      success: true, 
+      data: (data || []).map(score => ({
+        ...score,
+        hints_used: Array.isArray(score.hints_used) ? score.hints_used as HintType[] : []
+      }))
+    };
   } catch (error) {
     console.error("Unexpected error fetching 4 Pics scores:", error);
     return {
@@ -290,7 +316,7 @@ export async function getFourPicsLeaderboard(): Promise<
         total_coins_earned,
         highest_level_reached,
         total_time_played,
-        profiles!inner(username, avatar_url)
+        profiles(username, avatar_url)
       `,
       )
       .order("highest_level_reached", { ascending: false })
@@ -303,7 +329,16 @@ export async function getFourPicsLeaderboard(): Promise<
       return { success: false, error: error.message };
     }
 
-    return { success: true, data: data || [] };
+    return { 
+      success: true, 
+      data: (data || []).map(item => ({
+        ...item,
+        profiles: {
+          username: (item.profiles as any)?.username || 'Anonymous',
+          avatar_url: (item.profiles as any)?.avatar_url || null
+        }
+      }))
+    };
   } catch (error) {
     console.error("Unexpected error fetching 4 Pics leaderboard:", error);
     return {
@@ -375,7 +410,7 @@ export async function purchaseFourPicsCoins(
     // Record the transaction
     await supabase.from("transactions").insert({
       user_id: userId,
-      transaction_type: "coin_purchase",
+      transaction_type: "deposit",
       amount: amount,
       status: "completed",
       description: `Purchased ${coinPackage} coin package for 4 Pics 1 Word`,
@@ -399,10 +434,11 @@ export async function getFourPicsLevelsByDifficulty(
   difficulty: "easy" | "medium" | "hard",
 ): Promise<FourPicsApiResult<FourPicsLevel[]>> {
   try {
+    const difficultyValue = difficulty === "easy" ? 1 : difficulty === "medium" ? 2 : 3;
     const { data, error } = await supabase
       .from("fourpics_levels")
       .select("*")
-      .eq("difficulty", difficulty)
+      .eq("difficulty", difficultyValue)
       .order("level_number", { ascending: true });
 
     if (error) {
@@ -410,7 +446,16 @@ export async function getFourPicsLevelsByDifficulty(
       return { success: false, error: error.message };
     }
 
-    return { success: true, data: data || [] };
+    return { 
+      success: true, 
+      data: (data || []).map(level => ({
+        ...level,
+        image_urls: Array.isArray(level.images) ? level.images as string[] : [],
+        difficulty: level.difficulty === 1 ? "easy" as const : 
+                   level.difficulty === 2 ? "medium" as const : 
+                   "hard" as const
+      }))
+    };
   } catch (error) {
     console.error(
       "Unexpected error fetching 4 Pics levels by difficulty:",

@@ -15,7 +15,21 @@ export async function checkFourPicsDatabase(): Promise<{
     use_fourpics_hint: boolean;
   };
 }> {
-  const result = {
+  const result: {
+    isSetup: boolean;
+    error?: string;
+    tables: {
+      fourpics_levels: boolean;
+      fourpics_progress: boolean;
+      fourpics_scores: boolean;
+      fourpics_coin_transactions: boolean;
+    };
+    functions: {
+      get_fourpics_progress: boolean;
+      complete_fourpics_level: boolean;
+      use_fourpics_hint: boolean;
+    };
+  } = {
     isSetup: false,
     tables: {
       fourpics_levels: false,

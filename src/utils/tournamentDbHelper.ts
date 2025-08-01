@@ -77,7 +77,10 @@ export const tournamentDbHelper = {
         throw new Error(error.message);
       }
 
-      return data || [];
+      return (data || []).map(tournament => ({
+        ...tournament,
+        status: tournament.status as "upcoming" | "active" | "completed" | "cancelled"
+      }));
     } catch (error) {
       console.error("Error in getTournaments:", error);
       return [];
@@ -133,7 +136,7 @@ export const tournamentDbHelper = {
         return { success: false, error: error.message };
       }
 
-      return data as JoinTournamentResult;
+      return data as unknown as JoinTournamentResult;
     } catch (error) {
       console.error("Error in joinTournament:", error);
       return { success: false, error: "Failed to join tournament" };
@@ -161,7 +164,7 @@ export const tournamentDbHelper = {
         return { success: false, error: error.message };
       }
 
-      return data as SubmitScoreResult;
+      return data as unknown as SubmitScoreResult;
     } catch (error) {
       console.error("Error in submitScore:", error);
       return { success: false, error: "Failed to submit score" };
