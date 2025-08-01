@@ -53,7 +53,7 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
     try {
       // Helper function to get top scores per user for a specific difficulty
       const getTopScoresByDifficulty = async (difficulty: string) => {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from("maze_scores")
           .select("*")
           .eq("difficulty", difficulty)
@@ -84,7 +84,7 @@ export const MazeLeaderboard: React.FC<MazeLeaderboardProps> = ({
       });
 
       // Fetch overall leaderboard (highest score per user across all difficulties)
-      const { data: overallData, error: overallError } = await supabase
+      const { data: overallData, error: overallError } = await (supabase as any)
         .from("maze_scores")
         .select("*")
         .order("score", { ascending: false });

@@ -73,11 +73,12 @@ export const TournamentRewards: React.FC = () => {
 
       if (error) throw error;
 
-      if (data.success) {
-        toast.success(`Reward of ₹${data.amount_claimed} claimed successfully!`);
+      const result = data as any;
+      if (result.success) {
+        toast.success(`Reward of ₹${result.amount_claimed} claimed successfully!`);
         fetchRewards(); // Refresh the list
       } else {
-        toast.error(data.error || "Failed to claim reward");
+        toast.error(result.error || "Failed to claim reward");
       }
     } catch (error) {
       console.error("Error claiming reward:", error);

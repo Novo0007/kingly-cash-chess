@@ -244,9 +244,9 @@ export const CoinShop: React.FC<CoinShopProps> = ({
       // Create transaction record
       const transactionData = {
         user_id: user.id,
-        transaction_type: "withdrawal", // Using withdrawal since money is being deducted from wallet
+        transaction_type: "withdrawal" as const, // Using withdrawal since money is being deducted from wallet
         amount: packageData.priceINR,
-        status: "completed",
+        status: "completed" as const,
         description: `Coin purchase: ${packageData.name} - ${packageData.coins + packageData.bonus} coins`,
       };
 
@@ -254,7 +254,7 @@ export const CoinShop: React.FC<CoinShopProps> = ({
 
       const { error: transactionError } = await supabase
         .from("transactions")
-        .insert(transactionData);
+        .insert([transactionData]);
 
       if (transactionError) {
         console.error("Error creating transaction:", {

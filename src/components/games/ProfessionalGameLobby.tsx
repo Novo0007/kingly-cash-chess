@@ -43,6 +43,9 @@ interface ProfessionalGameLobbyProps {
       | "hangman"
       | "akinator"
       | "memory"
+      | "maze"
+      | "game2048"
+      | "fourpics"
   ) => void;
 }
 

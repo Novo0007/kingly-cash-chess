@@ -41,7 +41,7 @@ export const MazeGame: React.FC<MazeGameProps> = ({ onBack, user }) => {
     const initializeMazeTable = async () => {
       try {
         // Check if maze_scores table exists by trying a simple query
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from("maze_scores")
           .select("id")
           .limit(1);
@@ -97,7 +97,7 @@ export const MazeGame: React.FC<MazeGameProps> = ({ onBack, user }) => {
 
     setIsSubmittingScore(true);
     try {
-      const { error } = await supabase.from("maze_scores").insert([
+      const { error } = await (supabase as any).from("maze_scores").insert([
         {
           user_id: scoreData.user_id,
           username: scoreData.username,
@@ -105,8 +105,8 @@ export const MazeGame: React.FC<MazeGameProps> = ({ onBack, user }) => {
           time_taken: scoreData.time_taken,
           difficulty: scoreData.difficulty,
           maze_size: scoreData.maze_size,
-          completed_at: scoreData.completed_at,
-        },
+          completed_at: scoreData.completed_at
+        }
       ]);
 
       if (error) {

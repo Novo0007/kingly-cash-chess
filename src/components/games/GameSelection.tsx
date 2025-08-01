@@ -35,14 +35,15 @@ interface GameSelectionProps {
     gameType:
       | "chess"
       | "ludo"
-      | "maze"
-      | "game2048"
       | "math"
       | "wordsearch"
       | "codelearn"
-      | "fourpics"
       | "hangman"
-      | "akinator",
+      | "akinator"
+      | "memory"
+      | "maze"
+      | "game2048"
+      | "fourpics",
   ) => void;
 }
 
