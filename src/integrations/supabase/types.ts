@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_settings: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_users: {
         Row: {
           created_at: string
@@ -113,6 +143,48 @@ export type Database = {
           white_player_id?: string | null
           white_time_remaining?: number | null
           winner_id?: string | null
+        }
+        Relationships: []
+      }
+      coin_transactions: {
+        Row: {
+          coins_amount: number
+          created_at: string
+          currency_amount: number | null
+          description: string | null
+          game_reference: string | null
+          id: string
+          package_id: string | null
+          payment_reference: string | null
+          status: string
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          coins_amount: number
+          created_at?: string
+          currency_amount?: number | null
+          description?: string | null
+          game_reference?: string | null
+          id?: string
+          package_id?: string | null
+          payment_reference?: string | null
+          status?: string
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          coins_amount?: number
+          created_at?: string
+          currency_amount?: number | null
+          description?: string | null
+          game_reference?: string | null
+          id?: string
+          package_id?: string | null
+          payment_reference?: string | null
+          status?: string
+          transaction_type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -382,51 +454,6 @@ export type Database = {
           },
         ]
       }
-      game2048_scores: {
-        Row: {
-          board_size: number
-          completed_at: string
-          created_at: string
-          difficulty: string
-          id: string
-          moves: number
-          score: number
-          target_reached: number
-          time_taken: number
-          updated_at: string
-          user_id: string
-          username: string
-        }
-        Insert: {
-          board_size?: number
-          completed_at?: string
-          created_at?: string
-          difficulty?: string
-          id?: string
-          moves?: number
-          score?: number
-          target_reached?: number
-          time_taken?: number
-          updated_at?: string
-          user_id: string
-          username: string
-        }
-        Update: {
-          board_size?: number
-          completed_at?: string
-          created_at?: string
-          difficulty?: string
-          id?: string
-          moves?: number
-          score?: number
-          target_reached?: number
-          time_taken?: number
-          updated_at?: string
-          user_id?: string
-          username?: string
-        }
-        Relationships: []
-      }
       global_chat: {
         Row: {
           created_at: string
@@ -450,104 +477,6 @@ export type Database = {
           username?: string
         }
         Relationships: []
-      }
-      ludo_games: {
-        Row: {
-          created_at: string
-          creator_id: string
-          current_players: number
-          current_turn: string | null
-          entry_fee: number
-          game_name: string | null
-          game_state: Json | null
-          game_status: string
-          id: string
-          is_friend_challenge: boolean | null
-          max_players: number
-          player1_id: string
-          player2_id: string | null
-          player3_id: string | null
-          player4_id: string | null
-          prize_amount: number
-          updated_at: string
-          winner_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          creator_id: string
-          current_players?: number
-          current_turn?: string | null
-          entry_fee?: number
-          game_name?: string | null
-          game_state?: Json | null
-          game_status?: string
-          id?: string
-          is_friend_challenge?: boolean | null
-          max_players?: number
-          player1_id: string
-          player2_id?: string | null
-          player3_id?: string | null
-          player4_id?: string | null
-          prize_amount?: number
-          updated_at?: string
-          winner_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          creator_id?: string
-          current_players?: number
-          current_turn?: string | null
-          entry_fee?: number
-          game_name?: string | null
-          game_state?: Json | null
-          game_status?: string
-          id?: string
-          is_friend_challenge?: boolean | null
-          max_players?: number
-          player1_id?: string
-          player2_id?: string | null
-          player3_id?: string | null
-          player4_id?: string | null
-          prize_amount?: number
-          updated_at?: string
-          winner_id?: string | null
-        }
-        Relationships: []
-      }
-      ludo_moves: {
-        Row: {
-          created_at: string
-          game_id: string
-          id: string
-          move_data: Json
-          move_number: number
-          player_id: string
-        }
-        Insert: {
-          created_at?: string
-          game_id: string
-          id?: string
-          move_data: Json
-          move_number: number
-          player_id: string
-        }
-        Update: {
-          created_at?: string
-          game_id?: string
-          id?: string
-          move_data?: Json
-          move_number?: number
-          player_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ludo_moves_game_id_fkey"
-            columns: ["game_id"]
-            isOneToOne: false
-            referencedRelation: "ludo_games"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       math_game_sessions: {
         Row: {
@@ -798,6 +727,48 @@ export type Database = {
           total_score?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      memory_scores: {
+        Row: {
+          board_size: number
+          completed_at: string
+          created_at: string
+          difficulty: string
+          id: string
+          moves: number
+          score: number
+          time_taken: number
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          board_size?: number
+          completed_at?: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          moves?: number
+          score?: number
+          time_taken?: number
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          board_size?: number
+          completed_at?: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          moves?: number
+          score?: number
+          time_taken?: number
+          updated_at?: string
+          user_id?: string
+          username?: string
         }
         Relationships: []
       }
@@ -1063,6 +1034,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_coins: {
+        Row: {
+          coins_balance: number
+          created_at: string
+          id: string
+          total_coins_purchased: number
+          total_coins_spent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          coins_balance?: number
+          created_at?: string
+          id?: string
+          total_coins_purchased?: number
+          total_coins_spent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          coins_balance?: number
+          created_at?: string
+          id?: string
+          total_coins_purchased?: number
+          total_coins_spent?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       wallets: {
         Row: {
@@ -1406,6 +1407,16 @@ export type Database = {
       }
     }
     Views: {
+      global_rankings: {
+        Row: {
+          games_played: number | null
+          rank: number | null
+          total_score: number | null
+          user_id: string | null
+          username: string | null
+        }
+        Relationships: []
+      }
       math_level_leaderboard: {
         Row: {
           completed_levels_count: number | null
@@ -1510,6 +1521,18 @@ export type Database = {
           rank: number
         }[]
       }
+      get_user_coins: {
+        Args: { target_user_id: string }
+        Returns: {
+          coins_balance: number
+          created_at: string
+          id: string
+          total_coins_purchased: number
+          total_coins_spent: number
+          updated_at: string
+          user_id: string
+        }
+      }
       get_user_math_rank: {
         Args: { target_user_id: string }
         Returns: number
@@ -1558,6 +1581,16 @@ export type Database = {
           tournament_id_param: string
           user_id_param: string
           username_param: string
+        }
+        Returns: Json
+      }
+      purchase_coins: {
+        Args: {
+          target_user_id: string
+          package_id_param: string
+          coins_amount_param: number
+          currency_amount_param: number
+          payment_reference_param: string
         }
         Returns: Json
       }

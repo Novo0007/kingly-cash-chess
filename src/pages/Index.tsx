@@ -14,10 +14,6 @@ import {
   ProfessionalAppLayout,
   ProfessionalMobileOptimized,
 } from "@/components/layout/ProfessionalAppLayout";
-import { LudoLobby } from "@/components/games/ludo/LudoLobby";
-import { LudoGame } from "@/components/games/ludo/LudoGame";
-import { MazeGame } from "@/components/games/maze/MazeGame";
-import { Game2048 } from "@/components/games/game2048/Game2048";
 import { MathGame } from "@/components/games/math/MathGame";
 import { WordSearchGame } from "@/components/games/wordsearch/WordSearchGame";
 import { CodeLearnGame } from "@/components/games/codelearn/CodeLearnGame";
@@ -44,9 +40,6 @@ const Index = () => {
   const [currentGameId, setCurrentGameId] = useState<string | null>(null);
   const [selectedGameType, setSelectedGameType] = useState<
     | "chess"
-    | "ludo"
-    | "maze"
-    | "game2048"
     | "math"
     | "wordsearch"
     | "codelearn"
@@ -189,25 +182,17 @@ const Index = () => {
   const handleSelectGame = (
     gameType:
       | "chess"
-      | "ludo"
-      | "maze"
-      | "game2048"
       | "math"
       | "wordsearch"
       | "codelearn"
       | "fourpics"
       | "hangman"
-      | "akinator",
+      | "akinator"
+      | "memory",
   ) => {
     setSelectedGameType(gameType);
     if (gameType === "chess") {
       setCurrentView("lobby");
-    } else if (gameType === "ludo") {
-      setCurrentView("ludo-lobby");
-    } else if (gameType === "maze") {
-      setCurrentView("maze-game");
-    } else if (gameType === "game2048") {
-      setCurrentView("game2048");
     } else if (gameType === "math") {
       setCurrentView("math-game");
     } else if (gameType === "wordsearch") {
@@ -229,12 +214,6 @@ const Index = () => {
     setCurrentGameId(gameId);
     if (selectedGameType === "chess") {
       setCurrentView("game");
-    } else if (selectedGameType === "ludo") {
-      setCurrentView("ludo-game");
-    } else if (selectedGameType === "maze") {
-      setCurrentView("maze-game");
-    } else if (selectedGameType === "game2048") {
-      setCurrentView("game2048");
     } else if (selectedGameType === "math") {
       setCurrentView("math-game");
     } else if (selectedGameType === "wordsearch") {
@@ -250,12 +229,6 @@ const Index = () => {
     setCurrentGameId(null);
     if (selectedGameType === "chess") {
       setCurrentView("lobby");
-    } else if (selectedGameType === "ludo") {
-      setCurrentView("ludo-lobby");
-    } else if (selectedGameType === "maze") {
-      setCurrentView("maze-game");
-    } else if (selectedGameType === "game2048") {
-      setCurrentView("game2048");
     } else if (selectedGameType === "math") {
       setCurrentView("math-game");
     } else if (selectedGameType === "wordsearch") {
@@ -335,36 +308,6 @@ const Index = () => {
         ) : (
           <GameLobby onJoinGame={handleJoinGame} />
         );
-      case "ludo-lobby":
-        return (
-          <LudoLobby
-            onJoinGame={handleJoinGame}
-            onBackToGameSelection={handleBackToGameSelection}
-          />
-        );
-      case "ludo-game":
-        return currentGameId ? (
-          <div className="grid grid-cols-1 xl:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
-            <div className="xl:col-span-3">
-              <LudoGame
-                gameId={currentGameId}
-                onBackToLobby={handleBackToLobby}
-              />
-            </div>
-            <div className="hidden xl:block">
-              <ChatSystem gameId={currentGameId} />
-            </div>
-          </div>
-        ) : (
-          <LudoLobby
-            onJoinGame={handleJoinGame}
-            onBackToGameSelection={handleBackToGameSelection}
-          />
-        );
-      case "maze-game":
-        return <MazeGame onBack={handleBackToGameSelection} user={user} />;
-      case "game2048":
-        return <Game2048 onBack={handleBackToGameSelection} user={user} />;
       case "math-game":
         return <MathGame onBack={handleBackToGameSelection} user={user} />;
       case "wordsearch-game":

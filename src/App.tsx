@@ -12,9 +12,6 @@ import {
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { ChessRulesPage } from "./pages/ChessRulesPage";
-import { LudoRulesPage } from "./pages/LudoRulesPage";
-import MazeRulesPage from "./pages/MazeRulesPage";
-import { Game2048RulesPage } from "./pages/Game2048RulesPage";
 import { MathRulesPage } from "./pages/MathRulesPage";
 import WordSearchRulesPage from "./pages/WordSearchRulesPage";
 import FourPicsRulesPage from "./pages/FourPicsRulesPage";
@@ -125,9 +122,6 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/chess-rules" element={<ChessRulesPage />} />
-                <Route path="/ludo-rules" element={<LudoRulesPage />} />
-                <Route path="/maze-rules" element={<MazeRulesPage />} />
-                <Route path="/game2048-rules" element={<Game2048RulesPage />} />
                 <Route path="/math-rules" element={<MathRulesPage />} />
                 <Route
                   path="/wordsearch-rules"

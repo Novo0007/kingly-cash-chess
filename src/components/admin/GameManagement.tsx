@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Gamepad2, Crown, Dice6, Users, Clock, Trophy } from "lucide-react";
+import { Gamepad2, Crown, Users, Clock, Trophy } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface GameManagementProps {
@@ -12,13 +12,10 @@ interface GameManagementProps {
 }
 
 type ChessGame = Tables<"chess_games">;
-type LudoGame = Tables<"ludo_games">;
 
 export const GameManagement = ({ adminUser }: GameManagementProps) => {
   const [chessGames, setChessGames] = useState<ChessGame[]>([]);
-  const [ludoGames, setLudoGames] = useState<LudoGame[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"chess" | "ludo">("chess");
 
   useEffect(() => {
     fetchGames();
@@ -26,24 +23,15 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
 
   const fetchGames = async () => {
     try {
-      const [chessResult, ludoResult] = await Promise.all([
-        supabase
-          .from("chess_games")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(50),
-        supabase
-          .from("ludo_games")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(50),
-      ]);
+      const chessResult = await supabase
+        .from("chess_games")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(50);
 
       if (chessResult.error) throw chessResult.error;
-      if (ludoResult.error) throw ludoResult.error;
 
       setChessGames(chessResult.data || []);
-      setLudoGames(ludoResult.data || []);
     } catch (error) {
       console.error("Error fetching games:", error);
       toast.error("Failed to load games");
@@ -52,12 +40,14 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
     }
   };
 
-  const endGame = async (gameId: string, gameType: "chess" | "ludo") => {
+  const endGame = async (gameId: string) => {
     try {
-      const table = gameType === "chess" ? "chess_games" : "ludo_games";
       const { error } = await supabase
-        .from(table)
-        .update({ game_status: "completed" })
+        .from("chess_games")
+        .update({ 
+          game_status: "completed",
+          game_result: "abandoned"
+        })
         .eq("id", gameId);
 
       if (error) throw error;
@@ -70,253 +60,127 @@ export const GameManagement = ({ adminUser }: GameManagementProps) => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "waiting":
-        return "bg-yellow-600 text-white";
-      case "active":
-        return "bg-green-600 text-white";
-      case "completed":
-        return "bg-blue-600 text-white";
-      case "cancelled":
-        return "bg-red-600 text-white";
-      default:
-        return "bg-gray-600 text-white";
-    }
-  };
-
   if (loading) {
     return (
-      <Card className="wood-card border-amber-600">
-        <CardContent className="p-4 sm:p-6 text-center">
-          <div className="w-6 h-6 sm:w-8 sm:h-8 border-3 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-amber-900 text-sm sm:text-base">
-            Loading games...
-          </p>
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center">Loading games...</div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Game Stats - Wood Theme */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <Card className="wood-card bg-gradient-to-r from-blue-50 to-blue-100 border-blue-700">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-2">
-              <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-blue-800" />
-              <div>
-                <p className="text-blue-800 text-xs sm:text-sm font-semibold">
-                  Chess Games
-                </p>
-                <p className="text-blue-900 font-bold text-sm sm:text-lg">
-                  {chessGames.length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="wood-card bg-gradient-to-r from-orange-50 to-orange-100 border-orange-700">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-2">
-              <Dice6 className="h-4 w-4 sm:h-5 sm:w-5 text-orange-800" />
-              <div>
-                <p className="text-orange-800 text-xs sm:text-sm font-semibold">
-                  Ludo Games
-                </p>
-                <p className="text-orange-900 font-bold text-sm sm:text-lg">
-                  {ludoGames.length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="wood-card bg-gradient-to-r from-green-50 to-green-100 border-green-700">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-green-800" />
-              <div>
-                <p className="text-green-800 text-xs sm:text-sm font-semibold">
-                  Active Games
-                </p>
-                <p className="text-green-900 font-bold text-sm sm:text-lg">
-                  {chessGames.filter((g) => g.game_status === "active").length +
-                    ludoGames.filter((g) => g.game_status === "active").length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="wood-card bg-gradient-to-r from-purple-50 to-purple-100 border-purple-700">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-2">
-              <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-purple-800" />
-              <div>
-                <p className="text-purple-300 text-sm">Waiting</p>
-                <p className="text-white font-bold text-lg">
-                  {chessGames.filter((g) => g.game_status === "waiting")
-                    .length +
-                    ludoGames.filter((g) => g.game_status === "waiting").length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card className="bg-slate-800 border-slate-600">
+    <div className="space-y-6">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Gamepad2 className="h-5 w-5 text-orange-400" />
-            Game Management
+          <CardTitle className="flex items-center gap-2">
+            <Gamepad2 className="h-5 w-5" />
+            Active Games Overview
           </CardTitle>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant={activeTab === "chess" ? "default" : "outline"}
-              onClick={() => setActiveTab("chess")}
-              className={
-                activeTab === "chess"
-                  ? "bg-blue-600"
-                  : "text-slate-300 border-slate-600"
-              }
-            >
-              <Crown className="h-4 w-4 mr-2" />
-              Chess Games
-            </Button>
-            <Button
-              size="sm"
-              variant={activeTab === "ludo" ? "default" : "outline"}
-              onClick={() => setActiveTab("ludo")}
-              className={
-                activeTab === "ludo"
-                  ? "bg-orange-600"
-                  : "text-slate-300 border-slate-600"
-              }
-            >
-              <Dice6 className="h-4 w-4 mr-2" />
-              Ludo Games
-            </Button>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Crown className="h-5 w-5 text-blue-600" />
+                <span className="font-semibold text-blue-800">Chess Games</span>
+              </div>
+              <div className="text-2xl font-bold text-blue-900">
+                {chessGames.length}
+              </div>
+              <div className="text-sm text-blue-600">Total Games</div>
+            </div>
+            
+            <div className="bg-green-50 p-4 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Users className="h-5 w-5 text-green-600" />
+                <span className="font-semibold text-green-800">Active</span>
+              </div>
+              <div className="text-2xl font-bold text-green-900">
+                {chessGames.filter((g) => g.game_status === "active").length}
+              </div>
+              <div className="text-sm text-green-600">Currently Playing</div>
+            </div>
+            
+            <div className="bg-amber-50 p-4 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="h-5 w-5 text-amber-600" />
+                <span className="font-semibold text-amber-800">Waiting</span>
+              </div>
+              <div className="text-2xl font-bold text-amber-900">
+                {chessGames.filter((g) => g.game_status === "waiting").length}
+              </div>
+              <div className="text-sm text-amber-600">For Opponents</div>
+            </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Crown className="h-5 w-5" />
+            Chess Games
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {activeTab === "chess"
-              ? chessGames.map((game) => (
-                  <Card key={game.id} className="bg-slate-700 border-slate-600">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
+            {chessGames.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                No chess games found
+              </div>
+            ) : (
+              chessGames.map((game) => (
+                <div
+                  key={game.id}
+                  className="border rounded-lg p-4 space-y-2"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-semibold">
+                        {game.game_name || `Chess ${game.id.slice(0, 8)}`}
+                      </h4>
+                      <div className="text-sm text-gray-600 space-y-1">
                         <div className="flex items-center gap-4">
-                          <Crown className="h-6 w-6 text-blue-400" />
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-white font-semibold">
-                                {game.game_name ||
-                                  `Game ${game.id.slice(0, 8)}`}
-                              </span>
-                              <Badge
-                                className={getStatusColor(
-                                  game.game_status || "waiting",
-                                )}
-                              >
-                                {game.game_status}
-                              </Badge>
-                            </div>
-                            <p className="text-slate-400 text-sm">
-                              Entry Fee: ₹{Number(game.entry_fee).toFixed(2)} •
-                              Prize: ₹{Number(game.prize_amount).toFixed(2)}
-                            </p>
-                            <p className="text-slate-300 text-sm">
-                              Current Turn: {game.current_turn} • Time Control:{" "}
-                              {game.time_control}s
-                            </p>
-                          </div>
+                          <Badge
+                            variant={
+                              game.game_status === "active"
+                                ? "default"
+                                : game.game_status === "waiting"
+                                  ? "secondary"
+                                  : "outline"
+                            }
+                          >
+                            {game.game_status}
+                          </Badge>
+                          <span>Entry: ₹{game.entry_fee}</span>
+                          <span>Prize: ₹{game.prize_amount}</span>
                         </div>
-
                         <div className="flex items-center gap-4">
-                          <div className="text-right">
-                            <p className="text-white text-sm">
-                              Created:{" "}
-                              {new Date(
-                                game.created_at || "",
-                              ).toLocaleDateString()}
-                            </p>
-                            <p className="text-slate-400 text-xs">
-                              {game.id.slice(0, 8)}...
-                            </p>
-                          </div>
-
-                          {game.game_status === "active" && (
-                            <Button
-                              size="sm"
-                              onClick={() => endGame(game.id, "chess")}
-                              className="bg-red-600 hover:bg-red-700"
-                            >
-                              End Game
-                            </Button>
-                          )}
+                          <span>Players: {game.black_player_id ? "2/2" : "1/2"}</span>
+                          <span>Turn: {game.current_turn}</span>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))
-              : ludoGames.map((game) => (
-                  <Card key={game.id} className="bg-slate-700 border-slate-600">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <Dice6 className="h-6 w-6 text-orange-400" />
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-white font-semibold">
-                                {game.game_name ||
-                                  `Ludo ${game.id.slice(0, 8)}`}
-                              </span>
-                              <Badge
-                                className={getStatusColor(game.game_status)}
-                              >
-                                {game.game_status}
-                              </Badge>
-                            </div>
-                            <p className="text-slate-400 text-sm">
-                              Entry Fee: ₹{Number(game.entry_fee).toFixed(2)} •
-                              Prize: ₹{Number(game.prize_amount).toFixed(2)}
-                            </p>
-                            <p className="text-slate-300 text-sm">
-                              Players: {game.current_players}/{game.max_players}{" "}
-                              • Current Turn: {game.current_turn}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                          <div className="text-right">
-                            <p className="text-white text-sm">
-                              Created:{" "}
-                              {new Date(
-                                game.created_at || "",
-                              ).toLocaleDateString()}
-                            </p>
-                            <p className="text-slate-400 text-xs">
-                              {game.id.slice(0, 8)}...
-                            </p>
-                          </div>
-
-                          {game.game_status === "active" && (
-                            <Button
-                              size="sm"
-                              onClick={() => endGame(game.id, "ludo")}
-                              className="bg-red-600 hover:bg-red-700"
-                            >
-                              End Game
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <span className="text-xs text-gray-500">
+                        {new Date(game.created_at).toLocaleString()}
+                      </span>
+                      {game.game_status === "active" && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => endGame(game.id)}
+                        >
+                          End Game
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>

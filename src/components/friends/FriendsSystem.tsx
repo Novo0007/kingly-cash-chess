@@ -43,7 +43,7 @@ export const FriendsSystem = () => {
     open: boolean;
     friendId: string;
     friendName: string;
-    gameType: "chess" | "ludo";
+    gameType: "chess";
   }>({
     open: false,
     friendId: "",
@@ -177,7 +177,6 @@ export const FriendsSystem = () => {
         *,
         to_user:profiles!game_invitations_to_user_id_fkey(*),
         chess_game:chess_games(*),
-        ludo_game:ludo_games(*)
       `,
       )
       .eq("from_user_id", user.id)
@@ -260,7 +259,7 @@ export const FriendsSystem = () => {
   const createGameInvitation = async (
     friendId: string,
     amount: number,
-    gameType: "chess" | "ludo" = "chess",
+    gameType: "chess" = "chess",
   ) => {
     const {
       data: { user },

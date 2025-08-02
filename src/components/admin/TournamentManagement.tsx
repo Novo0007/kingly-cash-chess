@@ -39,9 +39,6 @@ interface TournamentFormData {
 
 const gameTypes = [
   { value: "chess", label: "Chess" },
-  { value: "ludo", label: "Ludo" },
-  { value: "maze", label: "Maze" },
-  { value: "game2048", label: "2048" },
   { value: "math", label: "Math" },
   { value: "wordsearch", label: "Word Search" },
   { value: "memory", label: "Memory" },
