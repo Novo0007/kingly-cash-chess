@@ -197,8 +197,7 @@ export const FriendsSystem = () => {
         `
         *,
         from_user:profiles!game_invitations_from_user_id_fkey(*),
-        chess_game:chess_games(*),
-        ludo_game:ludo_games(*)
+        chess_game:chess_games(*)
       `,
       )
       .eq("to_user_id", user.id)
@@ -340,29 +339,6 @@ export const FriendsSystem = () => {
           return;
         }
         gameData = chessGameData;
-      } else {
-        // Create a new ludo game with is_friend_challenge flag
-        const { data: ludoGameData, error: gameError } = await supabase
-          .from("ludo_games")
-          .insert({
-            creator_id: user.id,
-            player1_id: user.id,
-            entry_fee: amount,
-            prize_amount: amount * 2,
-            game_status: "waiting",
-            game_name: `Challenge - ₹${amount}`,
-            is_friend_challenge: true,
-            game_state: {},
-          })
-          .select()
-          .single();
-
-        if (gameError) {
-          console.error("Ludo game creation error:", gameError);
-          toast.error("Failed to create challenge");
-          return;
-        }
-        gameData = ludoGameData;
       }
 
       console.log("Game created successfully:", gameData);
@@ -428,10 +404,9 @@ export const FriendsSystem = () => {
       .update({ status: "cancelled" })
       .eq("id", invitationId);
 
-    // Cancel the game in the appropriate table
-    const gameTable = gameType === "chess" ? "chess_games" : "ludo_games";
+    // Cancel the chess game
     const { error: gameError } = await supabase
-      .from(gameTable)
+      .from("chess_games")
       .update({ game_status: "cancelled" })
       .eq("id", gameId);
 
@@ -500,28 +475,14 @@ export const FriendsSystem = () => {
       .update({ status: "accepted" })
       .eq("id", invitationId);
 
-    // Update game in the appropriate table
-    let gameError;
-    if (gameType === "chess") {
-      const { error } = await supabase
-        .from("chess_games")
-        .update({
-          black_player_id: user.id,
-          game_status: "active",
-        })
-        .eq("id", gameId);
-      gameError = error;
-    } else {
-      const { error } = await supabase
-        .from("ludo_games")
-        .update({
-          player2_id: user.id,
-          current_players: 2,
-          game_status: "active",
-        })
-        .eq("id", gameId);
-      gameError = error;
-    }
+    // Update chess game
+    const { error: gameError } = await supabase
+      .from("chess_games")
+      .update({
+        black_player_id: user.id,
+        game_status: "active",
+      })
+      .eq("id", gameId);
 
     if (invitationError || gameError) {
       toast.error("Failed to accept challenge");
@@ -563,10 +524,9 @@ export const FriendsSystem = () => {
       .update({ status: "declined" })
       .eq("id", invitationId);
 
-    // Cancel the game in the appropriate table
-    const gameTable = gameType === "chess" ? "chess_games" : "ludo_games";
+    // Cancel the chess game
     const { error: gameError } = await supabase
-      .from(gameTable)
+      .from("chess_games")
       .update({ game_status: "cancelled" })
       .eq("id", gameId);
 
@@ -581,7 +541,7 @@ export const FriendsSystem = () => {
   const openChallengePopup = (
     friendId: string,
     friendName: string,
-    gameType: "chess" | "ludo" = "chess",
+    gameType: "chess" = "chess",
   ) => {
     setChallengePopup({
       open: true,
@@ -889,20 +849,6 @@ export const FriendsSystem = () => {
                       >
                         <Gamepad2 className="h-3 w-3" />
                         Chess
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          openChallengePopup(
-                            friendship.friend?.id || "",
-                            friendship.friend?.username || "",
-                            "ludo",
-                          )
-                        }
-                        size="sm"
-                        className="bg-orange-600 hover:bg-orange-700 font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-1 flex-1 sm:flex-none"
-                      >
-                        <Gamepad2 className="h-3 w-3" />
-                        Ludo
                       </Button>
                     </div>
                   </div>

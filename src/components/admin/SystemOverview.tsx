@@ -36,7 +36,6 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
       const [
         usersResult,
         chessGamesResult,
-        ludoGamesResult,
         transactionsResult,
         revenueResult,
         withdrawalsResult,
@@ -44,10 +43,6 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
         supabase.from("profiles").select("id", { count: "exact" }),
         supabase
           .from("chess_games")
-          .select("id", { count: "exact" })
-          .in("game_status", ["waiting", "active"]),
-        supabase
-          .from("ludo_games")
           .select("id", { count: "exact" })
           .in("game_status", ["waiting", "active"]),
         supabase.from("transactions").select("id", { count: "exact" }),
@@ -68,8 +63,7 @@ export const SystemOverview = ({ adminUser }: SystemOverviewProps) => {
 
       setStats({
         totalUsers: usersResult.count || 0,
-        activeGames:
-          (chessGamesResult.count || 0) + (ludoGamesResult.count || 0),
+        activeGames: chessGamesResult.count || 0,
         totalTransactions: transactionsResult.count || 0,
         totalRevenue,
         todayRevenue: 0, // We'll implement this later
