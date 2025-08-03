@@ -188,6 +188,192 @@ export type Database = {
         }
         Relationships: []
       }
+      event_participants: {
+        Row: {
+          best_score: number | null
+          entry_fee_paid: number | null
+          event_id: string
+          id: string
+          joined_at: string | null
+          last_attempt_at: string | null
+          total_attempts: number | null
+          user_id: string
+          username: string
+        }
+        Insert: {
+          best_score?: number | null
+          entry_fee_paid?: number | null
+          event_id: string
+          id?: string
+          joined_at?: string | null
+          last_attempt_at?: string | null
+          total_attempts?: number | null
+          user_id: string
+          username: string
+        }
+        Update: {
+          best_score?: number | null
+          entry_fee_paid?: number | null
+          event_id?: string
+          id?: string
+          joined_at?: string | null
+          last_attempt_at?: string | null
+          total_attempts?: number | null
+          user_id?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_participants_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_rewards: {
+        Row: {
+          claimed: boolean | null
+          claimed_at: string | null
+          created_at: string | null
+          event_id: string
+          id: string
+          rank: number
+          reward_amount: number
+          user_id: string
+        }
+        Insert: {
+          claimed?: boolean | null
+          claimed_at?: string | null
+          created_at?: string | null
+          event_id: string
+          id?: string
+          rank: number
+          reward_amount: number
+          user_id: string
+        }
+        Update: {
+          claimed?: boolean | null
+          claimed_at?: string | null
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          rank?: number
+          reward_amount?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_rewards_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_scores: {
+        Row: {
+          event_id: string
+          game_data: Json | null
+          id: string
+          score: number
+          submitted_at: string | null
+          user_id: string
+        }
+        Insert: {
+          event_id: string
+          game_data?: Json | null
+          id?: string
+          score: number
+          submitted_at?: string | null
+          user_id: string
+        }
+        Update: {
+          event_id?: string
+          game_data?: Json | null
+          id?: string
+          score?: number
+          submitted_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_scores_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string
+          difficulty: string | null
+          end_date: string
+          entry_fee: number | null
+          event_type: string
+          featured: boolean | null
+          first_prize: number | null
+          game_type: string
+          id: string
+          max_participants: number | null
+          prize_pool: number | null
+          second_prize: number | null
+          start_date: string
+          status: string
+          third_prize: number | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description: string
+          difficulty?: string | null
+          end_date: string
+          entry_fee?: number | null
+          event_type: string
+          featured?: boolean | null
+          first_prize?: number | null
+          game_type: string
+          id?: string
+          max_participants?: number | null
+          prize_pool?: number | null
+          second_prize?: number | null
+          start_date: string
+          status?: string
+          third_prize?: number | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string
+          difficulty?: string | null
+          end_date?: string
+          entry_fee?: number | null
+          event_type?: string
+          featured?: boolean | null
+          first_prize?: number | null
+          game_type?: string
+          id?: string
+          max_participants?: number | null
+          prize_pool?: number | null
+          second_prize?: number | null
+          start_date?: string
+          status?: string
+          third_prize?: number | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       fourpics_coin_transactions: {
         Row: {
           amount: number
@@ -1451,6 +1637,10 @@ export type Database = {
         Args: { user_email?: string }
         Returns: boolean
       }
+      claim_event_reward: {
+        Args: { reward_id_param: string; user_id_param: string }
+        Returns: Json
+      }
       claim_tournament_reward: {
         Args: { reward_id_param: string; user_id_param: string }
         Returns: Json
@@ -1576,6 +1766,14 @@ export type Database = {
         Args: { user_email?: string }
         Returns: boolean
       }
+      join_event: {
+        Args: {
+          event_id_param: string
+          user_id_param: string
+          username_param: string
+        }
+        Returns: Json
+      }
       join_tournament: {
         Args: {
           tournament_id_param: string
@@ -1597,6 +1795,15 @@ export type Database = {
       start_math_session: {
         Args: { target_user_id: string; level_num: number }
         Returns: string
+      }
+      submit_event_score: {
+        Args: {
+          event_id_param: string
+          user_id_param: string
+          score_param: number
+          game_data_param?: Json
+        }
+        Returns: Json
       }
       submit_tournament_score: {
         Args: {

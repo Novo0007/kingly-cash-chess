@@ -18,103 +18,162 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SplitText } from '@/components/ui/split-text';
 import { GlassSurface } from '@/components/ui/glass-surface';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import type { Database } from '@/integrations/supabase/types';
 
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  type: 'tournament' | 'challenge' | 'special' | 'community';
-  status: 'upcoming' | 'live' | 'ended';
-  startDate: Date;
-  endDate: Date;
-  participants: number;
-  maxParticipants: number;
-  prizePool: string;
-  gameType: string;
-  location?: string;
-  entryFee: number;
-  difficulty: 'easy' | 'medium' | 'hard';
-  featured?: boolean;
+type EventRow = Database['public']['Tables']['events']['Row'];
+type EventParticipantRow = Database['public']['Tables']['event_participants']['Row'];
+type EventRewardRow = Database['public']['Tables']['event_rewards']['Row'];
+
+interface Event extends EventRow {
+  current_participants?: number;
 }
 
 export const EventsSystem: React.FC = () => {
   const { currentTheme } = useTheme();
   const isMobile = useIsMobile();
   const [events, setEvents] = useState<Event[]>([]);
+  const [userRewards, setUserRewards] = useState<EventRewardRow[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
   const [filter, setFilter] = useState<'all' | 'tournament' | 'challenge' | 'special' | 'community'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'upcoming' | 'live' | 'ended'>('upcoming');
+  const [loading, setLoading] = useState(true);
 
-  // Mock events data
+  // Get current user
   useEffect(() => {
-    const mockEvents: Event[] = [
-      {
-        id: '1',
-        title: 'Chess Masters Championship',
-        description: 'Monthly championship for chess masters with premium rewards',
-        type: 'tournament',
-        status: 'upcoming',
-        startDate: new Date('2024-02-15T18:00:00'),
-        endDate: new Date('2024-02-15T22:00:00'),
-        participants: 245,
-        maxParticipants: 500,
-        prizePool: '₹50,000',
-        gameType: 'Chess',
-        entryFee: 100,
-        difficulty: 'hard',
-        featured: true
-      },
-      {
-        id: '2',
-        title: 'Math Genius Sprint',
-        description: 'Speed math challenge for all skill levels',
-        type: 'challenge',
-        status: 'live',
-        startDate: new Date('2024-02-10T10:00:00'),
-        endDate: new Date('2024-02-20T23:59:00'),
-        participants: 1250,
-        maxParticipants: 2000,
-        prizePool: '₹25,000',
-        gameType: 'Math',
-        entryFee: 0,
-        difficulty: 'medium',
-        featured: true
-      },
-      {
-        id: '3',
-        title: 'Word Hunt Arena',
-        description: 'Community word search competition with daily prizes',
-        type: 'community',
-        status: 'upcoming',
-        startDate: new Date('2024-02-18T15:00:00'),
-        endDate: new Date('2024-02-25T15:00:00'),
-        participants: 89,
-        maxParticipants: 200,
-        prizePool: '₹15,000',
-        gameType: 'Word Search',
-        entryFee: 50,
-        difficulty: 'easy'
-      },
-      {
-        id: '4',
-        title: 'Memory Master Challenge',
-        description: 'Test your memory skills in this intensive challenge',
-        type: 'special',
-        status: 'upcoming',
-        startDate: new Date('2024-02-22T20:00:00'),
-        endDate: new Date('2024-02-22T21:30:00'),
-        participants: 156,
-        maxParticipants: 300,
-        prizePool: '₹20,000',
-        gameType: 'Memory',
-        entryFee: 75,
-        difficulty: 'medium'
+    const getCurrentUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setCurrentUser(session.user);
+        // Get user profile for username
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('id', session.user.id)
+          .maybeSingle();
+        setCurrentUser({ ...session.user, username: profile?.username });
       }
-    ];
-    setEvents(mockEvents);
+    };
+    getCurrentUser();
   }, []);
 
+  // Fetch events and user rewards
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch events with participant counts
+        const { data: eventsData, error: eventsError } = await supabase
+          .from('events')
+          .select(`
+            *,
+            event_participants(count)
+          `)
+          .order('start_date', { ascending: true });
+
+        if (eventsError) throw eventsError;
+
+        // Transform data to include participant counts
+        const eventsWithCounts = eventsData?.map(event => ({
+          ...event,
+          current_participants: event.event_participants?.[0]?.count || 0
+        })) || [];
+
+        setEvents(eventsWithCounts);
+
+        // Fetch user rewards if logged in
+        if (currentUser?.id) {
+          const { data: rewardsData, error: rewardsError } = await supabase
+            .from('event_rewards')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .eq('claimed', false);
+
+          if (!rewardsError) {
+            setUserRewards(rewardsData || []);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        toast.error('Failed to load events');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [currentUser?.id]);
+
+  const handleJoinEvent = async (eventId: string) => {
+    if (!currentUser) {
+      toast.error('Please login to join events');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.rpc('join_event', {
+        event_id_param: eventId,
+        user_id_param: currentUser.id,
+        username_param: currentUser.username || 'Anonymous'
+      });
+
+      if (error) throw error;
+
+      const result = data as { success: boolean; error?: string; entry_fee_paid?: number };
+
+      if (result.success) {
+        toast.success(`Successfully joined event! ${result.entry_fee_paid > 0 ? `Entry fee: ₹${result.entry_fee_paid}` : ''}`);
+        // Refresh events data
+        window.location.reload();
+      } else {
+        toast.error(result.error || 'Failed to join event');
+      }
+    } catch (error) {
+      console.error('Error joining event:', error);
+      toast.error('Failed to join event');
+    }
+  };
+
+  const handleClaimReward = async (rewardId: string) => {
+    if (!currentUser) return;
+
+    try {
+      const { data, error } = await supabase.rpc('claim_event_reward', {
+        reward_id_param: rewardId,
+        user_id_param: currentUser.id
+      });
+
+      if (error) throw error;
+
+      const result = data as { success: boolean; error?: string; amount_claimed?: number };
+
+      if (result.success) {
+        toast.success(`Reward claimed! ₹${result.amount_claimed} added to your wallet`);
+        // Remove from unclaimed rewards
+        setUserRewards(prev => prev.filter(r => r.id !== rewardId));
+      } else {
+        toast.error(result.error || 'Failed to claim reward');
+      }
+    } catch (error) {
+      console.error('Error claiming reward:', error);
+      toast.error('Failed to claim reward');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4 animate-pulse" />
+          <p className="text-muted-foreground">Loading events...</p>
+        </div>
+      </div>
+    );
+  }
+
   const filteredEvents = events.filter(event => {
-    const typeMatch = filter === 'all' || event.type === filter;
+    const typeMatch = filter === 'all' || event.event_type === filter;
     const statusMatch = statusFilter === 'all' || event.status === statusFilter;
     return typeMatch && statusMatch;
   });
@@ -170,6 +229,33 @@ export const EventsSystem: React.FC = () => {
         </p>
       </div>
 
+      {/* Unclaimed Rewards */}
+      {userRewards.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <Gift className="w-5 h-5 text-green-500" />
+            Unclaimed Rewards
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {userRewards.map((reward) => (
+              <Card key={reward.id} className="border-2 border-green-200 bg-gradient-to-br from-green-50 to-emerald-50">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold">Rank #{reward.rank} Reward</p>
+                      <p className="text-2xl font-bold text-green-600">₹{reward.reward_amount}</p>
+                    </div>
+                    <Button onClick={() => handleClaimReward(reward.id)} className="bg-green-600 hover:bg-green-700">
+                      Claim Reward
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Filters */}
       <GlassSurface className="p-4 rounded-xl" blur="md" opacity={0.1}>
         <div className="flex flex-col sm:flex-row gap-4">
@@ -214,7 +300,11 @@ export const EventsSystem: React.FC = () => {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredEvents.filter(event => event.featured).map((event) => {
-              const TypeIcon = getTypeIcon(event.type);
+              const TypeIcon = getTypeIcon(event.event_type);
+              const startDate = new Date(event.start_date);
+              const endDate = new Date(event.end_date);
+              const prizePool = event.prize_pool > 0 ? `₹${event.prize_pool}` : 'Free';
+              
               return (
                 <Card key={event.id} className="overflow-hidden border-2 border-yellow-200 bg-gradient-to-br from-yellow-50 to-orange-50">
                   <CardHeader className="pb-2">
@@ -239,23 +329,23 @@ export const EventsSystem: React.FC = () => {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4 text-muted-foreground" />
-                        <span>{formatDate(event.startDate)}</span>
+                        <span>{formatDate(startDate)}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Users className="w-4 h-4 text-muted-foreground" />
-                        <span>{event.participants}/{event.maxParticipants}</span>
+                        <span>{event.current_participants}/{event.max_participants}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Trophy className="w-4 h-4 text-muted-foreground" />
-                        <span className="font-semibold text-green-600">{event.prizePool}</span>
+                        <span className="font-semibold text-green-600">{prizePool}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Gift className="w-4 h-4 text-muted-foreground" />
-                        <span>{event.entryFee === 0 ? 'Free' : `₹${event.entryFee}`}</span>
+                        <span>{event.entry_fee === 0 ? 'Free' : `₹${event.entry_fee}`}</span>
                       </div>
                     </div>
 
-                    <Button className="w-full" disabled={event.status === 'ended'}>
+                    <Button className="w-full" disabled={event.status === 'ended'} onClick={() => handleJoinEvent(event.id)}>
                       {event.status === 'live' ? 'Join Now' : event.status === 'upcoming' ? 'Register' : 'View Results'}
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -275,7 +365,10 @@ export const EventsSystem: React.FC = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredEvents.filter(event => !event.featured).map((event) => {
-            const TypeIcon = getTypeIcon(event.type);
+            const TypeIcon = getTypeIcon(event.event_type);
+            const startDate = new Date(event.start_date);
+            const prizePool = event.prize_pool > 0 ? `₹${event.prize_pool}` : 'Free';
+            
             return (
               <Card key={event.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-2">
@@ -300,26 +393,26 @@ export const EventsSystem: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {formatDate(event.startDate)}
+                        {formatDate(startDate)}
                       </span>
                       <span className="flex items-center gap-1">
                         <Users className="w-3 h-3" />
-                        {event.participants}/{event.maxParticipants}
+                        {event.current_participants}/{event.max_participants}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1 font-semibold text-green-600">
                         <Trophy className="w-3 h-3" />
-                        {event.prizePool}
+                        {prizePool}
                       </span>
                       <span className="flex items-center gap-1">
                         <Gift className="w-3 h-3" />
-                        {event.entryFee === 0 ? 'Free' : `₹${event.entryFee}`}
+                        {event.entry_fee === 0 ? 'Free' : `₹${event.entry_fee}`}
                       </span>
                     </div>
                   </div>
 
-                  <Button size="sm" className="w-full" disabled={event.status === 'ended'}>
+                  <Button size="sm" className="w-full" disabled={event.status === 'ended'} onClick={() => handleJoinEvent(event.id)}>
                     {event.status === 'live' ? 'Join' : event.status === 'upcoming' ? 'Register' : 'Results'}
                   </Button>
                 </CardContent>
