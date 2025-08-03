@@ -28,6 +28,7 @@ import { ChatSystem } from "@/components/chat/ChatSystem";
 import { AdminPanel } from "@/components/admin/AdminPanel";
 import { GlobalRankings } from "@/components/rankings/GlobalRankings";
 import { SimpleTournamentSection } from "@/components/games/tournaments/SimpleTournamentSection";
+import { EventsSystem } from "@/components/events/EventsSystem";
 import { toast } from "sonner";
 import type { User } from "@supabase/supabase-js";
 import { ModernLoading } from "@/components/ui/modern-loading";
@@ -334,6 +335,8 @@ const Index = () => {
         return <GlobalRankings user={user} />;
       case "tournaments":
         return <SimpleTournamentSection />;
+      case "events":
+        return <EventsSystem />;
       default:
         return <GameSelection onSelectGame={handleSelectGame} />;
     }

@@ -36,15 +36,12 @@ interface ProfessionalGameLobbyProps {
   onSelectGame: (
     gameType:
       | "chess"
-      | "ludo"
       | "math"
       | "wordsearch"
       | "codelearn"
       | "hangman"
       | "akinator"
       | "memory"
-      | "maze"
-      | "game2048"
       | "fourpics"
   ) => void;
 }
@@ -125,24 +122,6 @@ export const ProfessionalGameLobby: React.FC<ProfessionalGameLobbyProps> = ({
       features: ["Live Tournaments", "Quick Matches", "Global Rankings"],
       highlight: true,
       priority: 2,
-    },
-    {
-      id: "ludo",
-      title: "Ludo King",
-      subtitle: "Board Game Classic",
-      description: "Roll dice and race to victory with friends",
-      icon: Dice1,
-      category: "earn",
-      gradient: "from-emerald-500 to-green-600",
-      cardBg: "from-emerald-50 to-green-50",
-      iconBg: "bg-emerald-100",
-      iconColor: "text-emerald-600",
-      players: "1.8K+ Playing",
-      status: "⭐ POPULAR",
-      earning: "₹1,80,000",
-      features: ["2-4 Players", "Quick Rounds", "Real Prizes"],
-      highlight: true,
-      priority: 3,
     },
 
     {
